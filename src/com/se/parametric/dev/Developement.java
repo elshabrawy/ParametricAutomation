@@ -285,7 +285,7 @@ public class Developement extends JPanel implements ActionListener
 				// TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 				TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 				pdfUrl = tableInfoDTO.getPdfUrl();
-				docsInfo = ParaQueryUtil.getParametricPLsByPdfUrl(pdfUrl,userId);
+				docsInfo = ParaQueryUtil.getParametricPLsByPdfUrl(pdfUrl, userId);
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
 				String suppName = "";
@@ -302,8 +302,8 @@ public class Developement extends JPanel implements ActionListener
 					if(docInfo.getTaskType().contains("NPI"))
 					{
 						ws.setNPIflag(true);
-//						pdfId = ParaQueryUtil.getPdfId(pdfUrl, suppName);
-//						newsLink = DataDevQueryUtil.getNewsLink(pdfId);
+						// pdfId = ParaQueryUtil.getPdfId(pdfUrl, suppName);
+						// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
 						newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
 					}
 					String taxonomies = "";
@@ -313,7 +313,7 @@ public class Developement extends JPanel implements ActionListener
 						taxonomies += pl.getName() + "|";
 					}
 					taxonomies = taxonomies.substring(0, taxonomies.length() - 1);
-					ws.setDevHeader(true,false);
+					ws.setDevHeader(true, false);
 					ws.setPdfInfo(pdfUrl, suppName, docInfo.getTitle(), newsLink, taxonomies, 2);
 					// ws.setSupplierName(suppName);
 
@@ -435,7 +435,7 @@ public class Developement extends JPanel implements ActionListener
 			{
 				ws.setNPIflag(true);
 			}
-			ws.setDevHeader(true,false);
+			ws.setDevHeader(true, false);
 			// ws.setSupplierName(supplierName);
 
 			for(int i = 0; i < tableRecs.size(); i++)
@@ -451,11 +451,11 @@ public class Developement extends JPanel implements ActionListener
 				long pdfId = -1;
 				if(tableRecord.getTaskType().contains("NPI"))
 				{
-//					pdfId = ParaQueryUtil.getPdfId(pdfUrl, supplierName);
-//					if(pdfId != -1)
-//					{
-//						newsLink = DataDevQueryUtil.getNewsLink(pdfId);
-//					}
+					// pdfId = ParaQueryUtil.getPdfId(pdfUrl, supplierName);
+					// if(pdfId != -1)
+					// {
+					// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
+					// }
 					newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
 				}
 				String taxonomies = "";
@@ -614,19 +614,15 @@ public class Developement extends JPanel implements ActionListener
 				for(int i = 0; i < separationValues.size(); i++)
 				{
 					row = separationValues.get(i);
-					if(row.get(7).contains("!"))
-					{
-						isExclamationMark = true;
-					}
+
 					String plName = row.get(0);
 					String featureName = row.get(3);
 					String featureFullValue = row.get(4);
 					try
 					{
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8),
-								isExclamationMark);
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
 
-						ApprovedDevUtil.saveApprovedParametricValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId, null);
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
 					}catch(ArrayIndexOutOfBoundsException ex)
 					{
 						try
@@ -642,7 +638,6 @@ public class Developement extends JPanel implements ActionListener
 					{
 						ex.printStackTrace();
 					}
-					isExclamationMark = false;
 					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 					appValues.add(featureFullValue);
 				}
@@ -668,7 +663,7 @@ public class Developement extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, new String[] {"Assigned"}, startDate, endDate, null, "assigned", priority);
+			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, new String[] { "Assigned" }, startDate, endDate, null, "assigned", priority);
 
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
@@ -766,10 +761,10 @@ public class Developement extends JPanel implements ActionListener
 		frame.setSize(width, height);
 		frame.setTitle("Developement");
 		GrmUserDTO uDTO = new GrmUserDTO();
-		 uDTO.setId(119);
-		 uDTO.setFullName("ahmed hasanin");
-//		uDTO.setId(376);
-//		uDTO.setFullName("salah shiha");
+		uDTO.setId(119);
+		uDTO.setFullName("ahmed hasanin");
+		// uDTO.setId(376);
+		// uDTO.setFullName("salah shiha");
 		// uDTO.setId(116);
 		// uDTO.setFullName("a_kamal");
 		// uDTO.setId(121);

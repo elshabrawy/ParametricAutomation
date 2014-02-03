@@ -495,9 +495,9 @@ public class Update extends JPanel implements ActionListener
 					String featureFullValue = row.get(4);
 					try
 					{
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8), isExclamationMark);
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
 
-						ApprovedDevUtil.saveApprovedParametricValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId, null);
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
 					}catch(ArrayIndexOutOfBoundsException ex)
 					{
 						try
