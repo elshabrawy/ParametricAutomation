@@ -226,7 +226,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			if(!status.equals("Pending TL Review"))
 			{
-				JOptionPane.showMessageDialog(null, "You Can Oly Save Pending TL Review Status");
+				JOptionPane.showMessageDialog(null, "You Can Only Save Pending TL Review Status");
 				thread.stop();
 				loading.frame.dispose();
 				return;
