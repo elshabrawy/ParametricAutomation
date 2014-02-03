@@ -24,6 +24,7 @@ import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
+import com.se.automation.db.client.mapping.ParametricApprovedGroup;
 import com.se.automation.db.client.mapping.ParametricReviewData;
 import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
@@ -91,51 +92,13 @@ public class ApprovedDevUtil
 	public static void updateApprovedValue(int updateFlag, UnApprovedDTO app)
 	{
 		Session session = SessionUtil.getSession();
-		Criteria criteria;
-		List partsParametricValuesGroups = null;
-		boolean isExclamationMark = false;
-		PartsParametricValuesGroup partsParametricValuesGroup = null;
-		Long valueId;
-		ApprovedParametricValue valueObj = null;
-		// Long userId = 0l;
-		Long groupId = 0l;
 		try
 		{
-			if(app.getFeatureValue().contains("!"))
-			{
-				isExclamationMark = true;
-			}
 			List<ApprovedParametricDTO> approved = createApprovedValuesList(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), app.getFeatureUnit(), app.getSign(), app.getValue(), app.getMultiplier(), app.getUnit(), app.getCondition(),
-					app.getType(), isExclamationMark);
-			criteria = session.createCriteria(Pl.class);
-			criteria.add(Restrictions.eq("name", app.getPlName()));
-			Pl pl = (Pl) criteria.uniqueResult();
-			criteria = session.createCriteria(Feature.class);
-			criteria.add(Restrictions.eq("name", app.getFeatureName()));
-			Feature feature = (Feature) criteria.uniqueResult();
-			criteria = session.createCriteria(PlFeature.class);
-			criteria.add(Restrictions.eq("pl", pl));
-			criteria.add(Restrictions.eq("feature", feature));
-			PlFeature plFeature = (PlFeature) criteria.uniqueResult();
-			criteria = session.createCriteria(PartsParametricValuesGroup.class);
-			criteria.add(Restrictions.eq("plFeature", plFeature));
-			criteria.add(Restrictions.eq("groupFullValue", app.getFeatureValue()));
-			partsParametricValuesGroups = criteria.list();
-			if(!partsParametricValuesGroups.isEmpty())
-			{
-				partsParametricValuesGroup = (PartsParametricValuesGroup) partsParametricValuesGroups.get(0);
-				groupId = partsParametricValuesGroup.getGroupId();
-			}
+					app.getType());
 
-			try
-			{
-				saveApprovedParametricValue(0, updateFlag, approved, app.getPlName(), app.getFeatureName(), app.getFeatureValue(), app.getPdfUrl(), app.getUserId(), groupId);
-			}catch(Exception ex)
-			{
-				ex.printStackTrace();
-			}
-			isExclamationMark = false;
-			// System.out.println();
+			saveAppGroupAndSepValue(0, updateFlag, approved, app.getPlName(), app.getFeatureName(), app.getFeatureValue(), app.getPdfUrl(), app.getUserId());
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();
@@ -145,19 +108,14 @@ public class ApprovedDevUtil
 		}
 	}
 
-	public static List<ApprovedParametricDTO> createApprovedValuesList(String fullValue, String plName, String featureName, String featureUnit, String sign, String value, String multiplier, String unit, String condition, String valueType,
-			boolean isExclamationMark) throws ArrayIndexOutOfBoundsException
+	public static List<ApprovedParametricDTO> createApprovedValuesList(String fullValue, String plName, String featureName, String featureUnit, String sign, String value, String multiplier, String unit, String condition, String valueType)
+			throws ArrayIndexOutOfBoundsException
 	{
 		Session session = SessionUtil.getSession();
 		Criteria criteria = null;
 		List<ApprovedParametricDTO> approvedParametricValueDTOList = new ArrayList<ApprovedParametricDTO>();
 		ApprovedParametricDTO approvedParametricDTO = null;
-		String separator = "";
-		if(isExclamationMark)
-			separator = "!";
 
-		else
-			separator = "\\|";
 		try
 		{
 			boolean toflag = false;
@@ -171,14 +129,6 @@ public class ApprovedDevUtil
 			ArrayList<String[]> valueTypeSections = getSeparatedSections(valueType, toflag);
 
 			String[] valueArr = valueSections.get(0);
-			String[] fullValueArr = null;
-			// if (isExclamationMark) {
-			// String currentValue = getRightValue(value, fullValue);
-			// fullValueArr = currentValue.split(separator);
-			// } else {
-			// fullValueArr = fullValue.split(separator);
-			// }
-
 			String[] signArr = signSections.get(0);
 			String[] multiplierArr = multipSections.get(0);
 			String[] unitArr = unitSections.get(0);
@@ -191,21 +141,7 @@ public class ApprovedDevUtil
 			String[] unitSepArr = unitSections.get(1);
 			String[] conditionSepArr = condSections.get(1);
 			String[] valueTypeSepArr = valueTypeSections.get(1);
-			// String[] valueArr = value.split(separator);
-			// String[] fullValueArr = null;
-			// // if (isExclamationMark) {
-			// // String currentValue = getRightValue(value, fullValue);
-			// // fullValueArr = currentValue.split(separator);
-			// // } else {
-			// // fullValueArr = fullValue.split(separator);
-			// // }
-			//
-			// String[] signArr = sign.split(separator);
-			// String[] multiplierArr = multiplier.split(separator);
-			// String[] unitArr = unit.split(separator);
-			// String[] conditionArr = condition.split(separator);
-			// String[] valueTypeArr = valueType.split(separator);
-			//
+
 			int multiValCount = valueArr.length;
 			System.out.println("multiValCount+++++++++++ " + multiValCount);
 			if(!sign.trim().equals("") && signArr.length > multiValCount)
@@ -222,17 +158,6 @@ public class ApprovedDevUtil
 			for(int i = 0; i < multiValCount; i++)
 			{
 				approvedParametricDTO = new ApprovedParametricDTO();
-				// approvedParametricDTO.setFromValue(valueArr[i].split(" to ")[0].trim());
-				// if (signArr.length > i)
-				// approvedParametricDTO.setFromSign(signArr[i].split(" to ")[0].trim());
-				// if (conditionArr.length > i)
-				// approvedParametricDTO.setFromCondition(conditionArr[i].split(" to ")[0].trim());
-				// if (multiplierArr.length > i)
-				// approvedParametricDTO.setFromMultiplier(multiplierArr[i].split(" to ")[0].trim());
-				// if (unitArr.length > i)
-				// approvedParametricDTO.setFromUnit(unitArr[i].split(" to ")[0].trim());
-				// if (valueTypeArr.length > i)
-				// approvedParametricDTO.setFromValueType(valueTypeArr[i].split(" to ")[0].trim());
 
 				approvedParametricDTO.setFromValue(valueArr[i].trim());
 				if(signArr.length > i)
@@ -246,95 +171,10 @@ public class ApprovedDevUtil
 				if(valueTypeArr.length > i)
 					approvedParametricDTO.setFromValueType(valueTypeArr[i].trim());
 
-				// if(valueArr[i].startsWith("Up to "))
-				// {
-				// valueArr[i]=valueArr[i].replaceAll("Up to ", "Up~to~");
-				// }
-				// if(valueArr[i].split(" to ").length > 1)
-				// {
-				// approvedParametricDTO.setFromValue(valueArr[i].split(" to ")[0].trim());
-				// String signval="";
-				// if(signArr.length > i)
-				// signval=signArr[i].split(" to ")[0].trim();
-				// if(signval.equals("to"))
-				// {
-				// approvedParametricDTO.setFromSign(" to ");
-				// }else{
-				// approvedParametricDTO.setFromSign(signArr[i].split(" to ")[0].trim());
-				// }
-				//
-				// if(conditionArr.length > i)
-				// approvedParametricDTO.setFromCondition(conditionArr[i].split(" to ")[0].trim());
-				// if(multiplierArr.length > i)
-				// approvedParametricDTO.setFromMultiplier(multiplierArr[i].split(" to ")[0].trim());
-				// if(unitArr.length > i)
-				// approvedParametricDTO.setFromUnit(unitArr[i].split(" to ")[0].trim());
-				// if(valueTypeArr.length > i)
-				// approvedParametricDTO.setFromValueType(valueTypeArr[i].split(" to ")[0].trim());
-				//
-				// System.out.println(valueArr[i].split(" to ")[1].trim());
-				// approvedParametricDTO.setToValue(valueArr[i].split(" to ")[1].trim());
-				// if(signArr.length > i && !signArr[i].trim().equals(""))
-				// {
-				// System.out.println("here~~" + signArr[i] + "~~and");
-				// if(signArr[i].endsWith(" to ")||signArr[i].endsWith(" to")||signval.equals("to"))
-				// approvedParametricDTO.setToSign("");
-				//
-				// else if(signArr[i].split(" to ").length != 2)
-				// throw new ArrayIndexOutOfBoundsException("Error . \nPlease enter a valid sign range ' to '");
-				// else
-				// approvedParametricDTO.setToSign(signArr[i].split(" to ")[1].trim());
-				// }
-				// if(conditionArr.length > i && !conditionArr[i].trim().equals(""))
-				// {
-				// if(conditionArr[i].endsWith(" to "))
-				// approvedParametricDTO.setToCondition("");
-				// else if(conditionArr[i].split(" to ").length != 2)
-				// throw new ArrayIndexOutOfBoundsException("Error . \nPlease enter a valid condition range ' to '");
-				// else
-				// approvedParametricDTO.setToCondition(conditionArr[i].split(" to ")[1].trim());
-				// }
-				// if(multiplierArr.length > i && !multiplierArr[i].trim().equals(""))
-				// {
-				// if(multiplierArr[i].endsWith(" to "))
-				// approvedParametricDTO.setToMultiplier("");
-				// else if(multiplierArr[i].split(" to ").length != 2)
-				// throw new ArrayIndexOutOfBoundsException("Error . \nPlease enter a valid multiplier range ' to '");
-				// else
-				// approvedParametricDTO.setToMultiplier(multiplierArr[i].split(" to ")[1].trim());
-				// }
-				// if(unitArr.length > i && !unitArr[i].trim().equals(""))
-				// {
-				// if(unitArr[i].endsWith(" to "))
-				// approvedParametricDTO.setToUnit("");
-				// else if(unitArr[i].split(" to ").length != 2)
-				// throw new ArrayIndexOutOfBoundsException("Error . \nPlease enter a valid unit range ' to '");
-				// else
-				// approvedParametricDTO.setToUnit(unitArr[i].split(" to ")[1].trim());
-				// }
-				// if(valueTypeArr.length > i && !valueTypeArr[i].trim().equals(""))
-				// {
-				// if(valueTypeArr[i].endsWith(" to "))
-				// approvedParametricDTO.setToValueType("");
-				// else if(valueTypeArr[i].split(" to ").length != 2)
-				// throw new ArrayIndexOutOfBoundsException("Error . \nPlease enter a valid value type range ' to '");
-				// else
-				// approvedParametricDTO.setToValueType(valueTypeArr[i].split(" to ")[1].trim());
-				// }
-				// }
-				// valueArr[i]=valueArr[i].replaceAll("Up~to~", "Up to ");
 				approvedParametricDTO.setFeatUnit(featureUnit);
 				approvedParametricDTO.setFullValue(approvedParametricDTO.toString());
 				String pattern = fullValue;
-				// fullValueArr = fullValue.split(separator);
-				//
-				// for (int j = 0; j < fullValueArr.length; j++) {
-				// if (j == 0 || j == fullValueArr.length - 1) {
-				// pattern = pattern.replace(fullValueArr[j], "");
-				// } else {
-				// pattern = pattern.replace(fullValueArr[j], " ");
-				// }
-				// }
+
 				String signSep = "", conditionSep = "", valueTypeSep = "", multiplierSep = "", unitSep = "";
 				if((value.contains("|") || value.contains("!") || value.contains(" to ")) && !valueSepArr[i].equals(""))
 				{
@@ -361,12 +201,7 @@ public class ApprovedDevUtil
 				criteria.add(Restrictions.eq("plFeature", plFeature));
 				criteria.add(Restrictions.eq("fullValue", approvedParametricDTO.toString()));
 				ApprovedParametricValue approvedParametricValue = (ApprovedParametricValue) criteria.uniqueResult();
-				// if(approvedParametricValue != null)
-				// {
-				// // approvedParametricValue.setPattern(pattern);
-				// session.saveOrUpdate(approvedParametricValue);
-				// session.beginTransaction().commit();
-				// }
+
 				approvedParametricDTO.setApprovedParametricValue(approvedParametricValue);
 
 				approvedParametricValueDTOList.add(approvedParametricDTO);
@@ -379,103 +214,39 @@ public class ApprovedDevUtil
 		return approvedParametricValueDTOList;
 	}
 
-	public static long saveApprovedParametricValue(int engine, int update, List<ApprovedParametricDTO> approvedParametricDTOList, String plName, String featureName, String groupFullValue, String pdfurl, Long userID, Long clientGroupId)
-			throws Exception
+	public static void saveAppGroupAndSepValue(int engine, int update, List<ApprovedParametricDTO> approvedParametricDTOList, String plName, String featureName, String groupFullValue, String pdfurl, Long userId) throws Exception
 	{
 		Session session = SessionUtil.getSession();
-		boolean isUpdate = false;
 		int approvedValueOrder = 1;
 		try
 		{
-			// check if approved values exists and get approved value id
-			List<String> fullValuesList = new ArrayList<String>();
-			List<String> fromConditionList = new ArrayList<String>();
-			List<String> toConditionList = new ArrayList<String>();
-			List<String> fromMultiplierList = new ArrayList<String>();
-			List<String> toMultiplierList = new ArrayList<String>();
-			List<String> fromUnitList = new ArrayList<String>();
-			List<String> toUnitList = new ArrayList<String>();
-			List<String> fromSignList = new ArrayList<String>();
-			List<String> toSignList = new ArrayList<String>();
-			List<String> fromValueList = new ArrayList<String>();
-			List<String> toValueList = new ArrayList<String>();
-			List<String> fromValueTypeList = new ArrayList<String>();
-			List<String> toValueTypeList = new ArrayList<String>();
-			List<PartsParametricValuesGroup> partsParametricValuesGroupList = null;
-			// get groupList by groupFullvalue
-			// List<PartsParametricValuesGroup> partsParametricValuesGroupList = ParaQueryUtil
-			// .getPartsParametricValuesGroupByGroupFullValue(groupFullValue, plName, featureName, session);
-			List<ApprovedParametricValue> approvedParametricValueList = new ArrayList<ApprovedParametricValue>();
-			if(clientGroupId != null)
-			{
-				isUpdate = true;
-				partsParametricValuesGroupList = ParaQueryUtil.getPartsParametricValuesGroup(clientGroupId, plName, featureName, session);
-				ParaQueryUtil.deleteOldGroups(partsParametricValuesGroupList, session);
-
-			}
-			else
-				clientGroupId = System.nanoTime(); // new group
-
-			for(ApprovedParametricDTO approvedParametricDTO : approvedParametricDTOList)
-			{
-				fullValuesList.add(approvedParametricDTO.getFullValue());
-				// System.out.println(""+approvedParametricDTO.getApprovedParametricValue());
-				fromConditionList.add(approvedParametricDTO.getFromCondition());
-				toConditionList.add(approvedParametricDTO.getToCondition());
-				fromMultiplierList.add(approvedParametricDTO.getFromMultiplier());
-				toMultiplierList.add(approvedParametricDTO.getToMultiplier());
-				fromSignList.add(approvedParametricDTO.getFromSign());
-				toSignList.add(approvedParametricDTO.getToSign());
-				fromUnitList.add(approvedParametricDTO.getFromUnit());
-				toUnitList.add(approvedParametricDTO.getToUnit());
-				toSignList.add(approvedParametricDTO.getToSign());
-				fromValueList.add(approvedParametricDTO.getFromValue());
-				toValueList.add(approvedParametricDTO.getToValue());
-				fromValueTypeList.add(approvedParametricDTO.getFromValueType());
-				toValueTypeList.add(approvedParametricDTO.getToValueType());
-			}
-
-			approvedValueOrder = 1;
 			Document document = null;
-			// pdfurl="http://download.siliconexpert.com/pdfs/2013/3/20/19/6/11/868/mmm_/manual/bgel_pwls.pdf";
 			if(pdfurl != null && !pdfurl.isEmpty())
 				document = ParaQueryUtil.getDocumentBySeUrl(pdfurl, session);
+			ParametricApprovedGroup approvedGroup = ParaQueryUtil.addAppValueGroup(engine, update, document,plName, featureName, groupFullValue,  userId, session);
+			if(approvedGroup != null)
+				ParaQueryUtil.deleteSeprationGroups(approvedGroup, session);
+			approvedValueOrder = 1;
+
 			for(ApprovedParametricDTO approvedParametricDTO : approvedParametricDTOList)
 			{
-				ApprovedParametricValue approvedParametricValue = saveApprovedParametricValue(engine, update, document, approvedParametricDTO, plName, featureName, clientGroupId, groupFullValue, approvedValueOrder, userID, session);
-				if(approvedParametricValueList.size() == 0)
-					approvedParametricValueList.add(approvedParametricValue);
+				saveApprovedParametricValue(engine, update, approvedParametricDTO, plName, featureName, approvedGroup, approvedValueOrder, userId, session);
 				approvedValueOrder++;
 			}
-			// ParaQueryUtil.addTrackingParamDocApprov(document, clientGroupId, approvedParametricValueList.get(0), groupFullValue,
-			// null, "", session);
-			// ParaQueryUtil.addTrackingParametricApprovedValue(approvedParametricValueList.get(0), clientGroupId, groupFullValue,
-			// "Pending", session);
-			// now delete approved values un used
-			if(isUpdate)
-				ParaQueryUtil.deleteUnUsedApprovedValues(partsParametricValuesGroupList, session);
-			// session.beginTransaction().commit();
+
 		}catch(ConstraintViolationException e)
 		{
 			e.printStackTrace();
-			// session.getTransaction().rollback();
-			// throw new Exception("Duplicated row data" + "\n"+ getCatchException(e));
 		}
-		// catch(Exception e)
-		// {
-		// e.printStackTrace();
-		// // session.getTransaction().rollback();
-		// // throw getCatchException(e);
-		// }
+
 		finally
 		{
 			session.close();
 		}
-		return clientGroupId;
 	}
 
-	public static ApprovedParametricValue saveApprovedParametricValue(int engine, int update, Document document, ApprovedParametricDTO approvedParametricDTO, String plName, String featureName, Long grpId, String groupFullValue,
-			int approvedValueOrder, Long paraUserId, Session sessionold) throws Exception
+	public static ApprovedParametricValue saveApprovedParametricValue(int engine, int update, ApprovedParametricDTO approvedParametricDTO, String plName, String featureName, ParametricApprovedGroup parametricApprovedGroup, int approvedValueOrder,
+			Long paraUserId, Session sessionold) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
@@ -486,7 +257,7 @@ public class ApprovedDevUtil
 			System.out.println((approvedParametricDTO.getApprovedParametricValue() == null) ? "null" : approvedParametricDTO.getApprovedParametricValue().getId());
 			if(approvedParametricDTO.getApprovedParametricValue() != null && approvedParametricDTO.getApprovedParametricValue().getIsApproved() == 1l)
 			{
-				ParaQueryUtil.addAppValueGroup(engine, update, document, approvedParametricDTO.getApprovedParametricValue(), approvedParametricDTO.getPattern(), plFeature, grpId, groupFullValue, approvedValueOrder, paraUserId, session);
+				ParaQueryUtil.addSeparationGroup(engine, update, approvedParametricDTO.getApprovedParametricValue(), approvedParametricDTO.getPattern(), parametricApprovedGroup, approvedValueOrder, session);
 				return approvedParametricDTO.getApprovedParametricValue();
 			}
 
@@ -496,8 +267,8 @@ public class ApprovedDevUtil
 
 			if(approvedParametricDTO.getApprovedParametricValue() != null && approvedParametricDTO.getApprovedParametricValue().getIsApproved() == 0l)
 			{
-				ApprovedParametricValue	approvedParametricValue1 = approvedParametricDTO.getApprovedParametricValue();
-				approvedParametricValue =(ApprovedParametricValue) session.get(ApprovedParametricValue.class, approvedParametricDTO.getApprovedParametricValue().getId());
+				ApprovedParametricValue approvedParametricValue1 = approvedParametricDTO.getApprovedParametricValue();
+				approvedParametricValue = (ApprovedParametricValue) session.get(ApprovedParametricValue.class, approvedParametricDTO.getApprovedParametricValue().getId());
 				System.out.println(approvedParametricValue1.equals(approvedParametricValue));
 				approvedParametricValue.setFromSign(null);
 				approvedParametricValue.setToSign(null);
@@ -509,7 +280,7 @@ public class ApprovedDevUtil
 				approvedParametricValue.setToMultiplierUnit(null);
 				// session.merge(approvedParametricValue);
 				// approvedParametricDTO.setApprovedParametricValue(approvedParametricValue);
-				 session.update(approvedParametricValue);
+				session.update(approvedParametricValue);
 			}
 			else
 			{
@@ -706,24 +477,24 @@ public class ApprovedDevUtil
 			}
 			try
 			{
-//				session.clear();
-//				ApprovedParametricValue ob = null;
-//				ob = (ApprovedParametricValue) session.get(ApprovedParametricValue.class, approvedParametricValue.getId());
-//				if(ob == null)
-//				{
-//					session.saveOrUpdate(approvedParametricValue);
-//				}
-//				else
-//				{
-//					// session.getTransaction().begin();
-//					session.saveOrUpdate(ob);
-//					if(!session.getTransaction().isInitiator())
-//						session.beginTransaction();
-//					session.getTransaction().commit();
-//					// session.getTransaction().commit();
-//				}
+				// session.clear();
+				// ApprovedParametricValue ob = null;
+				// ob = (ApprovedParametricValue) session.get(ApprovedParametricValue.class, approvedParametricValue.getId());
+				// if(ob == null)
+				// {
+				// session.saveOrUpdate(approvedParametricValue);
+				// }
+				// else
+				// {
+				// // session.getTransaction().begin();
+				// session.saveOrUpdate(ob);
+				// if(!session.getTransaction().isInitiator())
+				// session.beginTransaction();
+				// session.getTransaction().commit();
+				// // session.getTransaction().commit();
+				// }
 
-				 session.saveOrUpdate(approvedParametricValue);
+				session.saveOrUpdate(approvedParametricValue);
 			}catch(ConstraintViolationException e)
 			{
 				System.out.println("Approved Value Found before:" + approvedParametricDTO.toString() + " ~~ " + featureName + " ~~ " + plName);
@@ -732,13 +503,12 @@ public class ApprovedDevUtil
 				criteria.add(Restrictions.eq("plFeature", plFeature));
 				criteria.add(Restrictions.eq("fullValue", approvedParametricDTO.toString()));
 				approvedParametricValue = (ApprovedParametricValue) criteria.uniqueResult();
-				ParaQueryUtil.addAppValueGroup(engine, update, document, approvedParametricValue, approvedParametricDTO.getPattern(), plFeature, grpId, groupFullValue, approvedValueOrder, paraUserId, session);
+				ParaQueryUtil.addSeparationGroup(engine, update, approvedParametricDTO.getApprovedParametricValue(), approvedParametricDTO.getPattern(), parametricApprovedGroup, approvedValueOrder, session);
 				return approvedParametricValue;
 			}
 
-			// Document document=getDocumentBySeUrl(, session);
 			// save the group
-			ParaQueryUtil.addAppValueGroup(engine, update, document, approvedParametricValue, approvedParametricDTO.getPattern(), plFeature, grpId, groupFullValue, approvedValueOrder, paraUserId, session);
+			ParaQueryUtil.addSeparationGroup(engine, update, approvedParametricValue, approvedParametricDTO.getPattern(), parametricApprovedGroup, approvedValueOrder, session);
 			return approvedParametricValue;
 			// }
 			// catch (ConstraintViolationException e) {

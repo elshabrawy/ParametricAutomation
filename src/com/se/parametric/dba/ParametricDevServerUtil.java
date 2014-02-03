@@ -657,36 +657,7 @@ public class ParametricDevServerUtil
 		return null;
 	}
 
-	private static long[] saveFeatureValues(/*
-											 * Component component, List<String> valuesList,
-											 */Document document, PlFeature plFeature, String groupFullValue, /*
-																											 * PlFeature plFeature2 ,
-																											 */Session session) throws Throwable
-	{
-		long[] ret = new long[2];
-		ret[1] = 0;
 
-		PartsParametricValuesGroup partsParametricValuesGroup = ParaQueryUtil.getPartsParametricValuesGroup(groupFullValue, plFeature, session);
-		// ParaQueryUtil.getappr
-		if(partsParametricValuesGroup == null)
-			return ret;
-		if(partsParametricValuesGroup.getIsApproved() == 0L)
-		{
-			manageApprovedValueStatus(document, partsParametricValuesGroup, "Pending");
-			changeParametricTaskStatus(document, "Need Value Approval", null);
-			ret[1] = 1;
-		}
-		Long groupId = partsParametricValuesGroup.getGroupId();
-		if(groupId >= 0)
-		{
-			ret[0] = groupId;
-			return ret;
-		}
-
-		ret[0] = groupId;
-		return ret;
-
-	}
 
 	// private static long[] savePkgFeatureValues(List<String> valuesList,
 	// PkgFeature pkgFeature, Document document, Session session)
@@ -4019,95 +3990,6 @@ public class ParametricDevServerUtil
 	// }
 	// }
 
-	public static void saveParametricFeedBackData(Map<Pl, Map<String, Map<String, List<String>>>> plDataMap, Supplier supplier, Document document, TrackingFeedback trackingFeedback) throws Exception
-	{
-		boolean isNeedValueApproval = false;
-		String exceptionString = "";
-		Set<Pl> plSet = plDataMap.keySet();
-		for(Pl pl : plSet)
-		{
-			Map<String, Map<String, List<String>>> dataMap = plDataMap.get(pl);
-			if(dataMap.size() == 0)
-				return;
-			Set<String> keys = dataMap.keySet();
-			int savedParts = 0;
-			// iterate over map data
-			for(String partInfo : keys)
-			{
-				Session session = SessionUtil.getSession();
-				//
-				try
-				{
-					System.out.println("part info = " + partInfo);
-					PartComponent component = savePart(supplier, document, pl, session, partInfo);
-					//
-					Map<String, List<String>> featureMap = dataMap.get(partInfo);
-					Set<String> featureNames = featureMap.keySet();
-					Map<Long, PlFeature> featureGroupMap = new HashMap<Long, PlFeature>();
-					long RandomKey = -1;
-					for(String plFeatureName : featureNames)
-					{
-						List<String> valuesList = featureMap.get(plFeatureName);
-						if(valuesList == null || valuesList.size() == 0)
-							continue;
-						//
-						PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(plFeatureName, pl.getName(), session);
-						String groupFullValue = valuesList.get(0);
-						valuesList.remove(0);
-						if(valuesList.size() == 0)
-						{
-							featureGroupMap.put(new Long(RandomKey), plFeature);
-							RandomKey--;
-						}
-						else
-						{
-							long[] ret = saveFeatureValues(/*
-															 * component, valuesList,
-															 */document, plFeature, groupFullValue, /* plFeature, */
-									session);
-							long groupId = ret[0];
-							if(ret[1] == 1)
-								isNeedValueApproval = true;
-							featureGroupMap.put(groupId, plFeature);
-						}
-					}
-					// save parts parametric object if one is not already saved
-					PartsParametric partsParametric = ParaQueryUtil.getPartsParametricByComponentAndFeatures(component, session);
-					if(partsParametric == null)
-						savePartsPararmetricObject(component, featureGroupMap, session);
-					else
-						updatePartsPararmetricObject(partsParametric, featureGroupMap, session);
-					//
-					String newDiscription = ParaQueryUtil.getNewDiscription(component.getSupplierPl().getPl().getId(), component.getComId(), session);
-//					if(newDiscription != null)
-//						component.setNewDescription(newDiscription);
-					//
-					session.beginTransaction().commit();
-					savedParts++;
-				}catch(Throwable e)
-				{
-					e.printStackTrace();
-					// in case an exception is thrown while saving part or one
-					// of its features, rollback
-					session.getTransaction().rollback();
-				}finally
-				{
-					if(session != null)
-						SessionUtil.closeSession(session);
-				}
-			}
-			if(savedParts < keys.size())
-			{
-				exceptionString = exceptionString.length() == 0 ? exceptionString : exceptionString + ",";
-				exceptionString += "SAVED_PARTS:" + savedParts + ":" + pl.getName();
-			}
-		}
-		if(exceptionString.length() > 0)
-			throw new Exception(exceptionString);
-		if(!isNeedValueApproval)
-			changeParametricTaskStatus(document, "Pending TL Review", trackingFeedback);
-		closeTrackingFeedback(trackingFeedback);
-	}
 
 	public static void closeTrackingFeedback(TrackingFeedback trackingFeedback) throws Exception
 	{
@@ -4128,6 +4010,7 @@ public class ParametricDevServerUtil
 		}
 
 	}
+	
 
 	// public static void savePkgFeedbackData(List<Component> componentsList,
 	// Map<Pl, Map<String, Map<String, List<String>>>> plDataMap, /*

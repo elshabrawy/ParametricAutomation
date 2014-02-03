@@ -75,7 +75,9 @@ import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NoParametricDocuments;
 import com.se.automation.db.client.mapping.NonPdf;
+import com.se.automation.db.client.mapping.ParametricApprovedGroup;
 import com.se.automation.db.client.mapping.ParametricReviewData;
+import com.se.automation.db.client.mapping.ParametricSeparationGroup;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.PartMaskValue;
 import com.se.automation.db.client.mapping.PartMaskValueId;
@@ -136,6 +138,7 @@ import com.se.parametric.dto.RelatedFeaturesDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.excel.ExcelHandler2003;
+import com.sun.star.lib.uno.environments.remote.remote_environment;
 
 public class ParaQueryUtil
 {
@@ -160,8 +163,8 @@ public class ParaQueryUtil
 		try
 		{
 			String g = "N/A";
-//			getGeneric(g);
-//			checkUser("abeer","123456");
+			// getGeneric(g);
+			// checkUser("abeer","123456");
 			// pl = getPlByPlName("Solid State Relay");
 			// Pl ptype = getPLType(pl);
 			// System.out.println(ptype.getName());
@@ -3279,27 +3282,19 @@ public class ParaQueryUtil
 
 	}
 
-	public static void addAppValueGroup(int engine, int update, Document document, ApprovedParametricValue approvedParametricValue, String pattern, PlFeature plFeature, Long groupId, String groupFullValue, int approvedValueOrder, Long paraUserId,
-			Session session) throws Exception
+	public static ParametricApprovedGroup addAppValueGroup(int engine, int update, Document document, String plName, String featureName, String groupFullValue, Long paraUserId, Session session) throws Exception
 	{
-		PartsParametricValuesGroup partsParametricValuesGroup = new PartsParametricValuesGroup();
-		partsParametricValuesGroup.setId(System.nanoTime());
-		partsParametricValuesGroup.setGroupId(groupId);
-		partsParametricValuesGroup.setApprovedParametricValue(approvedParametricValue);
-		partsParametricValuesGroup.setPlFeature(plFeature);
-		partsParametricValuesGroup.setGroupFullValue(groupFullValue);
-		partsParametricValuesGroup.setApprovedValueOrder(approvedValueOrder);
-		if(engine == 1)
+
+		ParametricApprovedGroup parametricApprovedGroup = ParaQueryUtil.getParametricApprovedGroup(groupFullValue, plName, featureName, session);
+		if(parametricApprovedGroup == null)
 		{
-			partsParametricValuesGroup.setIsApproved(1L);
-		}
-		else
-		{
-			partsParametricValuesGroup.setIsApproved(0L);
+			parametricApprovedGroup = new ParametricApprovedGroup();
+			parametricApprovedGroup.setId(System.nanoTime());
+			parametricApprovedGroup.setPlFeature(getPlFeatureByExactName(featureName, plName, session));
+			parametricApprovedGroup.setGroupFullValue(groupFullValue);
 		}
 		if(document != null)
-			partsParametricValuesGroup.setDocument(document);
-		partsParametricValuesGroup.setPattern(pattern);
+			parametricApprovedGroup.setDocument(document);
 		Criteria criteria = session.createCriteria(TrackingTaskStatus.class);
 		if(engine == 1)
 		{
@@ -3318,16 +3313,33 @@ public class ParaQueryUtil
 			criteria.add(Restrictions.eq("name", "Send Back To Team Leader"));
 		}
 		TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();
-		partsParametricValuesGroup.setTaskStatus(trackingTaskStatus);
-		partsParametricValuesGroup.setParaUserId(paraUserId);
+		parametricApprovedGroup.setStatus(trackingTaskStatus);
+		parametricApprovedGroup.setParaUserId(paraUserId);
 		Date d = new Date();
 		// System.out.println("Date is " + d.toString());
-		partsParametricValuesGroup.setStoreDate(d);
+		parametricApprovedGroup.setStoreDate(d);
 
-		Long qaUserId = getQAUserId(plFeature.getPl(), getTrackingTaskTypeByName("Approved Values", session));
+		Long qaUserId = getQAUserId(getPlByPlName(session, plName), getTrackingTaskTypeByName("Approved Values", session));
 		if(qaUserId != null && paraUserId != 120)
-			partsParametricValuesGroup.setQaUserId(qaUserId);
-		session.saveOrUpdate(partsParametricValuesGroup);
+			parametricApprovedGroup.setQaUserId(qaUserId);
+		session.saveOrUpdate(parametricApprovedGroup);
+
+		return parametricApprovedGroup;
+
+	}
+
+	public static void addSeparationGroup(int engine, int update, ApprovedParametricValue approvedParametricValue, String pattern, ParametricApprovedGroup parametricApprovedGroup, int approvedValueOrder, Session session) throws Exception
+	{
+		ParametricSeparationGroup paraSepGroup = new ParametricSeparationGroup();
+		paraSepGroup.setId(System.nanoTime());
+		paraSepGroup.setApprovedParametricValue(approvedParametricValue);
+		paraSepGroup.setParametricApprovedGroup(parametricApprovedGroup);
+		paraSepGroup.setApprovedValueOrder((long) approvedValueOrder);
+		paraSepGroup.setPattern(pattern);
+		paraSepGroup.setStoreDate(new Date());
+
+		session.saveOrUpdate(paraSepGroup);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -3352,98 +3364,69 @@ public class ParaQueryUtil
 		return (PartComponent) crit.uniqueResult();
 	}
 
-	public static PartsParametricValuesGroup getpartParametricValueGroupByGroupId(long grpId, String featureName, String plName, Session session)
+	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValue, PlFeature plFeature, Session session)
 	{
-		final Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-
-		Criteria plFeatureCrit = crit.createCriteria("plFeature");
-		//
-		plFeatureCrit.createCriteria("feature").add(Restrictions.eq("name", featureName));
-		//
-		plFeatureCrit.createCriteria("pl").add(Restrictions.eq("name", plName));
-		crit.add(Restrictions.eq("groupId", grpId));
-		PartsParametricValuesGroup partsParametricValuesGroup = (PartsParametricValuesGroup) crit.uniqueResult();
-
-		return partsParametricValuesGroup;
-	}
-
-	public static PartsParametricValuesGroup getPartsParametricValuesGroup(String groupFullValue, PlFeature plFeature, Session session)
-	{
-		final Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
+		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		crit.add(Restrictions.eq("groupFullValue", groupFullValue));
 		crit.add(Restrictions.eq("plFeature", plFeature));
-		// crit.setProjection(Projections.distinct(Projections.property("groupId")));
-		List<PartsParametricValuesGroup> partsParametricValuesGroup = crit.list();
-		System.out.println("Group.size() " + groupFullValue + "  " + plFeature.getId() + " " + partsParametricValuesGroup.size());
-		if(partsParametricValuesGroup.size() > 0)
-			return partsParametricValuesGroup.get(0);
-		return null;
+		ParametricApprovedGroup group = (ParametricApprovedGroup) crit.uniqueResult();
+		return group;
 	}
 
-	public static List<PartsParametricValuesGroup> getPartsParametricValuesGroupByGroupFullValue(String groupFullValues, String plName, String featureName, Session session) throws Exception
+	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValues, String plName, String featureName, Session session) throws Exception
 	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
+
+		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		crit.add(Restrictions.eq("groupFullValue", groupFullValues));
-		// crit.createAlias("plFeature", "plFet");
-		// crit.createCriteria("plFet.pl").add(Restrictions.eq("name", plName));
-		// crit.createCriteria("plFet.feature").add(Restrictions.eq("name",
-		// featureName));
 		Criteria criteria = crit.createCriteria("plFeature");
 		criteria.createCriteria("pl").add(Restrictions.eq("name", plName));
 		criteria.createCriteria("feature").add(Restrictions.eq("name", featureName));
 
-		// crit.setProjection(Projections.property("id"));
-		List<PartsParametricValuesGroup> groups = crit.list();
+		ParametricApprovedGroup group = (ParametricApprovedGroup) crit.uniqueResult();
 
-		return groups;
+		return group;
 
 	}
 
-	public static List<PartsParametricValuesGroup> getPartsParametricValuesGroup(Long clientGroupId, String plName, String featureName, Session session) throws Exception
+	public static ParametricApprovedGroup getParametricApprovedGroup(Long clientGroupId, Session session) throws Exception
 	{
 
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
+		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		crit.add(Restrictions.eq("groupId", clientGroupId));
-		// crit.createAlias("plFeature", "plFet");
-		// crit.createCriteria("plFet.pl").add(Restrictions.eq("name", plName));
-		// crit.createCriteria("plFet.feature").add(Restrictions.eq("name",
-		// featureName));
-		Criteria criteria = crit.createCriteria("plFeature");
-		criteria.createCriteria("pl").add(Restrictions.eq("name", plName));
-		criteria.createCriteria("feature").add(Restrictions.eq("name", featureName));
+		ParametricApprovedGroup group = (ParametricApprovedGroup) crit.uniqueResult();
 
-		// crit.setProjection(Projections.property("id"));
-		List<PartsParametricValuesGroup> groups = crit.list();
-
-		return groups;
+		return group;
 
 	}
 
-	public static void deleteOldGroups(List<PartsParametricValuesGroup> partsParametricValuesGroupList, Session session) throws Exception
+	public static void deleteSeprationGroups(ParametricApprovedGroup parametricApprovedGroup, Session session) throws Exception
 	{
-		for(PartsParametricValuesGroup partsParametricValuesGroup : partsParametricValuesGroupList)
+
+		for(Object ob : parametricApprovedGroup.getParametricSeparationGroups())
 		{
-			session.delete(partsParametricValuesGroup);
+			ParametricSeparationGroup parametricSeparationGroup = (ParametricSeparationGroup) ob;
+			session.delete(parametricSeparationGroup);
 		}
 
 	}
 
-	public static void deleteUnUsedApprovedValues(List<PartsParametricValuesGroup> partsParametricValuesGroupList, Session session) throws Exception
+	public static void deleteUnUsedApprovedValues(ParametricApprovedGroup parametricApprovedGroup, Session session) throws Exception
 	{
-		for(PartsParametricValuesGroup partsParametricValuesGroup : partsParametricValuesGroupList)
+
+		for(Object ob : parametricApprovedGroup.getParametricSeparationGroups())
 		{
+			ParametricSeparationGroup parametricSeparationGroup = (ParametricSeparationGroup) ob;
+
 			try
 			{
-				session.delete(partsParametricValuesGroup.getApprovedParametricValue());
+				session.delete(parametricSeparationGroup.getApprovedParametricValue());
 
 			}catch(ConstraintViolationException cv)
 			{
-				System.err.println(partsParametricValuesGroup.getApprovedParametricValue().getId() + " Can't Deleted Used by " + cv.getMessage());
+				System.err.println(parametricSeparationGroup.getApprovedParametricValue().getId() + " Can't Deleted Used by " + cv.getMessage());
 				// cv.printStackTrace();
 			}
-
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -5940,9 +5923,8 @@ public class ParaQueryUtil
 			session = SessionUtil.getSession();
 			Pl pl = getPlByPlName(session, plName);
 			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, AUTOMATION2.GETSUPPLIERBYDOC(c.document_id) sup_name, "
-					+ " AUTOMATION2.GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id "
-					+ " in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and tracking_task_status_id=3 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id="
-					+ pl.getId() + ")";
+					+ " AUTOMATION2.GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id="
+					+ userDto.getId() + " and tracking_task_status_id=3 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy HH:mm:ss");
@@ -6340,7 +6322,7 @@ public class ParaQueryUtil
 			crit.add(Restrictions.eq("feedbackRecieved", 0l)); // foreign key col
 			PartsFeedback p = (PartsFeedback) crit.uniqueResult();
 			if(p != null)
-			flowSource = p.getFlowSource();
+				flowSource = p.getFlowSource();
 			if(flowSource != null)
 				result = p.getFlowSource().getName();
 
