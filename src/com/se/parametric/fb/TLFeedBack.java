@@ -522,22 +522,19 @@ public class TLFeedBack extends JPanel implements ActionListener
 				for(int i = 0; i < separationValues.size(); i++)
 				{
 					row = separationValues.get(i);
-					if(row.get(7).contains("!"))
-					{
-						isExclamationMark = true;
-					}
+					
 					String plName = row.get(0);
 					String featureName = row.get(3);
 					String featureFullValue = row.get(4);
-					List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8), isExclamationMark);
+					List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
 					try
 					{
-						ApprovedDevUtil.saveApprovedParametricValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId, null);
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
 					}catch(Exception ex)
 					{
 						ex.printStackTrace();
 					}
-					isExclamationMark = false;
+			
 					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 					appValues.add(featureFullValue);
 				}
