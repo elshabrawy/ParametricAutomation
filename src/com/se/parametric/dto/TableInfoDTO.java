@@ -27,6 +27,17 @@ public class TableInfoDTO
 	private String cerDate;
 	private String taxPath;
 	private int pagesCount;
+	private long pdfId;
+
+	public long getPdfId()
+	{
+		return pdfId;
+	}
+
+	public void setPdfId(long pdfId)
+	{
+		this.pdfId = pdfId;
+	}
 
 	public int getPagesCount()
 	{
