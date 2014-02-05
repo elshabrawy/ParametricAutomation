@@ -3127,7 +3127,21 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartsParametricValuesGroup> getAppGroupListByFullValAndFetNameAndPlName(String featureName, String plName, String groupFullValue, Session session)
+	public static List<ParametricApprovedGroup> getAppGroupListByFullValAndFetNameAndPlName(String featureName, String plName, String groupFullValue, Session session)
+	{
+		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		Criteria plFeatureCrit = crit.createCriteria("plFeature");
+		//
+		plFeatureCrit.createCriteria("feature").add(Restrictions.eq("name", featureName));
+		//
+		plFeatureCrit.createCriteria("pl").add(Restrictions.eq("name", plName));
+		crit.add(Restrictions.eq("groupFullValue", groupFullValue));
+		// crit.setProjection(Projections.distinct(Projections.property("groupFullValue")));
+		List<ParametricApprovedGroup> parametricApprovedGroup = crit.list();
+		return parametricApprovedGroup;
+	}
+
+	public static List<PartsParametricValuesGroup> getAppGroupListByFullValAndFetNameAndPlNameOLD(String featureName, String plName, String groupFullValue, Session session)
 	{
 		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
@@ -5644,9 +5658,9 @@ public class ParaQueryUtil
 		try
 		{
 
-			List<PartsParametricValuesGroup> groups = getAppGroupListByFullValAndFetNameAndPlName(app.getFeatureName(), app.getPlName(), app.getFeatureValue(), session);
+			ParametricApprovedGroup groups = getParametricApprovedGroup(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
 			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("groupID", groups.get(0).getGroupId()));
+			criteria.add(Restrictions.eq("groupID", groups.getId()));
 			criteria.add(Restrictions.eq("issuedToId", user.getId()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 			ApprovedValueFeedback approvedValueFeedback = (ApprovedValueFeedback) criteria.uniqueResult();
@@ -5655,7 +5669,7 @@ public class ParaQueryUtil
 			session.saveOrUpdate(approvedValueFeedback);
 			session.beginTransaction().commit();
 			ApprovedValueFeedback appFBObj = new ApprovedValueFeedback();
-			appFBObj.setGroupID(groups.get(0).getGroupId());
+			appFBObj.setGroupID(groups.getId());
 			criteria = session.createCriteria(TrackingTaskQaStatus.class);
 			criteria.add(Restrictions.eq("name", "Rejected"));
 			TrackingTaskQaStatus trackingTaskQaStatus = (TrackingTaskQaStatus) criteria.uniqueResult();//
@@ -5674,19 +5688,19 @@ public class ParaQueryUtil
 			session.saveOrUpdate(appFBObj);
 			session.beginTransaction().commit();
 
-			PartsParametricValuesGroup groupObj = null;
+			// PartsParametricValuesGroup groupObj = null;
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			// criteria.add(Restrictions.eq("name", "Send Back To Developer"));
 			criteria.add(Restrictions.eq("name", "Send Back To Team Leader"));
 			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
-			for(int i = 0; i < groups.size(); i++)
-			{
-				// session.beginTransaction().begin();
-				groupObj = groups.get(i);
-				groupObj.setTaskStatus(trackingTaskStatus);
-				session.saveOrUpdate(groupObj);
-				// session.beginTransaction().commit();
-			}
+			// for(int i = 0; i < groups.size(); i++)
+			// {
+			// session.beginTransaction().begin();
+			// groupObj = groups.get(i);
+			groups.setStatus(trackingTaskStatus);
+			session.saveOrUpdate(groups);
+			// session.beginTransaction().commit();
+			// }
 
 		}catch(Exception e)
 		{
@@ -5705,9 +5719,9 @@ public class ParaQueryUtil
 		try
 		{
 
-			List<PartsParametricValuesGroup> groups = getAppGroupListByFullValAndFetNameAndPlName(app.getFeatureName(), app.getPlName(), app.getFeatureValue(), session);
+			ParametricApprovedGroup groups = getParametricApprovedGroup(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
 			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("groupID", groups.get(0).getGroupId()));
+			criteria.add(Restrictions.eq("groupID", groups.getId()));
 			criteria.add(Restrictions.eq("issuedToId", user.getId()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
@@ -5737,7 +5751,7 @@ public class ParaQueryUtil
 			approvedValueFeedback.setFeedbackRecieved(0l);
 			approvedValueFeedback.setStoreDate(new Date());
 			approvedValueFeedback.setFbComment(app.getComment());
-			approvedValueFeedback.setGroupID(groups.get(0).getGroupId());
+			approvedValueFeedback.setGroupID(groups.getId());
 			session.saveOrUpdate(approvedValueFeedback);
 			// session.beginTransaction().commit();
 		}catch(Exception e)
