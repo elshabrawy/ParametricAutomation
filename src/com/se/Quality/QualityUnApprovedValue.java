@@ -73,7 +73,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewSelection(new Long[]{userDTO.getId()},null,null,"QA");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[]{userDTO.getId()},null,null,"QA");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name","PL Name", "Supplier", "Status", "Task Type" };
@@ -210,7 +210,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			 filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewSelection(new Long[]{userDTO.getId()},startDate,endDate,"QA");
+			 filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[]{userDTO.getId()},startDate,endDate,"QA");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
