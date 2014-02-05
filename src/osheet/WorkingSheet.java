@@ -2454,16 +2454,17 @@ public class WorkingSheet
 
 	}
 
-	public void setExtractionData1(String pdfUrl, String supplierName, String plName, int pdfRow)
+	public void setExtractionData1(String pdf, String supplierName, String plName, int pdfRow)
 	{
 
 		try
 		{
-			Pdf pdf = ParaQueryUtil.getPdfBySeUrl(pdfUrl);
+//			Pdf pdf = ParaQueryUtil.getPdfBySeUrl(pdfUrl);
+			Document doc=ParaQueryUtil.getDocumnetByPdfUrl(pdf);
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
 			Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 			// Map<String, List<String>> partsData = ParametricQueryUtil.getExtractorData(pdfUrl, supplierName, plName);
-			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(pdf, supplier, pl);
+			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(doc.getPdf(), supplier, pl);
 			Set<String> parts = partsData.keySet();
 			for(String part : parts)
 			{
