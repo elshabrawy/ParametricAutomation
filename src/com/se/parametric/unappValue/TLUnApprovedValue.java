@@ -75,7 +75,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewSelection(teamMembers, null, null,"parametric");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, null, null,"parametric");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
@@ -218,7 +218,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewSelection(teamMembers, startDate, endDate,"parametric");
+			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate,"parametric");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
