@@ -1760,13 +1760,36 @@ public class ParaQueryUtil
 	public static Document getDocumentBySeUrl(String seUrl, Session session)
 	{
 		Document doc = null;
+		
+//		Criteria crit = session.createCriteria(Document.class);
+//		if(seUrl.endsWith(".pdf"))
+//			crit.createCriteria("pdf").add(Restrictions.eq("seUrl", seUrl));
+//		else
+//			crit.createCriteria("nonPdf").add(Restrictions.eq("seUrl", seUrl));
+//		doc = (Document) crit.uniqueResult();
+//		return doc;
+//		
+//		String latestLink = "";
+
+		try
+		{
+			session = SessionUtil.getSession();
+			SQLQuery query = session.createSQLQuery("select AUTOMATION2.GET_DOCID_BY_PDFURL('" + seUrl + "') from dual");
+		long	docId = ((BigDecimal) query.uniqueResult()).longValue();
 		Criteria crit = session.createCriteria(Document.class);
-		if(seUrl.endsWith(".pdf"))
-			crit.createCriteria("pdf").add(Restrictions.eq("seUrl", seUrl));
-		else
-			crit.createCriteria("nonPdf").add(Restrictions.eq("seUrl", seUrl));
+		crit.add(Restrictions.eq("id", docId));
 		doc = (Document) crit.uniqueResult();
 		return doc;
+				
+		}catch(NullPointerException ex)
+		{
+			return doc;
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return doc;
+		
 
 	}
 
@@ -3968,6 +3991,7 @@ public class ParaQueryUtil
 		Session session = null;
 		try
 		{
+			seUrl = seUrl.trim().toLowerCase();
 			session = SessionUtil.getSession();
 			Criteria criteria = session.createCriteria(Pdf.class);
 			criteria.add(Restrictions.eq("seUrl", seUrl));
@@ -4646,6 +4670,7 @@ public class ParaQueryUtil
 				docInfo.setTaskType(track.getTrackingTaskType().getName());
 				docInfo.setStatus(track.getTrackingTaskStatus().getName());
 				docInfo.setTitle(track.getDocument().getTitle());
+				docInfo.setPdf(track.getDocument().getPdf());
 
 				result.add(docInfo);
 			}
@@ -4686,7 +4711,7 @@ public class ParaQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-			return QueryUtil.getDocumentBySeUrlQuery(pdfUrl, session);
+			return getDocumentBySeUrl(pdfUrl, session);
 		}finally
 		{
 			session.close();

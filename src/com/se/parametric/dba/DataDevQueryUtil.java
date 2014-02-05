@@ -737,7 +737,7 @@ public class DataDevQueryUtil
 
 			StringBuffer qury = new StringBuffer();
 			qury.append(" SELECT  GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, GET_PL_NAME (t.PL_ID) plName,GETSUPPLIERNAME (t.supplier_id) supName, GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,"
-					+ " GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) user_Name,t.EXTRACTION_STATUS,t.PRIORIY,t.ASSIGNED_DATE ,d.TITLE,getallTaxbyDocID(t.DOCUMENT_ID) tax ,t.DOCUMENT_ID FROM  TRACKING_PARAMETRIC T,document d");
+					+ " GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) user_Name,t.EXTRACTION_STATUS,t.PRIORIY,t.ASSIGNED_DATE ,d.TITLE,getallTaxbyDocID(t.DOCUMENT_ID) tax ,t.DOCUMENT_ID,t.pdf_id FROM  TRACKING_PARAMETRIC T,document d");
 
 			qury.append(" where  t.document_id=d.id  and T.USER_ID =" + userId);
 			if(plName != null && !plName.equals("All"))
@@ -813,6 +813,7 @@ public class DataDevQueryUtil
 				docInfo.setTitle(data[9] != null ? data[9].toString() : "");
 				docInfo.setTaxonomies(data[10].toString());
 				docInfo.setDocId(data[11].toString());
+				docInfo.setPdfId(Long.parseLong(data[11].toString()));
 
 				tableData.add(docInfo);
 			}
