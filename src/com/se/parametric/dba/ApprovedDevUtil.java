@@ -2099,16 +2099,19 @@ public class ApprovedDevUtil
 			criteria.addOrder(Order.asc("plFeature"));
 			criteria.addOrder(Order.desc("groupFullValue"));
 			// criteria.addOrder(Order.asc("approvedValueOrder"));
-			String sql = "";
+			String sql = "document_id in (select document_id from tracking_parametric where ";
+			boolean sup = false;
+			boolean typ = false;
 			if(type != null && !type.equals("All"))
 			{
 				String tsktype = "";
+				typ = true;
 				if(type.equals("NPI"))
 				{
 					// tsktype = "'NPI','NPI Transferred','NPI Update'";
 					// sql =
 					// "select distinct AUTOMATION2.GETPDFURLbydoc(x.DOCUMENT_ID) from PARAMETRIC_APPROVED_GROUP x where GET_TASK_TYPE(X.DOCUMENT_ID) = 'NPI' or GET_TASK_TYPE(X.DOCUMENT_ID) = 'NPI Transferred' or GET_TASK_TYPE(X.DOCUMENT_ID) = 'NPI Update' ";
-					sql = "document_id in (select document_id from tracking_parametric where TRACKING_TASK_TYPE_ID in(4,12,15)";
+					sql += " TRACKING_TASK_TYPE_ID in(4,12,15)";
 				}
 				else
 				{
@@ -2116,61 +2119,76 @@ public class ApprovedDevUtil
 					// sql =
 					// "select distinct AUTOMATION2.GETPDFURLbydoc(x.DOCUMENT_ID) from PARAMETRIC_APPROVED_GROUP x where GET_TASK_TYPE(X.DOCUMENT_ID) ="
 					// + tsktype + " ";
-					sql = "document_id in (select document_id from tracking_parametric where TRACKING_TASK_TYPE_ID in getTaskTypeId(" + tsktype + ")";
+					sql += " TRACKING_TASK_TYPE_ID in getTaskTypeId(" + tsktype + ")";
 				}
-				criteria.add(Restrictions.sqlRestriction(sql));
+
 			}
 			if(supplierName != null && !supplierName.equals("All"))
 			{
-				sql += " and SUPPLIER_ID in GETSUPPLIERID('"+supplierName+"') ";
-				sql += " and TRACKING_TASK_STATUS_ID in getTaskstatusId('','','') )";
-				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
-				trackingcriteria.createAlias("trackingTaskStatus", "status");
-				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name", "Pending TL Review"), Restrictions.eq("status.name", "Pending QA Approval"), Restrictions.eq("status.name", "Finished")));
-				trackingcriteria.createAlias("track.supplier", "supplier");
-				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
-				// // ///////////////////////////////////////////////////////////////////////////////////////
-				// // ////May cause an issue if distinct docs for this supplier in tracking parametric exceeds 1000
-				trackingcriteria.setProjection(Projections.distinct(Projections.property("document")));
-				// List<Document> documentList = trackingcriteria.list();
-				Set set = new HashSet(trackingcriteria.list());
-				criteria.add(Restrictions.in("document", set));
+				sup = true;
+				if(typ == false)
+				{
+					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
+					sql += "  TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+				}
+				else
+				{
+					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
+					sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+				}
+			}
+			if(typ == true && sup == false)
+			{
+				sql += " ) ";
+			}
+			if(typ == true || sup == true)
+			{
+				criteria.add(Restrictions.sqlRestriction(sql));
 			}
 			groups = criteria.list();
 
-			ArrayList<ArrayList<ParametricApprovedGroup>> re = new ArrayList<ArrayList<ParametricApprovedGroup>>();
+			// ArrayList<ArrayList<ParametricApprovedGroup>> re = new ArrayList<ArrayList<ParametricApprovedGroup>>();
 			ArrayList<ParametricApprovedGroup> row = null;
 			int count = 0;
 			group = (ParametricApprovedGroup) groups.get(0);
 			String fullValue = group.getGroupFullValue();
 			PlFeature plFet = group.getPlFeature();
 			row = new ArrayList<ParametricApprovedGroup>();
-			while(count < groups.size())
+			// while(count < groups.size())
+			// {
+			// group = ((ParametricApprovedGroup) groups.get(count));
+			// if(group.getGroupFullValue().equals(fullValue) && group.getPlFeature() == plFet)
+			// {
+
+			// }
+			// else
+			// {
+			// re.add(row);
+			// row = new ArrayList<ParametricApprovedGroup>();
+			// fullValue = group.getGroupFullValue();
+			// plFet = group.getPlFeature();
+			// }
+			// }
+			// re.add(row);
+			for(int h = 0; h < groups.size(); h++)
 			{
-				group = ((ParametricApprovedGroup) groups.get(count));
-				if(group.getGroupFullValue().equals(fullValue) && group.getPlFeature() == plFet)
-				{
-					row.add(group);
-					count++;
-				}
-				else
-				{
-					re.add(row);
-					row = new ArrayList<ParametricApprovedGroup>();
-					fullValue = group.getGroupFullValue();
-					plFet = group.getPlFeature();
-				}
+				row.add((ParametricApprovedGroup) groups.get(h));
 			}
-			re.add(row);
-			System.out.println("size is " + re.size());
-			ArrayList<ParametricApprovedGroup> values = null;
-			for(int i = 0; i < re.size(); i++)
+			System.out.println("size is " + row.size());
+			// ArrayList<ParametricApprovedGroup> values = null;
+			// for(int i = 0; i < re.size(); i++)
+			// {
+			// values = re.get(i);
+
+			// groupRecord = values.get(0);
+			// separationgroup = (ParametricSeparationGroup) groupRecord.getParametricSeparationGroups();
+
+			for(int j = 0; j < row.size(); j++)
 			{
-				values = re.get(i);
 				unApprovedDTO = new UnApprovedDTO();
 				ParametricApprovedGroup groupRecord = null;
 				ParametricSeparationGroup separationgroup = null;
-				Set<ParametricSeparationGroup> separationgroups = null;
+				List<ParametricSeparationGroup> separationgroups = null;
 				ApprovedParametricValue approvedValue = null;
 				String fetValue = "";
 				String signValue = "";
@@ -2179,16 +2197,15 @@ public class ApprovedDevUtil
 				String conditionValue = "";
 				String unitValue = "";
 				String pattern = "";
-				// groupRecord = values.get(0);
-				// separationgroup = (ParametricSeparationGroup) groupRecord.getParametricSeparationGroups();
+				groupRecord = row.get(j);
+				Criteria SeparationCri = session.createCriteria(ParametricSeparationGroup.class);
+				SeparationCri.add(Restrictions.eq("parametricApprovedGroup", row.get(j)));
+				criteria.addOrder(Order.asc("approvedValueOrder"));
+				separationgroups = (List<ParametricSeparationGroup>) SeparationCri.list();
 
-				for(int j = 0; j < values.size(); j++)
+				for(int k = 0; k < separationgroups.size(); k++)
 				{
-
-					groupRecord = values.get(j);
-					separationgroups = groupRecord.getParametricSeparationGroups();
-					Iterator it = separationgroups.iterator();
-					separationgroup = (ParametricSeparationGroup) it.next();
+					separationgroup = separationgroups.get(k);
 					approvedValue = separationgroup.getApprovedParametricValue();
 					fetValue += approvedValue.getFromValue().getValue();
 					signValue += (separationgroup.getApprovedParametricValue().getFromSign() == null) ? "" : separationgroup.getApprovedParametricValue().getFromSign().getName();
@@ -2306,10 +2323,11 @@ public class ApprovedDevUtil
 						unApprovedDTO.setUnit("");
 					}
 					unApprovedDTO.setUserId(groupRecord.getParaUserId());
-					result.add(unApprovedDTO);
 				}
-
+				result.add(unApprovedDTO);
 			}
+
+			// }
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
