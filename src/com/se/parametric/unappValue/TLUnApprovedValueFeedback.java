@@ -134,7 +134,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 //			unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-			unApproveds = ApprovedDevUtil.getUnapprovedFeedback(TLDTO.getId(),teamMembers, startDate, endDate, plName, supplierName, taskType,"Send Back To Team Leader","Parametric");
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers,"", startDate, endDate, plName, supplierName, "Send Back To Team Leader",taskType,"Parametric","FB",TLDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
