@@ -3,7 +3,18 @@ package com.se.parametric.dto;
 public class UnApprovedDTO
 {
 	String plName, partNumber, pdfUrl, featureName, featureValue, featureUnit, sign, value, type, condition, multiplier, unit;
-	String fbStatus, comment, gruopSatus, fbType, qaComment, qaStatus, IssueType;
+	String fbStatus, comment, gruopSatus, fbType, qaComment, qaStatus, IssueType, lastEngComment;
+
+	public String getLastEngComment()
+	{
+		return lastEngComment;
+	}
+
+	public void setLastEngComment(String lastEngComment)
+	{
+		this.lastEngComment = lastEngComment;
+	}
+
 	Long userId, issuedby, issueTo, qaUserId;
 
 	public String getQaStatus()
