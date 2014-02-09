@@ -69,7 +69,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 
 		// ArrayList<Object[]> filterData = ParaQueryUtil.getUnapprovedReviewData(new Long[]{userDTO.getId()},null,null,"QA");
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null, "QA");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
@@ -213,7 +213,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, startDate, endDate);
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, startDate, endDate, "QA");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
