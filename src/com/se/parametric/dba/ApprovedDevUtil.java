@@ -1154,7 +1154,7 @@ public class ApprovedDevUtil
 			if(!result.getFbStatus().equals(taskType))
 				return null;
 		}
-		/** get Last QA comment **/
+		/** get Last comment **/
 		if(appFeedback.getParametricFeedback().getTrackingFeedbackType().getName().equals("QA"))
 		{
 			Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(), ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
@@ -1174,10 +1174,31 @@ public class ApprovedDevUtil
 				result.setFbStatus("");
 			}
 		}
+		else
+		{
+			// Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(),
+			// ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
+			feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
+			feedBackCrit.add(Restrictions.eq("issuedBy", issuedTo));
+			// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
+			feedBackCrit.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+			feedBackCrit.addOrder(Order.desc("storeDate"));
+			if(feedBackCrit.list() != null && !feedBackCrit.list().isEmpty())
+				appFeedback = (ParametricFeedbackCycle) feedBackCrit.list().get(0);
+
+			result.setLastEngComment(appFeedback.getFbComment());
+			// result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
+			// result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
+			// if(result.getIssuedby() == issuedTo)
+			// {
+			// result.setComment("");
+			// result.setFbStatus("");
+			// }
+		}
 		return result;
 	}
 
-	public static ArrayList<Object[]> getEngUnapprovedData(GrmUserDTO userDto, Date startDate, Date endDate)
+	public static ArrayList<Object[]> getEngUnapprovedData(GrmUserDTO userDto, Date startDate, Date endDate, String type)
 	{
 		Session session = SessionUtil.getSession();
 		// Session grmSession = com.se.grm.db.SessionUtil.getSession();
@@ -1196,7 +1217,7 @@ public class ApprovedDevUtil
 			ParametricApprovedGroup parametricApprovedGroup = null;
 			for(int i = 0; i < list.size(); i++)
 			{
-				row = new Object[3];
+
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
@@ -1205,24 +1226,53 @@ public class ApprovedDevUtil
 					criteria.add(Expression.between("storeDate", startDate, endDate));
 				}
 				list2 = (ParametricApprovedGroup) criteria.uniqueResult();
-				if(list2 != null)
+				if(type.equals("Eng"))
 				{
-					parametricApprovedGroup = list2;
-					row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
+					row = new Object[3];
+					if(list2 != null)
+					{
+						parametricApprovedGroup = list2;
+						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
 
-					if(parametricApprovedGroup.getDocument() != null)
-					{
-						Set set = parametricApprovedGroup.getDocument().getTrackingParametrics();
-						Iterator it = set.iterator();
-						TrackingParametric tp = (TrackingParametric) it.next();
-						row[1] = tp.getSupplier().getName();
+						if(parametricApprovedGroup.getDocument() != null)
+						{
+							Set set = parametricApprovedGroup.getDocument().getTrackingParametrics();
+							Iterator it = set.iterator();
+							TrackingParametric tp = (TrackingParametric) it.next();
+							row[1] = tp.getSupplier().getName();
+						}
+						else
+						{
+							row[1] = "All";
+						}
+						row[2] = parametricFeedbackCycle.getParaFeedbackStatus().getFeedbackStatus();
+						result.add(row);
 					}
-					else
+				}
+				else
+				{
+					row = new Object[4];
+					if(list2 != null)
 					{
-						row[1] = "All";
+						parametricApprovedGroup = list2;
+						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
+						if(parametricApprovedGroup.getDocument() != null)
+						{
+							Set set = parametricApprovedGroup.getDocument().getTrackingParametrics();
+							Iterator it = set.iterator();
+							TrackingParametric tp = (TrackingParametric) it.next();
+							row[1] = tp.getSupplier().getName();
+						}
+						else
+						{
+							row[1] = "All";
+						}
+
+						row[2] = parametricFeedbackCycle.getParaFeedbackStatus().getFeedbackStatus();
+						// row[2] = tp.getTrackingTaskType().getName();
+						row[3] = parametricFeedbackCycle.getParametricFeedback().getTrackingFeedbackType().getName();
+						result.add(row);
 					}
-					row[2] = parametricFeedbackCycle.getParaFeedbackStatus().getFeedbackStatus();
-					result.add(row);
 				}
 
 			}
@@ -1233,67 +1283,6 @@ public class ApprovedDevUtil
 			session.close();
 		}
 		return result;
-	}
-
-	public static ArrayList<Object[]> getTLUnapprovedFeedBack(GrmUserDTO TLDTO, Date startDate, Date endDate)
-	{
-		Session session = SessionUtil.getSession();
-		Session grmSession = com.se.grm.db.SessionUtil.getSession();
-		Criteria criteria;
-		ArrayList<Object[]> result = new ArrayList<Object[]>();
-		try
-		{
-
-			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("issuedToId", TLDTO.getId()));
-			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			if(startDate != null && endDate != null)
-			{
-				criteria.add(Expression.between("storeDate", startDate, endDate));
-			}
-			List list = criteria.list();
-			GrmUser eng = null;
-			Object[] row = null;
-			List list2 = null;
-			ApprovedValueFeedback approvedValueFeedback = null;
-			PartsParametricValuesGroup parametricValuesGroup = null;
-			for(int i = 0; i < list.size(); i++)
-			{
-				row = new Object[4];
-				approvedValueFeedback = (ApprovedValueFeedback) list.get(i);
-				criteria = session.createCriteria(PartsParametricValuesGroup.class);
-				criteria.add(Restrictions.eq("groupId", approvedValueFeedback.getGroupID()));
-				list2 = criteria.list();
-				if(!list2.isEmpty())
-				{
-					PartsParametricValuesGroup partsParametricValuesGroup = (PartsParametricValuesGroup) list2.get(0);
-					row[0] = partsParametricValuesGroup.getApprovedParametricValue().getPlFeature().getPl().getName();
-					if(partsParametricValuesGroup.getDocument() != null)
-					{
-						Set set = partsParametricValuesGroup.getDocument().getTrackingParametrics();
-						Iterator it = set.iterator();
-						TrackingParametric tp = (TrackingParametric) it.next();
-						row[1] = tp.getSupplier().getName();
-					}
-					else
-					{
-						row[1] = "All";
-					}
-
-					row[2] = approvedValueFeedback.getTrackingTaskStatus().getName();
-					// row[2] = tp.getTrackingTaskType().getName();
-					row[3] = approvedValueFeedback.getTrackingFeedbackType().getName();
-					result.add(row);
-				}
-			}
-
-		}finally
-		{
-
-			session.close();
-		}
-		return result;
-
 	}
 
 	public static ArrayList<UnApprovedDTO> getTLUnapprovedFeedBack(GrmUserDTO userDTO, Date startDate, Date endDate, String plName, String supplierName, String taskType, String feedBackType)
@@ -1942,12 +1931,26 @@ public class ApprovedDevUtil
 				if(typ == false)
 				{
 					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
-					sql += "  TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+					if(Datatype.equals("Data"))
+					{
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+					}
+					else
+					{
+						sql += " ) ";
+					}
 				}
 				else
 				{
 					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
-					sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+					if(Datatype.equals("Data"))
+					{
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+					}
+					else
+					{
+						sql += " ) ";
+					}
 				}
 			}
 			if(typ == true && sup == false)
@@ -2001,6 +2004,7 @@ public class ApprovedDevUtil
 						unApprovedDTO.setQaUserId(FBData.getQaUserId());
 						unApprovedDTO.setIssuedby(FBData.getIssuedby());
 						unApprovedDTO.setIssueTo(FBData.getIssueTo());
+						unApprovedDTO.setLastEngComment(FBData.getLastEngComment());
 					}
 					else
 					{
