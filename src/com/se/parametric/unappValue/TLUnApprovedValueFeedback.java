@@ -65,7 +65,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getTLUnapprovedFeedBack(TLDTO, null, null);
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,"TL");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
@@ -133,8 +133,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-//			unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers,"", startDate, endDate, plName, supplierName, "Send Back To Team Leader",taskType,"Parametric","FB",TLDTO.getId());
+			// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, "", startDate, endDate, plName, supplierName, "Send Back To Team Leader", taskType, "Parametric", "FB", TLDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
@@ -161,6 +161,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("Dev Comment");
 			row.add("QA Status");
 			row.add("QA Comment");
+			row.add("Last TL Comment");
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
@@ -186,6 +187,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add(obj.getComment());
 				row.add(obj.getQaStatus());
 				row.add(obj.getQaComment());
+				row.add(obj.getLastEngComment());
 				list.add(row);
 			}
 			ArrayList<String> statusValues = new ArrayList<String>();
@@ -208,7 +210,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate);
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate,"TL");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
@@ -244,9 +246,11 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
-//									oldValReq.setFbStatus("Approved");
+									// oldValReq.setFbStatus("Approved");
 									oldValReq.setGruopSatus("Send Back To QA");
-								}else{
+								}
+								else
+								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
 									oldValReq.setFbStatus("Feedback Closed");
@@ -262,13 +266,15 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setFbStatus("Approved");
 									oldValReq.setGruopSatus("Send Back To QA");
-								}else{
+								}
+								else
+								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
 									oldValReq.setFbStatus("Feedback Closed");
 									oldValReq.setGruopSatus("Pending QA Approval");
 								}
-								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);								
+								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 							else if(newValReq.get(12).equals("Wrong Value"))
