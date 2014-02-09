@@ -2,7 +2,15 @@ package com.se.parametric.dto;
 
 public class FeedBackData
 {
-		String fbStatus, comment, fbType, qaComment, qaStatus;
+		String fbStatus, comment, fbType, qaComment, qaStatus,lastEngComment;
+		public String getLastEngComment()
+		{
+			return lastEngComment;
+		}
+		public void setLastEngComment(String lastEngComment)
+		{
+			this.lastEngComment = lastEngComment;
+		}
 		public String getFbStatus()
 		{
 			return fbStatus;
