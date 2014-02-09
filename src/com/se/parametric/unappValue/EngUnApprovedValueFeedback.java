@@ -65,7 +65,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null);
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,"Eng");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type" };
@@ -176,8 +176,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("TL Comment");
 			row.add("QA Status");
 			row.add("QA Comment");
-			row.add("Old Dev Status");
-			row.add("Old Dev Comment");
+			row.add("Old Eng Comment");
 
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
@@ -204,6 +203,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add(obj.getComment());
 				row.add(obj.getQaStatus());
 				row.add(obj.getQaComment());
+				row.add(obj.getLastEngComment());
 				list.add(row);
 			}
 			ArrayList<String> statusValues = new ArrayList<String>();
@@ -217,7 +217,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
 			// filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
-			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null);
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,"Eng");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
