@@ -40,7 +40,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet,selectionPanel;
+	JPanel tabSheet, selectionPanel;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -57,7 +57,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	ArrayList<String> row = null;
 	GrmUserDTO userDTO;
 	ArrayList<UnApprovedDTO> unApproveds = new ArrayList<UnApprovedDTO>();;
-	static AlertsPanel alertsPanel,alertsPanel1;
+	static AlertsPanel alertsPanel, alertsPanel1;
 
 	public EngUnApprovedValueFeedback(GrmUserDTO userDTO)
 	{
@@ -67,7 +67,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
-	  selectionPanel = new JPanel();
+		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type" };
 		sheetPanel = new SheetPanel();
 		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
@@ -120,7 +120,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		tabSheet.setLayout(null);
 		tabSheet.add(devSheetButtonPanel);
-		tabSheet.add(alertsPanel1);		
+		tabSheet.add(alertsPanel1);
 		add(tabbedPane);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
@@ -146,8 +146,10 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-//			unApproveds = ParaQueryUtil.getEngUnapproved(userDTO, startDate, endDate, plName, supplierName, taskType);
-			unApproveds = ApprovedDevUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userDTO.getId()}, startDate, endDate, plName, supplierName, taskType,"Send Back To Developer","Parametric");
+			// unApproveds = ParaQueryUtil.getEngUnapproved(userDTO, startDate, endDate, plName, supplierName, taskType);
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To Developer", taskType, "Parametric", "FB", userDTO.getId());
+			// unApproveds = ApprovedDevUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userDTO.getId()}, startDate, endDate, plName,
+			// supplierName, taskType,"Send Back To Developer","Parametric");
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
@@ -174,7 +176,9 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("TL Comment");
 			row.add("QA Status");
 			row.add("QA Comment");
-			
+			row.add("Old Dev Status");
+			row.add("Old Dev Comment");
+
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
@@ -212,8 +216,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		}
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
-			filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
-//			filterPanel.filterList = ParaQueryUtil.getEngUnapprovedData(userDTO, null, null);
+			// filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null);
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
@@ -238,23 +242,23 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
 							oldValReq.setComment(newValReq.get(13));
-							long issuedto=oldValReq.getIssuedby();
-							long issuedby=oldValReq.getIssueTo();
+							long issuedto = oldValReq.getIssuedby();
+							long issuedby = oldValReq.getIssueTo();
 							if(result.get(i).get(12).equals("Reject"))
 							{
 								// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
 								oldValReq.setFbStatus("Rejected");
-								oldValReq.setGruopSatus("Send Back To Team Leader");	
-								ApprovedDevUtil.replyApprovedValueFB( oldValReq );
+								oldValReq.setGruopSatus("Send Back To Team Leader");
+								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 							else if(result.get(i).get(12).equals("Update"))
 							{
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								oldValReq.setFbStatus("Approved");
 								oldValReq.setGruopSatus("Send Back To Team Leader");
-								ApprovedDevUtil.replyApprovedValueFB( oldValReq);
+								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								// ParaQueryUtil.EngUpdateApprovedValue(userDTO, updateFlag, oldValReq);
 							}
 						}
@@ -279,6 +283,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		alertsPanel1.updateFlags(flags);
 
 	}
+
 	public static void main(String[] args)
 	{
 		JFrame frame = new JFrame();
