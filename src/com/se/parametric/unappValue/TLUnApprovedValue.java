@@ -48,7 +48,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet,selectionPanel;
+	JPanel tabSheet, selectionPanel;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -75,7 +75,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, null, null,"parametric");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, null, null, "parametric");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
@@ -155,9 +155,9 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers,engName,startDate, endDate,  plName, supplierName, "Pending TL Review", taskType,"Parametric");
-//			unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
+
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, "Pending TL Review", taskType, "Parametric","Data",new Long(null));
+			// unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
 			sheetPanel.openOfficeDoc();
@@ -218,7 +218,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate,"parametric");
+			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate, "parametric");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
@@ -256,10 +256,11 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setGruopSatus("Send Back To Developer");
 							oldValReq.setComment(newValReq.get(13));
 							oldValReq.setIssuedby(userDTO.getId());
-							oldValReq.setFbType( "Internal");
+							oldValReq.setFbType("Internal");
+							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
-								ApprovedDevUtil.setValueApproved(result.get(i),"Pending QA Approval");
+								ApprovedDevUtil.setValueApproved(result.get(i), "Pending QA Approval");
 							}
 							else if(newValReq.get(12).equals("Update"))
 							{
@@ -267,11 +268,11 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							}
 							else if(newValReq.get(12).equals("Wrong Value"))
 							{
-								ApprovedDevUtil.saveAppWrongValue( oldValReq);
+								ApprovedDevUtil.saveWrongSeparation(oldValReq);
 							}
 							else if(newValReq.get(12).equals("Wrong Separation"))
 							{
-								ApprovedDevUtil.saveWrongSeparation( oldValReq);
+								ApprovedDevUtil.saveWrongSeparation(oldValReq);
 							}
 						}
 						else
@@ -295,6 +296,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		TLfeedBack.alertsPanel.updateFlags(flags);
 
 	}
+
 	public static void main(String[] args)
 	{
 		JFrame frame = new JFrame();
