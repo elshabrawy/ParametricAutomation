@@ -67,15 +67,15 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		
-//		ArrayList<Object[]> filterData = ParaQueryUtil.getUnapprovedReviewData(new Long[]{userDTO.getId()},null,null,"QA");
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO,null,null);
+
+		// ArrayList<Object[]> filterData = ParaQueryUtil.getUnapprovedReviewData(new Long[]{userDTO.getId()},null,null,"QA");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
 		sheetPanel = new SheetPanel();
 		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110, (((height - 100) * 7) / 10)-30);
+		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110, (((height - 100) * 7) / 10) - 30);
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
@@ -139,8 +139,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-//			unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-			unApproveds = ApprovedDevUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userDTO.getId()}, startDate, endDate, plName, supplierName, taskType,"Send Back To QA","QA");
+			// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To QA", taskType, "QA", "FB", userDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
@@ -242,7 +242,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setFbStatus("Rejected");
 							oldValReq.setGruopSatus("Send Back To Team Leader");
 							oldValReq.setComment(newValReq.get(13));
-							long issuedto=oldValReq.getIssuedby();
+							long issuedto = oldValReq.getIssuedby();
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setIssueTo(issuedto);
 							oldValReq.setFbType("QA");
@@ -250,18 +250,18 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								oldValReq.setFbStatus("Feedback Closed");
 								oldValReq.setGruopSatus("Approved");
-								ApprovedDevUtil.setValueApproved(result.get(i),"Approved");
+								ApprovedDevUtil.setValueApproved(result.get(i), "Approved");
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}							
-								
+							}
+
 							else if(newValReq.get(12).equals("Wrong Value"))
 							{
-								ApprovedDevUtil.saveAppWrongValue( oldValReq);
+								ApprovedDevUtil.saveAppWrongValue(oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 							else if(newValReq.get(12).equals("Wrong Separation"))
 							{
-//								ParaQueryUtil.saveWrongSeparation( oldValReq);
+								// ParaQueryUtil.saveWrongSeparation( oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 						}
