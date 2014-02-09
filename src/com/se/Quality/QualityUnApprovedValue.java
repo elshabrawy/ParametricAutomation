@@ -22,7 +22,6 @@ import javax.swing.border.SoftBevelBorder;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
-
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -73,10 +72,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[]{userDTO.getId()},null,null,"QA");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[] { userDTO.getId() }, null, null, "QA");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
-		String[] filterLabels = { "Eng Name","PL Name", "Supplier", "Status", "Task Type" };
+		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
@@ -150,10 +149,11 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 			String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			long userId=userDTO.getId();
+			long userId = userDTO.getId();
 
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[]{userId},engName,startDate, endDate,  plName, supplierName, "Pending QA Approval", taskType,"QA");
-//			unApproveds = ParaQueryUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userId}, startDate, endDate, plName, supplierName, taskType,"Pending QA Approval","QA");
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userId }, engName, startDate, endDate, plName, supplierName, "Pending QA Approval", taskType, "QA", "Data", userId);
+			// unApproveds = ParaQueryUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userId}, startDate, endDate, plName, supplierName,
+			// taskType,"Pending QA Approval","QA");
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
 			sheetPanel.openOfficeDoc();
@@ -210,7 +210,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			 filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[]{userDTO.getId()},startDate,endDate,"QA");
+			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[] { userDTO.getId() }, startDate, endDate, "QA");
 			filterPanel.refreshFilters();
 		}
 		else if(event.getActionCommand().equals("Save"))
@@ -243,22 +243,21 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setFbType("QA");
 							if(newValReq.get(12).equals("Approved"))
 							{
-								ApprovedDevUtil.setValueApproved(result.get(i),"Approved");
-							}							
-								
-//							else if(newValReq.get(12).equals("Wrong Value"))
-//							{
-//								ApprovedDevUtil.saveAppWrongValue( oldValReq);
-//							}
-//							else if(newValReq.get(12).equals("Wrong Separation"))
-//							{
-//								ApprovedDevUtil.saveWrongSeparation( oldValReq);
-//							}
-							
-							
-							else if(newValReq.get(12).equals("Wrong Separation")||newValReq.get(12).equals("Wrong Value"))
+								ApprovedDevUtil.setValueApproved(result.get(i), "Approved");
+							}
+
+							// else if(newValReq.get(12).equals("Wrong Value"))
+							// {
+							// ApprovedDevUtil.saveAppWrongValue( oldValReq);
+							// }
+							// else if(newValReq.get(12).equals("Wrong Separation"))
+							// {
+							// ApprovedDevUtil.saveWrongSeparation( oldValReq);
+							// }
+
+							else if(newValReq.get(12).equals("Wrong Separation") || newValReq.get(12).equals("Wrong Value"))
 							{
-								ApprovedDevUtil.saveWrongSeparation( oldValReq);
+								ApprovedDevUtil.saveWrongSeparation(oldValReq);
 							}
 						}
 						else
