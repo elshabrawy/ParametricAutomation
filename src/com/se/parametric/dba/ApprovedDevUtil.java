@@ -777,14 +777,6 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("feedbackStatus", "Open"));
 			paraFeedbackStatus = (ParaFeedbackStatus) criteria.uniqueResult();//
 
-			// criteria = session.createCriteria(ParametricFeedback.class);
-			// criteria.add(Restrictions.eq("itemId", groups.getId()));
-			// criteria.add(Restrictions.eq("type", "V"));
-			// criteria.add(Restrictions.eq("paraFeedbackStatus", paraFeedbackStatus));
-			// FBObj = (ParametricFeedback) criteria.uniqueResult();
-
-			// if(FBObj == null)
-			// {
 			FBObj.setId(System.nanoTime());
 			FBObj.setParaIssueType(paraIssueType);
 			FBObj.setParaFeedbackStatus(paraFeedbackStatus);
@@ -793,7 +785,6 @@ public class ApprovedDevUtil
 			FBObj.setTrackingFeedbackType(trackingFeedbackType);
 			FBObj.setItemId(groups.getId());
 			FBObj.setType("V");
-			// }
 
 			FBCyc.setId(System.nanoTime());
 			FBCyc.setParametricFeedback(FBObj);
@@ -1237,9 +1228,12 @@ public class ApprovedDevUtil
 						if(parametricApprovedGroup.getDocument() != null)
 						{
 							Set set = parametricApprovedGroup.getDocument().getTrackingParametrics();
-							Iterator it = set.iterator();
-							TrackingParametric tp = (TrackingParametric) it.next();
-							row[1] = tp.getSupplier().getName();
+							if(!set.isEmpty())
+							{
+								Iterator it = set.iterator();
+								TrackingParametric tp = (TrackingParametric) it.next();
+								row[1] = tp.getSupplier().getName();
+							}
 						}
 						else
 						{
@@ -1259,9 +1253,12 @@ public class ApprovedDevUtil
 						if(parametricApprovedGroup.getDocument() != null)
 						{
 							Set set = parametricApprovedGroup.getDocument().getTrackingParametrics();
-							Iterator it = set.iterator();
-							TrackingParametric tp = (TrackingParametric) it.next();
-							row[1] = tp.getSupplier().getName();
+							if(!set.isEmpty())
+							{
+								Iterator it = set.iterator();
+								TrackingParametric tp = (TrackingParametric) it.next();
+								row[1] = tp.getSupplier().getName();
+							}
 						}
 						else
 						{
@@ -1549,54 +1546,74 @@ public class ApprovedDevUtil
 		Criteria criteria;
 		try
 		{
+			ParaFeedbackStatus paraFeedbackAction = null;
+			ParaFeedbackStatus paraFeedbackStatus = null;
+			ParametricFeedback FBObj = new ParametricFeedback();
+			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
+			Document document = null;
 
-			List<ParametricApprovedGroup> groups = ParaQueryUtil.getAppGroupListByFullValAndFetNameAndPlName(app.getFeatureName(), app.getPlName(), app.getFeatureValue(), session);
-			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("groupID", groups.get(0).getId()));
-			criteria.add(Restrictions.eq("issuedToId", app.getIssuedby()));
+			document = ParaQueryUtil.getDocumnetByPdfUrl(app.getPdfUrl());
+
+			ParametricApprovedGroup groups = ParaQueryUtil.getParametricApprovedGroup(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
+			criteria = session.createCriteria(ParametricFeedbackCycle.class);
+			criteria.add(Restrictions.eq("fbItemValue", groups.getGroupFullValue()));
+			criteria.add(Restrictions.eq("issuedTo", app.getIssuedby()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
-			ApprovedValueFeedback approvedValueFeedback = (ApprovedValueFeedback) criteria.uniqueResult();
-			approvedValueFeedback.setFeedbackRecieved(1l);
-			session.saveOrUpdate(approvedValueFeedback);
-			session.beginTransaction().commit();
+			ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria.uniqueResult();
+			parametricFeedbackCycle.setFeedbackRecieved(1l);
+			session.saveOrUpdate(parametricFeedbackCycle);
 
-			criteria = session.createCriteria(TrackingTaskQaStatus.class);
-			criteria.add(Restrictions.eq("name", app.getFbStatus()));
-			TrackingTaskQaStatus status = (TrackingTaskQaStatus) criteria.uniqueResult();
+			// criteria = session.createCriteria(ParaIssueType.class);
+			// System.out.println(app.getIssueType());
+			// criteria.add(Restrictions.eq("issueType", parametricFeedbackCycle.getParametricFeedback().getParaIssueType().getIssueType()));
+			// paraIssueType = (ParaIssueType) criteria.uniqueResult();
+
+			criteria = session.createCriteria(ParaFeedbackStatus.class);
+			System.out.println(app.getFbStatus());
+			criteria.add(Restrictions.eq("feedbackStatus", app.getFbStatus()));
+			paraFeedbackAction = (ParaFeedbackStatus) criteria.uniqueResult();//
+
+			// criteria = session.createCriteria(TrackingFeedbackType.class);
+			// System.out.println(app.getFbType());
+			// criteria.add(Restrictions.eq("name", app.getFbType()));
+			// trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
+
+			String fbStatus = "Inprogress";
 			long fbRecieved = 0l;
 			if(app.getFbStatus().equals("Feedback Closed"))
+			{
 				fbRecieved = 1l;
-			// session.beginTransaction().begin();
-			criteria = session.createCriteria(TrackingFeedbackType.class);
-			criteria.add(Restrictions.eq("name", app.getFbType()));
-			TrackingFeedbackType trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
-			approvedValueFeedback = new ApprovedValueFeedback();
-			approvedValueFeedback.setTrackingFeedbackType(trackingFeedbackType);
-			approvedValueFeedback.setTrackingTaskStatus(status);
-			approvedValueFeedback.setFullValue(app.getFeatureValue());
-			approvedValueFeedback.setId(System.nanoTime());
-			approvedValueFeedback.setIssuedBy(app.getIssuedby());
-			approvedValueFeedback.setIssuedToId(app.getIssueTo());
-			approvedValueFeedback.setFeedbackRecieved(fbRecieved);
-			approvedValueFeedback.setStoreDate(new Date());
-			approvedValueFeedback.setFbComment(app.getComment());
-			approvedValueFeedback.setGroupID(groups.get(0).getId());
-			session.saveOrUpdate(approvedValueFeedback);
-			// session.beginTransaction().commit();
+				fbStatus = "Closed";
+			}
 
-			ParametricApprovedGroup groupObj = null;
+			criteria = session.createCriteria(ParaFeedbackStatus.class);
+			criteria.add(Restrictions.eq("feedbackStatus", fbStatus));
+			paraFeedbackStatus = (ParaFeedbackStatus) criteria.uniqueResult();//
+			FBObj = parametricFeedbackCycle.getParametricFeedback();
+			FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+
+			FBCyc.setId(System.nanoTime());
+			FBCyc.setParametricFeedback(FBObj);
+			FBCyc.setFbItemValue(groups.getGroupFullValue());
+			FBCyc.setFbComment(app.getComment());
+			FBCyc.setIssuedBy(app.getIssuedby());
+
+			FBCyc.setIssuedTo(parametricFeedbackCycle.getIssuedBy());
+
+			FBCyc.setStoreDate(new Date());
+			FBCyc.setDocumentId(document.getId());
+			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
+			FBCyc.setFeedbackRecieved(fbRecieved);
+			session.saveOrUpdate(FBObj);
+			session.saveOrUpdate(FBCyc);
+
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
-			for(int i = 0; i < groups.size(); i++)
-			{
-				// session.beginTransaction().begin();
-				groupObj = groups.get(i);
-				groupObj.setStatus(trackingTaskStatus);
-				session.saveOrUpdate(groupObj);
-				// session.beginTransaction().commit();
-			}
+
+			groups.setStatus(trackingTaskStatus);
+			session.saveOrUpdate(groups);
 
 		}catch(Exception e)
 		{
@@ -1989,7 +2006,7 @@ public class ApprovedDevUtil
 				groupRecord = row.get(j);
 				Criteria SeparationCri = session.createCriteria(ParametricSeparationGroup.class);
 				SeparationCri.add(Restrictions.eq("parametricApprovedGroup", row.get(j)));
-				criteria.addOrder(Order.asc("approvedValueOrder"));
+				SeparationCri.addOrder(Order.asc("approvedValueOrder"));
 				separationgroups = (List<ParametricSeparationGroup>) SeparationCri.list();
 				if(Datatype.equals("FB"))
 				{
