@@ -235,7 +235,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
 							oldValReq.setComment(newValReq.get(13));
-							long issuedto, issuedby;
 
 							// oldValReq.setIssuedby(issuedto);
 
@@ -246,14 +245,14 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									// oldValReq.setFbStatus("Approved");
+									 oldValReq.setFbStatus("Accept");
 									oldValReq.setGruopSatus("Send Back To QA");
 								}
 								else
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
-									oldValReq.setFbStatus("Feedback Closed");
+									oldValReq.setFbStatus("Accept");
 									oldValReq.setGruopSatus("Pending QA Approval");
 								}
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
@@ -264,14 +263,14 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									oldValReq.setFbStatus("Approved");
+									oldValReq.setFbStatus("Accept");
 									oldValReq.setGruopSatus("Send Back To QA");
 								}
 								else
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
-									oldValReq.setFbStatus("Feedback Closed");
+									oldValReq.setFbStatus("Accept");
 									oldValReq.setGruopSatus("Pending QA Approval");
 								}
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
