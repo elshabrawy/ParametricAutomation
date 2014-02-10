@@ -244,6 +244,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setComment(newValReq.get(13));
 							long issuedto = oldValReq.getIssuedby();
 							long issuedby = oldValReq.getIssueTo();
+							oldValReq.setFbType("Internal");
 							if(result.get(i).get(12).equals("Reject"))
 							{
 								// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
