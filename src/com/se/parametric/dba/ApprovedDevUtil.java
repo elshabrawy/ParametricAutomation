@@ -2479,4 +2479,98 @@ public class ApprovedDevUtil
 		return result;
 	}
 
+	public static String validateSeparation(ArrayList<String> row, Session session)
+	{
+		String error = "";
+		String plname = row.get(0);
+		String fetName = row.get(3);
+		String fetValue = row.get(4);
+		String sign = row.get(6);
+		String value = row.get(7);
+		String type = row.get(8);
+		String multiplier = row.get(10);
+		String condition = row.get(9);
+		String unit = row.get(11);
+
+		boolean toflag = false;
+		if(value.contains(" to "))
+			toflag = true;
+		ArrayList<String[]> valueSections = getSeparatedSections(value, toflag);
+		ArrayList<String[]> signSections = getSeparatedSections(sign, toflag);
+		ArrayList<String[]> multipSections = getSeparatedSections(multiplier, toflag);
+		ArrayList<String[]> unitSections = getSeparatedSections(unit, toflag);
+		ArrayList<String[]> condSections = getSeparatedSections(condition, toflag);
+		ArrayList<String[]> valueTypeSections = getSeparatedSections(type, toflag);
+
+		String[] valueArr = valueSections.get(0);
+		String[] signArr = signSections.get(0);
+		String[] multiplierArr = multipSections.get(0);
+		String[] unitArr = unitSections.get(0);
+		String[] conditionArr = condSections.get(0);
+		String[] valueTypeArr = valueTypeSections.get(0);
+
+		int multiValCount = valueArr.length;
+		System.out.println("multiValCount+++++++++++ " + multiValCount);
+		if(!sign.trim().equals("") && signArr.length > multiValCount)
+			error += " |Error number of sticks in sign. \nPlease enter a valid sign";
+		if(!multiplier.trim().equals("") && multiplierArr.length > multiValCount)
+			error += " |Error number of sticks in multiplier. \nPlease enter a valid multiplier";
+		if(!unit.trim().equals("") && unitArr.length > multiValCount)
+			error += " |Error number of sticks in unit. \nPlease enter a valid unit";
+		if(!condition.trim().equals("") && conditionArr.length > multiValCount)
+			error += " |Error number of sticks in condition. \nPlease enter a valid condition";
+		if(!type.trim().equals("") && valueTypeArr.length > multiValCount)
+			error += " |Error number of sticks in value type. \nPlease enter a valid value type";
+
+		if(value.equalsIgnoreCase("N/A") || value.equalsIgnoreCase("N/R") || value.equalsIgnoreCase("9999"))
+		{
+			if(!sign.isEmpty() || !type.isEmpty() || !multiplier.isEmpty() || !condition.isEmpty() || !unit.isEmpty())
+			{
+				error += " |All the separation column should be Null except value ";
+			}
+		}
+		else if(value.contains("Min") || value.contains("Max") || value.contains("Typ"))
+		{
+			error += " |The Value contains \"(Min), (Typ), (Max)\"";
+		}
+		for(int i = 0; i < conditionArr.length; i++)
+		{
+			if(!conditionArr[i].isEmpty() && !conditionArr[i].trim().startsWith("@"))
+			{
+				error += " |Condition should start with \"@\"";
+				break;
+			}
+		}
+		for(int i = 0; i < conditionArr.length; i++)
+		{
+			if(checkPlFetUnit(plname, fetName, fetValue, unitArr[i], session) == false)
+
+			{
+				error += " |Unit differs with CP unit";
+				break;
+			}
+		}
+		return error;
+	}
+
+	private static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
+	{
+		boolean equal = false;
+		Criteria cri = session.createCriteria(PlFeature.class);
+		cri.createAlias("pl", "pl");
+		cri.createAlias("feature", "feature");
+		cri.add(Restrictions.eq("pl.name", plName));
+		cri.add(Restrictions.eq("feature.name", fetName));
+		PlFeature plfet = (PlFeature) cri.uniqueResult();
+		Unit Clsunit = plfet.getUnit();
+		System.out.println("DB : " + Clsunit.getName());
+		System.out.println("input : " + unit);
+		if(Clsunit.getName().trim().equalsIgnoreCase(unit.trim()))
+		{
+			equal = true;
+		}
+		return equal;
+
+	}
+
 }
