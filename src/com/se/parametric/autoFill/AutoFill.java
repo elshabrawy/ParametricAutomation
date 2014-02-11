@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.criteria.From;
 import javax.sound.midi.SysexMessage;
 import javax.swing.JOptionPane;
 
-import org.codehaus.jackson.node.BooleanNode;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
