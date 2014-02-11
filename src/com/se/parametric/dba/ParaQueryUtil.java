@@ -3,6 +3,7 @@ package com.se.parametric.dba;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -3353,6 +3354,7 @@ public class ParaQueryUtil
 		parametricApprovedGroup.setStatus(trackingTaskStatus);
 		parametricApprovedGroup.setParaUserId(paraUserId);
 		Date d = new Date();
+		
 		// System.out.println("Date is " + d.toString());
 		parametricApprovedGroup.setStoreDate(d);
 
