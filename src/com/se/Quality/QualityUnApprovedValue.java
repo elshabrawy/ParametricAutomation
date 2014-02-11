@@ -241,6 +241,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setComment(newValReq.get(13));
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setFbType("QA");
+							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
 								ApprovedDevUtil.setValueApproved(result.get(i), "Approved");
