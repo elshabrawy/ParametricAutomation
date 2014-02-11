@@ -15,9 +15,13 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import org.hibernate.Session;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.SessionUtil;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -57,6 +61,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	GrmUserDTO TLDTO;
 	ArrayList<UnApprovedDTO> unApproveds = new ArrayList<UnApprovedDTO>();;
 	public static AlertsPanel alertsPanel;
+	boolean validated;
 
 	public TLUnApprovedValueFeedback(GrmUserDTO TLDTO)
 	{
@@ -65,7 +70,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,"TL");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null, "TL");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
@@ -76,6 +81,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" validate ");
 		buttonLabels.add("Save");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
@@ -116,7 +122,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		Loading loading = new Loading();
-		WorkingSheet ws = null;
+		// WorkingSheet ws = null;
 		Thread thread = new Thread(loading);
 		thread.start();
 		UnApprovedDTO obj = null;
@@ -162,6 +168,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("QA Status");
 			row.add("QA Comment");
 			row.add("Last TL Comment");
+			row.add("Validation Result");// 20
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
@@ -210,9 +217,42 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate,"TL");
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate, "TL");
 			filterPanel.refreshFilters();
 		}
+
+		else if(event.getActionCommand().equals(" validate "))
+		{
+			// tabbedPane.setSelectedIndex(0);
+			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+			if(wsheet.isEmpty())
+			{
+				tabbedPane.setSelectedIndex(1);
+				JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+			}
+			else
+			{
+				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+				validated = true;
+				Session session = SessionUtil.getSession();
+				for(int i = 0; i < wsheet.size(); i++)
+				{
+					row = wsheet.get(i);
+					String result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(20, result);
+					validationResult.add(row);
+					if(result != "")
+					{
+						validated = false;
+					}
+				}
+				ws.writeSheetData(validationResult, 1);
+				session.close();
+				JOptionPane.showMessageDialog(null, " Validation Done");
+			}
+		}
+
 		else if(event.getActionCommand().equals("Save"))
 		{
 			for(String wsName : wsMap.keySet())
@@ -245,7 +285,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									 oldValReq.setFbStatus("Accept");
+									oldValReq.setFbStatus("Accept");
 									oldValReq.setGruopSatus("Send Back To QA");
 								}
 								else
@@ -259,22 +299,29 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(newValReq.get(12).equals("Update"))
 							{
-								if(oldValReq.getFbType().equals("QA"))
+								if(validated)
 								{
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									oldValReq.setFbStatus("Accept");
-									oldValReq.setGruopSatus("Send Back To QA");
+									if(oldValReq.getFbType().equals("QA"))
+									{
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setIssueTo(oldValReq.getQaUserId());
+										oldValReq.setFbStatus("Accept");
+										oldValReq.setGruopSatus("Send Back To QA");
+									}
+									else
+									{
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setIssueTo(oldValReq.getUserId());
+										oldValReq.setFbStatus("Accept");
+										oldValReq.setGruopSatus("Pending QA Approval");
+									}
+									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
 								else
 								{
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setIssueTo(oldValReq.getUserId());
-									oldValReq.setFbStatus("Accept");
-									oldValReq.setGruopSatus("Pending QA Approval");
+									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 								}
-								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 							else if(newValReq.get(12).equals("Wrong Value"))
 							{

@@ -15,9 +15,13 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import org.hibernate.Session;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.SessionUtil;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
@@ -58,6 +62,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	GrmUserDTO userDTO;
 	ArrayList<UnApprovedDTO> unApproveds = new ArrayList<UnApprovedDTO>();;
 	static AlertsPanel alertsPanel, alertsPanel1;
+	boolean validated;
 
 	public EngUnApprovedValueFeedback(GrmUserDTO userDTO)
 	{
@@ -65,7 +70,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,"Eng");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null, "Eng");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type" };
@@ -77,7 +82,9 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" validate ");
 		buttonLabels.add("Save");
+
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -130,7 +137,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		Loading loading = new Loading();
-		WorkingSheet ws = null;
+		// WorkingSheet ws = null;
 		Thread thread = new Thread(loading);
 		thread.start();
 		UnApprovedDTO obj = null;
@@ -157,26 +164,27 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			sheetPanel.openOfficeDoc();
 			ws = new WorkingSheet(sheetPanel, "Unapproved Values");
 			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			row.add("PL Name");
-			row.add("Part Name");
-			row.add("Pdf Url");
-			row.add("Feature Name");
-			row.add("Feature Value");
-			row.add("Feature Unit");
-			row.add("Sign");
-			row.add("Value");
-			row.add("Type");
-			row.add("Condition");
-			row.add("Multiplier");
-			row.add("Unit");
-			row.add("Dev Status");
-			row.add("Dev Comment");
-			row.add("FeedBack Type");
-			row.add("TL Status");
-			row.add("TL Comment");
-			row.add("QA Status");
-			row.add("QA Comment");
-			row.add("Old Eng Comment");
+			row.add("PL Name");// 0
+			row.add("Part Name");// 1
+			row.add("Pdf Url");// 2
+			row.add("Feature Name");// 3
+			row.add("Feature Value");// 4
+			row.add("Feature Unit");// 5
+			row.add("Sign");// 6
+			row.add("Value");// 7
+			row.add("Type");// 8
+			row.add("Condition");// 09
+			row.add("Multiplier");// 10
+			row.add("Unit");// 11
+			row.add("Dev Status");// 12
+			row.add("Dev Comment");// 13
+			row.add("FeedBack Type");// 14
+			row.add("TL Status");// 15
+			row.add("TL Comment");// 16
+			row.add("QA Status");// 17
+			row.add("QA Comment");// 18
+			row.add("Old Eng Comment");// 19
+			row.add("Validation Result");// 20
 
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
@@ -217,9 +225,42 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
 			// filterPanel.filterList = ApprovedDevUtil.getTLUnapprovedFeedBack(userDTO, null, null);
-			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,"Eng");
+			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null, "Eng");
 			filterPanel.refreshFilters();
 		}
+
+		else if(event.getActionCommand().equals(" validate "))
+		{
+		//	tabbedPane.setSelectedIndex(0);
+			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+			if(wsheet.isEmpty())
+			{
+				tabbedPane.setSelectedIndex(1);
+				JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+			}
+			else
+			{
+				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+				validated = true;
+				Session session = SessionUtil.getSession();
+				for(int i = 0; i < wsheet.size(); i++)
+				{
+					row = wsheet.get(i);
+					String result = ApprovedDevUtil.validateSeparation(row,session);
+					row.set(20, result);
+					validationResult.add(row);
+					if(result != "")
+					{
+						validated = false;
+					}
+				}
+				ws.writeSheetData(validationResult, 1);
+				session.close();
+				JOptionPane.showMessageDialog(null, " Validation Done");
+			}
+		}
+
 		else if(event.getActionCommand().equals("Save"))
 		{
 			for(String wsName : wsMap.keySet())
@@ -256,10 +297,17 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(result.get(i).get(12).equals("Update"))
 							{
-								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
-								oldValReq.setFbStatus("Approved");
-								oldValReq.setGruopSatus("Send Back To Team Leader");
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								if(validated)
+								{
+									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+									oldValReq.setFbStatus("Approved");
+									oldValReq.setGruopSatus("Send Back To Team Leader");
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+								else
+								{
+									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+								}
 								// ParaQueryUtil.EngUpdateApprovedValue(userDTO, updateFlag, oldValReq);
 							}
 						}

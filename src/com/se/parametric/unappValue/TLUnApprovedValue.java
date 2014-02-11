@@ -18,9 +18,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
+import org.hibernate.Session;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.SessionUtil;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -67,6 +70,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	ArrayList<UnApprovedDTO> unApproveds;
 	TLUnApprovedValueFeedback TLfeedBack = null;
 	static AlertsPanel alertsPanel;
+	boolean validated;
 
 	public TLUnApprovedValue(GrmUserDTO userDTO)
 	{
@@ -87,6 +91,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" validate ");
 		buttonLabels.add("Save");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
@@ -136,7 +141,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		Loading loading = new Loading();
-		WorkingSheet ws = null;
+		// WorkingSheet ws = null;
 		Thread thread = new Thread(loading);
 		thread.start();
 		UnApprovedDTO obj = null;
@@ -156,7 +161,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, "Pending TL Review", taskType, "Parametric","Data",new Long(null));
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, "Pending TL Review", taskType, "Parametric", "Data", 0l);
 			// unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
@@ -177,6 +182,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			row.add("Unit");
 			row.add("TL Approved Status");
 			row.add("TL Approved Comment");
+			row.add("Validation Result");// 14
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
@@ -221,6 +227,39 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate, "parametric");
 			filterPanel.refreshFilters();
 		}
+
+		else if(event.getActionCommand().equals(" validate "))
+		{
+			// tabbedPane.setSelectedIndex(0);
+			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+			if(wsheet.isEmpty())
+			{
+				tabbedPane.setSelectedIndex(1);
+				JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+			}
+			else
+			{
+				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+				validated = true;
+				Session session = SessionUtil.getSession();
+				for(int i = 0; i < wsheet.size(); i++)
+				{
+					row = wsheet.get(i);
+					String result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(14, result);
+					validationResult.add(row);
+					if(result != "")
+					{
+						validated = false;
+					}
+				}
+				ws.writeSheetData(validationResult, 1);
+				session.close();
+				JOptionPane.showMessageDialog(null, " Validation Done");
+			}
+		}
+
 		else if(event.getActionCommand().equals("Save"))
 		{
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
@@ -239,6 +278,18 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
 					int updateFlag = 1;
 					/** Team Leader approved and send to QA */
+					for(int i = 0; i < result.size(); i++)
+					{
+						ArrayList<String> newValReq = result.get(i);
+						if(newValReq.get(12).equals("Update"))
+						{
+							if(!validated)
+							{
+								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+								return;
+							}
+						}
+					}
 					for(int i = 0; i < result.size(); i++)
 					{
 						ArrayList<String> newValReq = result.get(i);
