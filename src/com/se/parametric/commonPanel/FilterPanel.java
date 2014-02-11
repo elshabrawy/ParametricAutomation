@@ -19,6 +19,14 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
+
+import com.se.automation.db.ParametricQueryUtil;
+import com.se.automation.db.QueryUtil;
+import com.se.automation.db.SessionUtil;
+import com.se.automation.db.client.mapping.CheckFeature;
+import com.se.automation.db.client.mapping.PlFeature;
 import com.se.parametric.Loading;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
@@ -281,4 +289,12 @@ public class FilterPanel extends JPanel implements ActionListener
 			}
 		}
 	}
+
+//	public static void main(String args[])
+//	{
+//		Session session=SessionUtil.getSession();
+//		CheckFeature ch=new CheckFeature(0l, (PlFeature) session.createCriteria(PlFeature.class).add(Restrictions.eq("id", 15665l)).uniqueResult(), 10l);
+//		session.save(ch);
+//		session.close();
+//	}
 }

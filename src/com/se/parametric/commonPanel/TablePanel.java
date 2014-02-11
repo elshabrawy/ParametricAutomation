@@ -149,6 +149,7 @@ public class TablePanel extends JPanel implements ActionListener {
 				catch(NullPointerException e)
 				{
 					System.out.println("blank record clicked !!");
+					e.printStackTrace();
 				}
 			}
 		});
