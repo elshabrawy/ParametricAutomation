@@ -25,7 +25,7 @@ import org.hibernate.criterion.Restrictions;
 import com.se.automation.db.ParametricQueryUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.client.mapping.CheckFeature;
+//import com.se.automation.db.client.mapping.CheckFeature;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.parametric.Loading;
 import com.se.parametric.dba.ParaQueryUtil;
