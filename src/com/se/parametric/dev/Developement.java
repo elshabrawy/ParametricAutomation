@@ -25,12 +25,14 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
 import org.apache.avro.io.parsing.Symbol.Alternative;
+import org.hibernate.Session;
 import org.jgroups.tests.UnicastTest.StartData;
 
 import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.TrackingParametric;
@@ -81,6 +83,7 @@ public class Developement extends JPanel implements ActionListener
 	String userName;
 	GrmUserDTO userDTO = null;
 	AutoFill autoFillProcess;
+	boolean validated;
 
 	/**
 	 * Create the panel.
@@ -179,6 +182,7 @@ public class Developement extends JPanel implements ActionListener
 		sheetpanel.setBounds(0, 0, width - 120, height - 125);
 		separationPanel.setBounds(0, 0, width - 120, height - 125);
 		ArrayList<String> separationButtonLabels = new ArrayList<String>();
+		separationButtonLabels.add(" validate ");
 		separationButtonLabels.add(" Save ");
 		separationButtonsPanel = new ButtonsPanel(separationButtonLabels);
 		JButton separationButtons[] = separationButtonsPanel.getButtons();
@@ -565,18 +569,20 @@ public class Developement extends JPanel implements ActionListener
 			input = new ArrayList<ArrayList<String>>();
 			tabbedPane.setSelectedIndex(2);
 			row = new ArrayList<String>();
-			row.add("PL_Name");
-			row.add("Part");
-			row.add("Datasheet");
-			row.add("Feature Name");
-			row.add("Feature Value");
-			row.add("Feature Unit");
-			row.add("Sign");
-			row.add("Value");
-			row.add("Type");
-			row.add("Condition");
-			row.add("Multiplier");
-			row.add("Unit");
+			row.add("PL_Name");// 0
+			row.add("Part");// 1
+			row.add("Datasheet");// 2
+			row.add("Feature Name");// 3
+			row.add("Feature Value");// 4
+			row.add("Feature Unit");// 5
+			row.add("Sign");// 6
+			row.add("Value");// 7
+			row.add("Type");// 8
+			row.add("Condition");// 9
+			row.add("Multiplier");// 10
+			row.add("Unit");// 11
+			row.add("Validation result");// 12
+
 			if(wsMap.get("Separation") != null)
 			{
 				wsMap.remove("Separation");
@@ -611,40 +617,80 @@ public class Developement extends JPanel implements ActionListener
 			}
 			else
 			{
-				for(int i = 0; i < separationValues.size(); i++)
+				if(validated)
 				{
-					row = separationValues.get(i);
-
-					String plName = row.get(0);
-					String featureName = row.get(3);
-					String featureFullValue = row.get(4);
-					try
+					for(int i = 0; i < separationValues.size(); i++)
 					{
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+						row = separationValues.get(i);
 
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-					}catch(ArrayIndexOutOfBoundsException ex)
-					{
+						String plName = row.get(0);
+						String featureName = row.get(3);
+						String featureFullValue = row.get(4);
 						try
 						{
-							Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-							cell.setText(ex.getMessage());
-						}catch(Exception e)
+							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+
+							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+						}catch(ArrayIndexOutOfBoundsException ex)
 						{
-							e.printStackTrace();
+							try
+							{
+								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+								cell.setText(ex.getMessage());
+							}catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+							ex.printStackTrace();
+						}catch(Exception ex)
+						{
+							ex.printStackTrace();
 						}
-						ex.printStackTrace();
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
+						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+						appValues.add(featureFullValue);
 					}
-					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
-					appValues.add(featureFullValue);
+					JOptionPane.showMessageDialog(null, "Approved Saving Done");
 				}
-				JOptionPane.showMessageDialog(null, "Approved Saving Done");
+				else
+				{
+					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+				}
+
 			}
 
 		}
+		else if(event.getActionCommand().equals(" validate "))
+		{
+			tabbedPane.setSelectedIndex(2);
+			separationValues = wsMap.get("Separation").readSpreadsheet(1);
+			if(separationValues.isEmpty())
+			{
+				tabbedPane.setSelectedIndex(1);
+				JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+			}
+			else
+			{
+				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+				validated = true;
+				Session session = SessionUtil.getSession();
+				for(int i = 0; i < separationValues.size(); i++)
+				{
+					row = separationValues.get(i);
+					String result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(12, result);
+					validationResult.add(row);
+					if(result != "")
+					{
+						validated = false;
+					}
+				}
+				ws.writeSheetData(validationResult, 1);
+				session.close();
+				JOptionPane.showMessageDialog(null, " Validation Done");
+			}
+		}
+
 		/**
 		 * Show pdfs Action
 		 * **/
