@@ -28,10 +28,12 @@ import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
+import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
+import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.unappValue.TLUnApprovedValueFeedback;
 
@@ -126,6 +128,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		Thread thread = new Thread(loading);
 		thread.start();
 		UnApprovedDTO obj = null;
+		String statuses[];
 		if(event.getSource().equals(filterPanel.filterButton))
 		{
 			Date startDate = null;
@@ -135,11 +138,29 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
+			
+//			/******* all combo box items except all in statuses[]******/
+////            int count = filterPanel.comboBoxItems[4].getItemCount();
+//            StringBuilder builder = new StringBuilder();
+//            for (int i = 0; i < count; i++) {
+//            	
+//            	if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
+//            	{	builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
+//                    if (i < count - 1) {
+//                        builder.append(", ");
+//                    }
+//                }
+//            }
+//			statuses=builder.toString().split(", ");
+//		
+		
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
+//			ArrayList<TableInfoDTO> reviewPDF = DataDevQueryUtil.getReviewPDF(null, plName, supplierName, taskType, null, null, null, null, null, null, null);
+
 			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To QA", taskType, "QA", "FB", userDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
