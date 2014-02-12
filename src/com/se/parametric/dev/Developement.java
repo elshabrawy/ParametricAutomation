@@ -626,6 +626,11 @@ public class Developement extends JPanel implements ActionListener
 						String plName = row.get(0);
 						String featureName = row.get(3);
 						String featureFullValue = row.get(4);
+						if(!row.get(12).isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, "Can't save due to errors on data");
+							return;
+						}
 						try
 						{
 							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
