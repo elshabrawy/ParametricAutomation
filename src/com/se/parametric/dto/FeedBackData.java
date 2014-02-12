@@ -2,7 +2,15 @@ package com.se.parametric.dto;
 
 public class FeedBackData
 {
-		String fbStatus, comment, fbType, qaComment, qaStatus,lastEngComment;
+		String fbStatus, comment, fbType, qaComment, qaStatus,lastEngComment,issuetype;
+		public String getIssuetype()
+		{
+			return issuetype;
+		}
+		public void setIssuetype(String issuetype)
+		{
+			this.issuetype = issuetype;
+		}
 		public String getLastEngComment()
 		{
 			return lastEngComment;
