@@ -51,7 +51,7 @@ public class MainPanel extends JPanel
 		add(new JButton("Ok"));
 
 		// role 3 eng , role 1 tl
-		if(userRole == 1 && userGroup == 101)
+		if(userRole == 1 && userGroup == 1)
 		{
 			// parametric Leader
 			tlfeedBack = new TLFeedBack(userDTO);
@@ -62,7 +62,7 @@ public class MainPanel extends JPanel
 			tabbedPane.addTab("TL UnApproved Review", null, tlunApprovedPanel, null);
 
 		}
-		else if(userRole == 3 && userGroup == 101)
+		else if(userRole == 3 && userGroup == 1)
 		{
 			// parametric eng
 
@@ -77,15 +77,7 @@ public class MainPanel extends JPanel
 			tabbedPane.addTab("EngUnApproved", null, engunApprovedPanel, null);
 			tabbedPane.addTab("Export", null, exportPanel, null);
 
-		}
-		else if(userRole == 1 && userGroup == 23)
-		{
-			// Q leader
-			qaReviewData = new QAReviewData(userDTO);
-//			tlfeedBack = new TLFeedBack(userDTO);
-			tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
-//			tabbedPane.addTab("TL Quality Feedback", null, tlfeedBack, null);
-		}
+		}	
 		else if(userRole == 3 && userGroup == 23)
 		{
 			// Q eng
