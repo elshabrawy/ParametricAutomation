@@ -44,6 +44,7 @@ import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
+import com.se.automation.db.client.mapping.TblNpiParts;
 import com.se.automation.db.client.mapping.TrackingFeedbackType;
 import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.automation.db.client.mapping.TrackingTaskStatus;
@@ -3462,7 +3463,26 @@ public class DataDevQueryUtil
 		session.beginTransaction().commit();
 		return familyCross;
 	}
-
+/**
+ * @author ahmad_makram
+ * @param genericStr
+ * @param session
+ * @return
+ */
+	public static TblNpiParts insertNPIPart(PartComponent com,String seUrl, Session session)
+	{
+		TblNpiParts npiPart = new TblNpiParts();
+		// generic.setId(QueryUtil.getRandomID());
+		npiPart.setPartComponent(com);
+		npiPart.setSupplier(com.getSupplierId());
+		npiPart.setPl(com.getSupplierPl().getPl());
+		npiPart.setOfflinedocid(com.getDocument());
+		npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));		
+		npiPart.setInsertionDate(new Date());
+		session.saveOrUpdate(npiPart);
+		session.beginTransaction().commit();
+		return npiPart;
+	}
 	public static MasterPartMask insertMask(String maskStr, Session session)
 	{
 		String maskMaster = getNonAlphaMask(maskStr).replaceAll("_", "%").replaceAll("(%){2,}", "%");

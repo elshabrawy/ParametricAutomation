@@ -165,10 +165,11 @@ public class ParaQueryUtil
 			String g = "N/A";
 			// getGeneric(g);
 			// checkUser("abeer","123456");
-			// pl = getPlByPlName("Solid State Relay");
+			 pl = getPlByPlName("Solid State Relay");
 			// Pl ptype = getPLType(pl);
 			// System.out.println(ptype.getName());
 			// System.out.println(getLastIssueSource(28862724l));
+			new ParaQueryUtil().getPlFeautres(pl, false);
 			DataDevQueryUtil.getMask("AD7903BRQZ____");
 		}catch(Exception e)
 		{
