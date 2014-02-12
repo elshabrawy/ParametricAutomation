@@ -279,7 +279,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						ArrayList<String> newValReq = result.get(i);
 						if(newValReq.get(12).equals("Update"))
 						{
-							if(!validated)
+							if(!validated||!newValReq.get(21).trim().isEmpty())
 							{
 								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 								return;
