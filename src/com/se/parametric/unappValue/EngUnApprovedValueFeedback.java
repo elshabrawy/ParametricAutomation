@@ -179,12 +179,13 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("Dev Status");// 12
 			row.add("Dev Comment");// 13
 			row.add("FeedBack Type");// 14
-			row.add("TL Status");// 15
-			row.add("TL Comment");// 16
-			row.add("QA Status");// 17
-			row.add("QA Comment");// 18
-			row.add("Old Eng Comment");// 19
-			row.add("Validation Result");// 20
+			row.add("Issue Type");// 15
+			row.add("TL Status");// 16
+			row.add("TL Comment");// 17
+			row.add("QA Status");// 18
+			row.add("QA Comment");// 19
+			row.add("Old Eng Comment");// 20
+			row.add("Validation Result");// 21
 
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
@@ -207,6 +208,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add("");
 				row.add("");
 				row.add(obj.getFbType());
+				row.add(obj.getIssueType());
 				row.add(obj.getFbStatus());
 				row.add(obj.getComment());
 				row.add(obj.getQaStatus());
@@ -217,6 +219,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			ArrayList<String> statusValues = new ArrayList<String>();
 			statusValues.add("Update");
 			statusValues.add("Reject");
+			statusValues.add("Accept Wrong Value");
 			ws.statusValues = statusValues;
 			ws.writeReviewData(list, 1, 13);
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
@@ -231,7 +234,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 
 		else if(event.getActionCommand().equals(" validate "))
 		{
-		//	tabbedPane.setSelectedIndex(0);
+			// tabbedPane.setSelectedIndex(0);
 			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
 			if(wsheet.isEmpty())
 			{
@@ -247,8 +250,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					String result = ApprovedDevUtil.validateSeparation(row,session);
-					row.set(20, result);
+					String result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(21, result);
 					validationResult.add(row);
 					if(result != "")
 					{
@@ -267,9 +270,32 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			{
 				if(wsName == "Unapproved Values")
 				{
+					Session session = SessionUtil.getSession();
 					ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
 					int updateFlag = 2;
 					/** Team Leader approved and send to QA */
+					for(int i = 0; i < result.size(); i++)
+					{
+						ArrayList<String> newValReq = result.get(i);
+						if(newValReq.get(12).equals("Update"))
+						{
+							if(!validated)
+							{
+								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+								return;
+							}
+						}
+						if(newValReq.get(12).equals("Update") && !newValReq.get(15).equals("Wrong Separation"))
+						{
+							JOptionPane.showMessageDialog(null, " You Can update on Wrong Seperation Feedback only");
+							return;
+						}
+						if(newValReq.get(12).equals("Accept Wrong Value") && !newValReq.get(15).equals("Wrong Value"))
+						{
+							JOptionPane.showMessageDialog(null, " You Can Accept on Wrong Value Feedback only");
+							return;
+						}
+					}
 					for(int i = 0; i < result.size(); i++)
 					{
 						ArrayList<String> newValReq = result.get(i);
@@ -285,9 +311,10 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setComment(newValReq.get(13));
 							long issuedto = oldValReq.getIssuedby();
 							long issuedby = oldValReq.getIssueTo();
-							oldValReq.setFbType("Internal");
+
 							if(result.get(i).get(12).equals("Reject"))
 							{
+								oldValReq.setFbType("Internal");
 								// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
@@ -297,18 +324,46 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(result.get(i).get(12).equals("Update"))
 							{
-								if(validated)
+								oldValReq.setFbType("Internal");
+								oldValReq.setIssuedby(issuedby);
+								oldValReq.setIssueTo(issuedto);
+								oldValReq.setFbStatus("Approved");
+								oldValReq.setGruopSatus("Send Back To Team Leader");
+								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+							}
+							else if(result.get(i).get(12).equals("Accept Wrong Value"))
+							{
+								oldValReq.setIssuedby(issuedby);
+								oldValReq.setIssueTo(issuedto);
+								oldValReq.setFbStatus("Approved");
+								oldValReq.setGruopSatus("Rejected");
+								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								// initiate new FB
+								oldValReq.setGruopSatus("Send Back To Developer");
+								oldValReq.setIssueType("Wrong Value");
+								oldValReq.setFbStatus("Rejected");
+								oldValReq.setIssueTo(issuedby);
+								if(oldValReq.getFbType().equals("Internal"))
 								{
-									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
-									oldValReq.setFbStatus("Approved");
-									oldValReq.setGruopSatus("Send Back To Team Leader");
-									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+									oldValReq.setIssuedby(issuedto);
 								}
 								else
 								{
-									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+									Long qaUserId = 0L;
+									try
+									{
+										qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil.getPlByPlName(session, oldValReq.getPlName()), ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
+									}catch(Exception e)
+									{
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									oldValReq.setIssuedby(qaUserId);
 								}
-								// ParaQueryUtil.EngUpdateApprovedValue(userDTO, updateFlag, oldValReq);
+								// oldValReq.setFbType(oldValReq.getFbType());
+								ApprovedDevUtil.saveAppWrongValue(oldValReq);
+
 							}
 						}
 						else
