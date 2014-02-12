@@ -3140,8 +3140,8 @@ public class ParaQueryUtil
 
 	public static List<String> getGroupFullValueByPlFeature(PlFeature plFeature, Session session)
 	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.ne("isApproved", 2L));
+		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		crit.createCriteria("status").add(Restrictions.ne("id", 2L));
 		crit.add(Restrictions.eq("plFeature", plFeature));
 		crit.addOrder(Order.asc("groupFullValue"));
 		crit.setProjection(Projections.distinct(Projections.property("groupFullValue")));
