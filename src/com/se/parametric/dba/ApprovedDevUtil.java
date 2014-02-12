@@ -785,7 +785,7 @@ public class ApprovedDevUtil
 			FBObj.setTrackingFeedbackType(trackingFeedbackType);
 			FBObj.setItemId(groups.getId());
 			FBObj.setType("V");
-			FBObj.setDocumentId(document);
+			FBObj.setDocument(document);
 
 			FBCyc.setId(System.nanoTime());
 			FBCyc.setParametricFeedback(FBObj);
@@ -880,7 +880,7 @@ public class ApprovedDevUtil
 				{
 					FBObj = OldFBCyc.getParametricFeedback();
 					OldFBCyc.setFeedbackRecieved(1l);
-					FBObj.setDocumentId(document);
+					FBObj.setDocument(document);
 					FBCyc = new ParametricFeedbackCycle();
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
@@ -914,7 +914,7 @@ public class ApprovedDevUtil
 					FBObj.setTrackingFeedbackType(trackingFeedbackType);
 					FBObj.setItemId(rd.getComponent().getComId());
 					FBObj.setType("P");
-					FBObj.setDocumentId(document);
+					FBObj.setDocument(document);
 
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
@@ -1595,7 +1595,7 @@ public class ApprovedDevUtil
 
 			FBObj = parametricFeedbackCycle.getParametricFeedback();
 			FBObj.setParaFeedbackStatus(paraFeedbackStatus);
-			FBObj.setDocumentId(document);
+			FBObj.setDocument(document);
 			if(paraIssueType != null)
 				FBObj.setParaIssueType(paraIssueType);
 
@@ -2569,9 +2569,15 @@ public class ApprovedDevUtil
 		cri.add(Restrictions.eq("feature.name", fetName));
 		PlFeature plfet = (PlFeature) cri.uniqueResult();
 		Unit Clsunit = plfet.getUnit();
-		System.out.println("DB : " + Clsunit.getName());
 		System.out.println("input : " + unit);
-		if(Clsunit.getName().trim().equalsIgnoreCase(unit.trim()))
+		if(Clsunit != null)
+		{
+			if(Clsunit.getName().trim().equalsIgnoreCase(unit.trim()))
+			{
+				equal = true;
+			}
+		}
+		else if(Clsunit == null && unit.isEmpty())
 		{
 			equal = true;
 		}
