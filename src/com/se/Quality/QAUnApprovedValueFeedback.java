@@ -267,6 +267,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setIssueTo(issuedto);
 							oldValReq.setFbType("QA");
+							
 							if(newValReq.get(12).equals("Approved"))
 							{
 								oldValReq.setFbStatus("Feedback Closed");
@@ -277,12 +278,13 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 
 							else if(newValReq.get(12).equals("Wrong Value"))
 							{
-								ApprovedDevUtil.saveAppWrongValue(oldValReq);
+								oldValReq.setIssueType(newValReq.get(12));
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								
 							}
 							else if(newValReq.get(12).equals("Wrong Separation"))
 							{
-								// ParaQueryUtil.saveWrongSeparation( oldValReq);
+								oldValReq.setIssueType(newValReq.get(12));
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 						}
