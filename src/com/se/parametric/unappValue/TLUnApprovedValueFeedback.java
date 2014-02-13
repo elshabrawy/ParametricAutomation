@@ -1,6 +1,7 @@
 package com.se.parametric.unappValue;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,7 +55,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	boolean foundPdf = false;
 	JPanel unapprovedPanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
 	public ArrayList<ArrayList<String>> list;
 	Long[] teamMembers = null;
 	ArrayList<String> row = null;
@@ -80,22 +80,11 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
-		ArrayList<String> buttonLabels = new ArrayList<String>();
-		buttonLabels.add(" validate ");
-		buttonLabels.add("Save");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
 		alertsPanel = new AlertsPanel(TLDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
 		selectionPanel.setLayout(null);
 		selectionPanel.add(filterPanel);
 		selectionPanel.add(sheetPanel);
-		selectionPanel.add(buttonsPanel);
 		selectionPanel.add(alertsPanel);
 		selectionPanel.setBounds(0, 0, width - 120, height - 100);
 		filterPanel.filterButton.addActionListener(this);
@@ -109,9 +98,21 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
-		save.setBounds(3, 11, 85, 29);
+		validate = new JButton("validate");
+
+		save.setBounds(3, 39, 95, 29);
+		save.setForeground(new Color(25, 25, 112));
+		save.setFont(new Font("Tahoma", Font.BOLD, 11));
+		save.setForeground(new Color(25, 25, 112));
+
+		validate.setBounds(3, 5, 95, 29);
+		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
+		validate.addActionListener(this);
 		save.addActionListener(this);
+
+		devSheetButtonPanel.add(validate);
 		devSheetButtonPanel.add(save);
+
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		add(devSheetButtonPanel);
 		add(selectionPanel);
@@ -224,7 +225,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			filterPanel.refreshFilters();
 		}
 
-		else if(event.getActionCommand().equals(" validate "))
+		else if(event.getSource().equals(validate))
 		{
 			// tabbedPane.setSelectedIndex(0);
 			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
@@ -256,7 +257,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			}
 		}
 
-		else if(event.getActionCommand().equals("Save"))
+		else if(event.getSource().equals(save))
 		{
 			for(String wsName : wsMap.keySet())
 			{
@@ -271,40 +272,60 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						ArrayList<String> newValReq = result.get(i);
 						if(newValReq.get(12).equals("Update"))
 						{
-							if(!validated || !newValReq.get(21).trim().isEmpty())
+							try
 							{
-								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-								return;
+								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								{
+									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+									thread.stop();
+									loading.frame.dispose();
+									return;
+								}
+							}catch(Exception e)
+							{
+								continue;
 							}
 						}
 						if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(14).equals("Internal"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(14).equals("QA"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(14).equals("QA"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Update") && newValReq.get(15).equals("Wrong Value"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback ");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(14).equals("Internal"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(14).equals("Internal"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 					}

@@ -279,20 +279,32 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						ArrayList<String> newValReq = result.get(i);
 						if(newValReq.get(12).equals("Update"))
 						{
-							if(!validated||!newValReq.get(21).trim().isEmpty())
+							try
 							{
-								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-								return;
+								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								{
+									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+									thread.stop();
+									loading.frame.dispose();
+									return;
+								}
+							}catch(Exception e)
+							{
+								continue;
 							}
 						}
 						if(newValReq.get(12).equals("Update") && !newValReq.get(15).equals("Wrong Separation"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can update on Wrong Seperation Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Accept Wrong Value") && !newValReq.get(15).equals("Wrong Value"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can Accept on Wrong Value Feedback only");
+							thread.stop();
+							loading.frame.dispose();
 							return;
 						}
 					}
@@ -327,7 +339,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setFbType("Internal");
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
-								oldValReq.setFbStatus("Approved");
+								oldValReq.setFbStatus("Accept");
 								oldValReq.setGruopSatus("Send Back To Team Leader");
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
@@ -336,7 +348,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
-								oldValReq.setFbStatus("Approved");
+								oldValReq.setFbStatus("Accept");
 								oldValReq.setGruopSatus("Rejected");
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								// initiate new FB

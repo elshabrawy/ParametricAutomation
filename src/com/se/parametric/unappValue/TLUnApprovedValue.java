@@ -283,11 +283,20 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						ArrayList<String> newValReq = result.get(i);
 						if(newValReq.get(12).equals("Update"))
 						{
-							if(!validated||!newValReq.get(21).trim().isEmpty())
+							try
 							{
-								JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-								return;
+								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								{
+									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+									thread.stop();
+									loading.frame.dispose();
+									return;
+								}
+							}catch(Exception e)
+							{
+								continue;
 							}
+
 						}
 					}
 					for(int i = 0; i < result.size(); i++)
