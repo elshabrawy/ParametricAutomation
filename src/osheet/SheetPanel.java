@@ -60,6 +60,7 @@ public class SheetPanel extends Panel
 	private Properties culmns;
 	protected JButton butSeparation, save;
 	private Frame frame;
+	public static int row, column;
 
 	protected JButton btuSaveParts;
 
@@ -423,7 +424,9 @@ public class SheetPanel extends Panel
 		{
 			Logger.getLogger(SheetPanel.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
+		row = SVD.getSelectedCellposesions().y;
+		column = SVD.getSelectedCellposesions().x;
+		System.out.println(SVD.getSelectedCellposesions().y + " and " + SVD.getSelectedCellposesions().x);
 		return this.SVD.getSelectedCellposesions().x;
 	}
 
@@ -444,6 +447,7 @@ public class SheetPanel extends Panel
 	{
 		// if (this.sheet == null)
 		// throw new Exception("Error no sheet activated");
+		
 		return getCellByPosission(getActivSheet(), x, y);
 	}
 
@@ -455,7 +459,6 @@ public class SheetPanel extends Panel
 			int x = SVD.getSelectedCellposesions().x;
 			int y = SVD.getSelectedCellposesions().y;
 			XCell xcell = getCellByPosission(x, y);
-
 			return xcell;
 		}catch(Exception ex)
 		{
@@ -463,7 +466,7 @@ public class SheetPanel extends Panel
 		}
 		return null;
 	}
-
+	
 	public XText getCellText(XCell cell)
 	{
 		XText cellText = null;
