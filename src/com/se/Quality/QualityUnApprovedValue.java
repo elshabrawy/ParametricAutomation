@@ -81,6 +81,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
+//		buttonLabels.add("Feedback History");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -108,6 +109,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		QAAppfeedBack.setBounds(width - 110, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
+		
 		save.setBounds(3, 80, 85, 29);
 		validate = new JButton("Validate");
 		validate.setBounds(3, 46, 85, 29);

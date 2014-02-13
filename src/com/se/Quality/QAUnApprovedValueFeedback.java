@@ -49,7 +49,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 	JTabbedPane tabbedPane;
 	JButton button = null;
 	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation;
+	JButton save, validate, separation, feedbackHistory;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
@@ -81,21 +81,22 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
-		ArrayList<String> buttonLabels = new ArrayList<String>();
-		buttonLabels.add("Save");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
+		// ArrayList<String> buttonLabels = new ArrayList<String>();
+		// buttonLabels.add("Save");
+		// buttonLabels.add("Feedback History");
+		// buttonsPanel = new ButtonsPanel(buttonLabels);
+		// JButton buttons[] = buttonsPanel.getButtons();
+		// for(int i = 0; i < buttons.length; i++)
+		// {
+		// buttons[i].addActionListener(this);
+		// }
+		// buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
 		alertsPanel = new AlertsPanel(userDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
 		selectionPanel.setLayout(null);
 		selectionPanel.add(filterPanel);
 		selectionPanel.add(sheetPanel);
-		selectionPanel.add(buttonsPanel);
+		// selectionPanel.add(buttonsPanel);
 		selectionPanel.add(alertsPanel);
 		selectionPanel.setBounds(0, 0, width - 120, height - 100);
 		filterPanel.filterButton.addActionListener(this);
@@ -109,11 +110,20 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
+		feedbackHistory = new JButton("Feedback History");
+		feedbackHistory.setBounds(3, 45, 85, 29);
+		feedbackHistory.setForeground(new Color(25, 25, 112));
+		feedbackHistory.setFont(new Font("Tahoma", Font.BOLD, 11));
+
 		save.setBounds(3, 11, 85, 29);
 		save.setForeground(new Color(25, 25, 112));
 		save.setFont(new Font("Tahoma", Font.BOLD, 11));
 		save.addActionListener(this);
+		feedbackHistory.addActionListener(this);
+		feedbackHistory.setEnabled(false);
 		devSheetButtonPanel.add(save);
+		devSheetButtonPanel.add(feedbackHistory);
+		// devSheetButtonPanel.add();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		add(devSheetButtonPanel);
 		add(selectionPanel);
@@ -123,14 +133,15 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
+		// Loading loading = new Loading();
 		WorkingSheet ws = null;
-		Thread thread = new Thread(loading);
-		thread.start();
+		// Thread thread = new Thread(loading);
+		// thread.start();
 		UnApprovedDTO obj = null;
 		String statuses[];
 		if(event.getSource().equals(filterPanel.filterButton))
 		{
+			feedbackHistory.setEnabled(true);
 			Date startDate = null;
 			Date endDate = null;
 			if(filterPanel.jDateChooser1.isEnabled())
@@ -138,29 +149,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			
-//			/******* all combo box items except all in statuses[]******/
-////            int count = filterPanel.comboBoxItems[4].getItemCount();
-//            StringBuilder builder = new StringBuilder();
-//            for (int i = 0; i < count; i++) {
-//            	
-//            	if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-//            	{	builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-//                    if (i < count - 1) {
-//                        builder.append(", ");
-//                    }
-//                }
-//            }
-//			statuses=builder.toString().split(", ");
-//		
-		
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-//			ArrayList<TableInfoDTO> reviewPDF = DataDevQueryUtil.getReviewPDF(null, plName, supplierName, taskType, null, null, null, null, null, null, null);
-
 			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To QA", taskType, "QA", "FB", userDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
@@ -225,6 +217,22 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 		}
+		else if(event.getActionCommand().equals("Feedback History"))
+		{
+			try
+			{
+				sheetPanel.getSelectedXCell();
+				String url = sheetPanel.getCellText(sheetPanel.getCellByPosission(1, 4)).toString();
+				System.out.println("" + url);
+			}catch(Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String url = sheetPanel.getCellText(sheetPanel.getSelectedXCell()).getString();
+			System.out.println(url + " " + "done here");
+			ArrayList<ArrayList<String>> list = ApprovedDevUtil.getFeedbackHistory(url);
+		}
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
 			Date startDate = null;
@@ -267,7 +275,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setIssueTo(issuedto);
 							oldValReq.setFbType("QA");
-							
+
 							if(newValReq.get(12).equals("Approved"))
 							{
 								oldValReq.setFbStatus("Feedback Closed");
@@ -280,7 +288,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								oldValReq.setIssueType(newValReq.get(12));
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-								
+
 							}
 							else if(newValReq.get(12).equals("Wrong Separation"))
 							{
@@ -299,8 +307,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			}
 			JOptionPane.showMessageDialog(null, "Save Done");
 		}
-		thread.stop();
-		loading.frame.dispose();
+		// thread.stop();
+		// loading.frame.dispose();
 	}
 
 	public void updateFlags(ArrayList<String> flags)
