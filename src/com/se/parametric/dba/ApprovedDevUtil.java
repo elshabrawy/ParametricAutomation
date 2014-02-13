@@ -785,7 +785,6 @@ public class ApprovedDevUtil
 			FBObj.setTrackingFeedbackType(trackingFeedbackType);
 			FBObj.setItemId(groups.getId());
 			FBObj.setType("V");
-			FBObj.setDocument(document);
 
 			FBCyc.setId(System.nanoTime());
 			FBCyc.setParametricFeedback(FBObj);
@@ -801,7 +800,7 @@ public class ApprovedDevUtil
 				FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 			}
 			FBCyc.setStoreDate(new Date());
-
+			FBObj.setDocument(document);
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(0l);
 			session.saveOrUpdate(FBObj);
@@ -896,7 +895,7 @@ public class ApprovedDevUtil
 						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 					}
 					FBCyc.setStoreDate(new Date());
-
+					FBObj.setDocument(document);
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(OldFBCyc);
@@ -914,7 +913,6 @@ public class ApprovedDevUtil
 					FBObj.setTrackingFeedbackType(trackingFeedbackType);
 					FBObj.setItemId(rd.getComponent().getComId());
 					FBObj.setType("P");
-					FBObj.setDocument(document);
 
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
@@ -923,7 +921,7 @@ public class ApprovedDevUtil
 					FBCyc.setIssuedBy(app.getIssuedby());
 					FBCyc.setIssuedTo(app.getIssueTo());
 					FBCyc.setStoreDate(new Date());
-
+					FBObj.setDocument(document);
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(FBObj);
@@ -1218,13 +1216,12 @@ public class ApprovedDevUtil
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
-				if(type.equals("Eng"))
-					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
 				}
-				list2 = (ParametricApprovedGroup) criteria.uniqueResult();
+
+				list2 = (ParametricApprovedGroup) criteria.list().get(0);
 				if(type.equals("Eng"))
 				{
 					row = new Object[3];
@@ -1620,7 +1617,7 @@ public class ApprovedDevUtil
 			FBCyc.setIssuedTo(parametricFeedbackCycle.getIssuedBy());
 
 			FBCyc.setStoreDate(new Date());
-
+			FBObj.setDocument(document);
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
 			session.saveOrUpdate(FBObj);
@@ -2008,6 +2005,7 @@ public class ApprovedDevUtil
 			System.out.println("size is " + row.size());
 			for(int j = 0; j < row.size(); j++)
 			{
+
 				unApprovedDTO = new UnApprovedDTO();
 				ParametricApprovedGroup groupRecord = null;
 				ParametricSeparationGroup separationgroup = null;
@@ -2022,6 +2020,7 @@ public class ApprovedDevUtil
 				String unitValue = "";
 				String pattern = "";
 				groupRecord = row.get(j);
+				// unApprovedDTO.setPdfUrl(groupRecord.getDocument().getPdf().getSeUrl());
 				Criteria SeparationCri = session.createCriteria(ParametricSeparationGroup.class);
 				SeparationCri.add(Restrictions.eq("parametricApprovedGroup", row.get(j)));
 				SeparationCri.addOrder(Order.asc("approvedValueOrder"));
@@ -2038,6 +2037,7 @@ public class ApprovedDevUtil
 						unApprovedDTO.setQaStatus(FBData.getQaStatus());
 						unApprovedDTO.setQaUserId(FBData.getQaUserId());
 						unApprovedDTO.setIssuedby(FBData.getIssuedby());
+						// unApprovedDTO.setPartNumber(FBData.get)
 						unApprovedDTO.setIssueTo(FBData.getIssueTo());
 						unApprovedDTO.setLastEngComment(FBData.getLastEngComment());
 						unApprovedDTO.setIssueType(FBData.getIssuetype());
@@ -2571,7 +2571,7 @@ public class ApprovedDevUtil
 		return error;
 	}
 
-	private static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
+	rivate static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
 	{
 		boolean equal = false;
 		Criteria cri = session.createCriteria(PlFeature.class);
@@ -2597,4 +2597,18 @@ public class ApprovedDevUtil
 
 	}
 
+	public static ArrayList<ArrayList<String>> getFeedbackHistory(String url)
+	{
+		Session session = SessionUtil.getSession();
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		List<Object[]> list = session
+				.createSQLQuery(
+						"select x.ID , x.ISSUE_TYPE, x.FEEDBACK_STATUS, x.STORE_DATE, x.FB_INITIATOR, x.FEEDBACK_TYPE, x.ITEM_ID, x.TYPE, x.PARA_FEEDBACK_REPORTING_ID, x.DOCUMENT_ID,y.PARA_FEEDBACK_ID, y.FB_ITEM_VALUE, y.FB_COMMENT, y.ISSUED_BY, y.ISSUED_TO, y.STORE_DATE, y.FEEDBACK_ACTION, y.FEEDBACK_RECIEVED, y.ACTION_ID from PARAMETRIC_FEEDBACK x,PARAMETRIC_FEEDBACK_CYCLE y where x.id=Y.PARA_FEEDBACK_ID and x.DOCUMENT_ID=automation2.GET_DOCUMENT_ID_by_url('"
+								+ url + "') and rownum =1").list();
+		if(!list.isEmpty())
+		{
+
+		}
+		return result;
+	}
 }
