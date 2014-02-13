@@ -346,12 +346,13 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(result.get(i).get(12).equals("Accept Wrong Value"))
 							{
+								// close old Feedback
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
 								oldValReq.setFbStatus("Accept");
 								oldValReq.setGruopSatus("Rejected");
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-								// initiate new FB
+								// initiate new FB from QA to Eng
 								oldValReq.setGruopSatus("Send Back To Developer");
 								oldValReq.setIssueType("Wrong Value");
 								oldValReq.setFbStatus("Rejected");
