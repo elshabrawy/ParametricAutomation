@@ -25,7 +25,6 @@ public class PartInfoDTO {
 	private String comment;
 	private String issuedBy;
 	private String issuedTo;
-	private String pdfurl;
 	private String plName;
 	private String supplierName;
 	private String description;
@@ -90,14 +89,6 @@ public class PartInfoDTO {
 
 	public void setFeedbackType(String feedbackType) {
 		this.feedbackType = feedbackType;
-	}
-
-	public String getPdfurl() {
-		return pdfurl;
-	}
-
-	public void setPdfurl(String pdfurl) {
-		this.pdfurl = pdfurl;
 	}
 
 	public String getPlName() {
