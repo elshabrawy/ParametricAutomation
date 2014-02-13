@@ -242,7 +242,7 @@ public class Developement extends JPanel implements ActionListener
 		String pdfUrl = "";
 		ArrayList<DocumentInfoDTO> docsInfo = null;
 		ArrayList<String> row = null;
-		boolean isExclamationMark = false;
+
 
 		/**
 		 * Load Data development Sheet
@@ -482,83 +482,10 @@ public class Developement extends JPanel implements ActionListener
 
 		else if(event.getActionCommand().equals("AutoFill"))
 		{
-			// boolean ok = false;
-			// if(sheetpanel.isOpened())
-			// ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-			//
-			// if(sheetpanel.isOpened() && ok == false)
-			// {
-			// thread.stop();
-			// loading.frame.dispose();
-			// return;
-			// }
-
-			// input = new ArrayList<ArrayList<String>>();
-			// row = new ArrayList<String>();
-			// row.add("PL_Name");
-			// row.add("Part");
-			// row.add("Datasheet");
-			// row.add("Feature Name");
-			// row.add("Feature Value");
-			// row.add("Feature Unit");
-			// row.add("Sign");
-			// row.add("Value");
-			// row.add("Type");
-			// row.add("Condition");
-			// row.add("Multiplier");
-			// row.add("Unit");
-			// input.add(row);
-			// for (int j = 0; j < 10; j++)
-			// {
-			// input.add(new ArrayList<String>(Arrays.asList("20","22")));
-			// }
-			//
-			// for (int j = 0; j < 10; j++)
-			// {
-			// input.add(new ArrayList<String>(Arrays.asList("k","l")));
-			// }
-			//
-			// for (int j = 0; j < 10; j++)
-			// {
-			// input.add(new ArrayList<String>(Arrays.asList("55","65")));
-			// }
-			//
-			// if(wsMap.get("Separation") != null)
-			// {
-			// wsMap.remove("Separation");
-			// }
+			
 			String userName = userDTO.getFullName();
 			System.err.println("start Check" + new Date());
-			//
-			// for(String wsName : wsMap.keySet())
-			// {
-			// if(wsName != "LoadAllData" && wsName != "Separation")
-			// {
-			// System.out.println("Sheet Name:" + wsName);
-			// AutoFill autoFillProcess=new AutoFill(sheetpanel,userName ,wsMap.get(wsName));
-			// autoFillProcess.readAutoFillData();
-			autoFillProcess.getAutoFillProcess();
-			// System.out.println(autoFillProcess.readAutoFillData());
-
-			// ws=autoFillProcess.getAutoFillProcess();
-			// }
-			// }
-
-			// System.err.println("check ends"+ new Date());
-			// int x=3;
-			// int y=5;
-			// int z=9;
-			// if(x== 3 && y ==5|z==9) {
-			// System.out.println("here");
-			// }
-			// sheetpanel.openOfficeDoc();
-			// ws = new WorkingSheet(sheetpanel, "Separation");
-			// sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() +
-			// ".xls");
-			// ws.setSeparationHeader(row);
-			// System.err.println("start write"+ new Date());
-			// ws.writeSheetData(input, 1);
-			// System.err.println("end write"+ new Date());
+			autoFillProcess.getAutoFillProcess();		
 			wsMap.put("Separation", ws);
 		}
 		/**
