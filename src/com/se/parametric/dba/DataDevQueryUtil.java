@@ -1949,7 +1949,7 @@ public class DataDevQueryUtil
 		String newsLink = null;
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select GETPDFURLBYDOCID(doc_id) from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
+			SQLQuery query = session.createSQLQuery("select GETPDFURLbydoc(doc_id) from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
 			newsLink = (String) query.uniqueResult();
 
 		}catch(Exception ex)
@@ -2242,13 +2242,13 @@ public class DataDevQueryUtil
 				com.setMasterPartMask(mask);
 			}
 			// NPI Flag part
-			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
-			{
-				com.setNpiFlag(1l);
-				// com.setAlu(partInfo.getNewsLink());
-			}
-			else
-				com.setNpiFlag(0l);
+//			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+//			{
+//				com.setNpiFlag(1l);
+//				// com.setAlu(partInfo.getNewsLink());
+//			}
+//			else
+//				com.setNpiFlag(0l);
 			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
 			{
 				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
@@ -2294,7 +2294,8 @@ public class DataDevQueryUtil
 			// }
 
 			session.saveOrUpdate(com);
-
+			
+			insertNPIPart(com,partInfo.getNewsLink(),session);
 			if(famGen != null)
 				session.saveOrUpdate(famGen);
 			// session.beginTransaction().commit();
