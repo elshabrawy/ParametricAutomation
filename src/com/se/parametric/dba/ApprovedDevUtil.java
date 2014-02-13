@@ -845,11 +845,11 @@ public class ApprovedDevUtil
 			List wrongPartsList = criteria.list();
 			/** reject status criteria */
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
-			criteria.add(Restrictions.eq("name", "Open"));
+			criteria.add(Restrictions.eq("feedbackStatus", "Open"));
 			paraFeedbackStatus = (ParaFeedbackStatus) criteria.uniqueResult();
 			/** Wrong value FB Type criteria */
 			criteria = session.createCriteria(ParaIssueType.class);
-			criteria.add(Restrictions.eq("name", app.getIssueType()));
+			criteria.add(Restrictions.eq("issueType", app.getIssueType()));
 			paraIssueType = (ParaIssueType) criteria.uniqueResult();
 
 			criteria = session.createCriteria(TrackingFeedbackType.class);
@@ -857,7 +857,7 @@ public class ApprovedDevUtil
 			trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
 
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
-			criteria.add(Restrictions.eq("name", app.getFbStatus()));
+			criteria.add(Restrictions.eq("feedbackStatus", app.getFbStatus()));
 			paraFeedbackAction = (ParaFeedbackStatus) criteria.uniqueResult();
 
 			Set<TrackingParametric> tracks = new HashSet<TrackingParametric>();
@@ -1150,13 +1150,13 @@ public class ApprovedDevUtil
 		if(appFeedback.getParametricFeedback().getTrackingFeedbackType().getName().equals("QA"))
 		{
 			Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(), ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
-			feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
-			feedBackCrit.add(Restrictions.eq("issuedBy", qaUserId));
+			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+			feedBCri.add(Restrictions.eq("issuedBy", qaUserId));
 			// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
-			feedBackCrit.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
-			feedBackCrit.addOrder(Order.desc("storeDate"));
-			if(feedBackCrit.list() != null && !feedBackCrit.list().isEmpty())
-				appFeedback = (ParametricFeedbackCycle) feedBackCrit.list().get(0);
+			feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+			feedBCri.addOrder(Order.desc("storeDate"));
+			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+				appFeedback = (ParametricFeedbackCycle) feedBCri.list().get(0);
 
 			result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
 			result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
@@ -1170,15 +1170,20 @@ public class ApprovedDevUtil
 		{
 			// Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(),
 			// ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
-			feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
-			feedBackCrit.add(Restrictions.eq("issuedBy", issuedTo));
+			ParametricFeedbackCycle appFB = null;
+			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+			feedBCri.add(Restrictions.eq("issuedBy", issuedTo));
 			// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
-			feedBackCrit.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
-			feedBackCrit.addOrder(Order.desc("storeDate"));
-			if(feedBackCrit.list() != null && !feedBackCrit.list().isEmpty())
-				appFeedback = (ParametricFeedbackCycle) feedBackCrit.list().get(0);
+			feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+			feedBCri.addOrder(Order.desc("storeDate"));
+			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+			{
+				appFB = (ParametricFeedbackCycle) feedBCri.list().get(0);
+				result.setLastEngComment(appFB.getFbComment());
+			}
+			else
+				result.setLastEngComment("");
 
-			result.setLastEngComment(appFeedback.getFbComment());
 			// result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
 			// result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
 			// if(result.getIssuedby() == issuedTo)
@@ -1213,6 +1218,8 @@ public class ApprovedDevUtil
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
+				if(type.equals("Eng"))
+					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
@@ -1584,6 +1591,11 @@ public class ApprovedDevUtil
 			String fbStatus = "Inprogress";
 			long fbRecieved = 0l;
 			if(app.getFbStatus().equals("Feedback Closed"))
+			{
+				fbRecieved = 1l;
+				fbStatus = "Closed";
+			}
+			if(app.getGruopSatus().equals("Rejected"))
 			{
 				fbRecieved = 1l;
 				fbStatus = "Closed";
