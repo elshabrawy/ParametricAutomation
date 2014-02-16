@@ -54,6 +54,7 @@ import com.se.parametric.AppContext;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.StatusName;
 
 public class DataDevQueryUtil
 {
@@ -440,10 +441,7 @@ public class DataDevQueryUtil
 			// if(!status.equals("All"))
 			// {
 			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			// if(status.equals(""))
-			// {
-			// statusCriteria.add(Restrictions.eq("name", "Pending QA Approval"));
-			// }
+			
 			// else
 			// {
 			// statusCriteria.add(Restrictions.eq("name", status));
@@ -453,10 +451,7 @@ public class DataDevQueryUtil
 			// }
 			// else
 			// {// temp (case status="All")
-			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			// statusCriteria.add(Restrictions.eq("name", "Pending TL Review"));
-			// TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-			// criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
+
 			// }
 
 			if(statuses.length != 0)
@@ -1587,7 +1582,7 @@ public class DataDevQueryUtil
 					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 "
 					+
 
-					"and T.QA_USER_ID =" + qaUser + " and T.TRACKING_TASK_STATUS_ID = getTaskstatusId(" + availableStatus + ") ");
+					"and T.QA_USER_ID =" + qaUser + " and T.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + availableStatus + "') ");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -2099,11 +2094,7 @@ public class DataDevQueryUtil
 			{
 				criteria.add(Expression.between("finishedDate", startDate, endDate));
 			}
-
-			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			// statusCriteria.add(Restrictions.eq("name", "Send Back To Developer"));
-			// TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-			criteria.add(Restrictions.eq("trackingTaskStatus", ParaQueryUtil.getTrackingTaskStatus(session, "Send Back To Developer")));
+			criteria.add(Restrictions.eq("trackingTaskStatus", ParaQueryUtil.getTrackingTaskStatus(session,StatusName.engFeedback)));
 
 			if(plName != null && !plName.equals("All"))
 			{
@@ -2294,8 +2285,11 @@ public class DataDevQueryUtil
 			// }
 
 			session.saveOrUpdate(com);
+			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+				{
+				insertNPIPart(com,partInfo.getNewsLink(),session);
+				}
 			
-			insertNPIPart(com,partInfo.getNewsLink(),session);
 			if(famGen != null)
 				session.saveOrUpdate(famGen);
 			// session.beginTransaction().commit();
@@ -2473,7 +2467,7 @@ public class DataDevQueryUtil
 				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
 				track.setQaUserId(qaUserId);
 				track.setFinishedDate(ParaQueryUtil.getDate());
-				if("Pending QA Approval".equals(status))
+				if(StatusName.qaReview.equals(status))
 				{
 					// if document has opened feedbacks
 					// don't transfere to QA Team
@@ -2515,17 +2509,6 @@ public class DataDevQueryUtil
 				String feedbackStatus = partInfo.getFeedBackStatus();
 				String feedbackTypeStr = partInfo.getFeedBackCycleType();
 				TrackingTaskStatus trackingTaskStatus = null;
-
-				// if ((status != null) && (!"".equals(status))) {
-				// Criteria trackingTaskStatusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				// if ("Updated".equalsIgnoreCase(status) || "Approved".equalsIgnoreCase(status)) {
-				// trackingTaskStatusCriteria.add(Restrictions.eq("name", "Feedback Closed"));
-				// } else if ("Rejected".equalsIgnoreCase(status)) {
-				// trackingTaskStatusCriteria.add(Restrictions.eq("name", "Rejected"));
-				// }
-				// trackingTaskStatus = (TrackingTaskStatus) trackingTaskStatusCriteria.uniqueResult();
-				// }
-
 				if((feedbackStatus != null) && (!"".equals(feedbackStatus)))
 				{
 					Criteria trackingTaskStatusCriteria = session.createCriteria(TrackingTaskStatus.class);
@@ -2643,17 +2626,6 @@ public class DataDevQueryUtil
 				String feedbackStatus = partInfo.getFeedBackStatus();
 				String feedbackTypeStr = partInfo.getFeedBackCycleType();
 				TrackingTaskStatus trackingTaskStatus = null;
-
-				// if ((status != null) && (!"".equals(status))) {
-				// Criteria trackingTaskStatusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				// if ("Updated".equalsIgnoreCase(status) || "Approved".equalsIgnoreCase(status)) {
-				// trackingTaskStatusCriteria.add(Restrictions.eq("name", "Feedback Closed"));
-				// } else if ("Rejected".equalsIgnoreCase(status)) {
-				// trackingTaskStatusCriteria.add(Restrictions.eq("name", "Rejected"));
-				// }
-				// trackingTaskStatus = (TrackingTaskStatus) trackingTaskStatusCriteria.uniqueResult();
-				// }
-
 				if((feedbackStatus != null) && (!"".equals(feedbackStatus)))
 				{
 					Criteria trackingTaskStatusCriteria = session.createCriteria(TrackingTaskStatus.class);
@@ -2813,7 +2785,7 @@ public class DataDevQueryUtil
 			session.saveOrUpdate(docFeedback);
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
 			TrackingParametric trackingParametric = getTrackingParametricByDocumentAndPl(document, pl);
-			TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(session, "Send Back To Sourcing");
+			TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(session, StatusName.srcFeedback);
 			trackingParametric.setTrackingTaskStatus(trackingTaskStatus);
 			session.update(trackingParametric);
 			// session.beginTransaction().commit();
