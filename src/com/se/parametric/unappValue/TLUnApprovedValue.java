@@ -36,6 +36,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.StatusName;
 
 /**
  * created by Ahmed Makram
@@ -161,7 +162,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, "Pending TL Review", taskType, "Parametric", "Data", 0l);
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, StatusName.tlReview, taskType, "Parametric", "Data", 0l);
 			// unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
@@ -263,9 +264,9 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		else if(event.getActionCommand().equals("Save"))
 		{
 			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			if(!status.equals("Pending TL Review"))
+			if(!status.equals(StatusName.tlReview))
 			{
-				JOptionPane.showMessageDialog(null, "You Can Only Save Pending TL Review Status");
+				JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
 				thread.stop();
 				loading.frame.dispose();
 				return;
@@ -312,15 +313,15 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setCondition(newValReq.get(9));
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
-							oldValReq.setFbStatus("Rejected");
-							oldValReq.setGruopSatus("Send Back To Developer");
+							oldValReq.setFbStatus(StatusName.reject);
+							oldValReq.setGruopSatus(StatusName.engFeedback);
 							oldValReq.setComment(newValReq.get(13));
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setFbType("Internal");
 							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
-								ApprovedDevUtil.setValueApproved(result.get(i), "Pending QA Approval");
+								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.qaReview);
 							}
 							else if(newValReq.get(12).equals("Update"))
 							{
