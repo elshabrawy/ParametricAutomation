@@ -160,7 +160,11 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
 			sheetPanel.openOfficeDoc();
-			ws = new WorkingSheet(sheetPanel, "Unapproved Values");
+			
+//			ws = new WorkingSheet(new SheetPanel(), "Feedback Values",1);
+			ws = new WorkingSheet(sheetPanel, "Unapproved Values",0);
+			
+//			sheetPanel.add(arg0)
 			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 			row.add("PL Name");
 			row.add("Part Name");
@@ -222,8 +226,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		{
 			try
 			{
-				sheetPanel.getSelectedXCell();
-				String url = sheetPanel.getCellText(sheetPanel.getCellByPosission(1, 4)).toString();
+//				sheetPanel.getSelectedXCell();
+				String url = sheetPanel.getCellText(sheetPanel.getCellByPosission(1, 0)).toString();
 				System.out.println("" + url);
 			}catch(Exception e)
 			{
@@ -233,6 +237,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			String url = sheetPanel.getCellText(sheetPanel.getSelectedXCell()).getString();
 			System.out.println(url + " " + "done here");
 			ArrayList<ArrayList<String>> list = ApprovedDevUtil.getFeedbackHistory(url);
+			
+			
 		}
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
