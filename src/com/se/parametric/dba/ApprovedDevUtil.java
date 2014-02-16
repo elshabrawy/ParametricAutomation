@@ -48,6 +48,7 @@ import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.FeedBackData;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.StatusName;
 
 public class ApprovedDevUtil
 {
@@ -964,11 +965,11 @@ public class ApprovedDevUtil
 		try
 		{
 			String userCol = "paraUserId";
-			String status = "Pending TL Review";
+			String status = StatusName.tlReview;
 			if(team.equals("QA"))
 			{
 				userCol = "qaUserId";
-				status = "Pending QA Approval";
+				status = StatusName.qaReview;
 			}
 			criteria = session.createCriteria(PartsParametricValuesGroup.class, "group");
 			criteria.add(Restrictions.in(userCol, ids));
@@ -1052,11 +1053,11 @@ public class ApprovedDevUtil
 		try
 		{
 			String userCol = "paraUserId";
-			String status = "Pending TL Review";
+			String status = StatusName.tlReview;
 			if(team.equals("QA"))
 			{
 				userCol = "qaUserId";
-				status = "Pending QA Approval";
+				status = StatusName.qaReview;
 			}
 			criteria = session.createCriteria(ParametricApprovedGroup.class, "group");
 			criteria.add(Restrictions.in(userCol, ids));
@@ -1321,7 +1322,7 @@ public class ApprovedDevUtil
 			// criteria.add(Restrictions.in("paraUserId", teamMembers));
 			// criteria.add(Restrictions.in("groupId", groupIds));
 			criteria.createAlias("taskStatus", "status");
-			criteria.add(Restrictions.eq("status.name", "Send Back To Team Leader"));
+			criteria.add(Restrictions.eq("status.name", StatusName.tlFeedback));
 
 			if(startDate != null && endDate != null)
 			{
@@ -1671,7 +1672,7 @@ public class ApprovedDevUtil
 			else if(status.equals("All"))
 			{
 				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.eq("name", "Pending QA Approval"));
+				statusCriteria.add(Restrictions.eq("name", StatusName.qaReview));
 				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
 				criteria.add(Restrictions.eq("taskStatus", statusObj));
 			}
@@ -1682,10 +1683,10 @@ public class ApprovedDevUtil
 				Criteria tarkCrit = session.createCriteria(TrackingParametric.class, "track");
 				tarkCrit.createAlias("trackingTaskType", "typ");
 				tarkCrit.createAlias("trackingTaskStatus", "status");
-				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name", "Pending TL Review"), Restrictions.eq("status.name", "Pending QA Approval")));
+				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name",StatusName.tlReview), Restrictions.eq("status.name", StatusName.qaReview)));
 				if(type.equals("NPI"))
 				{
-					tarkCrit.add(Restrictions.or(Restrictions.eq("typ.name", "NPI"), Restrictions.eq("typ.name", "NPI Transferred"), Restrictions.eq("typ.name", "NPI Update")));
+					tarkCrit.add(Restrictions.or(Restrictions.eq("typ.name", StatusName.npi), Restrictions.eq("typ.name", StatusName.npiTransferred), Restrictions.eq("typ.name", StatusName.npiUpdate)));
 				}
 				else
 				{
@@ -1713,7 +1714,7 @@ public class ApprovedDevUtil
 				// criteria.add(Restrictions.eq("sup.name", supplierName));
 				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
 				trackingcriteria.createAlias("trackingTaskStatus", "status");
-				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name", "Pending TL Review"), Restrictions.eq("status.name", "Pending QA Approval"), Restrictions.eq("status.name", "Finished")));
+				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name",StatusName.qaReview), Restrictions.eq("status.name", StatusName.qaReview), Restrictions.eq("status.name", StatusName.finshed)));
 				trackingcriteria.createAlias("track.supplier", "supplier");
 				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
 				// // ///////////////////////////////////////////////////////////////////////////////////////
@@ -1965,7 +1966,7 @@ public class ApprovedDevUtil
 					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
 					if(Datatype.equals("Data"))
 					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('"+StatusName.tlReview+"'),getTaskstatusId('"+StatusName.qaReview+"'),getTaskstatusId('"+StatusName.finshed+"')) )";
 					}
 					else
 					{
@@ -1977,7 +1978,7 @@ public class ApprovedDevUtil
 					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
 					if(Datatype.equals("Data"))
 					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('Pending TL Review'),getTaskstatusId('Pending QA Approval'),getTaskstatusId('Finished')) )";
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('"+StatusName.tlReview+"'),getTaskstatusId('"+StatusName.qaReview+"'),getTaskstatusId('"+StatusName.finshed+"')) )";
 					}
 					else
 					{
@@ -2218,7 +2219,7 @@ public class ApprovedDevUtil
 				Criteria tarkCrit = session.createCriteria(TrackingParametric.class, "track");
 				tarkCrit.createAlias("trackingTaskType", "typ");
 				tarkCrit.createAlias("trackingTaskStatus", "status");
-				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name", "Pending TL Review"), Restrictions.eq("status.name", "Pending QA Approval")));
+				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name", StatusName.tlReview), Restrictions.eq("status.name", StatusName.qaReview)));
 				if(type.equals("NPI"))
 				{
 					tarkCrit.add(Restrictions.or(Restrictions.eq("typ.name", "NPI"), Restrictions.eq("typ.name", "NPI Transferred"), Restrictions.eq("typ.name", "NPI Update")));
@@ -2247,7 +2248,7 @@ public class ApprovedDevUtil
 
 				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
 				trackingcriteria.createAlias("trackingTaskStatus", "status");
-				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name", "Pending TL Review"), Restrictions.eq("status.name", "Pending QA Approval"), Restrictions.eq("status.name", "Finished")));
+				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name", StatusName.tlReview), Restrictions.eq("status.name", StatusName.qaReview), Restrictions.eq("status.name", StatusName.finshed)));
 				trackingcriteria.createAlias("track.supplier", "supplier");
 				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
 				// // ///////////////////////////////////////////////////////////////////////////////////////
