@@ -35,6 +35,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.StatusName;
 
 public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 {
@@ -153,10 +154,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-			// unApproveds = ParaQueryUtil.getEngUnapproved(userDTO, startDate, endDate, plName, supplierName, taskType);
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To Developer", taskType, "Parametric", "FB", userDTO.getId());
-			// unApproveds = ApprovedDevUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userDTO.getId()}, startDate, endDate, plName,
-			// supplierName, taskType,"Send Back To Developer","Parametric");
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, StatusName.engFeedback, taskType, "Parametric", "FB", userDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
@@ -331,7 +329,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
 								oldValReq.setFbStatus("Rejected");
-								oldValReq.setGruopSatus("Send Back To Team Leader");
+								oldValReq.setGruopSatus(StatusName.tlFeedback);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 							else if(result.get(i).get(12).equals("Update"))
@@ -340,7 +338,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
 								oldValReq.setFbStatus("Accept");
-								oldValReq.setGruopSatus("Send Back To Team Leader");
+								oldValReq.setGruopSatus(StatusName.tlFeedback);
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
@@ -353,7 +351,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setGruopSatus("Rejected");
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								// initiate new FB from QA to Eng
-								oldValReq.setGruopSatus("Send Back To Developer");
+								oldValReq.setGruopSatus(StatusName.engFeedback);
 								oldValReq.setIssueType("Wrong Value");
 								oldValReq.setFbStatus("Rejected");
 								oldValReq.setIssueTo(issuedby);
