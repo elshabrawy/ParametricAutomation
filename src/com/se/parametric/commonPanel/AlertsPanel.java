@@ -3,20 +3,12 @@ package com.se.parametric.commonPanel;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
-import com.se.automation.db.ParametricQueryUtil;
-import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
-import com.se.parametric.fb.TLFeedBack;
-import com.se.parametric.review.TLReviewData;
-import com.se.parametric.unappValue.TLUnApprovedValue;
-import com.sun.star.drawing.Alignment;
+
 
 public class AlertsPanel extends JPanel
 {
