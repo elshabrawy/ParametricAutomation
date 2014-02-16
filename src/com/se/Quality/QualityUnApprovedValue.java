@@ -34,6 +34,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.StatusName;
 
 public class QualityUnApprovedValue extends JPanel implements ActionListener
 {
@@ -153,9 +154,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 			long userId = userDTO.getId();
 
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userId }, engName, startDate, endDate, plName, supplierName, "Pending QA Approval", taskType, "QA", "Data", userId);
-			// unApproveds = ParaQueryUtil.getUnapprovedFeedback(userDTO.getId(),new Long[]{userId}, startDate, endDate, plName, supplierName,
-			// taskType,"Pending QA Approval","QA");
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userId }, engName, startDate, endDate, plName, supplierName, StatusName.qaReview, taskType, "QA", "Data", userId);
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
 			sheetPanel.openOfficeDoc();
@@ -238,15 +237,15 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setCondition(newValReq.get(9));
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
-							oldValReq.setFbStatus("Rejected");
-							oldValReq.setGruopSatus("Send Back To Team Leader");
+							oldValReq.setFbStatus(StatusName.reject);
+							oldValReq.setGruopSatus(StatusName.tlFeedback);
 							oldValReq.setComment(newValReq.get(13));
 							oldValReq.setIssuedby(userDTO.getId());
 							oldValReq.setFbType("QA");
 							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
-								ApprovedDevUtil.setValueApproved(result.get(i), "Approved");
+								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.approved);
 							}
 
 							// else if(newValReq.get(12).equals("Wrong Value"))
