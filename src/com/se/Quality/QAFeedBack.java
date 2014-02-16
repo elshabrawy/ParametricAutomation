@@ -38,6 +38,7 @@ import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.StatusName;
 
 public class QAFeedBack extends JPanel implements ActionListener
 {
@@ -245,9 +246,9 @@ public class QAFeedBack extends JPanel implements ActionListener
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
 					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!"Pending QA Approval".equals(status))))
+					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
 					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending QA Approval pdfs can be loaded");
+						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
 						thread.stop();
 						loading.frame.dispose();
 						return;
@@ -283,7 +284,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 			                }
 					}
 					
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),"'Send Back To QA'");
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),StatusName.qaFeedback);
 //					String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
@@ -303,13 +304,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 						int tlstatusIndex = sheetHeader.indexOf("TL Status");
 						int tlCommentIndex = sheetHeader.indexOf("TLComment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-//						String partNumber = plData.get(6);
-//						// supplierName = sheetRecord.get(5);
-//						Supplier supplier = ParaQueryUtil.getSupplierByName(sheetRecord.get(5));					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),"'Send Back To QA'");
-//						String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
-//						
-						
-						
+	
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
@@ -317,9 +312,6 @@ public class QAFeedBack extends JPanel implements ActionListener
 							supplierName = sheetRecord.get(5);
 							Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 							PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-							// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-//							String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-//							String QAComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"QUALITY",null);
 							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused since we show comments of tl and QA
 
 							String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId(),feedCom.get(4));
@@ -386,9 +378,9 @@ public class QAFeedBack extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if((!"All".equals(status) & (!"Pending QA Approval".equals(status))))
+				if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
 				{
-					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending QA Approval pdfs can be loaded");
+					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
 					thread.stop();
 					loading.frame.dispose();
 					return;
@@ -411,9 +403,9 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 				if("All".equals(status))
 				{
-					status = "Send Back To QA";
+					status = StatusName.qaFeedback;
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null,userDTO.getId(),"'Send Back To QA'");
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null,userDTO.getId(),StatusName.qaFeedback);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();

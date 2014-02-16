@@ -43,6 +43,7 @@ import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.review.TLReviewData;
+import com.se.parametric.util.StatusName;
 
 public class QAReviewData extends JPanel implements ActionListener
 {
@@ -252,9 +253,9 @@ public class QAReviewData extends JPanel implements ActionListener
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
 					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!"Pending QA Approval".equals(status))))
+					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
 					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending QA Approval pdfs can be loaded");
+						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
 						thread.stop();
 						loading.frame.dispose();
 						return;
@@ -289,7 +290,7 @@ public class QAReviewData extends JPanel implements ActionListener
 //			                    System.out.println("Element at " + i + " = " + element);
 			                }
 					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),"'Pending QA Approval'");
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),StatusName.qaReview);
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
@@ -347,9 +348,9 @@ public class QAReviewData extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if((!"All".equals(status) & (!"Pending QA Approval".equals(status))))
+				if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
 				{
-					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending QA Approval pdfs can be loaded");
+					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
 					thread.stop();
 					loading.frame.dispose();
 					return;
@@ -372,9 +373,9 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 				if("All".equals(status))
 				{
-					status = "Pending QA Approval";
+					status = StatusName.qaReview;
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null,userDTO.getId(),"'Pending QA Approval'");
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null,userDTO.getId(),StatusName.qaReview);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
