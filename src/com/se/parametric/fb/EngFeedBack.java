@@ -44,6 +44,7 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.StatusName;
 
 public class EngFeedBack extends JPanel implements ActionListener
 {
@@ -264,7 +265,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 					sheetPanel.openOfficeDoc();
 					wsMap.clear();
 					Long[] users = { userId };
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName, "Send Back To Developer", feedbackType, issuedBy, startDate, endDate,
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName,StatusName.engFeedback, feedbackType, issuedBy, startDate, endDate,
 							new Long[] { document.getId() }, userDTO.getId());
 					int k = 0;
 					for(String pl : reviewData.keySet())
@@ -367,8 +368,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 			{
 
 				// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(users, plName,
-				// supplierName, null, "Send Back To Developer", startDate, endDate, null);
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName, "Send Back To Developer", feedbackType, issuedBy, startDate, endDate, null, userDTO.getId());
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName, StatusName.engFeedback, feedbackType, issuedBy, startDate, endDate, null, userDTO.getId());
 				int k = 0;
 				wsMap.clear();
 				tabbedPane.setSelectedIndex(1);
@@ -378,7 +378,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 					ws = new WorkingSheet(sheetPanel, pl, k);
 					sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 					wsMap.put(pl, ws);
-					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null, "Send Back To Developer", startDate, endDate, null))
+					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null, StatusName.engFeedback, startDate, endDate, null))
 						ws.setNPIflag(true);
 					ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment"), false);
 					ws.statusValues.remove(0);

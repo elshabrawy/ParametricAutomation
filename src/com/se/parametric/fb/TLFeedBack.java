@@ -42,6 +42,7 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.StatusName;
 
 public class TLFeedBack extends JPanel implements ActionListener
 {
@@ -199,7 +200,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String documentStatus = "Send Back To Team Leader";
+				String documentStatus = StatusName.tlFeedback;
 				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
@@ -263,7 +264,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					String supplierName = combos[1].getSelectedItem().toString();
 					String issuerName = combos[2].getSelectedItem().toString();
 					String feedbackType = combos[3].getSelectedItem().toString();
-					String documentStatus = "Send Back To Team Leader";
+					String documentStatus = StatusName.tlFeedback;
 					Date startDate = null, endDate = null;
 					if(filterPanel.jDateChooser1.isEnabled())
 					{
@@ -364,7 +365,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String issuerName = combos[2].getSelectedItem().toString();
 				String feedbackTypeStr = combos[3].getSelectedItem().toString();
 				Long[] docsIds = DataDevQueryUtil.getFeedbackDocIds(feedbackTypeStr);
-				String documentStatus = "Send Back To Team Leader";
+				String documentStatus = StatusName.tlFeedback;
 				Date startDate = null, endDate = null;
 				wsMap.clear();
 				if(filterPanel.jDateChooser1.isEnabled())
@@ -384,7 +385,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					ws = new WorkingSheet(sheetpanel, pl, k);
 					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pl + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 					wsMap.put(pl, ws);
-					if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, "Send Back To Team Leader", startDate, endDate, null))
+					if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
 						ws.setNPIflag(true);
 					ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment","BY", "Issue_Source"), false);
 					ArrayList<String> sheetHeader = ws.getHeader();
