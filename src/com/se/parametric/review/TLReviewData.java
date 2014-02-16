@@ -40,6 +40,7 @@ import com.se.parametric.dev.Developement;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.StatusName;
 
 public class TLReviewData extends JPanel implements ActionListener
 {
@@ -291,9 +292,9 @@ public class TLReviewData extends JPanel implements ActionListener
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
 					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!"Pending TL Review".equals(status))))
+					if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
 					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending TL Review pdfs can be loaded");
+						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
 						thread.stop();
 						loading.frame.dispose();
 						return;
@@ -401,9 +402,9 @@ public class TLReviewData extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if((!"All".equals(status) & (!"Pending TL Review".equals(status))))
+				if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
 				{
-					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly Pending TL Review pdfs can be loaded");
+					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
 					thread.stop();
 					loading.frame.dispose();
 					return;
@@ -420,7 +421,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				}
 				if("All".equals(status))
 				{
-					status = "Pending TL Review";
+					status = StatusName.tlReview;
 				}
 				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, status, startDate, endDate, null);
 				int k = 0;
