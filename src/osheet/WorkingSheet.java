@@ -43,6 +43,7 @@ import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
 import com.se.parametric.util.PDDRow;
+import com.se.parametric.util.StatusName;
 import com.se.parametric.util.ValidatePart;
 import com.sun.deploy.ui.FancyButton;
 import com.sun.star.beans.Property;
@@ -1467,7 +1468,7 @@ public class WorkingSheet
 					return;
 				}
 			}
-			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, "Pending TL Review");
+			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.tlReview);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1543,8 +1544,8 @@ public class WorkingSheet
 					}
 					else
 					{
-						partInfo.setFeedBackStatus("Rejected");
-						partInfo.setFeedBackCycleType("Wrong Data");
+						partInfo.setFeedBackStatus(StatusName.reject);
+						partInfo.setFeedBackCycleType(StatusName.wrongData);
 						feedbackParts.add(partInfo);
 						if(acceptedPdfs.contains(pdfUrl))
 						{
@@ -1557,7 +1558,7 @@ public class WorkingSheet
 				else if("Approved".equals(status))
 				{
 					if(screen.equals("FB")){
-						partInfo.setFeedBackStatus("Feedback Closed");
+						partInfo.setFeedBackStatus(StatusName.fbClosed);
 						feedbackParts.add(partInfo);
 					}
 					if(!rejectedPdfs.contains(pdfUrl))
@@ -1569,8 +1570,8 @@ public class WorkingSheet
 			}
 			// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
 			DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, "Waitting CM Transfere");
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, "Send Back To Team Leader");
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1694,8 +1695,8 @@ public class WorkingSheet
 				// ParaQueryUtil.updateDocStatus( teamLeaderName, row);
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts, "Internal");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, "Pending QA Approval");
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, "Send Back To Developer");
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,StatusName.engFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1817,7 +1818,7 @@ public class WorkingSheet
 			DataDevQueryUtil.savePartsFeedback(feedBackParts, "ENG");
 			// DataDevQueryUtil.savePartsFeedback(updatedParts, null, "Approved","ENG");
 			// DataDevQueryUtil.savePartsFeedback(rejectedParts, null, "Rejected","ENG");
-			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, "Send Back To Team Leader");
+			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1826,251 +1827,7 @@ public class WorkingSheet
 
 	}
 
-	// public void saveTLFeedbackAction(String teamLeaderName)
-	// {
-	// if(!canSave)
-	// {
-	// System.out.println("Can Save: " + canSave);
-	// JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
-	// return;
-	// }
-	// try
-	// {
-	// Set<String> engRejectedPdfs = new HashSet<String>();
-	// Set<String> qARejectedAndUpdatedPdfs = new HashSet<String>();
-	// String feedCycleStatus="";
-	// Set<String> engAcceptedPdfs = new HashSet<String>();
-	// Set<String> qAAcceptedPdfs = new HashSet<String>();
-	// List<PartInfoDTO> partsToOpenFeedback = new ArrayList<PartInfoDTO>();
-	// List<PartInfoDTO> partsToCloseFeedback = new ArrayList<PartInfoDTO>();
-	// List<PartInfoDTO> partsToUpdateFeedback = new ArrayList<PartInfoDTO>();
-	// ArrayList<String> sheetHeader = getHeader();
-	// int issuerIndex = sheetHeader.indexOf("Issuer");
-	// ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-	// String pn = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null,flowSource;
-	// for(int i = 0; i < fileData.size(); i++)
-	// {
-	// PartInfoDTO partInfo = new PartInfoDTO();
-	// ArrayList<String> partData = fileData.get(i);
-	// String status = partData.get(2);
-	// String comment = partData.get(3);
-	// String vendorName = partData.get(5);
-	// // String plName = partData.get(0);
-	// String issuedToEng = partData.get(1);
-	// String issuerName = partData.get(issuerIndex);
-	// // System.err.println(issuerName);
-	// pn = partData.get(PartCell);
-	// pdfUrl = partData.get(pdfCellNo);
-	// family = partData.get(familyCell);
-	// mask = partData.get(maskCellNo);
-	// desc = partData.get(descriptionColumn);
-	// if(plType.equals("Semiconductor"))
-	// {
-	// famCross = partData.get(famCrossCellNo);
-	// generic = partData.get(genericCellNo);
-	// }
-	// if(NPIFlag)
-	// NPIPart = partData.get(npiCellNo);
-	// if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
-	// {
-	// partInfo.setFeedbackType("LUT");
-	// }
-	// else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
-	// {
-	// partInfo.setFeedbackType("Acquisition");
-	// }
-	//
-	// partInfo.setPN(pn);
-	// partInfo.setSupplierName(vendorName);
-	// partInfo.setStatus(status);
-	// partInfo.setComment(comment);
-	// partInfo.setIssuedBy(teamLeaderName);
-	// partInfo.setIssuedTo(issuedToEng);
-	// partInfo.setPlName(selectedPL);
-	// partInfo.setNPIFlag(NPIPart);
-	// partInfo.setDescription(desc);
-	// partInfo.setPdfUrl(pdfUrl);
-	// partInfo.setFamily(family);
-	// partInfo.setFamilycross(famCross);
-	// partInfo.setMask(mask);
-	// partInfo.setGeneric(generic);
-	//
-	// GrmUser issuedToUser=ParaQueryUtil.getGRMUserByName(issuedToEng);
-	// if(issuedToUser==null)
-	// {
-	// JOptionPane.showMessageDialog(null, "Can't Find The Reciever User");
-	// return;
-	// }
-	// // List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
-	// // for (int i = 0; i < fileData.size(); i++) {
-	// // ArrayList<String> row = fileData.get(i);
-	// // String status = row.get(2);
-	// // String comment = row.get(3);
-	// // String pdfUrl = row.get(pdfCellNo);
-	// // String vendorName = row.get(5);
-	// // String plName = row.get(0);
-	// // String partNum = row.get(6);
-	// // String devName = row.get(1);
-	// // String familyName = row.get(7);
-	// //
-	// //
-	// // PartInfoDTO partInfo = new PartInfoDTO();
-	// // partInfo.setPN(partNum);
-	// // partInfo.setVendorName(vendorName);
-	// // partInfo.setStatus(status);
-	// // partInfo.setComment(comment);
-	// // partInfo.setIssuedBy(teamLeaderName);
-	// // partInfo.setIssuedTo(devName);
-	// // partInfo.setPlName(plName);
-	// // partInfo.setPdfUrl(pdfUrl);
-	// // partInfo.setFamily(familyName);
-	// // // partInfo.setIssuerName(issuerName);
-	//
-	// if("Rejected".equals(status))
-	// {
-	// if("".equals(comment))
-	// {
-	// System.out.println("Comment shouldn't be null");
-	// JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
-	// return;
-	// }
-	// else
-	// {
-	// if(issuerName.equals(issuedToEng))
-	// {//issuer Eng
-	// // sendTo="ENG";
-	// partsToOpenFeedback.add(partInfo);
-	// if(engAcceptedPdfs.contains(pdfUrl))
-	// {
-	// engAcceptedPdfs.remove(pdfUrl);
-	// }
-	// engRejectedPdfs.add(pdfUrl);
-	// }
-	// else
-	// { //issuer QA
-	// // sendTo="QA";
-	// partsToOpenFeedback.add(partInfo);
-	// if(qAAcceptedPdfs.contains(pdfUrl))
-	// {
-	// qAAcceptedPdfs.remove(pdfUrl);
-	// }
-	// qARejectedAndUpdatedPdfs.add(pdfUrl);
-	// }
-	//
-	// }
-	//
-	// }
-	// else if("Approved".equals(status))
-	// {
-	// if(issuerName.equals(issuedToEng))
-	// {//issuer Eng
-	// if(!engRejectedPdfs.contains(pdfUrl))
-	// {
-	// engAcceptedPdfs.add(pdfUrl);
-	// }
-	// if((issuerName != null) && !("".equals(issuerName)))
-	// {
-	// partsToCloseFeedback.add(partInfo);
-	// }
-	// }
-	// else
-	// {//issuer qa
-	// if(!qARejectedAndUpdatedPdfs.contains(pdfUrl))
-	// {
-	// qAAcceptedPdfs.add(pdfUrl);
-	// }
-	// if((issuerName != null) && !("".equals(issuerName)))
-	// {
-	// partsToCloseFeedback.add(partInfo);
-	// }
-	// }
-	// }
-	// else if("Updated".equals(status))
-	// {
-	// /*********** update ************/
-	// if(issuerName.equals(issuedToEng))
-	// {//issuer Eng
-	// partInfo.setFetValues(readRowValues(partData));
-	// DataDevQueryUtil.updateParamtric(partInfo);
-	// if(!engRejectedPdfs.contains(pdfUrl))
-	// {
-	// engAcceptedPdfs.add(pdfUrl);
-	// }
-	// if((issuerName != null) && !("".equals(issuerName)))
-	// {
-	// partsToCloseFeedback.add(partInfo);
-	// }
-	// }
-	// else
-	// {//issuer qa
-	// /*
-	// * case Updated as Rejected r the Same in (Status : send back to QA)
-	// * coz if it's in rejected must no
-	// */
-	// partInfo.setFetValues(readRowValues(partData));
-	// DataDevQueryUtil.updateParamtric(partInfo);
-	// // if(!qARejectedAndUpdatedPdfs.contains(pdfUrl))
-	// // {
-	// // qAUpdatedPdfs.add(pdfUrl);
-	// // }
-	// qARejectedAndUpdatedPdfs.add(pdfUrl);
-	// if((issuerName != null) && !("".equals(issuerName)))
-	// {
-	// partsToUpdateFeedback.add(partInfo);
-	// }
-	// }
-	//
-	//
-	//
-	//
-	//
-	// // List<String> fetVals = row.subList(startParametricFT, endParametricFT);
-	// // Map<String, String> fetsMap = new HashMap<String, String>();
-	// // for (int j = 0; j < fetNames.size(); j++) {
-	// // String fetName = fetNames.get(j);
-	// // String fetVal = fetVals.get(j);
-	// // fetsMap.put(fetName, fetVal);
-	// // }
-	// // partInfo.setFetValues(fetsMap);
-	//
-	//
-	//
-	// // }
-	// // else
-	// // {
-	// // ParaQueryUtil.updateParamtric(partInfo);
-	// // if(!engRejectedPdfs.contains(pdfUrl))
-	// // {
-	// // engAcceptedPdfs.add(pdfUrl);
-	// // }
-	// // if((issuerName != null) && !("".equals(issuerName)))
-	// // {
-	// // partsToCloseFeedback.add(partInfo);
-	// // }
-	// //
-	// // }
-	//
-	// }
-	// }
-	// // if(issu)
-	// DataDevQueryUtil.savePartsFeedback(partsToOpenFeedback, "Wrong Data", "Rejected","TL");
-	// DataDevQueryUtil.savePartsFeedback(partsToCloseFeedback, null, "Feedback Closed","TL");
-	// DataDevQueryUtil.savePartsFeedback(partsToUpdateFeedback, null, "Approved","TL");
-	// DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfs, selectedPL, null, "Pending QA Approval");//update ,approve Eng
-	// DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, selectedPL, null, "Send Back To Developer");
-	//
-	// /** QA is the reciever **/
-	// DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, selectedPL, null, "Send Back To QA");
-	// // DataDevQueryUtil.saveTrackingParamtric(qAUpdatedPdfs, selectedPL, null, "Send Back To QA");
-	// DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, selectedPL, null, "Send Back To Developer");
-	// JOptionPane.showMessageDialog(null, "Saving Data Finished");
-	// }catch(Exception e)
-	// {
-	// e.printStackTrace();
-	// }
-	//
-	// }
-
+	
 	public void saveTLFeedbackAction(String teamLeaderName)
 	{/* make partsFeedBack contain Status also to call savePartsFeedback once */
 		if(!canSave)
@@ -2276,7 +2033,7 @@ public class WorkingSheet
 					else
 					{// issuer qa
 						/*
-						 * case Updated as Rejected r the Same in (Status : send back to QA) coz if it's in rejected must no
+						 * case Updated as Rejected r the Same in (Status : qa Feedback) coz if it's in rejected must no
 						 */
 						partInfo.setFetValues(readRowValues(partData));
 						DataDevQueryUtil.updateParamtric(partInfo);
@@ -2287,7 +2044,7 @@ public class WorkingSheet
 						qARejectedAndUpdatedPdfs.add(pdfUrl);
 						if((issuerName != null) && !("".equals(issuerName)))
 						{
-							partInfo.setFeedBackStatus("Approved");
+							partInfo.setFeedBackStatus(StatusName.approved);
 							partsToStoreFeedback.add(partInfo);
 						}
 					}
@@ -2298,13 +2055,13 @@ public class WorkingSheet
 			// DataDevQueryUtil.savePartsFeedback(partsToRejectFeedback, "Wrong Data", "Rejected","TL");
 			// DataDevQueryUtil.savePartsFeedback(partsToCloseFeedback, null, "Feedback Closed","TL");
 			DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback, "Internal");
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, selectedPL, null, "Pending QA Approval");// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, selectedPL, null, "Send Back To QA");// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, selectedPL, null, "Send Back To Developer");
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, selectedPL, null, StatusName.qaReview);// update ,approve Eng
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, selectedPL, null, StatusName.qaFeedback);// update ,approve Eng
+			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, selectedPL, null, StatusName.engFeedback);
 
 			/** QA is the reciever **/
-			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, selectedPL, null, "Send Back To QA");
-			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, selectedPL, null, "Send Back To Developer");
+			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, selectedPL, null, StatusName.qaFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, selectedPL, null, StatusName.engFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3232,7 +2989,6 @@ public class WorkingSheet
 	// }
 	// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
 	// DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, "Waitting CM Transfere");
-	// DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, "Send Back To Team Leader");
 	// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 	// }catch(Exception e)
 	// {
