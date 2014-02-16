@@ -786,6 +786,7 @@ public class ApprovedDevUtil
 			FBObj.setTrackingFeedbackType(trackingFeedbackType);
 			FBObj.setItemId(groups.getId());
 			FBObj.setType("V");
+			FBObj.setDocument(document);
 
 			FBCyc.setId(System.nanoTime());
 			FBCyc.setParametricFeedback(FBObj);
@@ -801,7 +802,7 @@ public class ApprovedDevUtil
 				FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 			}
 			FBCyc.setStoreDate(new Date());
-			FBObj.setDocument(document);
+
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(0l);
 			session.saveOrUpdate(FBObj);
@@ -896,7 +897,7 @@ public class ApprovedDevUtil
 						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 					}
 					FBCyc.setStoreDate(new Date());
-					FBObj.setDocument(document);
+
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(OldFBCyc);
@@ -914,6 +915,7 @@ public class ApprovedDevUtil
 					FBObj.setTrackingFeedbackType(trackingFeedbackType);
 					FBObj.setItemId(rd.getComponent().getComId());
 					FBObj.setType("P");
+					FBObj.setDocument(document);
 
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
@@ -922,7 +924,7 @@ public class ApprovedDevUtil
 					FBCyc.setIssuedBy(app.getIssuedby());
 					FBCyc.setIssuedTo(app.getIssueTo());
 					FBCyc.setStoreDate(new Date());
-					FBObj.setDocument(document);
+
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(FBObj);
@@ -1208,7 +1210,7 @@ public class ApprovedDevUtil
 			List list = criteria.list();
 			GrmUser eng = null;
 			Object[] row = null;
-			ParametricApprovedGroup list2 = null;
+			List list2 = null;
 			ParametricFeedbackCycle parametricFeedbackCycle = null;
 			ParametricApprovedGroup parametricApprovedGroup = null;
 			for(int i = 0; i < list.size(); i++)
@@ -1217,18 +1219,19 @@ public class ApprovedDevUtil
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
+				if(type.equals("Eng"))
+					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
 				}
-
-				list2 = (ParametricApprovedGroup) criteria.list().get(0);
+				list2 = criteria.list();
 				if(type.equals("Eng"))
 				{
 					row = new Object[3];
 					if(list2 != null)
 					{
-						parametricApprovedGroup = list2;
+						parametricApprovedGroup = (ParametricApprovedGroup) list2.get(0);
 						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
 
 						if(parametricApprovedGroup.getDocument() != null)
@@ -1254,7 +1257,7 @@ public class ApprovedDevUtil
 					row = new Object[4];
 					if(list2 != null)
 					{
-						parametricApprovedGroup = list2;
+						parametricApprovedGroup = (ParametricApprovedGroup) list2.get(0);
 						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
 						if(parametricApprovedGroup.getDocument() != null)
 						{
@@ -1618,7 +1621,7 @@ public class ApprovedDevUtil
 			FBCyc.setIssuedTo(parametricFeedbackCycle.getIssuedBy());
 
 			FBCyc.setStoreDate(new Date());
-			FBObj.setDocument(document);
+
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
 			session.saveOrUpdate(FBObj);
