@@ -36,6 +36,7 @@ import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.unappValue.TLUnApprovedValueFeedback;
+import com.se.parametric.util.StatusName;
 
 public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 {
@@ -153,7 +154,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, "Send Back To QA", taskType, "QA", "FB", userDTO.getId());
+			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userDTO.getId() }, "", startDate, endDate, plName, supplierName, StatusName.qaFeedback, taskType, "QA", "FB", userDTO.getId());
 			list = new ArrayList<ArrayList<String>>();
 
 			list = new ArrayList<ArrayList<String>>();
@@ -269,7 +270,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
 							oldValReq.setFbStatus("Rejected");
-							oldValReq.setGruopSatus("Send Back To Team Leader");
+							oldValReq.setGruopSatus(StatusName.tlFeedback);
 							oldValReq.setComment(newValReq.get(13));
 							long issuedto = oldValReq.getIssuedby();
 							oldValReq.setIssuedby(userDTO.getId());
