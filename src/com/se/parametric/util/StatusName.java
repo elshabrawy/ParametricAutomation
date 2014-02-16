@@ -20,5 +20,6 @@ public class StatusName
 	public static final String npiTransferred = "NPI Transferred";
 	public static final String npiUpdate = "NPI Update";
 	public static final String npi ="NPI";
-	public static final String wrongValue = "Wrong Data";
+	public static final String wrongValue = "Wrong Value";
+	public static final String wrongData = "Wrong Data";
 }
