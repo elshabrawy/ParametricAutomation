@@ -2571,7 +2571,7 @@ public class ApprovedDevUtil
 		return error;
 	}
 
-	rivate static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
+	private static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
 	{
 		boolean equal = false;
 		Criteria cri = session.createCriteria(PlFeature.class);
