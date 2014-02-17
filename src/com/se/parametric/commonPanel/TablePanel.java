@@ -27,7 +27,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.se.parametric.dto.TableInfoDTO;
 
-public class TablePanel extends JPanel implements ActionListener {
+public class TablePanel extends JPanel implements ActionListener
+{
 	public JTable table;
 	JLabel recordsLabel = new JLabel();
 	JScrollPane scrollPane;
@@ -51,7 +52,8 @@ public class TablePanel extends JPanel implements ActionListener {
 
 	public HashSet<String> loadedPdfs = new HashSet<String>();
 
-	public TablePanel(String[] header, int width, int height) {
+	public TablePanel(String[] header, int width, int height)
+	{
 		this.header = header;
 		setLayout(null);
 		setSize(width, height);
@@ -109,44 +111,55 @@ public class TablePanel extends JPanel implements ActionListener {
 
 		table.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mousePressed(MouseEvent arg0) {
+			public void mousePressed(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
+			public void mouseExited(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
+			public void mouseEntered(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				try {
-				String data = table.getValueAt(table.getSelectedRow(), 0).toString();
-				Pattern pattern = Pattern.compile("<html><a href=\"(.*?)\">.*?</a>");
-				Matcher matcher = pattern.matcher(data);
-				System.out.println("Editing column is " + table.getSelectedColumn());
-				String url = null;
-				while (matcher.find()) {
-					url = matcher.group(1);
-				}
-				if (table.getSelectedColumn() == 0) {
-					if (Desktop.isDesktopSupported()) {
-						try {
-							Desktop.getDesktop().browse(new URI(url));
-						} catch (IOException ex) { /* TODO: error handling */
-						} catch (URISyntaxException e1) {
-							e1.printStackTrace();
+			public void mouseClicked(MouseEvent arg0)
+			{
+				try
+				{
+					String data = table.getValueAt(table.getSelectedRow(), 0).toString();
+					Pattern pattern = Pattern.compile("<html><a href=\"(.*?)\">.*?</a>");
+					Matcher matcher = pattern.matcher(data);
+					System.out.println("Editing column is " + table.getSelectedColumn());
+					String url = null;
+					while(matcher.find())
+					{
+						url = matcher.group(1);
+					}
+					if(table.getSelectedColumn() == 0)
+					{
+						if(Desktop.isDesktopSupported())
+						{
+							try
+							{
+								Desktop.getDesktop().browse(new URI(url));
+							}catch(IOException ex)
+							{ /* TODO: error handling */
+							}catch(URISyntaxException e1)
+							{
+								e1.printStackTrace();
+							}
 						}
 					}
-				}
-			}
-				catch(NullPointerException e)
+				}catch(NullPointerException e)
 				{
 					System.out.println("blank record clicked !!");
 					e.printStackTrace();
@@ -156,9 +169,11 @@ public class TablePanel extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(ActionEvent event)
+	{
 		Object obj = event.getSource();
-		if (obj == first) {
+		if(obj == first)
+		{
 			paggingLabel.setText("1");
 			setTableData1(1, selectedData);
 			setCurrentPage(1);
@@ -186,7 +201,9 @@ public class TablePanel extends JPanel implements ActionListener {
 			next.setEnabled(true);
 			last.setEnabled(true);
 
-		} else if (obj == next) {
+		}
+		else if(obj == next)
+		{
 			previous.setEnabled(true);
 			first.setEnabled(true);
 			int current = this.getCurrentPage();
@@ -195,28 +212,38 @@ public class TablePanel extends JPanel implements ActionListener {
 			paggingLabel.setText("" + (current + 1));
 			setTableData1(1, getRows1(this.getCurrentPage()));
 			System.out.println("current is " + this.getCurrentPage() + " and pageNumber is " + this.getPageNumber());
-			if (this.getCurrentPage() == this.getPageNumber()) {
+			if(this.getCurrentPage() == this.getPageNumber())
+			{
 				next.setEnabled(false);
 				last.setEnabled(false);
-			} else {
+			}
+			else
+			{
 				next.setEnabled(true);
 				last.setEnabled(true);
 			}
-		} else if (obj == previous) {
+		}
+		else if(obj == previous)
+		{
 			next.setEnabled(true);
 			last.setEnabled(true);
 
 			this.setCurrentPage(this.getCurrentPage() - 1);
 			paggingLabel.setText("" + this.getCurrentPage());
 			setTableData1(1, getRows1(this.getCurrentPage()));
-			if (this.getCurrentPage() == 1) {
+			if(this.getCurrentPage() == 1)
+			{
 				previous.setEnabled(false);
 				first.setEnabled(false);
-			} else {
+			}
+			else
+			{
 				previous.setEnabled(true);
 				first.setEnabled(true);
 			}
-		} else if (obj == last) {
+		}
+		else if(obj == last)
+		{
 			this.setCurrentPage(this.getPageNumber());
 			paggingLabel.setText("" + this.getPageNumber());
 			setTableData1(1, getRows1(this.getPageNumber()));
@@ -228,54 +255,69 @@ public class TablePanel extends JPanel implements ActionListener {
 
 	}
 
-	public ArrayList<ArrayList<String>> getRows(int page) {
+	public ArrayList<ArrayList<String>> getRows(int page)
+	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		int count = recordsPerPage;
-		if (filteredData.size() < (page * recordsPerPage)) {
+		if(filteredData.size() < (page * recordsPerPage))
+		{
 			count = filteredData.size() - ((page - 1) * recordsPerPage);
 		}
-		for (int i = (page - 1) * recordsPerPage; i < (((page - 1) * recordsPerPage) + count); i++) {
+		for(int i = (page - 1) * recordsPerPage; i < (((page - 1) * recordsPerPage) + count); i++)
+		{
 			result.add(filteredData.get(i));
 		}
 		return result;
 
 	}
 
-	public ArrayList<TableInfoDTO> getRows1(int page) {
+	public ArrayList<TableInfoDTO> getRows1(int page)
+	{
 		ArrayList<TableInfoDTO> result = new ArrayList<TableInfoDTO>();
 		int count = recordsPerPage;
-		if (selectedData.size() < (page * recordsPerPage)) {
+		if(selectedData.size() < (page * recordsPerPage))
+		{
 			count = selectedData.size() - ((page - 1) * recordsPerPage);
 		}
-		for (int i = (page - 1) * recordsPerPage; i < (((page - 1) * recordsPerPage) + count); i++) {
+		for(int i = (page - 1) * recordsPerPage; i < (((page - 1) * recordsPerPage) + count); i++)
+		{
 			result.add(selectedData.get(i));
 		}
 		return result;
 
 	}
 
-	public int getCurrentPage() {
+	public int getCurrentPage()
+	{
 		return currentPage;
 	}
 
-	public void setCurrentPage(int currentPage) {
+	public void setCurrentPage(int currentPage)
+	{
 		this.currentPage = currentPage;
 	}
 
-	public int getPageNumber() {
+	public int getPageNumber()
+	{
 		return pageNumber;
 	}
 
-	public void setPageNumber(int pageNumber) {
+	public void setPageNumber(int pageNumber)
+	{
 		this.pageNumber = pageNumber;
 	}
 
-	public void setTableData(int x, ArrayList<ArrayList<String>> result) {
+	public void setTableData(int x, ArrayList<ArrayList<String>> result)
+	{
 
-		if (x == 0) {
-			if (result.size() % recordsPerPage == 0) {
+		if(x == 0)
+		{
+			if(result.size() % recordsPerPage == 0)
+			{
 				this.setPageNumber(result.size() / recordsPerPage);
-			} else {
+			}
+			else
+			{
 				this.setPageNumber((result.size() / recordsPerPage) + 1);
 			}
 			this.setRecordNumber(result.size());
@@ -284,18 +326,23 @@ public class TablePanel extends JPanel implements ActionListener {
 			previous.setEnabled(false);
 		}
 		System.out.println("page number is " + this.getPageNumber());
-		for (int i = 0; i < recordsPerPage; i++) {
-			for (int j = 0; j < 6; j++) {
+		for(int i = 0; i < recordsPerPage; i++)
+		{
+			for(int j = 0; j < 6; j++)
+			{
 				table.setValueAt(null, i, j);
 			}
 		}
 		int count = recordsPerPage;
-		if (result.size() < recordsPerPage) {
+		if(result.size() < recordsPerPage)
+		{
 			count = result.size();
 		}
 		System.out.println("size is " + count);
-		for (int i = 0; i < count; i++) {
-			for (int j = 0; j < header.length; j++) {
+		for(int i = 0; i < count; i++)
+		{
+			for(int j = 0; j < header.length; j++)
+			{
 				// System.out.println("pdf is " + result.get(i).get(j));
 				// System.out.println(" and pl is " + result.get(i).getSupplierPl().getPl().getName());
 				// table.setValueAt("<html><a href=\"" + result.get(i).getPdf().getSeUrl() + "\">" + result.get(i).getPdf().getSeUrl() +
@@ -310,25 +357,34 @@ public class TablePanel extends JPanel implements ActionListener {
 		}
 	}
 
-	public void setTableData1(int x, ArrayList<TableInfoDTO> result) {
+	public void setTableData1(int x, ArrayList<TableInfoDTO> result)
+	{
 
 		Method[] m = TableInfoDTO.class.getMethods();
 		Method[] mapMethods = new Method[header.length];
-		try {
-			for (int i = 0; i < header.length; i++) {
-				for (Method method : m) {
+		try
+		{
+			for(int i = 0; i < header.length; i++)
+			{
+				for(Method method : m)
+				{
 					// System.out.println("Method Name:" + method.getName());
-					if (method.getName().equals("get" + header[i])) {
+					if(method.getName().equals("get" + header[i]))
+					{
 						mapMethods[i] = method;
 						break;
 					}
 				}
 			}
 
-			if (x == 0) {
-				if (result.size() % recordsPerPage == 0) {
+			if(x == 0)
+			{
+				if(result.size() % recordsPerPage == 0)
+				{
 					this.setPageNumber(result.size() / recordsPerPage);
-				} else {
+				}
+				else
+				{
 					this.setPageNumber((result.size() / recordsPerPage) + 1);
 				}
 				this.setRecordNumber(result.size());
@@ -337,44 +393,57 @@ public class TablePanel extends JPanel implements ActionListener {
 				// setCurrentPage(1);
 				first.setEnabled(false);
 				previous.setEnabled(false);
-				if (pageNumber > 1) {
+				if(pageNumber > 1)
+				{
 					next.setEnabled(true);
 					last.setEnabled(true);
-				} else {
+				}
+				else
+				{
 					next.setEnabled(false);
 					last.setEnabled(false);
 				}
 
 			}
 			System.out.println("page number is " + this.getPageNumber());
-			for (int i = 0; i < recordsPerPage; i++) {
-				for (int j = 0; j < header.length; j++) {
+			for(int i = 0; i < recordsPerPage; i++)
+			{
+				for(int j = 0; j < header.length; j++)
+				{
 					table.setValueAt(null, i, j);
 				}
 			}
 			int count = recordsPerPage;
-			if (result.size() < recordsPerPage) {
+			if(result.size() < recordsPerPage)
+			{
 				count = result.size();
 			}
 			System.out.println("size is " + count);
-			for (int i = 0; i < count; i++) {
-				for (int j = 0; j < header.length; j++) {
+			for(int i = 0; i < count; i++)
+			{
+				for(int j = 0; j < header.length; j++)
+				{
 					// System.out.println("pdf is " + result.get(i).get(j));
 					// System.out.println(" and pl is " + result.get(i).getSupplierPl().getPl().getName());
 					// table.setValueAt("<html><a href=\"" + result.get(i).getPdf().getSeUrl() + "\">" + result.get(i).getPdf().getSeUrl() +
 					// "</a>",
 					// i, 0);
 
-//					System.out.println("Method Name:" + mapMethods[j].getName());
+					// System.out.println("Method Name:" + mapMethods[j].getName());
 					Object obj = mapMethods[j].invoke(result.get(i));
 					String cellValue = "";
-					if (obj != null) {
+					if(obj != null)
+					{
 						cellValue = obj.toString();
 					}
-					if (mapMethods[j].getName().equals("getPdfUrl")) {
-						if (loadedPdfs.contains(cellValue)) {
+					if(mapMethods[j].getName().equals("getPdfUrl"))
+					{
+						if(loadedPdfs.contains(cellValue))
+						{
 							cellValue = "<html><a href=\"" + cellValue + "\"><font color=\"#AD3333\">" + cellValue + "</font></a>";
-						} else {
+						}
+						else
+						{
 							cellValue = "<html><a href=\"" + cellValue + "\">" + cellValue + "</a>";
 						}
 
@@ -389,44 +458,57 @@ public class TablePanel extends JPanel implements ActionListener {
 				}
 			}
 
-		} catch (IllegalAccessException e) {
+		}catch(IllegalAccessException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+		}catch(IllegalArgumentException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		}catch(InvocationTargetException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public int getRecordNumber() {
+	public int getRecordNumber()
+	{
 		return recordNumber;
 	}
 
-	public void setRecordNumber(int recordNumber) {
+	public void setRecordNumber(int recordNumber)
+	{
 		this.recordNumber = recordNumber;
 	}
 
-	public ArrayList<ArrayList<String>> getFilteredData() {
+	public ArrayList<ArrayList<String>> getFilteredData()
+	{
 		return filteredData;
 	}
 
-	public void setFilteredData(ArrayList<ArrayList<String>> filteredData) {
+	public void setFilteredData(ArrayList<ArrayList<String>> filteredData)
+	{
 		this.filteredData = filteredData;
 	}
 
-	public int getRecordsPerPage() {
+	public int getRecordsPerPage()
+	{
 		return recordsPerPage;
 	}
 
-	public void setRecordsPerPage(int recordsPerPage) {
+	public void setRecordsPerPage(int recordsPerPage)
+	{
 		this.recordsPerPage = recordsPerPage;
 	}
-	public void clearTable(){
-		for (int i = 0; i < recordsPerPage; i++) {
-			for (int j = 0; j < header.length; j++) {
+
+	public void clearTable()
+	{
+		for(int i = 0; i < recordsPerPage; i++)
+		{
+			for(int j = 0; j < header.length; j++)
+			{
 				table.setValueAt(null, i, j);
 			}
 		}
