@@ -377,17 +377,19 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
 							oldValReq.setComment(newValReq.get(13));
-							oldValReq.setCAction(newValReq.get(14));
-							oldValReq.setPAction(newValReq.get(15));
-							oldValReq.setRootCause(newValReq.get(16));
-							oldValReq.setActionDueDate(newValReq.get(17));
+
 							// oldValReq.setIssuedby(issuedto);
 
 							if(newValReq.get(12).equals("Approved Eng."))
 							{
+
 								// ParaQueryUtil.saveTLApproved(result.get(i));
 								if(oldValReq.getFbType().equals("QA"))
 								{
+									oldValReq.setCAction(newValReq.get(14));
+									oldValReq.setPAction(newValReq.get(15));
+									oldValReq.setRootCause(newValReq.get(16));
+									oldValReq.setActionDueDate(newValReq.get(17));
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setFbStatus(StatusName.accept);
@@ -407,6 +409,11 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 
 								if(oldValReq.getFbType().equals("QA"))
 								{
+									oldValReq.setCAction(newValReq.get(14));
+									oldValReq.setPAction(newValReq.get(15));
+									oldValReq.setRootCause(newValReq.get(16));
+									oldValReq.setActionDueDate(newValReq.get(17));
+
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setFbStatus(StatusName.accept);
@@ -419,7 +426,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setFbStatus(StatusName.fbClosed);
 									oldValReq.setGruopSatus(StatusName.qaReview);
 								}
-								
+
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 

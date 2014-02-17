@@ -366,6 +366,11 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(result.get(i).get(12).equals("Update"))
 							{
+								oldValReq.setCAction(newValReq.get(14));
+								oldValReq.setPAction(newValReq.get(15));
+								oldValReq.setRootCause(newValReq.get(16));
+								oldValReq.setActionDueDate(newValReq.get(17));
+
 								oldValReq.setFbType("Internal");
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
@@ -376,7 +381,12 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(result.get(i).get(12).equals("Accept Wrong Value"))
 							{
+								oldValReq.setCAction(newValReq.get(14));
+								oldValReq.setPAction(newValReq.get(15));
+								oldValReq.setRootCause(newValReq.get(16));
+								oldValReq.setActionDueDate(newValReq.get(17));
 								// close old Feedback
+
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
 								oldValReq.setFbStatus("Accept");
