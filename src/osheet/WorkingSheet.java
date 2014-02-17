@@ -2623,6 +2623,30 @@ public class WorkingSheet
 		}
 
 	}
+	
+	public void setHistoryHeader(ArrayList<String> header)
+	{
+		try
+		{
+			// setMainHeaders();
+			HeaderList = new ArrayList<Cell>();
+			for(int i = 0; i < header.size(); i++)
+			{
+				Cell cell = getCellByPosission(i, 0);
+				cell.setText(header.get(i));
+				HeaderList.add(cell);
+			}
+
+			String hdrUintRange = "A" + 1 + ":m" + 1;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangColor(xHdrUnitrange, 0x8A8C8B);
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+
+		}
+
+	}
 
 	public void setSeparationHeader(ArrayList<String> header)
 	{
