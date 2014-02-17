@@ -1488,7 +1488,7 @@ public class WorkingSheet
 					return;
 				}
 			}
-			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.tlReview);
+			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.doneFLagEngine);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
