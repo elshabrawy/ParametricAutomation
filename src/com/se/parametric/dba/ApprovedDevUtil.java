@@ -2111,6 +2111,10 @@ public class ApprovedDevUtil
 				SeparationCri.add(Restrictions.eq("parametricApprovedGroup", row.get(j)));
 				SeparationCri.addOrder(Order.asc("approvedValueOrder"));
 				separationgroups = (List<ParametricSeparationGroup>) SeparationCri.list();
+				if(separationgroups.isEmpty())
+				{
+					continue;
+				}
 				if(Datatype.equals("FB"))
 				{
 					FBData = getFeedbackData(issuedTo, groupRecord, tsktype, session);
