@@ -34,6 +34,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 
 public class QualityUnApprovedValue extends JPanel implements ActionListener
@@ -47,7 +48,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel;
+	JPanel tabSheet, selectionPanel,flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -126,6 +127,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
+		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
 	@Override
