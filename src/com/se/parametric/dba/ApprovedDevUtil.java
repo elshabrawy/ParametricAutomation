@@ -1597,19 +1597,6 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("feedbackStatus", app.getFbStatus()));
 			paraFeedbackAction = (ParaFeedbackStatus) criteria.uniqueResult();//
 
-			criteria = session.createCriteria(ParaFeedbackAction.class);
-			criteria.add(Restrictions.eq("CAction", app.getCAction()));
-			criteria.add(Restrictions.eq("PAction", app.getPAction()));
-			criteria.add(Restrictions.eq("rootCause", app.getRootCause()));
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			if(app.getActionDueDate() != null)
-			{
-				Date date = sdf.parse(app.getActionDueDate());
-				System.out.println(date);
-				criteria.add(Restrictions.eq("actionDueDate", date));
-			}
-			feedbackAction = (ParaFeedbackAction) criteria.uniqueResult();
-
 			String fbStatus = "Inprogress";
 			long fbRecieved = 0l;
 			if(app.getFbStatus().equals("Feedback Closed"))
@@ -1645,24 +1632,9 @@ public class ApprovedDevUtil
 
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
+			feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
 			if(feedbackAction != null)
 			{
-				FBCyc.setParaFeedbackAction(feedbackAction);
-			}
-			else
-			{
-				feedbackAction = new ParaFeedbackAction();
-				feedbackAction.setId(System.nanoTime());
-				feedbackAction.setCAction(app.getCAction());
-				feedbackAction.setPAction(app.getPAction());
-				feedbackAction.setRootCause(app.getRootCause());
-				if(app.getActionDueDate() != null)
-				{
-					Date Acdate = sdf.parse(app.getActionDueDate());
-					System.out.println(Acdate);
-					feedbackAction.setActionDueDate(Acdate);
-				}
-				session.saveOrUpdate(feedbackAction);
 				FBCyc.setParaFeedbackAction(feedbackAction);
 			}
 			session.saveOrUpdate(FBObj);
@@ -1682,6 +1654,46 @@ public class ApprovedDevUtil
 		{
 			session.close();
 		}
+	}
+
+	private static ParaFeedbackAction getParaAction(String cAction, String pAction, String rootCause, String actionDueDate, Session session)
+	{
+		ParaFeedbackAction feedbackAction = null;
+		try
+		{
+			Criteria criteria = null;
+			criteria = session.createCriteria(ParaFeedbackAction.class);
+			criteria.add(Restrictions.eq("CAction", cAction));
+			criteria.add(Restrictions.eq("PAction", pAction));
+			criteria.add(Restrictions.eq("rootCause", rootCause));
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			if(!actionDueDate.isEmpty())
+			{
+				Date date = sdf.parse(actionDueDate);
+				System.out.println(date);
+				criteria.add(Restrictions.eq("actionDueDate", date));
+			}
+			feedbackAction = (ParaFeedbackAction) criteria.uniqueResult();
+			if(feedbackAction == null)
+			{
+				feedbackAction = new ParaFeedbackAction();
+				feedbackAction.setId(System.nanoTime());
+				feedbackAction.setCAction(cAction);
+				feedbackAction.setPAction(pAction);
+				feedbackAction.setRootCause(rootCause);
+				if(!actionDueDate.isEmpty())
+				{
+					Date Acdate = sdf.parse(actionDueDate);
+					System.out.println(Acdate);
+					feedbackAction.setActionDueDate(Acdate);
+				}
+				session.saveOrUpdate(feedbackAction);
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return feedbackAction;
 	}
 
 	public static boolean isThisDateValid(String dateToValidate, String dateFromat)
