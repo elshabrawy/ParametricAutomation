@@ -243,7 +243,6 @@ public class Developement extends JPanel implements ActionListener
 		ArrayList<DocumentInfoDTO> docsInfo = null;
 		ArrayList<String> row = null;
 
-
 		/**
 		 * Load Data development Sheet
 		 */
@@ -482,10 +481,10 @@ public class Developement extends JPanel implements ActionListener
 
 		else if(event.getActionCommand().equals("AutoFill"))
 		{
-			
+
 			String userName = userDTO.getFullName();
 			System.err.println("start Check" + new Date());
-			autoFillProcess.getAutoFillProcess();		
+			autoFillProcess.getAutoFillProcess();
 			wsMap.put("Separation", ws);
 		}
 		/**
