@@ -900,7 +900,7 @@ public class ApprovedDevUtil
 						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 					}
 					FBCyc.setStoreDate(new Date());
-					FBObj.setDocument(document);
+
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(OldFBCyc);
@@ -1132,6 +1132,7 @@ public class ApprovedDevUtil
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord, String taskType, Session session)
 	{
 		FeedBackData result = new FeedBackData();
+
 		Criteria feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
 		feedBackCrit.add(Restrictions.eq("issuedTo", issuedTo));
 		feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
@@ -1144,7 +1145,15 @@ public class ApprovedDevUtil
 		result.setIssuedby(appFeedback.getIssuedBy());
 		result.setIssueTo(appFeedback.getIssuedTo());
 		result.setIssuetype(appFeedback.getParametricFeedback().getParaIssueType().getIssueType());
-
+		if(appFeedback.getParaFeedbackAction() != null)
+		{
+			result.setCAction((appFeedback.getParaFeedbackAction().getCAction() == null) ? "" : appFeedback.getParaFeedbackAction().getCAction());
+			result.setPAction((appFeedback.getParaFeedbackAction().getPAction()) == null ? "" : appFeedback.getParaFeedbackAction().getPAction());
+			result.setRootCause((appFeedback.getParaFeedbackAction().getRootCause()) == null ? "" : appFeedback.getParaFeedbackAction().getRootCause());
+			Date date = appFeedback.getParaFeedbackAction().getActionDueDate();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			result.setActionDueDate(date == null ? "" : sdf.format(date));
+		}
 		if(taskType != null & !taskType.equals("All"))
 		{
 			if(!result.getFbStatus().equals(taskType))
@@ -1213,15 +1222,17 @@ public class ApprovedDevUtil
 			List list = criteria.list();
 			GrmUser eng = null;
 			Object[] row = null;
+			List list2 = null;
 			ParametricFeedbackCycle parametricFeedbackCycle = null;
 			ParametricApprovedGroup parametricApprovedGroup = null;
-			List list2 = null;
 			for(int i = 0; i < list.size(); i++)
 			{
 
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
+				if(type.equals("Eng"))
+					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
@@ -1644,6 +1655,7 @@ public class ApprovedDevUtil
 			session.close();
 		}
 	}
+
 	private static ParaFeedbackAction getParaAction(String cAction, String pAction, String rootCause, String actionDueDate, Session session)
 	{
 		ParaFeedbackAction feedbackAction = null;
