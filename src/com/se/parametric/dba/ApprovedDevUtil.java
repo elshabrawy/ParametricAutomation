@@ -1,5 +1,7 @@
 package com.se.parametric.dba;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,6 +26,7 @@ import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
+import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.client.mapping.ParaFeedbackStatus;
 import com.se.automation.db.client.mapping.ParaIssueType;
 import com.se.automation.db.client.mapping.ParametricApprovedGroup;
@@ -1129,6 +1132,7 @@ public class ApprovedDevUtil
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord, String taskType, Session session)
 	{
 		FeedBackData result = new FeedBackData();
+
 		Criteria feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
 		feedBackCrit.add(Restrictions.eq("issuedTo", issuedTo));
 		feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
@@ -1141,7 +1145,15 @@ public class ApprovedDevUtil
 		result.setIssuedby(appFeedback.getIssuedBy());
 		result.setIssueTo(appFeedback.getIssuedTo());
 		result.setIssuetype(appFeedback.getParametricFeedback().getParaIssueType().getIssueType());
-
+		if(appFeedback.getParaFeedbackAction() != null)
+		{
+			result.setCAction((appFeedback.getParaFeedbackAction().getCAction() == null) ? "" : appFeedback.getParaFeedbackAction().getCAction());
+			result.setPAction((appFeedback.getParaFeedbackAction().getPAction()) == null ? "" : appFeedback.getParaFeedbackAction().getPAction());
+			result.setRootCause((appFeedback.getParaFeedbackAction().getRootCause()) == null ? "" : appFeedback.getParaFeedbackAction().getRootCause());
+			Date date = appFeedback.getParaFeedbackAction().getActionDueDate();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			result.setActionDueDate(date == null ? "" : sdf.format(date));
+		}
 		if(taskType != null & !taskType.equals("All"))
 		{
 			if(!result.getFbStatus().equals(taskType))
@@ -1557,6 +1569,7 @@ public class ApprovedDevUtil
 		{
 			ParaFeedbackStatus paraFeedbackAction = null;
 			ParaFeedbackStatus paraFeedbackStatus = null;
+			ParaFeedbackAction feedbackAction = null;
 			ParametricFeedback FBObj = new ParametricFeedback();
 			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 			Document document = null;
@@ -1584,10 +1597,18 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("feedbackStatus", app.getFbStatus()));
 			paraFeedbackAction = (ParaFeedbackStatus) criteria.uniqueResult();//
 
-			// criteria = session.createCriteria(TrackingFeedbackType.class);
-			// System.out.println(app.getFbType());
-			// criteria.add(Restrictions.eq("name", app.getFbType()));
-			// trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
+			criteria = session.createCriteria(ParaFeedbackAction.class);
+			criteria.add(Restrictions.eq("CAction", app.getCAction()));
+			criteria.add(Restrictions.eq("PAction", app.getPAction()));
+			criteria.add(Restrictions.eq("rootCause", app.getRootCause()));
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			if(app.getActionDueDate() != null)
+			{
+				Date date = sdf.parse(app.getActionDueDate());
+				System.out.println(date);
+				criteria.add(Restrictions.eq("actionDueDate", date));
+			}
+			feedbackAction = (ParaFeedbackAction) criteria.uniqueResult();
 
 			String fbStatus = "Inprogress";
 			long fbRecieved = 0l;
@@ -1618,12 +1639,32 @@ public class ApprovedDevUtil
 			FBCyc.setFbComment(app.getComment());
 			FBCyc.setIssuedBy(app.getIssuedby());
 
-			FBCyc.setIssuedTo(parametricFeedbackCycle.getIssuedBy());
+			FBCyc.setIssuedTo(app.getIssueTo());
 
 			FBCyc.setStoreDate(new Date());
 
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
+			if(feedbackAction != null)
+			{
+				FBCyc.setParaFeedbackAction(feedbackAction);
+			}
+			else
+			{
+				feedbackAction = new ParaFeedbackAction();
+				feedbackAction.setId(System.nanoTime());
+				feedbackAction.setCAction(app.getCAction());
+				feedbackAction.setPAction(app.getPAction());
+				feedbackAction.setRootCause(app.getRootCause());
+				if(app.getActionDueDate() != null)
+				{
+					Date Acdate = sdf.parse(app.getActionDueDate());
+					System.out.println(Acdate);
+					feedbackAction.setActionDueDate(Acdate);
+				}
+				session.saveOrUpdate(feedbackAction);
+				FBCyc.setParaFeedbackAction(feedbackAction);
+			}
 			session.saveOrUpdate(FBObj);
 			session.saveOrUpdate(FBCyc);
 
@@ -1641,6 +1682,32 @@ public class ApprovedDevUtil
 		{
 			session.close();
 		}
+	}
+
+	public static boolean isThisDateValid(String dateToValidate, String dateFromat)
+	{
+
+		if(dateToValidate == null)
+		{
+			return false;
+		}
+
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFromat);
+		sdf.setLenient(false);
+
+		try
+		{
+
+			// if not valid, it will throw ParseException
+			Date date = sdf.parse(dateToValidate);
+			System.out.println(date);
+
+		}catch(ParseException e)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public static ArrayList<UnApprovedDTO> getQAUnapprovedData(Date startDate, Date endDate, long userId, String plName, String supplierName, String status, String type)
@@ -1686,7 +1753,7 @@ public class ApprovedDevUtil
 				Criteria tarkCrit = session.createCriteria(TrackingParametric.class, "track");
 				tarkCrit.createAlias("trackingTaskType", "typ");
 				tarkCrit.createAlias("trackingTaskStatus", "status");
-				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name",StatusName.tlReview), Restrictions.eq("status.name", StatusName.qaReview)));
+				tarkCrit.add(Restrictions.or(Restrictions.eq("status.name", StatusName.tlReview), Restrictions.eq("status.name", StatusName.qaReview)));
 				if(type.equals("NPI"))
 				{
 					tarkCrit.add(Restrictions.or(Restrictions.eq("typ.name", StatusName.npi), Restrictions.eq("typ.name", StatusName.npiTransferred), Restrictions.eq("typ.name", StatusName.npiUpdate)));
@@ -1717,7 +1784,7 @@ public class ApprovedDevUtil
 				// criteria.add(Restrictions.eq("sup.name", supplierName));
 				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
 				trackingcriteria.createAlias("trackingTaskStatus", "status");
-				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name",StatusName.qaReview), Restrictions.eq("status.name", StatusName.qaReview), Restrictions.eq("status.name", StatusName.finshed)));
+				trackingcriteria.add(Restrictions.or(Restrictions.eq("status.name", StatusName.qaReview), Restrictions.eq("status.name", StatusName.qaReview), Restrictions.eq("status.name", StatusName.finshed)));
 				trackingcriteria.createAlias("track.supplier", "supplier");
 				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
 				// // ///////////////////////////////////////////////////////////////////////////////////////
@@ -1969,7 +2036,7 @@ public class ApprovedDevUtil
 					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
 					if(Datatype.equals("Data"))
 					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('"+StatusName.tlReview+"'),getTaskstatusId('"+StatusName.qaReview+"'),getTaskstatusId('"+StatusName.finshed+"')) )";
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('" + StatusName.tlReview + "'),getTaskstatusId('" + StatusName.qaReview + "'),getTaskstatusId('" + StatusName.finshed + "')) )";
 					}
 					else
 					{
@@ -1981,7 +2048,7 @@ public class ApprovedDevUtil
 					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
 					if(Datatype.equals("Data"))
 					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('"+StatusName.tlReview+"'),getTaskstatusId('"+StatusName.qaReview+"'),getTaskstatusId('"+StatusName.finshed+"')) )";
+						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('" + StatusName.tlReview + "'),getTaskstatusId('" + StatusName.qaReview + "'),getTaskstatusId('" + StatusName.finshed + "')) )";
 					}
 					else
 					{
@@ -2045,6 +2112,10 @@ public class ApprovedDevUtil
 						unApprovedDTO.setIssueTo(FBData.getIssueTo());
 						unApprovedDTO.setLastEngComment(FBData.getLastEngComment());
 						unApprovedDTO.setIssueType(FBData.getIssuetype());
+						unApprovedDTO.setCAction(FBData.getCAction());
+						unApprovedDTO.setPAction(FBData.getPAction());
+						unApprovedDTO.setRootCause(FBData.getRootCause());
+						unApprovedDTO.setActionDueDate(FBData.getActionDueDate());
 					}
 					else
 					{
