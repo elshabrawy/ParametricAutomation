@@ -263,14 +263,14 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 
 		else if(event.getActionCommand().equals("Save"))
 		{
-			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			if(!status.equals(StatusName.tlReview))
-			{
-				JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
+//			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+//			if(!status.equals(StatusName.tlReview))
+//			{
+//				JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
+//				thread.stop();
+//				loading.frame.dispose();
+//				return;
+//			}
 
 			for(String wsName : wsMap.keySet())
 			{
@@ -317,7 +317,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setGruopSatus(StatusName.engFeedback);
 							oldValReq.setComment(newValReq.get(13));
 							oldValReq.setIssuedby(userDTO.getId());
-							oldValReq.setFbType("Internal");
+							oldValReq.setFbType(StatusName.internal);
 							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
