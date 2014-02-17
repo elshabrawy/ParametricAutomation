@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
@@ -36,6 +38,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 
 /**
@@ -52,7 +55,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel;
+	JPanel tabSheet, selectionPanel,flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -133,9 +136,13 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		devSheetButtonPanel.add(validate);
 		devSheetButtonPanel.add(save);
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
+
+		
 		add(tabbedPane);
 		tabbedPane.addTab("TL UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("TL UnApproved FeedBack", null, TLfeedBack, null);
+		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
 	@Override
@@ -382,19 +389,19 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		TLUnApprovedValue devPanel = new TLUnApprovedValue(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
-		while(true)
-		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			devPanel.updateFlags(flags);
-
-			try
-			{
-				Thread.sleep(5000);
-			}catch(InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+//		while(true)
+//		{
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+//			devPanel.updateFlags(flags);
+//
+//			try
+//			{
+//				Thread.sleep(5000);
+//			}catch(InterruptedException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }

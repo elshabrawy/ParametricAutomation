@@ -35,6 +35,7 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 
 public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
@@ -45,7 +46,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel;
+	JPanel tabSheet, selectionPanel,flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -132,6 +133,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
+		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
 	@Override

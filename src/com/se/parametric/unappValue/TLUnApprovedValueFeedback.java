@@ -515,18 +515,18 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		TLUnApprovedValueFeedback devPanel = new TLUnApprovedValueFeedback(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
-		while(true)
-		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			devPanel.updateFlags(flags);
-
-			try
-			{
-				Thread.sleep(5000);
-			}catch(InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+//		while(true)
+//		{
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+//			devPanel.updateFlags(flags);
+//
+//			try
+//			{
+//				Thread.sleep(5000);
+//			}catch(InterruptedException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
 	}
 }
