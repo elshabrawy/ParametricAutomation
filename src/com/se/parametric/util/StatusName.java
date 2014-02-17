@@ -22,4 +22,5 @@ public class StatusName
 	public static final String npi ="NPI";
 	public static final String wrongValue = "Wrong Value";
 	public static final String wrongData = "Wrong Data";
+	public static final String internal = "Internal";
 }
