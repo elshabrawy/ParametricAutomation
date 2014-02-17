@@ -4,6 +4,47 @@ public class UnApprovedDTO
 {
 	String plName, partNumber, pdfUrl, featureName, featureValue, featureUnit, sign, value, type, condition, multiplier, unit;
 	String fbStatus, comment, gruopSatus, fbType, qaComment, qaStatus, IssueType, lastEngComment;
+	String CAction, PAction, RootCause, ActionDueDate;
+
+	public String getCAction()
+	{
+		return CAction;
+	}
+
+	public void setCAction(String cAction)
+	{
+		CAction = cAction;
+	}
+
+	public String getPAction()
+	{
+		return PAction;
+	}
+
+	public void setPAction(String pAction)
+	{
+		PAction = pAction;
+	}
+
+	public String getRootCause()
+	{
+		return RootCause;
+	}
+
+	public void setRootCause(String rootCause)
+	{
+		RootCause = rootCause;
+	}
+
+	public String getActionDueDate()
+	{
+		return ActionDueDate;
+	}
+
+	public void setActionDueDate(String actionDueDate)
+	{
+		ActionDueDate = actionDueDate;
+	}
 
 	public String getLastEngComment()
 	{
