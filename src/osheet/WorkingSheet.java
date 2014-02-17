@@ -136,6 +136,20 @@ public class WorkingSheet
 
 	}
 
+	public WorkingSheet(SheetPanel sheetPanel, String sheetPlName, int idx, boolean flag)
+	{
+		this.sheetPanel = sheetPanel;
+		this.sheet = sheetPanel.NewSheetByName(sheetPlName, idx);
+		int num = 0;
+		for(char c = 'A'; c <= 'Z'; ++c)
+		{
+			chars[num] = c;
+			// System.out.println(c);
+			num++;
+		}
+
+	}
+
 	public WorkingSheet(SheetPanel sheetPanel, String sheetPlName, int idx)
 	{
 		this.sheetPanel = sheetPanel;
@@ -157,7 +171,10 @@ public class WorkingSheet
 			{
 				JOptionPane.showMessageDialog(null, "Can't Load this PL Name as PL Type Not Clear");
 			}
-			this.plType = plTypeObj.getName();
+			else
+			{
+				this.plType = plTypeObj.getName();
+			}
 		}catch(Exception e)
 		{
 			e.printStackTrace();
@@ -213,6 +230,7 @@ public class WorkingSheet
 		try
 		{
 			System.out.println("~~~~~~ Write Sheet Data ~~~~~");
+			System.out.println(sheet);
 			for(int i = 0; i < list.size(); i++)
 			{
 				Cell cell = null;
@@ -509,7 +527,7 @@ public class WorkingSheet
 			cell.setText("Description");
 			HeaderList.add(cell);
 			if(!isQA)
-			setValidationHeaders();
+				setValidationHeaders();
 			// setPdfAndTitle(pdfUrl, desc,2);
 			int lastColNum = HeaderList.size() + 4;
 			String lastColumn = getColumnName(lastColNum);
@@ -696,12 +714,12 @@ public class WorkingSheet
 	protected void setValidationHeaders()
 	{
 		try
-		{			
+		{
 			int startCol = HeaderList.size();
 			Cell cell = getCellByPosission(HeaderList.size(), StatrtRecord);
-//			cell.setText("Description");
-//			descriptionColumn = HeaderList.size();
-//			HeaderList.add(cell);
+			// cell.setText("Description");
+			// descriptionColumn = HeaderList.size();
+			// HeaderList.add(cell);
 			cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 			cell.setText("VAL Status");
 			valStatusColumn = HeaderList.size();
@@ -1274,7 +1292,7 @@ public class WorkingSheet
 								}
 							}
 						}
-						else 
+						else
 						{
 							if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
 							{
@@ -1446,13 +1464,15 @@ public class WorkingSheet
 				boolean save = false;
 				if(!update)
 				{
-					try{
+					try
+					{
 						save = DataDevQueryUtil.saveParamtric(partInfo);
-					}catch(ConstraintViolationException e){
+					}catch(ConstraintViolationException e)
+					{
 						if(e.getMessage().contains("unique constraint (AUTOMATION2.PART_COMP_PART_SUPP_PL_UQ)"))
 							continue;
 					}
-					
+
 				}
 				else
 				{
@@ -1477,7 +1497,7 @@ public class WorkingSheet
 
 	}
 
-	public void saveQAReviewAction(String QAName,String screen)
+	public void saveQAReviewAction(String QAName, String screen)
 	{
 
 		try
@@ -1557,13 +1577,14 @@ public class WorkingSheet
 				}
 				else if("Approved".equals(status))
 				{
-					if(screen.equals("FB")){
+					if(screen.equals("FB"))
+					{
 						partInfo.setFeedBackStatus(StatusName.fbClosed);
 						feedbackParts.add(partInfo);
 					}
 					if(!rejectedPdfs.contains(pdfUrl))
 					{
-						acceptedPdfs.add(pdfUrl);						
+						acceptedPdfs.add(pdfUrl);
 					}
 
 				}
@@ -1696,7 +1717,7 @@ public class WorkingSheet
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts, "Internal");
 			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,StatusName.engFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1827,7 +1848,6 @@ public class WorkingSheet
 
 	}
 
-	
 	public void saveTLFeedbackAction(String teamLeaderName)
 	{/* make partsFeedBack contain Status also to call savePartsFeedback once */
 		if(!canSave)
@@ -1951,7 +1971,7 @@ public class WorkingSheet
 						if(issuerName.equals(issuedToEng))
 						{// issuer Eng
 							// sendTo="ENG";
-						// partsToStoreFeedback.add(partInfo);
+							// partsToStoreFeedback.add(partInfo);
 							if(engAcceptedPdfsInternal.contains(pdfUrl))
 							{
 								engAcceptedPdfsInternal.remove(pdfUrl);
@@ -1960,8 +1980,8 @@ public class WorkingSheet
 						}
 						else
 						{ // issuer QA
-						// sendTo="QA";
-						// partsToStoreFeedback.add(partInfo);
+							// sendTo="QA";
+							// partsToStoreFeedback.add(partInfo);
 							if(qAAcceptedPdfs.contains(pdfUrl))
 							{
 								qAAcceptedPdfs.remove(pdfUrl);
@@ -2216,8 +2236,8 @@ public class WorkingSheet
 
 		try
 		{
-//			Pdf pdf = ParaQueryUtil.getPdfBySeUrl(pdfUrl);
-			Document doc=ParaQueryUtil.getDocumnetByPdfUrl(pdf);
+			// Pdf pdf = ParaQueryUtil.getPdfBySeUrl(pdfUrl);
+			Document doc = ParaQueryUtil.getDocumnetByPdfUrl(pdf);
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
 			Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 			// Map<String, List<String>> partsData = ParametricQueryUtil.getExtractorData(pdfUrl, supplierName, plName);
@@ -2433,14 +2453,14 @@ public class WorkingSheet
 			int startrow = StatrtRecord;
 			Cell cell;
 			System.out.println("Show All List size:" + list.size());
-			Date sd=new Date();
+			Date sd = new Date();
 			for(int i = 0; i < list.size(); i++)
 			{
-				if(i%100==0)
+				if(i % 100 == 0)
 					System.out.println("Rec. No:" + startrow);
 				TableInfoDTO docInfoDTO = list.get(i);
 				// String pdfUrl = docInfoDTO.getPdfUrl();
-				// Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);			
+				// Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 				cell = getCellByPosission(0, startrow);
 				cell.setText("document.getPdf().getSeUrl()");
 				cell.setText(docInfoDTO.getPdfUrl());
@@ -2492,8 +2512,8 @@ public class WorkingSheet
 
 				startrow++;
 			}
-			Date ed=new Date();
-			System.out.println("~~~~ Time : ~~~~ " + sd +"  ****  "+ed);			
+			Date ed = new Date();
+			System.out.println("~~~~ Time : ~~~~ " + sd + "  ****  " + ed);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
