@@ -441,7 +441,7 @@ public class DataDevQueryUtil
 			// if(!status.equals("All"))
 			// {
 			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			
+
 			// else
 			// {
 			// statusCriteria.add(Restrictions.eq("name", status));
@@ -2094,7 +2094,7 @@ public class DataDevQueryUtil
 			{
 				criteria.add(Expression.between("finishedDate", startDate, endDate));
 			}
-			criteria.add(Restrictions.eq("trackingTaskStatus", ParaQueryUtil.getTrackingTaskStatus(session,StatusName.engFeedback)));
+			criteria.add(Restrictions.eq("trackingTaskStatus", ParaQueryUtil.getTrackingTaskStatus(session, StatusName.engFeedback)));
 
 			if(plName != null && !plName.equals("All"))
 			{
@@ -2233,13 +2233,13 @@ public class DataDevQueryUtil
 				com.setMasterPartMask(mask);
 			}
 			// NPI Flag part
-//			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
-//			{
-//				com.setNpiFlag(1l);
-//				// com.setAlu(partInfo.getNewsLink());
-//			}
-//			else
-//				com.setNpiFlag(0l);
+			// if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+			// {
+			// com.setNpiFlag(1l);
+			// // com.setAlu(partInfo.getNewsLink());
+			// }
+			// else
+			// com.setNpiFlag(0l);
 			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
 			{
 				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
@@ -2286,10 +2286,10 @@ public class DataDevQueryUtil
 
 			session.saveOrUpdate(com);
 			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
-				{
-				insertNPIPart(com,partInfo.getNewsLink(),session);
-				}
-			
+			{
+				insertNPIPart(com, partInfo.getNewsLink(), session);
+			}
+
 			if(famGen != null)
 				session.saveOrUpdate(famGen);
 			// session.beginTransaction().commit();
@@ -3436,13 +3436,14 @@ public class DataDevQueryUtil
 		session.beginTransaction().commit();
 		return familyCross;
 	}
-/**
- * @author ahmad_makram
- * @param genericStr
- * @param session
- * @return
- */
-	public static TblNpiParts insertNPIPart(PartComponent com,String seUrl, Session session)
+
+	/**
+	 * @author ahmad_makram
+	 * @param genericStr
+	 * @param session
+	 * @return
+	 */
+	public static TblNpiParts insertNPIPart(PartComponent com, String seUrl, Session session)
 	{
 		TblNpiParts npiPart = new TblNpiParts();
 		// generic.setId(QueryUtil.getRandomID());
@@ -3450,12 +3451,13 @@ public class DataDevQueryUtil
 		npiPart.setSupplier(com.getSupplierId());
 		npiPart.setPl(com.getSupplierPl().getPl());
 		npiPart.setOfflinedocid(com.getDocument());
-		npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));		
+		npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
 		npiPart.setInsertionDate(new Date());
 		session.saveOrUpdate(npiPart);
 		session.beginTransaction().commit();
 		return npiPart;
 	}
+
 	public static MasterPartMask insertMask(String maskStr, Session session)
 	{
 		String maskMaster = getNonAlphaMask(maskStr).replaceAll("_", "%").replaceAll("(%){2,}", "%");
