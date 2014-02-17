@@ -1632,10 +1632,13 @@ public class ApprovedDevUtil
 
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
-			feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
-			if(feedbackAction != null)
+			if(!app.getCAction().isEmpty() && !app.getPAction().isEmpty() && !app.getRootCause().isEmpty() && !app.getActionDueDate().isEmpty())
 			{
-				FBCyc.setParaFeedbackAction(feedbackAction);
+				feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
+				if(feedbackAction != null)
+				{
+					FBCyc.setParaFeedbackAction(feedbackAction);
+				}
 			}
 			session.saveOrUpdate(FBObj);
 			session.saveOrUpdate(FBCyc);
