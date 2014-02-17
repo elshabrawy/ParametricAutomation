@@ -77,7 +77,7 @@ public class MainPanel extends JPanel
 			tabbedPane.addTab("EngUnApproved", null, engunApprovedPanel, null);
 			tabbedPane.addTab("Export", null, exportPanel, null);
 
-		}	
+		}
 		else if(userRole == 3 && userGroup == 23)
 		{
 			// Q eng
@@ -85,7 +85,7 @@ public class MainPanel extends JPanel
 			tlfeedBack = new TLFeedBack(userDTO);
 
 			qaReviewData = new QAReviewData(userDTO);
-			qaFeedBack=new QAFeedBack(userDTO);
+			qaFeedBack = new QAFeedBack(userDTO);
 			qUnApproved = new QualityUnApprovedValue(userDTO);
 
 			tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
@@ -100,7 +100,7 @@ public class MainPanel extends JPanel
 	{
 		long userRole = userDTO.getGrmRole().getId();
 		long userGroup = userDTO.getGrmGroup().getId();
-		ArrayList<String> flags=new ArrayList<String>();
+		ArrayList<String> flags = new ArrayList<String>();
 		flags = ParaQueryUtil.getAlerts(userDTO.getId(), userGroup, userRole);
 		if(developement != null)
 			developement.updateFlags(flags);
