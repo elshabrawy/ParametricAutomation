@@ -265,9 +265,9 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			header.add("Root Cause");
 			header.add("Action Due Date");
 
-			ws.setUnapprovedHeader(header);
+			ws.setHistoryHeader(header);
 			ArrayList<ArrayList<String>> list = ApprovedDevUtil.getFeedbackHistory(url);
-			ws.writeReviewData(list, 1, 14);
+			ws.writeSheetData(list, 1);
 
 		}
 		else if(event.getSource().equals(filterPanel.refreshButton))
