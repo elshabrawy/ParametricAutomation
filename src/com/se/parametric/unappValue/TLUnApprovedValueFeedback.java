@@ -164,14 +164,20 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("Unit");// 11
 			row.add("TL Status");// 12
 			row.add("TL Comment");// 13
-			row.add("FeedBack Type");// 14
-			row.add("Issue Type");// 15
-			row.add("Dev Status");// 16
-			row.add("Dev Comment");// 17
-			row.add("QA Status");// 18
-			row.add("QA Comment");// 19
-			row.add("Last TL Comment");// 20
-			row.add("Validation Result");// 21
+
+			row.add("C_ACTION");// 14
+			row.add("P_ACTION");// 15
+			row.add("ROOT_CAUSE");// 16
+			row.add("Action Due Date");// 17
+
+			row.add("FeedBack Type");// 18
+			row.add("Issue Type");// 19
+			row.add("Dev Status");// 20
+			row.add("Dev Comment");// 21
+			row.add("QA Status");// 22
+			row.add("QA Comment");// 23
+			row.add("Last TL Comment");// 24
+			row.add("Validation Result");// 25
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
@@ -192,6 +198,12 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add(obj.getUnit());
 				row.add("");
 				row.add("");
+
+				row.add(obj.getCAction());
+				row.add(obj.getPAction());
+				row.add(obj.getRootCause());
+				row.add(obj.getActionDueDate());
+
 				row.add(obj.getFbType());
 				row.add(obj.getIssueType());
 				row.add(obj.getFbStatus());
@@ -245,7 +257,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				{
 					row = wsheet.get(i);
 					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(21, result);
+					row.set(25, result);
 					validationResult.add(row);
 					if(result != "")
 					{
@@ -275,7 +287,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							try
 							{
-								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								if(!validated || (newValReq.get(25) != null && !newValReq.get(25).trim().isEmpty()))
 								{
 									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 									thread.stop();
@@ -287,48 +299,70 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								continue;
 							}
 						}
-						if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(14).equals("Internal"))
+						if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(14).equals("QA"))
+						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(14).equals("QA"))
+						if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Update") && newValReq.get(15).equals("Wrong Value"))
+						if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback ");
+							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(14).equals("Internal"))
+						if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(14).equals("Internal"))
+						if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
+
+						if(newValReq.get(12).equals("Update") && newValReq.get(18).equals("QA"))
+						{
+							if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + i + 1);
+								thread.stop();
+								loading.frame.dispose();
+								return;
+							}
+							if(!newValReq.get(17).isEmpty())
+							{
+								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "dd/MM/yyyy") == false)
+								{
+									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+									thread.stop();
+									loading.frame.dispose();
+									return;
+								}
+							}
+						}
+
 					}
 					for(int i = 0; i < result.size(); i++)
 					{
@@ -343,7 +377,10 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
 							oldValReq.setComment(newValReq.get(13));
-
+							oldValReq.setCAction(newValReq.get(14));
+							oldValReq.setPAction(newValReq.get(15));
+							oldValReq.setRootCause(newValReq.get(16));
+							oldValReq.setActionDueDate(newValReq.get(17));
 							// oldValReq.setIssuedby(issuedto);
 
 							if(newValReq.get(12).equals("Approved Eng."))
@@ -382,6 +419,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setFbStatus(StatusName.fbClosed);
 									oldValReq.setGruopSatus(StatusName.qaReview);
 								}
+								
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 

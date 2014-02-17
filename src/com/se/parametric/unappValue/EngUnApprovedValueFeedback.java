@@ -176,14 +176,20 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("Unit");// 11
 			row.add("Dev Status");// 12
 			row.add("Dev Comment");// 13
-			row.add("FeedBack Type");// 14
-			row.add("Issue Type");// 15
-			row.add("TL Status");// 16
-			row.add("TL Comment");// 17
-			row.add("QA Status");// 18
-			row.add("QA Comment");// 19
-			row.add("Old Eng Comment");// 20
-			row.add("Validation Result");// 21
+
+			row.add("C_ACTION");// 14
+			row.add("P_ACTION");// 15
+			row.add("ROOT_CAUSE");// 16
+			row.add("Action Due Date");// 17
+
+			row.add("FeedBack Type");// 18
+			row.add("Issue Type");// 19
+			row.add("TL Status");// 20
+			row.add("TL Comment");// 21
+			row.add("QA Status");// 22
+			row.add("QA Comment");// 23
+			row.add("Old Eng Comment");// 24
+			row.add("Validation Result");// 25
 
 			wsMap.put("Unapproved Values", ws);
 			ws.setUnapprovedHeader(row);
@@ -205,6 +211,12 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add(obj.getUnit());
 				row.add("");
 				row.add("");
+
+				row.add(obj.getCAction());
+				row.add(obj.getPAction());
+				row.add(obj.getRootCause());
+				row.add(obj.getActionDueDate());
+
 				row.add(obj.getFbType());
 				row.add(obj.getIssueType());
 				row.add(obj.getFbStatus());
@@ -249,7 +261,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				{
 					row = wsheet.get(i);
 					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(21, result);
+					row.set(25, result);
 					validationResult.add(row);
 					if(result != "")
 					{
@@ -279,7 +291,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							try
 							{
-								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								if(!validated || (newValReq.get(25) != null && !newValReq.get(25).trim().isEmpty()))
 								{
 									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 									thread.stop();
@@ -291,19 +303,39 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								continue;
 							}
 						}
-						if(newValReq.get(12).equals("Update") && !newValReq.get(15).equals("Wrong Separation"))
+						if(newValReq.get(12).equals("Update") && !newValReq.get(19).equals("Wrong Separation"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can update on Wrong Seperation Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can update on Wrong Seperation Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
-						if(newValReq.get(12).equals("Accept Wrong Value") && !newValReq.get(15).equals("Wrong Value"))
+						if(newValReq.get(12).equals("Accept Wrong Value") && !newValReq.get(19).equals("Wrong Value"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Accept on Wrong Value Feedback only");
+							JOptionPane.showMessageDialog(null, " You Can Accept on Wrong Value Feedback only in row :" + i + 1);
 							thread.stop();
 							loading.frame.dispose();
 							return;
+						}
+						if((newValReq.get(12).equals("Update") || newValReq.get(12).equals("Accept Wrong Value")) && newValReq.get(18).equals("QA"))
+						{
+							if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
+							{
+								JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :" + i + 1);
+								thread.stop();
+								loading.frame.dispose();
+								return;
+							}
+							if(!newValReq.get(17).isEmpty())
+							{
+								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "dd/MM/yyyy") == false)
+								{
+									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+									thread.stop();
+									loading.frame.dispose();
+									return;
+								}
+							}
 						}
 					}
 					for(int i = 0; i < result.size(); i++)
