@@ -140,6 +140,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		// thread.start();
 		UnApprovedDTO obj = null;
 		String statuses[];
+
 		if(event.getSource().equals(filterPanel.filterButton))
 		{
 			feedbackHistory.setEnabled(true);
@@ -160,11 +161,11 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			list = new ArrayList<ArrayList<String>>();
 			row = new ArrayList<String>();
 			sheetPanel.openOfficeDoc();
-			
-//			ws = new WorkingSheet(new SheetPanel(), "Feedback Values",1);
-			ws = new WorkingSheet(sheetPanel, "Unapproved Values",0);
-			
-//			sheetPanel.add(arg0)
+
+			// ws = new WorkingSheet(new SheetPanel(), "Feedback Values",1);
+			ws = new WorkingSheet(sheetPanel, "Unapproved Values", 0, true);
+
+			// sheetPanel.add(arg0)
 			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 			row.add("PL Name");
 			row.add("Part Name");
@@ -182,11 +183,16 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			row.add("QA Comment");
 			row.add("FeedBack Type");
 			row.add("Para Status");
+			row.add("c_Action");
+			row.add("P_Action");
+			row.add("ROOT_CAUSE");
+			row.add("ACTION_DUE_DATE");
 			row.add("Para Comment");
 			row.add("Old QA Status");
 			row.add("Old QA Comment");
 
 			wsMap.put("Unapproved Values", ws);
+			wsMap.get("Unapproved Values");
 			ws.setUnapprovedHeader(row);
 			for(int i = 0; i < unApproveds.size(); i++)
 			{
@@ -208,6 +214,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add("");
 				row.add(obj.getFbType());
 				row.add(obj.getFbStatus());
+				row.add("c_Action");
+				row.add("P_Action");
+				row.add("ROOT_CAUSE");
+				row.add("ACTION_DUE_DATE");
 				row.add(obj.getComment());
 				row.add(obj.getQaStatus());
 				row.add(obj.getQaComment());
@@ -221,13 +231,17 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			ws.writeReviewData(list, 1, 13);
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+
 		}
 		else if(event.getActionCommand().equals("Feedback History"))
 		{
+			ws = new WorkingSheet(sheetPanel, "Feedback", 1, true);
+			wsMap.put("Feedback", ws);
+			ws = wsMap.get("Feedback");
 			try
 			{
-//				sheetPanel.getSelectedXCell();
-				String url = sheetPanel.getCellText(sheetPanel.getCellByPosission(1, 0)).toString();
+				// sheetPanel.getSelectedXCell();
+				String url = sheetPanel.getCellText(sheetPanel.getCellByPosission(1, 1)).toString();
 				System.out.println("" + url);
 			}catch(Exception e)
 			{
@@ -236,9 +250,25 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			}
 			String url = sheetPanel.getCellText(sheetPanel.getSelectedXCell()).getString();
 			System.out.println(url + " " + "done here");
+			ArrayList<String> header = new ArrayList<String>();
+			header.add("Pdf Url");
+			header.add("Feedback Item");
+			header.add("Initiator");
+			header.add("Issued To");
+			header.add("Issue Type");
+			header.add("Feedback Type");
+			header.add("Feedback Comment");
+			header.add("Feedback Status");
+			header.add("Store Date");
+			header.add("C_Action");
+			header.add("P_Action");
+			header.add("Root Cause");
+			header.add("Action Due Date");
+
+			ws.setUnapprovedHeader(header);
 			ArrayList<ArrayList<String>> list = ApprovedDevUtil.getFeedbackHistory(url);
-			
-			
+			ws.writeReviewData(list, 1, 14);
+
 		}
 		else if(event.getSource().equals(filterPanel.refreshButton))
 		{
