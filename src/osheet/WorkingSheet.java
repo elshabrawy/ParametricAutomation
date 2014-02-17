@@ -2582,6 +2582,20 @@ public class WorkingSheet
 			hdrUintRange = "M" + 1 + ":N" + 1;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0xCB3D30);
+			
+			hdrUintRange = "O" + 1 + ":R" + 1;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangColor(xHdrUnitrange, 0xe9d9c8);
+			
+			hdrUintRange = "O" + 1 + ":R" + 1;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangColor(xHdrUnitrange, 0x0067e7);
+			hdrUintRange = "S" + 1 + ":Y" + 1;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangColor(xHdrUnitrange, 0x6a9c53);
+			hdrUintRange = "Z" + 1 + ":Z" + 1;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangColor(xHdrUnitrange, 0x6e7998);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
