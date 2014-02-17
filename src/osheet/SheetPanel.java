@@ -447,7 +447,7 @@ public class SheetPanel extends Panel
 	{
 		// if (this.sheet == null)
 		// throw new Exception("Error no sheet activated");
-		
+//		System.out.println(getActiveSheetName());
 		return getCellByPosission(getActivSheet(), x, y);
 	}
 
