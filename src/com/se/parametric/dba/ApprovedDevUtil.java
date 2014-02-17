@@ -900,7 +900,7 @@ public class ApprovedDevUtil
 						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
 					}
 					FBCyc.setStoreDate(new Date());
-
+					FBObj.setDocument(document);
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					session.saveOrUpdate(OldFBCyc);
@@ -1132,7 +1132,6 @@ public class ApprovedDevUtil
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord, String taskType, Session session)
 	{
 		FeedBackData result = new FeedBackData();
-
 		Criteria feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
 		feedBackCrit.add(Restrictions.eq("issuedTo", issuedTo));
 		feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
@@ -1145,15 +1144,7 @@ public class ApprovedDevUtil
 		result.setIssuedby(appFeedback.getIssuedBy());
 		result.setIssueTo(appFeedback.getIssuedTo());
 		result.setIssuetype(appFeedback.getParametricFeedback().getParaIssueType().getIssueType());
-		if(appFeedback.getParaFeedbackAction() != null)
-		{
-			result.setCAction((appFeedback.getParaFeedbackAction().getCAction() == null) ? "" : appFeedback.getParaFeedbackAction().getCAction());
-			result.setPAction((appFeedback.getParaFeedbackAction().getPAction()) == null ? "" : appFeedback.getParaFeedbackAction().getPAction());
-			result.setRootCause((appFeedback.getParaFeedbackAction().getRootCause()) == null ? "" : appFeedback.getParaFeedbackAction().getRootCause());
-			Date date = appFeedback.getParaFeedbackAction().getActionDueDate();
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			result.setActionDueDate(date == null ? "" : sdf.format(date));
-		}
+
 		if(taskType != null & !taskType.equals("All"))
 		{
 			if(!result.getFbStatus().equals(taskType))
@@ -1222,17 +1213,15 @@ public class ApprovedDevUtil
 			List list = criteria.list();
 			GrmUser eng = null;
 			Object[] row = null;
-			List list2 = null;
 			ParametricFeedbackCycle parametricFeedbackCycle = null;
 			ParametricApprovedGroup parametricApprovedGroup = null;
+			List list2 = null;
 			for(int i = 0; i < list.size(); i++)
 			{
 
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
-				if(type.equals("Eng"))
-					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
@@ -1655,7 +1644,6 @@ public class ApprovedDevUtil
 			session.close();
 		}
 	}
-
 	private static ParaFeedbackAction getParaAction(String cAction, String pAction, String rootCause, String actionDueDate, Session session)
 	{
 		ParaFeedbackAction feedbackAction = null;
@@ -2690,11 +2678,41 @@ public class ApprovedDevUtil
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		List<Object[]> list = session
 				.createSQLQuery(
-						"select x.ID , x.ISSUE_TYPE, x.FEEDBACK_STATUS, x.STORE_DATE, x.FB_INITIATOR, x.FEEDBACK_TYPE, x.ITEM_ID, x.TYPE, x.PARA_FEEDBACK_REPORTING_ID, x.DOCUMENT_ID,y.PARA_FEEDBACK_ID, y.FB_ITEM_VALUE, y.FB_COMMENT, y.ISSUED_BY, y.ISSUED_TO, y.STORE_DATE, y.FEEDBACK_ACTION, y.FEEDBACK_RECIEVED, y.ACTION_ID from PARAMETRIC_FEEDBACK x,PARAMETRIC_FEEDBACK_CYCLE y where x.id=Y.PARA_FEEDBACK_ID and x.DOCUMENT_ID=automation2.GET_DOCUMENT_ID_by_url('"
-								+ url + "') and rownum =1").list();
-		if(!list.isEmpty())
+						"SELECT   AUTOMATION2.GETPDFURLBYDOC (x.DOCUMENT_ID),y.FB_ITEM_VALUE,AUTOMATION2.GETUSERNAME (x.FB_INITIATOR),AUTOMATION2.getissueTo (y.PARA_FEEDBACK_ID), AUTOMATION2.getissueType (x.ISSUE_TYPE) issueType, AUTOMATION2.getfeedbackTypt (x.FEEDBACK_TYPE) fedtype, y.FB_COMMENT, AUTOMATION2.getfeedbackstatus (x.FEEDBACK_STATUS) statusType, MAX (x.STORE_DATE), AUTOMATION2.getfeedbackAction (y.ACTION_ID) action FROM PARAMETRIC_FEEDBACK x, PARAMETRIC_FEEDBACK_CYCLE y WHERE   x.id = Y.PARA_FEEDBACK_ID AND x.DOCUMENT_ID = automation2.GET_DOCUMENT_ID_by_url('"
+								+ url + "') GROUP BY   x.DOCUMENT_ID,x.FB_INITIATOR,y.PARA_FEEDBACK_ID,x.ISSUE_TYPE,x.FEEDBACK_STATUS,x.FEEDBACK_TYPE,y.FB_ITEM_VALUE, y.FB_COMMENT, y.ACTION_ID").list();
+		Object[] row = null;
+		ArrayList<String> rowData = null;
+		for(int i = 0; i < list.size(); i++)
 		{
-
+			row = list.get(i);
+			rowData = new ArrayList<String>();
+			for(int j = 0; j < row.length; j++)
+			{
+				System.out.println(j);
+				if(j == (row.length - 1))
+				{
+					if(row[j] == null)
+					{
+						for(int k = 0; k < 4; k++)
+						{
+							rowData.add("");
+						}
+					}
+					else
+					{
+						String[] action = row[j].toString().split("\\|");
+						for(int k = 0; k < action.length; k++)
+						{
+							rowData.add(action[k]);
+						}
+					}
+				}
+				else
+				{
+					rowData.add((row[j] == null) ? "" : row[j].toString());
+				}
+			}
+			result.add(rowData);
 		}
 		return result;
 	}
