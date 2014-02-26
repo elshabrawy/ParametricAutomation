@@ -254,7 +254,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				{
 					row = wsheet.get(i);
 					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(25, result.get(0));
+					row.set(14, result.get(0));
 					validationResult.add(row);
 					if(result.get(0) != "" && result.get(1).equals("false"))
 					{
