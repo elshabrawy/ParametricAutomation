@@ -2591,9 +2591,11 @@ public class ApprovedDevUtil
 		return result;
 	}
 
-	public static String validateSeparation(ArrayList<String> row, Session session)
+	public static List<String> validateSeparation(ArrayList<String> row, Session session)
 	{
+		List<String> result = new ArrayList<>();
 		String error = "";
+		String unitstring = "true";
 		String plname = row.get(0);
 		String fetName = row.get(3);
 		String fetValue = row.get(4);
@@ -2624,31 +2626,49 @@ public class ApprovedDevUtil
 		int multiValCount = valueArr.length;
 		System.out.println("multiValCount+++++++++++ " + multiValCount);
 		if(!sign.trim().equals("") && signArr.length > multiValCount)
+		{
+			unitstring = "false";
 			error += " |Error number of sticks in sign. \nPlease enter a valid sign";
+		}
 		if(!multiplier.trim().equals("") && multiplierArr.length > multiValCount)
+		{
+			unitstring = "false";
 			error += " |Error number of sticks in multiplier. \nPlease enter a valid multiplier";
+		}
 		if(!unit.trim().equals("") && unitArr.length > multiValCount)
+		{
+			unitstring = "false";
 			error += " |Error number of sticks in unit. \nPlease enter a valid unit";
+		}
 		if(!condition.trim().equals("") && conditionArr.length > multiValCount)
+		{
+			unitstring = "false";
 			error += " |Error number of sticks in condition. \nPlease enter a valid condition";
+		}
 		if(!type.trim().equals("") && valueTypeArr.length > multiValCount)
+		{
+			unitstring = "false";
 			error += " |Error number of sticks in value type. \nPlease enter a valid value type";
+		}
 
 		if(value.equalsIgnoreCase("N/A") || value.equalsIgnoreCase("N/R") || value.equalsIgnoreCase("9999"))
 		{
 			if(!sign.isEmpty() || !type.isEmpty() || !multiplier.isEmpty() || !condition.isEmpty() || !unit.isEmpty())
 			{
+				unitstring = "false";
 				error += " |All the separation column should be Null except value ";
 			}
 		}
 		else if(value.contains("Min") || value.contains("Max") || value.contains("Typ"))
 		{
+			unitstring = "false";
 			error += " |The Value contains \"(Min), (Typ), (Max)\"";
 		}
 		for(int i = 0; i < conditionArr.length; i++)
 		{
 			if(!conditionArr[i].isEmpty() && !conditionArr[i].trim().startsWith("@"))
 			{
+				unitstring = "false";
 				error += " |Condition should start with \"@\"";
 				break;
 			}
@@ -2658,11 +2678,17 @@ public class ApprovedDevUtil
 			if(checkPlFetUnit(plname, fetName, fetValue, unitArr[i], session) == false)
 
 			{
+				if(error.isEmpty())
+				{
+					unitstring = "true";
+				}
 				error += " |Unit differs with CP unit";
 				break;
 			}
 		}
-		return error;
+		result.add(error);
+		result.add(unitstring);
+		return result;
 	}
 
 	private static boolean checkPlFetUnit(String plName, String fetName, String fetValue, String unit, Session session)
