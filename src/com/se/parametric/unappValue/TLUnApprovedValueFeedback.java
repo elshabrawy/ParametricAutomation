@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -256,10 +257,10 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(25, result);
+					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(25, result.get(0));
 					validationResult.add(row);
-					if(result != "")
+					if(result.get(0) != "" && result.get(1).equals("false"))
 					{
 						validated = false;
 					}
@@ -287,7 +288,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							try
 							{
-								if(!validated || (newValReq.get(25) != null && !newValReq.get(25).trim().isEmpty()))
+								if(!validated)
 								{
 									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 									thread.stop();
@@ -515,18 +516,18 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		TLUnApprovedValueFeedback devPanel = new TLUnApprovedValueFeedback(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
-//		while(true)
-//		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-//			devPanel.updateFlags(flags);
-//
-//			try
-//			{
-//				Thread.sleep(5000);
-//			}catch(InterruptedException e)
-//			{
-//				e.printStackTrace();
-//			}
-//		}
+		// while(true)
+		// {
+		// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+		// devPanel.updateFlags(flags);
+		//
+		// try
+		// {
+		// Thread.sleep(5000);
+		// }catch(InterruptedException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 }

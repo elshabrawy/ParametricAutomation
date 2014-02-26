@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -46,7 +47,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel,flowChart;
+	JPanel tabSheet, selectionPanel, flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -133,7 +134,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
-		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		flowChart = new ImagePanel("QASeparation.jpg");
 		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
@@ -263,10 +264,10 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(25, result);
+					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(25, result.get(0));
 					validationResult.add(row);
-					if(result != "")
+					if(result.get(0) != "" && result.get(1).equals("false"))
 					{
 						validated = false;
 					}
@@ -294,7 +295,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							try
 							{
-								if(!validated || (newValReq.get(25) != null && !newValReq.get(25).trim().isEmpty()))
+								if(!validated)
 								{
 									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 									thread.stop();

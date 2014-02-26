@@ -55,7 +55,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel,flowChart;
+	JPanel tabSheet, selectionPanel, flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -137,11 +137,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		devSheetButtonPanel.add(save);
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 
-		
 		add(tabbedPane);
 		tabbedPane.addTab("TL UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("TL UnApproved FeedBack", null, TLfeedBack, null);
-		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		flowChart = new ImagePanel("QASeparation.jpg");
 		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
@@ -254,10 +253,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(14, result);
+					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(25, result.get(0));
 					validationResult.add(row);
-					if(result != "")
+					if(result.get(0) != "" && result.get(1).equals("false"))
 					{
 						validated = false;
 					}
@@ -270,14 +269,14 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 
 		else if(event.getActionCommand().equals("Save"))
 		{
-//			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-//			if(!status.equals(StatusName.tlReview))
-//			{
-//				JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
-//				thread.stop();
-//				loading.frame.dispose();
-//				return;
-//			}
+			// String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+			// if(!status.equals(StatusName.tlReview))
+			// {
+			// JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
+			// thread.stop();
+			// loading.frame.dispose();
+			// return;
+			// }
 
 			for(String wsName : wsMap.keySet())
 			{
@@ -293,7 +292,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						{
 							try
 							{
-								if(!validated || (newValReq.get(21) != null && !newValReq.get(21).trim().isEmpty()))
+								if(!validated)
 								{
 									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 									thread.stop();
@@ -389,19 +388,19 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		TLUnApprovedValue devPanel = new TLUnApprovedValue(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
-//		while(true)
-//		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-//			devPanel.updateFlags(flags);
-//
-//			try
-//			{
-//				Thread.sleep(5000);
-//			}catch(InterruptedException e)
-//			{
-//				e.printStackTrace();
-//			}
-//		}
+		// while(true)
+		// {
+		// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+		// devPanel.updateFlags(flags);
+		//
+		// try
+		// {
+		// Thread.sleep(5000);
+		// }catch(InterruptedException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 }
