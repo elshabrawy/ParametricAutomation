@@ -543,8 +543,14 @@ public class Developement extends JPanel implements ActionListener
 			}
 			else
 			{
-				if(validated)
+				if(!validated)
 				{
+					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+					thread.stop();
+					loading.frame.dispose();
+					return;
+				}
+				
 					for(int i = 0; i < separationValues.size(); i++)
 					{
 						row = separationValues.get(i);
@@ -552,11 +558,7 @@ public class Developement extends JPanel implements ActionListener
 						String plName = row.get(0);
 						String featureName = row.get(3);
 						String featureFullValue = row.get(4);
-						if(!row.get(12).isEmpty())
-						{
-							JOptionPane.showMessageDialog(null, "Can't save due to errors on data");
-							return;
-						}
+
 						try
 						{
 							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
@@ -581,11 +583,7 @@ public class Developement extends JPanel implements ActionListener
 						appValues.add(featureFullValue);
 					}
 					JOptionPane.showMessageDialog(null, "Approved Saving Done");
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-				}
+				
 
 			}
 
@@ -608,10 +606,10 @@ public class Developement extends JPanel implements ActionListener
 				for(int i = 0; i < separationValues.size(); i++)
 				{
 					row = separationValues.get(i);
-					String result = ApprovedDevUtil.validateSeparation(row, session);
-					row.set(12, result);
+					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					row.set(12, result.get(0));
 					validationResult.add(row);
-					if(result != "")
+					if(result.get(0) != "" && result.get(1).equals("false"))
 					{
 						validated = false;
 					}
