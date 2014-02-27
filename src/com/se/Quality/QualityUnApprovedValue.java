@@ -127,7 +127,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
-		flowChart = new ImagePanel("src/images/QASeparation.jpg");
+		flowChart = new ImagePanel("QASeparation.jpg");
 		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
