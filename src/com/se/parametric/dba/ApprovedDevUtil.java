@@ -1632,7 +1632,7 @@ public class ApprovedDevUtil
 
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
-			if(!app.getCAction().isEmpty() && !app.getPAction().isEmpty() && !app.getRootCause().isEmpty() && !app.getActionDueDate().isEmpty())
+			if(app.getCAction()!=null && app.getPAction()!=null && app.getRootCause()!=null && app.getActionDueDate() !=null )
 			{
 				feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
 				if(feedbackAction != null)
