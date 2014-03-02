@@ -174,7 +174,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		add(tabbedPane);
 
 		filterPanel.refreshButton.addActionListener(this);
-
+		
 	}
 
 	@Override
