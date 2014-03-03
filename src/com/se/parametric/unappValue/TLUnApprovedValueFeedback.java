@@ -391,7 +391,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setPAction(newValReq.get(15));
 									oldValReq.setRootCause(newValReq.get(16));
 									oldValReq.setActionDueDate(newValReq.get(17));
-									oldValReq.setIssueTo(oldValReq.getIssuedby());
+									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setFbStatus(StatusName.accept);
 									oldValReq.setGruopSatus(StatusName.qaFeedback);
@@ -415,7 +415,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setRootCause(newValReq.get(16));
 									oldValReq.setActionDueDate(newValReq.get(17));
 
-									oldValReq.setIssueTo(oldValReq.getIssuedby());
+									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setFbStatus(StatusName.accept);
 									oldValReq.setGruopSatus(StatusName.qaFeedback);
@@ -434,7 +434,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(newValReq.get(12).equals("Reject QA"))
 							{
-								oldValReq.setIssueTo(oldValReq.getIssuedby());
+								oldValReq.setIssueTo(oldValReq.getQaUserId());
 								oldValReq.setIssuedby(TLDTO.getId());
 								oldValReq.setFbStatus(StatusName.reject);
 								oldValReq.setGruopSatus(StatusName.qaFeedback);
