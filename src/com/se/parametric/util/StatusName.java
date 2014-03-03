@@ -17,10 +17,12 @@ public class StatusName
 	public static final String cmTransfere="Waitting CM Transfere";
 	public static final String accept="Accept";
 	public static final String fbClosed="Feedback Closed";
+	public static final String closed="Closed";
 	public static final String npiTransferred = "NPI Transferred";
 	public static final String npiUpdate = "NPI Update";
 	public static final String npi ="NPI";
 	public static final String wrongValue = "Wrong Value";
 	public static final String wrongData = "Wrong Data";
 	public static final String internal = "Internal";
+	public static final String inprogress = "Inprogress";
 }
