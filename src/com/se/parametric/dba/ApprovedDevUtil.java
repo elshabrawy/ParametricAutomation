@@ -1593,23 +1593,25 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("issueType", app.getIssueType()));
 			paraIssueType = (ParaIssueType) criteria.uniqueResult();
 
+			String fbStatus = StatusName.inprogress;
+			String FBAction = app.getFbStatus();
+			long fbRecieved = 0l;
+			if(app.getFbStatus().equals(StatusName.fbClosed))
+			{
+				fbRecieved = 1l;
+				fbStatus = StatusName.closed;
+				FBAction = StatusName.accept;
+			}
+			if(app.getGruopSatus().equals(StatusName.reject))
+			{
+				fbRecieved = 1l;
+				fbStatus = StatusName.closed;
+			}
+
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
 			System.out.println(app.getFbStatus());
-			criteria.add(Restrictions.eq("feedbackStatus", app.getFbStatus()));
+			criteria.add(Restrictions.eq("feedbackStatus", FBAction));
 			paraFeedbackAction = (ParaFeedbackStatus) criteria.uniqueResult();//
-
-			String fbStatus = "Inprogress";
-			long fbRecieved = 0l;
-			if(app.getFbStatus().equals("Feedback Closed"))
-			{
-				fbRecieved = 1l;
-				fbStatus = "Closed";
-			}
-			if(app.getGruopSatus().equals("Rejected"))
-			{
-				fbRecieved = 1l;
-				fbStatus = "Closed";
-			}
 
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
 			criteria.add(Restrictions.eq("feedbackStatus", fbStatus));
