@@ -360,11 +360,11 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 
 							if(result.get(i).get(12).equals("Reject"))
 							{
-								oldValReq.setFbType("Internal");
+								oldValReq.setFbType(StatusName.internal);
 								// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
-								oldValReq.setFbStatus("Rejected");
+								oldValReq.setFbStatus(StatusName.reject);
 								oldValReq.setGruopSatus(StatusName.tlFeedback);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
@@ -375,10 +375,10 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setRootCause(newValReq.get(16));
 								oldValReq.setActionDueDate(newValReq.get(17));
 
-								oldValReq.setFbType("Internal");
+								oldValReq.setFbType(StatusName.internal);
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
-								oldValReq.setFbStatus("Accept");
+								oldValReq.setFbStatus(StatusName.accept);
 								oldValReq.setGruopSatus(StatusName.tlFeedback);
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
@@ -393,15 +393,15 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 
 								oldValReq.setIssuedby(issuedby);
 								oldValReq.setIssueTo(issuedto);
-								oldValReq.setFbStatus("Accept");
-								oldValReq.setGruopSatus("Rejected");
+								oldValReq.setFbStatus(StatusName.accept);
+								oldValReq.setGruopSatus(StatusName.reject);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								// initiate new FB from QA to Eng
 								oldValReq.setGruopSatus(StatusName.engFeedback);
-								oldValReq.setIssueType("Wrong Value");
-								oldValReq.setFbStatus("Rejected");
+								oldValReq.setIssueType(StatusName.wrongValue);
+								oldValReq.setFbStatus(StatusName.reject);
 								oldValReq.setIssueTo(issuedby);
-								if(oldValReq.getFbType().equals("Internal"))
+								if(oldValReq.getFbType().equals(StatusName.internal))
 								{
 									oldValReq.setIssuedby(issuedto);
 								}
