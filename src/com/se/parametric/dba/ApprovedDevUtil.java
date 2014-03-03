@@ -842,7 +842,7 @@ public class ApprovedDevUtil
 			TrackingFeedbackType trackingFeedbackType = null;
 			ParametricFeedback FBObj = null;
 			Document document = null;
-
+			document = ParaQueryUtil.getDocumnetByPdfUrl(app.getPdfUrl());
 			/** component has group value */
 			criteria = session.createCriteria(ParametricReviewData.class);
 			criteria.add(Restrictions.eq("groupApprovedValueId", groups.getId()));
@@ -909,7 +909,7 @@ public class ApprovedDevUtil
 				}
 				else
 				{
-
+					FBObj = new ParametricFeedback();
 					FBObj.setId(System.nanoTime());
 					FBObj.setParaIssueType(paraIssueType);
 					FBObj.setParaFeedbackStatus(paraFeedbackStatus);
@@ -920,9 +920,10 @@ public class ApprovedDevUtil
 					FBObj.setType("P");
 					FBObj.setDocument(document);
 
+					FBCyc = new ParametricFeedbackCycle();
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
-					FBCyc.setFbItemValue(groups.getGroupFullValue());
+					FBCyc.setFbItemValue(rd.getComponent().getPartNumber());
 					FBCyc.setFbComment(app.getComment());
 					FBCyc.setIssuedBy(app.getIssuedby());
 					FBCyc.setIssuedTo(app.getIssueTo());
@@ -1632,7 +1633,7 @@ public class ApprovedDevUtil
 
 			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 			FBCyc.setFeedbackRecieved(fbRecieved);
-			if(app.getCAction()!=null && app.getPAction()!=null && app.getRootCause()!=null && app.getActionDueDate() !=null )
+			if(app.getCAction() != null && app.getPAction() != null && app.getRootCause() != null && app.getActionDueDate() != null)
 			{
 				feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
 				if(feedbackAction != null)
@@ -2262,7 +2263,7 @@ public class ApprovedDevUtil
 						unApprovedDTO.setUnit("");
 					}
 					unApprovedDTO.setUserId(groupRecord.getParaUserId());
-					// unApprovedDTO.setQaUserId(groupRecord.getQaUserId());
+					unApprovedDTO.setQaUserId(groupRecord.getQaUserId() == null ? 0l : groupRecord.getQaUserId());
 				}
 				result.add(unApprovedDTO);
 			}
