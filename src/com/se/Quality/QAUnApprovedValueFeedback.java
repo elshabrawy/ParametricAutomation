@@ -305,7 +305,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							oldValReq.setCondition(newValReq.get(9));
 							oldValReq.setMultiplier(newValReq.get(10));
 							oldValReq.setUnit(newValReq.get(11));
-							oldValReq.setFbStatus("Rejected");
+							oldValReq.setFbStatus(StatusName.reject);
 							oldValReq.setGruopSatus(StatusName.tlFeedback);
 							oldValReq.setComment(newValReq.get(13));
 							long issuedto = oldValReq.getIssuedby();
@@ -315,9 +315,9 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 
 							if(newValReq.get(12).equals("Approved"))
 							{
-								oldValReq.setFbStatus("Feedback Closed");
-								oldValReq.setGruopSatus("Approved");
-								ApprovedDevUtil.setValueApproved(result.get(i), "Approved");
+								oldValReq.setFbStatus(StatusName.fbClosed);
+								oldValReq.setGruopSatus(StatusName.approved);
+								ApprovedDevUtil.setValueApproved(result.get(i),StatusName.approved);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 
