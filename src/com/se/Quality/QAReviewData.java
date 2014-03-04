@@ -81,7 +81,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
-		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "Status" };
+		String[] filterLabels = { "PL Name", "PL Type","Supplier", "Task Type", "User Name", "Status" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -124,6 +124,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		save.addActionListener(this);
 		devSheetButtonPanel.add(save);	
 		
+//		filterPanel.comboBoxItems[1].setSelectedIndex(1);
 		tabSheet.setLayout(null);
 		sheetpanel.setBounds(0, 0, width - 120, height - 125);
 		tabSheet.add(sheetpanel);
@@ -153,6 +154,15 @@ public class QAReviewData extends JPanel implements ActionListener
 		 * **/
 		if(event.getSource() == filterPanel.filterButton)
 		{
+			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+			String plType = filterPanel.comboBoxItems[1].getSelectedItem().toString();			
+			String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+			String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+			if(taskType.equals("All")){
+				JOptionPane.showMessageDialog(null, "Please Select Task Type");
+			}else{
+			String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+			String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
 			Date startDate = null;
 			Date endDate = null;
 			try
@@ -162,11 +172,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+				
 				
 				if(status.equals("All"))
 				{
@@ -208,6 +214,7 @@ public class QAReviewData extends JPanel implements ActionListener
 			{
 				e.printStackTrace();
 			}
+		}
 		}
 		else if(event.getSource() == filterPanel.refreshButton)
 		{
