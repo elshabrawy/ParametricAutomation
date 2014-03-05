@@ -1412,7 +1412,7 @@ public class WorkingSheet
 		try
 		{
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
-			Set<String> pdfSet = new HashSet<String>();
+			List<String> pdfSet = new ArrayList<String>();
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
@@ -1488,7 +1488,7 @@ public class WorkingSheet
 					return;
 				}
 			}
-			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.doneFLagEngine);
+			DataDevQueryUtil.saveTrackingParamtric(pdfSet, null, selectedPL, null, StatusName.doneFLagEngine);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1502,8 +1502,8 @@ public class WorkingSheet
 
 		try
 		{
-			Set<String> rejectedPdfs = new HashSet<String>();
-			Set<String> acceptedPdfs = new HashSet<String>();
+			List<String> rejectedPdfs = new ArrayList<String>();
+			List<String> acceptedPdfs = new ArrayList<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			// List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
@@ -1591,8 +1591,8 @@ public class WorkingSheet
 			}
 			// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
 			DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, null, selectedPL, null, StatusName.cmTransfere);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, null, selectedPL, null, StatusName.tlFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1612,8 +1612,8 @@ public class WorkingSheet
 		}
 		try
 		{
-			Set<String> rejectedPdfs = new HashSet<String>();
-			Set<String> acceptedPdfs = new HashSet<String>();
+			List<String> rejectedPdfs = new ArrayList<String>();
+			List<String> acceptedPdfs = new ArrayList<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			// List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
@@ -1715,9 +1715,9 @@ public class WorkingSheet
 
 				// ParaQueryUtil.updateDocStatus( teamLeaderName, row);
 			}
-			DataDevQueryUtil.savePartsFeedback(feedbackParts, "Internal");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.savePartsFeedback(feedbackParts);
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, null, selectedPL, null, StatusName.qaReview);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, null, selectedPL, null, StatusName.engFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1737,7 +1737,8 @@ public class WorkingSheet
 		}
 		try
 		{
-			Set<String> pdfs = new HashSet<String>();
+			List<String> pdfs = new ArrayList<String>();
+			List<String> fbTypes = new ArrayList<String>();
 			// List<PartInfoDTO> updatedParts = new ArrayList<PartInfoDTO>();
 			// List<PartInfoDTO> rejectedParts = new ArrayList<PartInfoDTO>();
 			List<PartInfoDTO> feedBackParts = new ArrayList<PartInfoDTO>();
@@ -1755,6 +1756,7 @@ public class WorkingSheet
 				String vendorName = partData.get(5);
 				String plName = partData.get(0);
 				String issuedTo = partData.get(1);
+				String fbtype = partData.get(partData.size() - 2);
 				pn = partData.get(PartCell);
 				pdfUrl = partData.get(pdfCellNo);
 				family = partData.get(familyCell);
@@ -1790,6 +1792,7 @@ public class WorkingSheet
 				partInfo.setFamilycross(famCross);
 				partInfo.setMask(mask);
 				partInfo.setGeneric(generic);
+				partInfo.setFbtype(fbtype);
 
 				if("Rejected".equals(status))
 				{
@@ -1803,9 +1806,10 @@ public class WorkingSheet
 					{
 						if((issuedTo != null) && (!"".equals(issuedTo)))
 						{
-							partInfo.setFeedBackStatus("Rejected");
+							partInfo.setFeedBackStatus(StatusName.reject);
 							feedBackParts.add(partInfo);
 							pdfs.add(pdfUrl);
+							fbTypes.add(partInfo.getFbtype());
 						}
 
 					}
@@ -1825,21 +1829,22 @@ public class WorkingSheet
 					partInfo.setFetValues(readRowValues(partData));
 					if((issuedTo != null) && (!"".equals(issuedTo)))
 					{
-						partInfo.setFeedBackStatus("Approved");
+						partInfo.setFeedBackStatus(StatusName.approved);
 						feedBackParts.add(partInfo);
 					}
 
 					DataDevQueryUtil.updateParamtric(partInfo);
 					pdfs.add(pdfUrl);
+					fbTypes.add(partInfo.getFbtype());
 
 				}
 
 			}
 
-			DataDevQueryUtil.savePartsFeedback(feedBackParts, "ENG");
+			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			// DataDevQueryUtil.savePartsFeedback(updatedParts, null, "Approved","ENG");
 			// DataDevQueryUtil.savePartsFeedback(rejectedParts, null, "Rejected","ENG");
-			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(pdfs, fbTypes, selectedPL, null, null);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1858,13 +1863,13 @@ public class WorkingSheet
 		}
 		try
 		{
-			Set<String> engRejectedPdfs = new HashSet<String>();
-			Set<String> qARejectedAndUpdatedPdfs = new HashSet<String>();
+			List<String> engRejectedPdfs = new ArrayList<String>();
+			List<String> qARejectedAndUpdatedPdfs = new ArrayList<String>();
 			String feedCycleStatus = "";
-			Set<String> engAcceptedPdfsInternal = new HashSet<String>();
-			Set<String> engAcceptedPdfsExternal = new HashSet<String>();
+			List<String> engAcceptedPdfsInternal = new ArrayList<String>();
+			List<String> engAcceptedPdfsExternal = new ArrayList<String>();
 
-			Set<String> qAAcceptedPdfs = new HashSet<String>();
+			List<String> qAAcceptedPdfs = new ArrayList<String>();
 			List<PartInfoDTO> partsToStoreFeedback = new ArrayList<PartInfoDTO>();
 			// List<PartInfoDTO> partsToCloseFeedback = new ArrayList<PartInfoDTO>();
 			// List<PartInfoDTO> partsToUpdateFeedback = new ArrayList<PartInfoDTO>();
@@ -2074,14 +2079,14 @@ public class WorkingSheet
 			// DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback, "Wrong Data", "Rejected","TL");
 			// DataDevQueryUtil.savePartsFeedback(partsToRejectFeedback, "Wrong Data", "Rejected","TL");
 			// DataDevQueryUtil.savePartsFeedback(partsToCloseFeedback, null, "Feedback Closed","TL");
-			DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback, "Internal");
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, selectedPL, null, StatusName.qaReview);// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, selectedPL, null, StatusName.qaFeedback);// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, null, selectedPL, null, StatusName.qaReview);// update ,approve Eng
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, null, selectedPL, null, StatusName.qaFeedback);// update ,approve Eng
+			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, null, selectedPL, null, StatusName.engFeedback);
 
 			/** QA is the reciever **/
-			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, selectedPL, null, StatusName.qaFeedback);
-			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, null, selectedPL, null, StatusName.qaFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, null, selectedPL, null, StatusName.engFeedback);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -2602,11 +2607,11 @@ public class WorkingSheet
 			hdrUintRange = "M" + 1 + ":N" + 1;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0xCB3D30);
-			
+
 			hdrUintRange = "O" + 1 + ":R" + 1;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0xe9d9c8);
-			
+
 			hdrUintRange = "O" + 1 + ":R" + 1;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0x0067e7);
@@ -2623,7 +2628,7 @@ public class WorkingSheet
 		}
 
 	}
-	
+
 	public void setHistoryHeader(ArrayList<String> header)
 	{
 		try
