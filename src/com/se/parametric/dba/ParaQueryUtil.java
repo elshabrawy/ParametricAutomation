@@ -2881,7 +2881,6 @@ public class ParaQueryUtil
 		return null;
 	}
 
-
 	public static TrackingDatasheetAlert getTrackingDatasheetAlertByObject(Session session, TrackingDatasheetAlert trackingDatasheetAlert)
 	{
 		Criteria crit = session.createCriteria(TrackingDatasheetAlert.class);
