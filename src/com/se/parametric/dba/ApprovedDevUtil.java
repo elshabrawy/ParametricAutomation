@@ -1182,8 +1182,6 @@ public class ApprovedDevUtil
 		}
 		else
 		{
-			// Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(),
-			// ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
 			ParametricFeedbackCycle appFB = null;
 			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
 			feedBCri.add(Restrictions.eq("issuedBy", issuedTo));
@@ -1196,15 +1194,9 @@ public class ApprovedDevUtil
 				result.setLastEngComment(appFB.getFbComment());
 			}
 			else
+			{
 				result.setLastEngComment("");
-
-			// result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
-			// result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
-			// if(result.getIssuedby() == issuedTo)
-			// {
-			// result.setComment("");
-			// result.setFbStatus("");
-			// }
+			}
 		}
 		return result;
 	}
@@ -1242,7 +1234,7 @@ public class ApprovedDevUtil
 				if(type.equals("Eng"))
 				{
 					row = new Object[3];
-					if(list2 != null)
+					if(!list2.isEmpty())
 					{
 						parametricApprovedGroup = (ParametricApprovedGroup) list2.get(0);
 						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
@@ -1268,7 +1260,7 @@ public class ApprovedDevUtil
 				else
 				{
 					row = new Object[4];
-					if(list2 != null)
+					if(!list2.isEmpty())
 					{
 						parametricApprovedGroup = (ParametricApprovedGroup) list2.get(0);
 						row[0] = parametricApprovedGroup.getPlFeature().getPl().getName();
