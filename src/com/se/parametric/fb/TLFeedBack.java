@@ -174,7 +174,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		add(tabbedPane);
 
 		filterPanel.refreshButton.addActionListener(this);
-		
+
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment","BY", "Issue_Source"), false);
+						ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment", "BY", "Issue_Source"), false);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int devCommentIndex = sheetHeader.indexOf("Dev Comment");
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
@@ -304,26 +304,29 @@ public class TLFeedBack extends JPanel implements ActionListener
 							Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 							PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
 							// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-//							String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused since we show comments of tl and QA
+							// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
+																																	// unused since we
+																																	// show comments
+																																	// of tl and QA
 
-							String QAComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"QUALITY",null,feedCom.get(4));
-							String engComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId(),feedCom.get(4));
+							String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
+							String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
 							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
 							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-							
+
 							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
 							}
-//							if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//							{
-								sheetRecord.set(devCommentIndex, engComment);
-//							}
-//							else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//							{
-								sheetRecord.set(qaCommentIndex, QAComment);
-//							}
+							// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+							// {
+							sheetRecord.set(devCommentIndex, engComment);
+							// }
+							// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+							// {
+							sheetRecord.set(qaCommentIndex, QAComment);
+							// }
 							sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
 							sheetRecord.set(sentBYIndex, senderDTO.getFullName());
 							// sheetRecord.set(2, status);
@@ -387,7 +390,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment","BY", "Issue_Source"), false);
+					ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment", "BY", "Issue_Source"), false);
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int devCommentIndex = sheetHeader.indexOf("Dev Comment");
 					int qaCommentIndex = sheetHeader.indexOf("QA Comment");
@@ -402,26 +405,29 @@ public class TLFeedBack extends JPanel implements ActionListener
 						Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 						PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
 						// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-//						String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused since we show comments of tl and QA
+						// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused
+																																// since we show
+																																// comments of tl and
+																																// QA
 
-						String QAComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"QUALITY",null,feedCom.get(4));
-						String engComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId(),feedCom.get(4));
+						String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
+						String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
 						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
 						GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-						
+
 						for(int l = 0; l < 7; l++)
 						{
 							sheetRecord.add("");
 						}
-//						if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//						{
-							sheetRecord.set(devCommentIndex, engComment);
-//						}
-//						else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//						{
-							sheetRecord.set(qaCommentIndex, QAComment);
-//						}
+						// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+						// {
+						sheetRecord.set(devCommentIndex, engComment);
+						// }
+						// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+						// {
+						sheetRecord.set(qaCommentIndex, QAComment);
+						// }
 						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
 						sheetRecord.set(sentBYIndex, senderDTO.getFullName());
 						// sheetRecord.set(2, status);
@@ -523,7 +529,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				for(int i = 0; i < separationValues.size(); i++)
 				{
 					row = separationValues.get(i);
-					
+
 					String plName = row.get(0);
 					String featureName = row.get(3);
 					String featureFullValue = row.get(4);
@@ -535,7 +541,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					{
 						ex.printStackTrace();
 					}
-			
+
 					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 					appValues.add(featureFullValue);
 				}
