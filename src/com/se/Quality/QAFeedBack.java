@@ -44,7 +44,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
-//	SheetPanel separationPanel = new SheetPanel();
+	// SheetPanel separationPanel = new SheetPanel();
 	JPanel tabSheet, selectionPanel;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	JTabbedPane tabbedPane;
@@ -73,7 +73,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
-//		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
+		// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "Status" };
@@ -108,7 +108,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 110, height /3);
+		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
 		save.setBounds(3, 80, 95, 29);
@@ -116,7 +116,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		save.setFont(new Font("Tahoma", Font.BOLD, 11));
 		save.addActionListener(this);
 		devSheetButtonPanel.add(save);
-		
+
 		tabSheet.setLayout(null);
 		sheetpanel.setBounds(0, 0, width - 120, height - 125);
 		tabSheet.add(sheetpanel);
@@ -139,7 +139,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		Thread thread = new Thread(loading);
 		thread.start();
 		ArrayList<String> row = null;
-		String[] statuses=null;
+		String[] statuses = null;
 		boolean isExclamationMark = false;
 		/**
 		 * Show pdfs Action
@@ -160,24 +160,27 @@ public class QAFeedBack extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				
+
 				if(status.equals("All"))
 				{
-					/******* all combo box items except all in statuses[]******/
-	                int count = filterPanel.comboBoxItems[4].getItemCount();
-	                StringBuilder builder = new StringBuilder();
-	                for (int i = 0; i < count; i++) {
-	                	
-	                	if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-	                	{	builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-		                    if (i < count - 1) {
-		                        builder.append(", ");
-		                    }
-	                    }
-	                }
-					statuses=builder.toString().split(", ");
+					/******* all combo box items except all in statuses[] ******/
+					int count = filterPanel.comboBoxItems[4].getItemCount();
+					StringBuilder builder = new StringBuilder();
+					for(int i = 0; i < count; i++)
+					{
+
+						if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
+						{
+							builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
+							if(i < count - 1)
+							{
+								builder.append(", ");
+							}
+						}
+					}
+					statuses = builder.toString().split(", ");
 				}
-				
+
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -185,14 +188,15 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 				else
 				{
-				     ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-		                int size = model.getSize();
-						users=new Long[size-1];
-		                for(int i=1;i<size;i++) {
-		                    Object element = model.getElementAt(i);
-		                    if(element!=null && !element.equals("All") )
-		                    users[i-1]=ParaQueryUtil.getUserIdByExactName((String) element);
-		                }
+					ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+					int size = model.getSize();
+					users = new Long[size - 1];
+					for(int i = 1; i < size; i++)
+					{
+						Object element = model.getElementAt(i);
+						if(element != null && !element.equals("All"))
+							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+					}
 				}
 				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, statuses, startDate, endDate, null, "QAReview", null);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
@@ -272,20 +276,21 @@ public class QAFeedBack extends JPanel implements ActionListener
 					}
 					else
 					{
-//						teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-					     ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-			                int size = model.getSize();
-							users=new Long[size-1];
-			                for(int i=1;i<size;i++) {
-			                    Object element = model.getElementAt(i);
-			                    if(element!=null && !element.equals("All") )
-			                    users[i-1]=ParaQueryUtil.getUserIdByExactName((String) element);
-//			                    System.out.println("Element at " + i + " = " + element);
-			                }
+						// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+						ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+						int size = model.getSize();
+						users = new Long[size - 1];
+						for(int i = 1; i < size; i++)
+						{
+							Object element = model.getElementAt(i);
+							if(element != null && !element.equals("All"))
+								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+							// System.out.println("Element at " + i + " = " + element);
+						}
 					}
-					
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() },userDTO.getId(),StatusName.qaFeedback);
-//					String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
+
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback);
+					// String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
@@ -298,13 +303,13 @@ public class QAFeedBack extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("TL Status","TLComment"),true);
-					
+						ws.setReviewHeader(Arrays.asList("TL Status", "TLComment"), true);
+
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int tlstatusIndex = sheetHeader.indexOf("TL Status");
 						int tlCommentIndex = sheetHeader.indexOf("TLComment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-	
+
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
@@ -312,27 +317,30 @@ public class QAFeedBack extends JPanel implements ActionListener
 							supplierName = sheetRecord.get(5);
 							Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 							PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused since we show comments of tl and QA
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
+																																	// unused since we
+																																	// show comments
+																																	// of tl and QA
 
-							String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId(),feedCom.get(4));
+							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
 							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
 							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-							
+
 							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
 							}
-//							if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//							{
-//								sheetRecord.set(devCommentIndex, engComment);
-//							}
-//							else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//							{
-								sheetRecord.set(tlCommentIndex, feedCom.get(0));
-								sheetRecord.set(tlstatusIndex, feedCom.get(5));
-//							}
-//							sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-//							sheetRecord.set(sentBYIndex, senderDTO.getFullName());
+							// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+							// {
+							// sheetRecord.set(devCommentIndex, engComment);
+							// }
+							// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+							// {
+							sheetRecord.set(tlCommentIndex, feedCom.get(0));
+							sheetRecord.set(tlstatusIndex, feedCom.get(5));
+							// }
+							// sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+							// sheetRecord.set(sentBYIndex, senderDTO.getFullName());
 							// sheetRecord.set(2, status);
 							plData.set(j, sheetRecord);
 						}
@@ -392,20 +400,22 @@ public class QAFeedBack extends JPanel implements ActionListener
 					users = new Long[] { userId };
 				}
 				else
-				{ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-                int size = model.getSize();
-				 users=new Long[size-1];
-                for(int i=1;i<size;i++) {
-                    Object element = model.getElementAt(i);
-                    if(element!=null && !element.equals("All") )
-                    users[i-1]=ParaQueryUtil.getUserIdByExactName((String) element);
-                }
+				{
+					ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+					int size = model.getSize();
+					users = new Long[size - 1];
+					for(int i = 1; i < size; i++)
+					{
+						Object element = model.getElementAt(i);
+						if(element != null && !element.equals("All"))
+							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+					}
 				}
 				if("All".equals(status))
 				{
 					status = StatusName.qaFeedback;
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null,userDTO.getId(),StatusName.qaFeedback);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null, userDTO.getId(), StatusName.qaFeedback);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -418,7 +428,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 					// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, status, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setReviewHeader(Arrays.asList("TL Status","TLComment"),true);
+					ws.setReviewHeader(Arrays.asList("TL Status", "TLComment"), true);
 
 					// ArrayList<String> sheetHeader = ws.getHeader();
 					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
@@ -445,12 +455,11 @@ public class QAFeedBack extends JPanel implements ActionListener
 					// // sheetRecord.set(2, status);
 					// // plData.set(j, sheetRecord);
 					// }
-					
+
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int tlstatusIndex = sheetHeader.indexOf("TL Status");
 					int tlCommentIndex = sheetHeader.indexOf("TLComment");
 
-					
 					for(int j = 0; j < plData.size(); j++)
 					{
 						ArrayList<String> sheetRecord = plData.get(j);
@@ -459,32 +468,35 @@ public class QAFeedBack extends JPanel implements ActionListener
 						Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 						PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
 						// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-//						String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-//						String QAComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"QUALITY",null);
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused since we show comments of tl and QA
-						String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId(),feedCom.get(4));
+						// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
+						// String QAComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"QUALITY",null);
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused
+																																// since we show
+																																// comments of tl and
+																																// QA
+						String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
 						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
 						GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-						
+
 						for(int l = 0; l < 7; l++)
 						{
 							sheetRecord.add("");
 						}
-//						if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//						{
-//							sheetRecord.set(devCommentIndex, engComment);
-//						}
-//						else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-//						{
-							sheetRecord.set(tlCommentIndex, feedCom.get(0));
-							sheetRecord.set(tlstatusIndex, feedCom.get(5));
-//						}
-//						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-//						sheetRecord.set(sentBYIndex, senderDTO.getFullName());
+						// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+						// {
+						// sheetRecord.set(devCommentIndex, engComment);
+						// }
+						// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
+						// {
+						sheetRecord.set(tlCommentIndex, feedCom.get(0));
+						sheetRecord.set(tlstatusIndex, feedCom.get(5));
+						// }
+						// sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+						// sheetRecord.set(sentBYIndex, senderDTO.getFullName());
 						// sheetRecord.set(2, status);
 						plData.set(j, sheetRecord);
-						}
-					
+					}
+
 					ws.writeReviewData(plData, 2, 3);
 					k++;
 				}
@@ -494,26 +506,26 @@ public class QAFeedBack extends JPanel implements ActionListener
 			}
 		}
 
-
-	/**
-	 * Save Parts Action
-	 */
-	else if(event.getSource() == save)
-	{
-		System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-		wsMap.keySet();
-		for(String wsName : wsMap.keySet())
+		/**
+		 * Save Parts Action
+		 */
+		else if(event.getSource() == save)
 		{
-			if(wsName != "LoadAllData" && wsName != "Separation")
+			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
 			{
-				wsMap.get(wsName).saveQAReviewAction(QAName,"FB");
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					wsMap.get(wsName).saveQAReviewAction(QAName, "FB");
+				}
 			}
 		}
-	}
-		
+
 		thread.stop();
 		loading.frame.dispose();
 	}
+
 	public static void main(String[] args)
 	{
 		JFrame frame = new JFrame();
@@ -543,7 +555,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		while(true)
 		{
 			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
-//			devPanel.updateFlags(flags);
+			// devPanel.updateFlags(flags);
 
 			try
 			{
@@ -560,6 +572,6 @@ public class QAFeedBack extends JPanel implements ActionListener
 		alertsPanel.updateFlags(flags);
 		alertsPanel1.updateFlags(flags);
 		alertsPanel2.updateFlags(flags);
-		
+
 	}
 }
