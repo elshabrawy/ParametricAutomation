@@ -7,8 +7,10 @@ import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
+import com.se.automation.db.client.mapping.TrackingFeedbackType;
 
-public class PartInfoDTO {
+public class PartInfoDTO
+{
 	private Pdf pdf;
 	private SupplierPl supplierPl;
 	private Supplier supplier;
@@ -34,9 +36,18 @@ public class PartInfoDTO {
 	private String feedBackStatus;
 	private String feedBackCycleType;
 	private String feedBackSource;
-	
-	
-	
+	private String Fbtype;
+
+	public String getFbtype()
+	{
+		return Fbtype;
+	}
+
+	public void setFbtype(String fbtype)
+	{
+		Fbtype = fbtype;
+	}
+
 	public String getFeedBackSource()
 	{
 		return feedBackSource;
@@ -67,179 +78,223 @@ public class PartInfoDTO {
 		this.feedBackStatus = feedBackStatus;
 	}
 
-	public String getDescription() {
+	public String getDescription()
+	{
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(String description)
+	{
 		this.description = description;
 	}
 
-	public String getNPIFlag() {
+	public String getNPIFlag()
+	{
 		return NPIFlag;
 	}
 
-	public void setNPIFlag(String nPIFlag) {
+	public void setNPIFlag(String nPIFlag)
+	{
 		NPIFlag = nPIFlag;
 	}
 
-	public String getFeedbackType() {
+	public String getFeedbackType()
+	{
 		return feedbackType;
 	}
 
-	public void setFeedbackType(String feedbackType) {
+	public void setFeedbackType(String feedbackType)
+	{
 		this.feedbackType = feedbackType;
 	}
 
-	public String getPlName() {
+	public String getPlName()
+	{
 		return plName;
 	}
 
-	public void setPlName(String plName) {
+	public void setPlName(String plName)
+	{
 		this.plName = plName;
 	}
 
-	public String getSupplierName() {
+	public String getSupplierName()
+	{
 		return supplierName;
 	}
 
-	public void setSupplierName(String supplierName) {
+	public void setSupplierName(String supplierName)
+	{
 		this.supplierName = supplierName;
 	}
 
-	public String getIssuedBy() {
+	public String getIssuedBy()
+	{
 		return issuedBy;
 	}
 
-	public void setIssuedBy(String issuedBy) {
+	public void setIssuedBy(String issuedBy)
+	{
 		this.issuedBy = issuedBy;
 	}
 
-	public String getIssuedTo() {
+	public String getIssuedTo()
+	{
 		return issuedTo;
 	}
 
-	public void setIssuedTo(String issuedTo) {
+	public void setIssuedTo(String issuedTo)
+	{
 		this.issuedTo = issuedTo;
 	}
 
-	public String getPdfUrl() {
+	public String getPdfUrl()
+	{
 		return pdfUrl;
 	}
 
-	public void setPdfUrl(String pdfUrl) {
+	public void setPdfUrl(String pdfUrl)
+	{
 		this.pdfUrl = pdfUrl;
 	}
 
-	public void setComment(String comment) {
+	public void setComment(String comment)
+	{
 		this.comment = comment;
 	}
 
-	public String getComment() {
+	public String getComment()
+	{
 		return this.comment;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(String status)
+	{
 		this.status = status;
 	}
 
-	public String getStatus() {
+	public String getStatus()
+	{
 		return this.status;
 	}
 
-	public Pdf getPdf() {
+	public Pdf getPdf()
+	{
 		return pdf;
 	}
 
-	public void setPdf(Pdf pdf) {
+	public void setPdf(Pdf pdf)
+	{
 		this.pdf = pdf;
 	}
 
-	public SupplierPl getSupplierPl() {
+	public SupplierPl getSupplierPl()
+	{
 		return supplierPl;
 	}
 
-	public void setSupplierPl(SupplierPl supplierPl) {
+	public void setSupplierPl(SupplierPl supplierPl)
+	{
 		this.supplierPl = supplierPl;
 	}
 
-	public Supplier getSupplier() {
+	public Supplier getSupplier()
+	{
 		return supplier;
 	}
 
-	public void setSupplier(Supplier supplier) {
+	public void setSupplier(Supplier supplier)
+	{
 		this.supplier = supplier;
 	}
 
-	public Pl getPl() {
+	public Pl getPl()
+	{
 		return pl;
 	}
 
-	public void setPl(Pl pl) {
+	public void setPl(Pl pl)
+	{
 		this.pl = pl;
 	}
 
-	public Document getDocument() {
+	public Document getDocument()
+	{
 		return document;
 	}
 
-	public void setDocument(Document document) {
+	public void setDocument(Document document)
+	{
 		this.document = document;
 	}
 
-	public String getPN() {
+	public String getPN()
+	{
 		return PN;
 	}
 
-	public void setPN(String pN) {
+	public void setPN(String pN)
+	{
 		PN = pN;
 	}
 
-	public String getFamily() {
+	public String getFamily()
+	{
 		return family;
 	}
 
-	public void setFamily(String family) {
+	public void setFamily(String family)
+	{
 		this.family = family;
 	}
 
-	public String getFamilycross() {
+	public String getFamilycross()
+	{
 		return familycross;
 	}
 
-	public void setFamilycross(String familycross) {
+	public void setFamilycross(String familycross)
+	{
 		this.familycross = familycross;
 	}
 
-	public String getGeneric() {
+	public String getGeneric()
+	{
 		return generic;
 	}
 
-	public void setGeneric(String generic) {
+	public void setGeneric(String generic)
+	{
 		this.generic = generic;
 	}
 
-	public String getMask() {
+	public String getMask()
+	{
 		return mask;
 	}
 
-	public void setMask(String mask) {
+	public void setMask(String mask)
+	{
 		this.mask = mask;
 	}
 
-	public Map<String, String> getFetValues() {
+	public Map<String, String> getFetValues()
+	{
 		return fetValues;
 	}
 
-	public void setFetValues(Map<String, String> fetValues) {
+	public void setFetValues(Map<String, String> fetValues)
+	{
 		this.fetValues = fetValues;
 	}
 
-	public String getNewsLink() {
+	public String getNewsLink()
+	{
 		return newsLink;
 	}
 
-	public void setNewsLink(String newsLink) {
+	public void setNewsLink(String newsLink)
+	{
 		this.newsLink = newsLink;
 	}
 
