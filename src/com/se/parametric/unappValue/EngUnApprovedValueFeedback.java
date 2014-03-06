@@ -401,12 +401,15 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								oldValReq.setIssueType(StatusName.wrongValue);
 								oldValReq.setFbStatus(StatusName.reject);
 								oldValReq.setIssueTo(issuedby);
+
 								if(oldValReq.getFbType().equals(StatusName.internal))
 								{
 									oldValReq.setIssuedby(issuedto);
+									oldValReq.setComment(newValReq.get(21));
 								}
 								else
 								{
+									oldValReq.setComment(newValReq.get(23));
 									Long qaUserId = 0L;
 									try
 									{
