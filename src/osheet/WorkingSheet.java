@@ -578,21 +578,46 @@ public class WorkingSheet
 			Cell cell = getCellByPosission(0, StatrtRecord);
 			cell.setText("Taxonomy");
 			HeaderList.add(cell);
+
 			cell = getCellByPosission(1, StatrtRecord);
+			cell.setText("Feedback Type");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(2, StatrtRecord);
 			cell.setText("Eng Name");
 			HeaderList.add(cell);
-			cell = getCellByPosission(2, StatrtRecord);
+
+			cell = getCellByPosission(3, StatrtRecord);
 			cell.setText("Status");
 			HeaderList.add(cell);
-			cell = getCellByPosission(3, StatrtRecord);
+
+			cell = getCellByPosission(4, StatrtRecord);
 			cell.setText("Comment");
 			HeaderList.add(cell);
-			cell = getCellByPosission(4, StatrtRecord);
+
+			cell = getCellByPosission(5, StatrtRecord);
+			cell.setText("C_Action");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(6, StatrtRecord);
+			cell.setText("P_Action");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(7, StatrtRecord);
+			cell.setText("RootCause");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(8, StatrtRecord);
+			cell.setText("ActionDueDate");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(9, StatrtRecord);
 			cell.setText("Task Type");
 			HeaderList.add(cell);
-			cell = getCellByPosission(5, StatrtRecord);
+			cell = getCellByPosission(10, StatrtRecord);
 			cell.setText("Supplier Name");
 			HeaderList.add(cell);
+
 			setDevHeader(false, isQA);
 			if(additionalCols != null)
 			{
@@ -1751,12 +1776,16 @@ public class WorkingSheet
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
 				ArrayList<String> partData = sheetData.get(i);
-				String status = partData.get(2);
-				String comment = partData.get(3);
-				String vendorName = partData.get(5);
+				String status = partData.get(3);
+				String comment = partData.get(4);
+				String vendorName = partData.get(10);
 				String plName = partData.get(0);
-				String issuedTo = partData.get(1);
-				String fbtype = partData.get(partData.size() - 2);
+				String issuedTo = partData.get(2);
+				String fbtype = partData.get(1);
+				String CAction = partData.get(5);
+				String PAction = partData.get(6);
+				String RootCause = partData.get(7);
+				String ActinDueDate = partData.get(8);
 				pn = partData.get(PartCell);
 				pdfUrl = partData.get(pdfCellNo);
 				family = partData.get(familyCell);
