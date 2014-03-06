@@ -872,6 +872,7 @@ public class ApprovedDevUtil
 					tracks.add(rd.getTrackingParametric());
 				ParametricFeedbackCycle FBCyc = null;
 				ParametricFeedbackCycle OldFBCyc = null;
+				ParaFeedbackAction feedbackAction = null;
 				// FBObj = new ParametricFeedback();
 				// if feedback posted already return
 				Criteria fbCriteria = session.createCriteria(ParametricFeedbackCycle.class);
@@ -903,6 +904,14 @@ public class ApprovedDevUtil
 
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
+					if(app.getCAction() != null && app.getPAction() != null && app.getRootCause() != null && app.getActionDueDate() != null)
+					{
+						feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
+						if(feedbackAction != null)
+						{
+							FBCyc.setParaFeedbackAction(feedbackAction);
+						}
+					}
 					session.saveOrUpdate(OldFBCyc);
 					session.saveOrUpdate(FBCyc);
 					session.beginTransaction().commit();
@@ -931,6 +940,14 @@ public class ApprovedDevUtil
 
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
+					if(app.getCAction() != null && app.getPAction() != null && app.getRootCause() != null && app.getActionDueDate() != null)
+					{
+						feedbackAction = getParaAction(app.getCAction(), app.getPAction(), app.getRootCause(), app.getActionDueDate(), session);
+						if(feedbackAction != null)
+						{
+							FBCyc.setParaFeedbackAction(feedbackAction);
+						}
+					}
 					session.saveOrUpdate(FBObj);
 					session.saveOrUpdate(FBCyc);
 				}
@@ -1132,70 +1149,75 @@ public class ApprovedDevUtil
 
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord, String taskType, Session session)
 	{
-		FeedBackData result = new FeedBackData();
+		FeedBackData result = null;
 
 		Criteria feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
 		feedBackCrit.add(Restrictions.eq("issuedTo", issuedTo));
 		feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
 		feedBackCrit.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+		feedBackCrit.createAlias("parametricFeedback", "feedback");
+		feedBackCrit.add(Restrictions.eq("feedback.type", "V"));
 		ParametricFeedbackCycle appFeedback = (ParametricFeedbackCycle) feedBackCrit.uniqueResult();
-
-		result.setComment((appFeedback == null) ? "" : appFeedback.getFbComment());
-		result.setFbStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
-		result.setFbType((appFeedback == null) ? "" : appFeedback.getParametricFeedback().getTrackingFeedbackType().getName());
-		result.setIssuedby(appFeedback.getIssuedBy());
-		result.setIssueTo(appFeedback.getIssuedTo());
-		result.setIssuetype(appFeedback.getParametricFeedback().getParaIssueType().getIssueType());
-		if(appFeedback.getParaFeedbackAction() != null)
+		if(appFeedback != null)
 		{
-			result.setCAction((appFeedback.getParaFeedbackAction().getCAction() == null) ? "" : appFeedback.getParaFeedbackAction().getCAction());
-			result.setPAction((appFeedback.getParaFeedbackAction().getPAction()) == null ? "" : appFeedback.getParaFeedbackAction().getPAction());
-			result.setRootCause((appFeedback.getParaFeedbackAction().getRootCause()) == null ? "" : appFeedback.getParaFeedbackAction().getRootCause());
-			Date date = appFeedback.getParaFeedbackAction().getActionDueDate();
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			result.setActionDueDate(date == null ? "" : sdf.format(date));
-		}
-		if(taskType != null & !taskType.equals("All"))
-		{
-			if(!result.getFbStatus().equals(taskType))
-				return null;
-		}
-		/** get Last comment **/
-		if(appFeedback.getParametricFeedback().getTrackingFeedbackType().getName().equals("QA"))
-		{
-			Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(), ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
-			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
-			feedBCri.add(Restrictions.eq("issuedBy", qaUserId));
-			// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
-			feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
-			feedBCri.addOrder(Order.desc("storeDate"));
-			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
-				appFeedback = (ParametricFeedbackCycle) feedBCri.list().get(0);
-
-			result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
-			result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
-			if(result.getIssuedby() == qaUserId)
+			result = new FeedBackData();
+			result.setComment((appFeedback == null) ? "" : appFeedback.getFbComment());
+			result.setFbStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
+			result.setFbType((appFeedback == null) ? "" : appFeedback.getParametricFeedback().getTrackingFeedbackType().getName());
+			result.setIssuedby(appFeedback.getIssuedBy());
+			result.setIssueTo(appFeedback.getIssuedTo());
+			result.setIssuetype(appFeedback.getParametricFeedback().getParaIssueType().getIssueType());
+			if(appFeedback.getParaFeedbackAction() != null)
 			{
-				result.setComment("");
-				result.setFbStatus("");
+				result.setCAction((appFeedback.getParaFeedbackAction().getCAction() == null) ? "" : appFeedback.getParaFeedbackAction().getCAction());
+				result.setPAction((appFeedback.getParaFeedbackAction().getPAction()) == null ? "" : appFeedback.getParaFeedbackAction().getPAction());
+				result.setRootCause((appFeedback.getParaFeedbackAction().getRootCause()) == null ? "" : appFeedback.getParaFeedbackAction().getRootCause());
+				Date date = appFeedback.getParaFeedbackAction().getActionDueDate();
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				result.setActionDueDate(date == null ? "" : sdf.format(date));
 			}
-		}
-		else
-		{
-			ParametricFeedbackCycle appFB = null;
-			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
-			feedBCri.add(Restrictions.eq("issuedBy", issuedTo));
-			// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
-			feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
-			feedBCri.addOrder(Order.desc("storeDate"));
-			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+			if(taskType != null & !taskType.equals("All"))
 			{
-				appFB = (ParametricFeedbackCycle) feedBCri.list().get(0);
-				result.setLastEngComment(appFB.getFbComment());
+				if(!result.getFbStatus().equals(taskType))
+					return null;
+			}
+			/** get Last comment **/
+			if(appFeedback.getParametricFeedback().getTrackingFeedbackType().getName().equals("QA"))
+			{
+				Long qaUserId = ParaQueryUtil.getQAUserId(groupRecord.getPlFeature().getPl(), ParaQueryUtil.getTrackingTaskTypeByName("Approved Values", session));
+				Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+				feedBCri.add(Restrictions.eq("issuedBy", qaUserId));
+				// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
+				feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+				feedBCri.addOrder(Order.desc("storeDate"));
+				if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+					appFeedback = (ParametricFeedbackCycle) feedBCri.list().get(0);
+
+				result.setQaComment((appFeedback == null) ? "" : appFeedback.getFbComment());
+				result.setQaStatus((appFeedback == null) ? "" : appFeedback.getParaFeedbackStatus().getFeedbackStatus());
+				if(result.getIssuedby() == qaUserId)
+				{
+					result.setComment("");
+					result.setFbStatus("");
+				}
 			}
 			else
 			{
-				result.setLastEngComment("");
+				ParametricFeedbackCycle appFB = null;
+				Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+				feedBCri.add(Restrictions.eq("issuedBy", issuedTo));
+				// feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
+				feedBCri.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
+				feedBCri.addOrder(Order.desc("storeDate"));
+				if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+				{
+					appFB = (ParametricFeedbackCycle) feedBCri.list().get(0);
+					result.setLastEngComment(appFB.getFbComment());
+				}
+				else
+				{
+					result.setLastEngComment("");
+				}
 			}
 		}
 		return result;
