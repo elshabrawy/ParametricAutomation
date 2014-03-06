@@ -1314,9 +1314,12 @@ public class DataDevQueryUtil
 		try
 		{
 			StringBuffer qury = new StringBuffer();
-			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross,GET_MSK_Value (c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG, GET_News_PDF_URL(c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
-					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID ");
+			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME ," +
+					" Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross,GET_MSK_Value (c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG," +
+					" GET_News_PDF_URL(c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
+					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID,AC.C_ACTION,AC.P_ACTION,AC.ROOT_CAUSE,to_date(AC.ACTION_DUE_DATE,'DD/MM/RRRR'),TY.NAME type"
+					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g,PARAMETRIC_FEEDBACK FB, PARAMETRIC_FEEDBACK_CYCLE FBC, PARA_FEEDBACK_ACTION Ac, TRACKING_FEEDBACK_TYPE ty" +
+					" WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID And FB.Item_id = R.COM_ID And FB.ID = FBC.PARA_FEEDBACK_ID AND FBC.ACTION_ID = AC.ID(+) And TY.ID = FB.FEEDBACK_TYPE");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -1350,7 +1353,8 @@ public class DataDevQueryUtil
 			Criteria ParametricFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
 			ParametricFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 			ParametricFeedbackCriteria.add(Restrictions.eq("issuedTo", issuedToId));
-
+			ParametricFeedbackCriteria.createAlias("parametricFeedback", "feedback");
+			ParametricFeedbackCriteria.add(Restrictions.eq("feedback.type", "P"));
 			if((feedbackType != null) && (!"All".equals(feedbackType)))
 			{
 				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
@@ -1487,12 +1491,22 @@ public class DataDevQueryUtil
 					partData = new ArrayList<String>();
 					partData.add(data[0].toString());
 					/** Pl Name */
+					partData.add(data[26].toString());
+					/** Feedback Type */
 					partData.add(data[1].toString());
 					/** user name */
 					partData.add("");
 					/** Status */
 					partData.add("");
 					/** Comment */
+					partData.add(data[22] == null ? "" : data[22].toString());
+					/**C_action*/
+					partData.add(data[23] == null ? "" : data[23].toString());
+					/**P_action*/
+					partData.add(data[24] == null ? "" : data[24].toString());
+					/**Root_cause*/
+					partData.add(data[25] == null ? "" : data[25].toString());
+					/**ActionDueDate*/
 					partData.add(data[2].toString());
 					/** Task Type */
 					partData.add(data[3].toString());
@@ -1504,7 +1518,7 @@ public class DataDevQueryUtil
 
 					if(plType.equals("Semiconductor"))
 					{
-						partData.add(data[6].toString());
+						partData.add(data[6] == null ? "" : data[6].toString());
 						/** family cross */
 						partData.add(data[7].toString());
 						/** generic */
@@ -3285,11 +3299,11 @@ public class DataDevQueryUtil
 			// + "')");
 			String sql = "";
 			sql = " SELECT FB_COMMENT, u.full_name, U.GROUP_ID, FB.ITEM_ID, FB.FEEDBACK_TYPE , s.";
-			sql = sql + "name status_name,get_pl_name(t.PL_ID) pl_name FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
+			sql = sql + "name status_name FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
 			sql = sql + "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s";
 			sql = sql + " WHERE c.com_id = FB.ITEM_ID AND FBC.ISSUED_BY = u.id AND FBC.FEEDBACK_RECIEVE";
-			sql = sql + "D = 0 AND C.PART_NUMBER = 'aaaa' AND C.SUPPLIER_ID = AUTOMATION2.GETSUPPLIERID";
-			sql = sql + " ('Micross Components') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_S";
+			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber + "' AND C.SUPPLIER_ID = AUTOMATION2.GETSUPPLIERID";
+			sql = sql + " ('" + supName + "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_S";
 			sql = sql + "TATUS_ID = S.ID AND T.DOCUMENT_ID = FB.DOCUMENT_ID";
 			SQLQuery query = session.createSQLQuery(sql);
 			List<Object[]> list = query.list();
@@ -3310,7 +3324,6 @@ public class DataDevQueryUtil
 			feed.add(objArr[3].toString());
 			feed.add(objArr[4].toString());// feedback source
 			feed.add(objArr[5].toString());// feedback status add by Ahmed Makram
-			feed.add(objArr[6].toString());// PL Name add by Mohamed Gawad
 
 		}catch(Exception e)
 		{
