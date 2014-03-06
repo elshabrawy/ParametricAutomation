@@ -276,36 +276,33 @@ public class EngFeedBack extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment", "FeedBack Type"), false);
+						ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment"), false);
 						ws.statusValues.remove(0);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int tlCommentIndex = sheetHeader.indexOf("TL Comment");
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
-						int FBTypeIndex = sheetHeader.indexOf("FeedBack Type");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							String partNumber = sheetRecord.get(6);
+							String partNumber = sheetRecord.get(11);
 
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(10));// feedcom 0 is
 																																	// unused since we
 																																	// show comments
 																																	// of tl and QA
-							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							String Fbtype = DataDevQueryUtil.getFeedbackTypeByComId(new Long(feedCom.get(3)));
+							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							for(int l = 0; l < 6; l++)
 							{
 								sheetRecord.add("");
 							}
 							sheetRecord.set(tlCommentIndex, tlComment);
 							sheetRecord.set(qaCommentIndex, qaComment);
-							sheetRecord.set(1, feedCom.get(1));
-							sheetRecord.set(FBTypeIndex, Fbtype);
+							sheetRecord.set(2, feedCom.get(1));
 							plData.set(j, sheetRecord);
 						}
-						ws.writeReviewData(plData, 2, 3);
+						ws.writeReviewData(plData, 2, 4);
 
 						k++;
 					}
@@ -366,7 +363,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int tlCommentIndex = sheetHeader.indexOf("TL Comment");
 					int qaCommentIndex = sheetHeader.indexOf("QA Comment");
-					int FBTypeIndex = sheetHeader.indexOf("FeedBack Type");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
@@ -377,7 +373,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 						PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
 						// String status = ParaQueryUtil.getPartStatusByComId(com.getComId());
 						String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-						String Fbtype = DataDevQueryUtil.getFeedbackTypeByComId(com.getComId());
 						GrmUserDTO issuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
 						for(int l = 0; l < 6; l++)
 						{
@@ -391,7 +386,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 						{
 							sheetRecord.set(qaCommentIndex, comment);
 						}
-						sheetRecord.set(FBTypeIndex, Fbtype);
 						sheetRecord.set(1, issuer.getFullName());
 						// sheetRecord.set(2, status);
 						plData.set(j, sheetRecord);
