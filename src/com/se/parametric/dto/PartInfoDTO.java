@@ -1,5 +1,6 @@
 package com.se.parametric.dto;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.se.automation.db.client.mapping.Document;
@@ -37,6 +38,50 @@ public class PartInfoDTO
 	private String feedBackCycleType;
 	private String feedBackSource;
 	private String Fbtype;
+	private String CAction;
+	private String PAction;
+	private String RootCause;
+	private String ActinDueDate;
+
+	public String getCAction()
+	{
+		return CAction;
+	}
+
+	public void setCAction(String cAction)
+	{
+		CAction = cAction;
+	}
+
+	public String getPAction()
+	{
+		return PAction;
+	}
+
+	public void setPAction(String pAction)
+	{
+		PAction = pAction;
+	}
+
+	public String getRootCause()
+	{
+		return RootCause;
+	}
+
+	public void setRootCause(String rootCause)
+	{
+		RootCause = rootCause;
+	}
+
+	public String getActinDueDate()
+	{
+		return ActinDueDate;
+	}
+
+	public void setActinDueDate(String actinDueDate)
+	{
+		ActinDueDate = actinDueDate;
+	}
 
 	public String getFbtype()
 	{
