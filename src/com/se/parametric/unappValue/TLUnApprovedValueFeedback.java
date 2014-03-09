@@ -300,13 +300,13 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								continue;
 							}
 						}
-						if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only in row :" + i + 1);
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
+						// if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
+						// {
+						// JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only in row :" + i + 1);
+						// thread.stop();
+						// loading.frame.dispose();
+						// return;
+						// }
 						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
 						{
 							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + i + 1);
@@ -387,6 +387,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								// ParaQueryUtil.saveTLApproved(result.get(i));
 								if(oldValReq.getFbType().equals("QA"))
 								{
+
 									oldValReq.setCAction(newValReq.get(14));
 									oldValReq.setPAction(newValReq.get(15));
 									oldValReq.setRootCause(newValReq.get(16));
@@ -407,7 +408,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else if(newValReq.get(12).equals("Update"))
 							{
-
 								if(oldValReq.getFbType().equals("QA"))
 								{
 									oldValReq.setCAction(newValReq.get(14));
@@ -427,7 +427,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setFbStatus(StatusName.fbClosed);
 									oldValReq.setGruopSatus(StatusName.qaReview);
 								}
-
 								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 
