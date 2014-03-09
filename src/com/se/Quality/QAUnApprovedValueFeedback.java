@@ -228,6 +228,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 			statusValues.add("Wrong Separation");
 			statusValues.add("Wrong Value");
 			ws.statusValues = statusValues;
+			ArrayList<String> commentValues = new ArrayList<String>();
+			commentValues.add(StatusName.approved);
+			commentValues.add(StatusName.reject);
+			ws.commentValues = commentValues;
 			ws.writeReviewData(list, 1, 13);
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
@@ -292,6 +296,15 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 					String work = wsMap.get(wsName).getSelectedCellValue();
 					ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
 					int updateFlag = 1;
+					for(int i = 0; i < result.size(); i++)
+					{
+						ArrayList<String> newValReq = result.get(i);
+						if(newValReq.get(12).equals("Approved") && (!newValReq.get(13).equals(StatusName.approved) && !newValReq.get(13).equals(StatusName.reject)))
+						{
+							JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" +(i + 1));
+							return;
+						}
+					}
 					/** Team Leader approved and send to QA */
 					for(int i = 0; i < result.size(); i++)
 					{
@@ -316,8 +329,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							if(newValReq.get(12).equals("Approved"))
 							{
 								oldValReq.setFbStatus(StatusName.fbClosed);
-								oldValReq.setGruopSatus(StatusName.approved);
-								ApprovedDevUtil.setValueApproved(result.get(i),StatusName.approved);
+								oldValReq.setGruopSatus(oldValReq.getComment());
+								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.approved);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 
