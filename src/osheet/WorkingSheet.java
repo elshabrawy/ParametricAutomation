@@ -114,6 +114,7 @@ public class WorkingSheet
 
 	SheetPanel sheetPanel;
 	public List<String> statusValues = new ArrayList<String>();
+	public List<String> commentValues = new ArrayList<String>();
 	private List<String> allPlNames;
 
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
@@ -241,6 +242,8 @@ public class WorkingSheet
 				}
 				cell = getCellByPosission(column - 1, i + start);
 				cell.SetApprovedValues(statusValues, sheet.getCellRangeByPosition(column - 1, i + start, column - 1, i + start));
+				if(!commentValues.isEmpty())
+					cell.SetApprovedValues(commentValues, sheet.getCellRangeByPosition(column, i + start, column, i + start));
 			}
 		}catch(Exception e)
 		{
@@ -1513,7 +1516,7 @@ public class WorkingSheet
 					return;
 				}
 			}
-			DataDevQueryUtil.saveTrackingParamtric(pdfSet, null, selectedPL, null, StatusName.doneFLagEngine);
+			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.doneFLagEngine, "");
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1616,8 +1619,8 @@ public class WorkingSheet
 			}
 			// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
 			DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, null, selectedPL, null, StatusName.cmTransfere);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, null, selectedPL, null, StatusName.tlFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere, QAName);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1741,8 +1744,8 @@ public class WorkingSheet
 				// ParaQueryUtil.updateDocStatus( teamLeaderName, row);
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, null, selectedPL, null, StatusName.qaReview);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, null, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -1822,7 +1825,10 @@ public class WorkingSheet
 				partInfo.setMask(mask);
 				partInfo.setGeneric(generic);
 				partInfo.setFbtype(fbtype);
-
+				partInfo.setCAction(CAction);
+				partInfo.setPAction(PAction);
+				partInfo.setRootCause(RootCause);
+				partInfo.setActinDueDate(ActinDueDate);
 				if("Rejected".equals(status))
 				{
 					if("".equals(comment))
@@ -1858,7 +1864,7 @@ public class WorkingSheet
 					partInfo.setFetValues(readRowValues(partData));
 					if((issuedTo != null) && (!"".equals(issuedTo)))
 					{
-						partInfo.setFeedBackStatus(StatusName.approved);
+						partInfo.setFeedBackStatus(StatusName.accept);
 						feedBackParts.add(partInfo);
 					}
 
@@ -1871,9 +1877,10 @@ public class WorkingSheet
 			}
 
 			DataDevQueryUtil.savePartsFeedback(feedBackParts);
+			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback, devName);
 			// DataDevQueryUtil.savePartsFeedback(updatedParts, null, "Approved","ENG");
 			// DataDevQueryUtil.savePartsFeedback(rejectedParts, null, "Rejected","ENG");
-			DataDevQueryUtil.saveTrackingParamtric(pdfs, fbTypes, selectedPL, null, null);
+
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -2109,13 +2116,16 @@ public class WorkingSheet
 			// DataDevQueryUtil.savePartsFeedback(partsToRejectFeedback, "Wrong Data", "Rejected","TL");
 			// DataDevQueryUtil.savePartsFeedback(partsToCloseFeedback, null, "Feedback Closed","TL");
 			DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback);
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, null, selectedPL, null, StatusName.qaReview);// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, null, selectedPL, null, StatusName.qaFeedback);// update ,approve Eng
-			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, null, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsInternal, selectedPL, null, StatusName.qaReview, teamLeaderName);// update ,approve
+																																	// Eng
+			DataDevQueryUtil.saveTrackingParamtric(engAcceptedPdfsExternal, selectedPL, null, StatusName.qaFeedback, teamLeaderName);// update
+																																		// ,approve
+																																		// Eng
+			DataDevQueryUtil.saveTrackingParamtric(engRejectedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
 
 			/** QA is the reciever **/
-			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, null, selectedPL, null, StatusName.qaFeedback);
-			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, null, selectedPL, null, StatusName.engFeedback);
+			DataDevQueryUtil.saveTrackingParamtric(qARejectedAndUpdatedPdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(qAAcceptedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
