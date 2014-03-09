@@ -956,18 +956,18 @@ public class ApprovedDevUtil
 			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			// TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
-			criteria = session.createCriteria(TrackingTaskStatus.class);
-			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
-			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
-			groups.setStatus(trackingParaStatus);
-			// session.saveOrUpdate(groups);
-			for(TrackingParametric tp : tracks)
-			{
-				// session.beginTransaction().begin();
-				tp.setTrackingTaskStatus(trackingParaStatus);
-				session.saveOrUpdate(tp);
-				// session.beginTransaction().commit();
-			}
+//			criteria = session.createCriteria(TrackingTaskStatus.class);
+//			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
+//			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
+//			groups.setStatus(trackingParaStatus);
+//			// session.saveOrUpdate(groups);
+//			for(TrackingParametric tp : tracks)
+//			{
+//				// session.beginTransaction().begin();
+//				tp.setTrackingTaskStatus(trackingParaStatus);
+//				session.saveOrUpdate(tp);
+//				// session.beginTransaction().commit();
+//			}
 
 		}catch(Exception e)
 		{
@@ -1676,7 +1676,7 @@ public class ApprovedDevUtil
 		}
 	}
 
-	private static ParaFeedbackAction getParaAction(String cAction, String pAction, String rootCause, String actionDueDate, Session session)
+	public static ParaFeedbackAction getParaAction(String cAction, String pAction, String rootCause, String actionDueDate, Session session)
 	{
 		ParaFeedbackAction feedbackAction = null;
 		try
