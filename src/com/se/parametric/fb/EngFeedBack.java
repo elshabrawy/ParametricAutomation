@@ -28,6 +28,7 @@ import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
 import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.TrackingFeedbackType;
@@ -281,6 +282,10 @@ public class EngFeedBack extends JPanel implements ActionListener
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int tlCommentIndex = sheetHeader.indexOf("TL Comment");
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
+						int Cactionindex = sheetHeader.indexOf("C_Action");
+						int Pactionindex = sheetHeader.indexOf("P_Action");
+						int RootcauseIndex = sheetHeader.indexOf("RootCause");
+						int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
@@ -293,6 +298,15 @@ public class EngFeedBack extends JPanel implements ActionListener
 																																	// of tl and QA
 							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+							ParaFeedbackAction action = null;
+							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+							if(action != null)
+							{
+								sheetRecord.set(Cactionindex, action.getCAction());
+								sheetRecord.set(Pactionindex, action.getPAction());
+								sheetRecord.set(RootcauseIndex, action.getRootCause());
+								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+							}
 							for(int l = 0; l < 6; l++)
 							{
 								sheetRecord.add("");
