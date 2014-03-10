@@ -332,7 +332,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							if(!newValReq.get(17).isEmpty())
 							{
-								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "dd/MM/yyyy") == false)
+								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
 								{
 									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
 									thread.stop();
