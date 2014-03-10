@@ -1912,7 +1912,8 @@ public class DataDevQueryUtil
 			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
 			{
 				List<Document> docs = getFeedbackDocs(feedbackTypeStr);
-				criteria.add(Restrictions.in("document", docs));
+				if(!docs.isEmpty())
+					criteria.add(Restrictions.in("document", docs));
 			}
 
 			Set<Document> docsSet = new HashSet<Document>();
@@ -1931,8 +1932,8 @@ public class DataDevQueryUtil
 					docsSet.add(partsFeedbacks.get(i).getPartComponent().getDocument());
 				}
 			}
-
-			criteria.add(Restrictions.in("document", docsSet));
+			if(!docsSet.isEmpty())
+				criteria.add(Restrictions.in("document", docsSet));
 
 			// Criteria pdfCriteria = criteria.createCriteria("document");
 			// pdfCriteria.add(Restrictions.isNotNull("pdf"));
@@ -2983,8 +2984,9 @@ public class DataDevQueryUtil
 		try
 		{
 			TrackingFeedbackType feedbackType = getFeedbackType(feedbackTypeStr);
-			Criteria cr = session.createCriteria(PartsFeedback.class);
-			cr.add(Restrictions.eq("feedbackTypeId", feedbackType));
+			Criteria cr = session.createCriteria(ParametricFeedbackCycle.class);
+			cr.createAlias("parametricFeedback", "Feedback");
+			cr.add(Restrictions.eq("Feedback.trackingFeedbackType", feedbackType.getId()));
 			cr.add(Restrictions.eq("feedbackRecieved", 0l));
 			List<PartsFeedback> partsFeedback = cr.list();
 			if(partsFeedback != null)
