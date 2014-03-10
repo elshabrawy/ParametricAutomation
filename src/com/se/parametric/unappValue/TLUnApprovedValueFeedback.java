@@ -309,35 +309,35 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						// }
 						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + i + 1);
+							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + (i + 1));
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + i + 1);
+							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + i + 1);
+							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + (i + 1));
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + i + 1);
+							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
 							thread.stop();
 							loading.frame.dispose();
 							return;
 						}
 						if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
 						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + i + 1);
+							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + (i + 1));
 							thread.stop();
 							loading.frame.dispose();
 							return;
@@ -347,16 +347,16 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
 							{
-								JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + i + 1);
+								JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
 								thread.stop();
 								loading.frame.dispose();
 								return;
 							}
 							if(!newValReq.get(17).isEmpty())
 							{
-								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "dd/MM/yyyy") == false)
+								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
 								{
-									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
 									thread.stop();
 									loading.frame.dispose();
 									return;
