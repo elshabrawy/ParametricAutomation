@@ -33,6 +33,7 @@ import com.se.automation.db.client.mapping.SupplierUrl;
 import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.AppContext;
+import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dba.ParametricDevServerUtil;
@@ -1829,6 +1830,11 @@ public class WorkingSheet
 				partInfo.setPAction(PAction);
 				partInfo.setRootCause(RootCause);
 				partInfo.setActinDueDate(ActinDueDate);
+				if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
+				{
+					JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+					return;
+				}
 				if("Rejected".equals(status))
 				{
 					if("".equals(comment))
