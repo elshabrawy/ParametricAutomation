@@ -6089,7 +6089,7 @@ public class ParaQueryUtil
 				reviewStatusId = 4;
 			}
 
-			if(group == 101)
+			if(group == 23)
 			{
 				colName = "qaUserId";
 				fbStatusId = 15;
@@ -6099,7 +6099,7 @@ public class ParaQueryUtil
 			int newcount = getNewAssigned(userIds, colName, reviewStatusId, session);
 			int bk = getBacklogAssigned(userIds, colName, reviewStatusId, session);
 			int fb = getFeedBackCount(userIds, colName, fbStatusId, session);
-			if(group != 101)
+			if(group != 23)
 			{
 				colName = "paraUserId";
 			}
@@ -6178,8 +6178,8 @@ public class ParaQueryUtil
 	public static int getAppValueCount(Long[] userIds, String colName, long statusId, final Session session)
 	{
 
-		final Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.createCriteria("taskStatus").add(Restrictions.eq("id", statusId));
+		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		crit.createCriteria("status").add(Restrictions.eq("id", statusId));
 		// crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
 		crit.add(Restrictions.in(colName, userIds));
 
@@ -6191,8 +6191,8 @@ public class ParaQueryUtil
 	public static int getAppFeedBackCount(Long[] userIds, String colName, long statusId, final Session session)
 	{
 
-		final Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.createCriteria("taskStatus").add(Restrictions.eq("id", statusId));
+		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		crit.createCriteria("status").add(Restrictions.eq("id", statusId));
 		crit.add(Restrictions.in(colName, userIds));
 
 		if(crit.list() != null)
