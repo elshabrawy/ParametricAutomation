@@ -571,7 +571,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 	{
 		alertsPanel.updateFlags(flags);
 		alertsPanel1.updateFlags(flags);
-		alertsPanel2.updateFlags(flags);
+		// alertsPanel2.updateFlags(flags);
 
 	}
 }
