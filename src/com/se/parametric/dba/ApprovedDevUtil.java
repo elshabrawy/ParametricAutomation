@@ -956,18 +956,18 @@ public class ApprovedDevUtil
 			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			// TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
-//			criteria = session.createCriteria(TrackingTaskStatus.class);
-//			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
-//			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
-//			groups.setStatus(trackingParaStatus);
-//			// session.saveOrUpdate(groups);
-//			for(TrackingParametric tp : tracks)
-//			{
-//				// session.beginTransaction().begin();
-//				tp.setTrackingTaskStatus(trackingParaStatus);
-//				session.saveOrUpdate(tp);
-//				// session.beginTransaction().commit();
-//			}
+			// criteria = session.createCriteria(TrackingTaskStatus.class);
+			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
+			// TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
+			// groups.setStatus(trackingParaStatus);
+			// // session.saveOrUpdate(groups);
+			// for(TrackingParametric tp : tracks)
+			// {
+			// // session.beginTransaction().begin();
+			// tp.setTrackingTaskStatus(trackingParaStatus);
+			// session.saveOrUpdate(tp);
+			// // session.beginTransaction().commit();
+			// }
 
 		}catch(Exception e)
 		{
@@ -1248,10 +1248,14 @@ public class ApprovedDevUtil
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
 				if(type.equals("Eng"))
 					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
+				if(type.equals("QA"))
+					criteria.add(Restrictions.eq("qaUserId", userDto.getId()));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
 				}
+				criteria.createAlias("status", "status");
+				criteria.add(Restrictions.not(Restrictions.eq("status.id", 11l)));
 				list2 = criteria.list();
 				if(type.equals("Eng"))
 				{
@@ -1269,6 +1273,10 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								row[1] = tp.getSupplier().getName();
+							}
+							else
+							{
+								row[1] = "All";
 							}
 						}
 						else
@@ -1294,6 +1302,10 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								row[1] = tp.getSupplier().getName();
+							}
+							else
+							{
+								row[1] = "All";
 							}
 						}
 						else
@@ -1725,8 +1737,7 @@ public class ApprovedDevUtil
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFromat);
-		sdf.setLenient(false);
-
+		// sdf.setLenient(false);
 		try
 		{
 
