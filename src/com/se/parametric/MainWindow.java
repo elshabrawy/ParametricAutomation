@@ -12,17 +12,20 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.se.parametric.dto.GrmUserDTO;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame
+{
 
 	private JPanel contentPane;
 	JPanel panel, panel2;
 	int width, height;
 	Container container;
 	MainPanel p;
+
 	/**
 	 * Create the frame.
 	 */
-	public MainWindow() {
+	public MainWindow()
+	{
 		container = getContentPane();
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,52 +39,60 @@ public class MainWindow extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
 		container.add(contentPane);
-		
-		try {
+
+		try
+		{
 			// Set cross-platform Java L&F (also called "Metal")
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
+		}catch(UnsupportedLookAndFeelException e)
+		{
 
-		} catch (ClassNotFoundException e) {
+		}catch(ClassNotFoundException e)
+		{
 
-		} catch (InstantiationException e) {
+		}catch(InstantiationException e)
+		{
 
-		} catch (IllegalAccessException e) {
+		}catch(IllegalAccessException e)
+		{
 
 		}
 
 	}
 
-	public void init(GrmUserDTO grmUser) {
+	public void init(GrmUserDTO grmUser)
+	{
 		contentPane.removeAll();
 		contentPane.getWidth();
 		contentPane.getHeight();
-		 p = new MainPanel(grmUser, width, height);
+		p = new MainPanel(grmUser, width, height);
 		System.out.println("Main Frame Dimession " + width + " " + height);
 		p.repaint();
 		System.out.println("Main Panel Dimession " + p.getWidth() + " " + p.getHeight());
 		contentPane.add(p);
 		contentPane.revalidate();
 		contentPane.repaint();
-//		while(true)
-//		{		
-//				updateFlags();
-//				try
-//				{
-//					Thread.sleep(50000);
-//				}catch(InterruptedException e)
-//				{
-//					e.printStackTrace();
-//				}
-//			
-//		}
+		// while(true)
+		// {
+		// updateFlags();
+		// try
+		// {
+		// Thread.sleep(50000);
+		// }catch(InterruptedException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
-	public long getUserID(String userName, String pass) {
+	public long getUserID(String userName, String pass)
+	{
 
 		return 1l;
 	}
-	public void updateFlags() {
+
+	public void updateFlags()
+	{
 
 		p.updateFlags();
 	}
