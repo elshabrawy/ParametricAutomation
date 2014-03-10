@@ -102,26 +102,29 @@ public class MainPanel extends JPanel
 		long userGroup = userDTO.getGrmGroup().getId();
 		ArrayList<String> flags = new ArrayList<String>();
 		flags = ParaQueryUtil.getAlerts(userDTO.getId(), userGroup, userRole);
-		if(developement != null)
-			developement.updateFlags(flags);
-		if(reviewData != null)
-			reviewData.updateFlags(flags);
 
+		// TL Screens
 		if(tlfeedBack != null)
 			tlfeedBack.updateFlags(flags);
+		if(reviewData != null)
+			reviewData.updateFlags(flags);
 		if(tlunApprovedPanel != null)
 			tlunApprovedPanel.updateFlags(flags);
-
+		// Eng Screens
 		if(engfeedBack != null)
 			engfeedBack.updateFlags(flags);
 		if(engunApprovedPanel != null)
 			engunApprovedPanel.updateFlags(flags);
-
+		if(developement != null)
+			developement.updateFlags(flags);
+		// QA Screens
 		if(qaReviewData != null)
 			qaReviewData.updateFlags(flags);
-
+		if(qaFeedBack != null)
+			qaFeedBack.updateFlags(flags);
 		if(qUnApproved != null)
 			qUnApproved.updateFlags(flags);
+
 	}
 
 }
