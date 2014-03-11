@@ -1150,14 +1150,14 @@ public class ApprovedDevUtil
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord, String taskType, Session session)
 	{
 		FeedBackData result = null;
-
+		ParametricFeedbackCycle appFeedback = null;
 		Criteria feedBackCrit = session.createCriteria(ParametricFeedbackCycle.class);
 		feedBackCrit.add(Restrictions.eq("issuedTo", issuedTo));
 		feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
 		feedBackCrit.add(Restrictions.eq("fbItemValue", groupRecord.getGroupFullValue()));
 		feedBackCrit.createAlias("parametricFeedback", "feedback");
 		feedBackCrit.add(Restrictions.eq("feedback.type", "V"));
-		ParametricFeedbackCycle appFeedback = (ParametricFeedbackCycle) feedBackCrit.uniqueResult();
+		appFeedback = (ParametricFeedbackCycle) feedBackCrit.uniqueResult();
 		if(appFeedback != null)
 		{
 			result = new FeedBackData();
