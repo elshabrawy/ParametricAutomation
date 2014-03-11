@@ -1238,6 +1238,7 @@ public class ApprovedDevUtil
 			GrmUser eng = null;
 			Object[] row = null;
 			List list2 = null;
+			Long[] teamMembers = null;
 			ParametricFeedbackCycle parametricFeedbackCycle = null;
 			ParametricApprovedGroup parametricApprovedGroup = null;
 			for(int i = 0; i < list.size(); i++)
@@ -1250,6 +1251,11 @@ public class ApprovedDevUtil
 					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
 				if(type.equals("QA"))
 					criteria.add(Restrictions.eq("qaUserId", userDto.getId()));
+				if(type.equals("TL"))
+				{
+					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDto.getId());
+					criteria.add(Restrictions.in("paraUserId", teamMembers));
+				}
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
