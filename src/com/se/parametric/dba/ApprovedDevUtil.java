@@ -1247,21 +1247,30 @@ public class ApprovedDevUtil
 				parametricFeedbackCycle = (ParametricFeedbackCycle) list.get(i);
 				criteria = session.createCriteria(ParametricApprovedGroup.class);
 				criteria.add(Restrictions.eq("groupFullValue", parametricFeedbackCycle.getFbItemValue()));
+				criteria.createAlias("status", "status");
 				if(type.equals("Eng"))
+				{
 					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
+					criteria.add(Restrictions.eq("status.name", StatusName.engFeedback));
+				}
+
 				if(type.equals("QA"))
+				{
 					criteria.add(Restrictions.eq("qaUserId", userDto.getId()));
+					criteria.add(Restrictions.eq("status.name", StatusName.qaFeedback));
+				}
 				if(type.equals("TL"))
 				{
 					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDto.getId());
 					criteria.add(Restrictions.in("paraUserId", teamMembers));
+					criteria.add(Restrictions.eq("status.name", StatusName.tlFeedback));
 				}
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
+
 				}
-				criteria.createAlias("status", "status");
-				criteria.add(Restrictions.not(Restrictions.eq("status.id", 11l)));
+
 				list2 = criteria.list();
 				if(type.equals("Eng"))
 				{
