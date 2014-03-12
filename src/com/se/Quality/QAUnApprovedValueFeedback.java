@@ -299,9 +299,14 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 					for(int i = 0; i < result.size(); i++)
 					{
 						ArrayList<String> newValReq = result.get(i);
+						if(newValReq.get(12).equals("Approved") && newValReq.get(13).isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
+							return;
+						}
 						if(newValReq.get(12).equals("Approved") && (!newValReq.get(13).equals(StatusName.approved) && !newValReq.get(13).equals(StatusName.reject)))
 						{
-							JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" +(i + 1));
+							JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
 							return;
 						}
 					}
@@ -338,7 +343,6 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								oldValReq.setIssueType(newValReq.get(12));
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-
 							}
 							else if(newValReq.get(12).equals("Wrong Separation"))
 							{
