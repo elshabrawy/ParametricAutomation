@@ -301,8 +301,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 							ArrayList<String> sheetRecord = plData.get(j);
 							String partNumber = sheetRecord.get(6);
 							supplierName = sheetRecord.get(5);
-							Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-							PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
+							// Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
+							PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
 							// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
 							// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
 							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
