@@ -27,6 +27,7 @@ import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
 import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.grm.client.mapping.GrmGroup;
@@ -295,26 +296,38 @@ public class TLFeedBack extends JPanel implements ActionListener
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 						int issuerIndex = sheetHeader.indexOf("Issue_Source");
 						int sentBYIndex = sheetHeader.indexOf("BY");
+						int Cactionindex = sheetHeader.indexOf("C_Action");
+						int Pactionindex = sheetHeader.indexOf("P_Action");
+						int RootcauseIndex = sheetHeader.indexOf("RootCause");
+						int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							String partNumber = sheetRecord.get(6);
-							supplierName = sheetRecord.get(5);
+							String partNumber = sheetRecord.get(11);
+							supplierName = sheetRecord.get(10);
 							// Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-							PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
+							// PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
 							// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
 							// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
-																																	// unused since we
-																																	// show comments
-																																	// of tl and QA
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);// feedcom 0 is
+																															// unused since we
+																															// show comments
+																															// of tl and QA
 
-							String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
-							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-
+							String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
+							String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
+							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(new Long(feedCom.get(3)));
+							ParaFeedbackAction action = null;
+							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+							if(action != null)
+							{
+								sheetRecord.set(Cactionindex, action.getCAction());
+								sheetRecord.set(Pactionindex, action.getPAction());
+								sheetRecord.set(RootcauseIndex, action.getRootCause());
+								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+							}
 							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
@@ -329,10 +342,10 @@ public class TLFeedBack extends JPanel implements ActionListener
 							// }
 							sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
 							sheetRecord.set(sentBYIndex, senderDTO.getFullName());
-							// sheetRecord.set(2, status);
+							sheetRecord.set(2, feedCom.get(1));
 							plData.set(j, sheetRecord);
 						}
-						ws.writeReviewData(plData, 2, 3);
+						ws.writeReviewData(plData, 2, 4);
 						k++;
 					}
 					tablePanel.loadedPdfs.add(pdfUrl);
