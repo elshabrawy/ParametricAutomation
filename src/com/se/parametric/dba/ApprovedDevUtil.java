@@ -842,7 +842,7 @@ public class ApprovedDevUtil
 			TrackingFeedbackType trackingFeedbackType = null;
 			ParametricFeedback FBObj = null;
 			Document document = null;
-			document = ParaQueryUtil.getDocumnetByPdfUrl(app.getPdfUrl());
+
 			/** component has group value */
 			criteria = session.createCriteria(ParametricReviewData.class);
 			criteria.add(Restrictions.eq("groupApprovedValueId", groups.getId()));
@@ -869,7 +869,10 @@ public class ApprovedDevUtil
 			{
 				ParametricReviewData rd = (ParametricReviewData) wrongPartsList.get(i);
 				if(rd.getTrackingParametric() != null)
+				{
 					tracks.add(rd.getTrackingParametric());
+					document = rd.getTrackingParametric().getDocument();
+				}
 				ParametricFeedbackCycle FBCyc = null;
 				ParametricFeedbackCycle OldFBCyc = null;
 				ParaFeedbackAction feedbackAction = null;
@@ -956,18 +959,18 @@ public class ApprovedDevUtil
 			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			// TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
-			// criteria = session.createCriteria(TrackingTaskStatus.class);
-			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
-			// TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
+			criteria = session.createCriteria(TrackingTaskStatus.class);
+			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
+			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
 			// groups.setStatus(trackingParaStatus);
-			// // session.saveOrUpdate(groups);
-			// for(TrackingParametric tp : tracks)
-			// {
-			// // session.beginTransaction().begin();
-			// tp.setTrackingTaskStatus(trackingParaStatus);
-			// session.saveOrUpdate(tp);
-			// // session.beginTransaction().commit();
-			// }
+			// session.saveOrUpdate(groups);
+			for(TrackingParametric tp : tracks)
+			{
+				// session.beginTransaction().begin();
+				tp.setTrackingTaskStatus(trackingParaStatus);
+				session.saveOrUpdate(tp);
+				// session.beginTransaction().commit();
+			}
 
 		}catch(Exception e)
 		{
