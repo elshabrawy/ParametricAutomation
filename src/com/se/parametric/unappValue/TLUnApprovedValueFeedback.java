@@ -138,6 +138,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
+			
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
