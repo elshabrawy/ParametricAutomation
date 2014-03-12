@@ -3157,7 +3157,7 @@ public class DataDevQueryUtil
 			List<Object> list = query.list();
 			for(int i = 0; i < list.size(); i++)
 			{
-				comment += list.get(i).toString();
+				comment += list.get(i) == null ? "" : list.get(i).toString();
 				if(i != list.size() - 1)
 				{
 					comment += "$";
@@ -3465,6 +3465,25 @@ public class DataDevQueryUtil
 			System.out.println(supplier.getName());
 			PartComponent component = getComponentByPartNumberAndSupplierName(partNumber, supplier.getName(), session);
 			return (PartComponent) CloneUtil.cloneObject(component, new ArrayList<String>());
+		}catch(Exception ex)
+		{
+			throw ParametricDevServerUtil.getCatchException(ex);
+		}finally
+		{
+			session.close();
+		}
+	}
+
+	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber, String suppliername) throws Exception
+	{
+		Session session = SessionUtil.getSession();
+		try
+		{
+			Criteria crit = session.createCriteria(PartComponent.class);
+			crit.add(Restrictions.eq("partNumber", partnumber));
+			crit.createCriteria("supplierPl").createCriteria("supplier").add(Restrictions.eq("name", suppliername));
+			PartComponent component = (PartComponent) crit.uniqueResult();
+			return component;
 		}catch(Exception ex)
 		{
 			throw ParametricDevServerUtil.getCatchException(ex);
