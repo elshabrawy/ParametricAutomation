@@ -271,8 +271,8 @@ public class DataDevQueryUtil
 			sql = sql + "_feedback_type tft WHERE TP.USER_ID = 117 AND TP.TRACKING_TASK_STATUS_ID = 14 ";
 			sql = sql + "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
 			sql = sql + "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
-			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('12";
-			sql = sql + "/10/2012', 'MM/DD/YYYY') AND TO_DATE ('2/25/2014', 'MM/DD/YYYY') AND FBc.ISSUE";
+			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('" + startDate + "', 'MM/DD/YYYY')";
+			sql = sql + " AND TO_DATE ('" + endDate + "', 'MM/DD/YYYY') AND FBc.ISSUE";
 			sql = sql + "D_TO = 117 AND FB.ID = FBC.PARA_FEEDBACK_ID";
 		}
 
@@ -407,21 +407,43 @@ public class DataDevQueryUtil
 			// + grmUser.getId() + " AND pf.feedback_recieved = 0 " + " AND pf.feedback_type = tft.id " +
 			// // "AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = " + grmUser.getId()+ ") "
 			// " GROUP BY p.name, s.name, U.FULL_NAME, tft.name ";
-			String sql = "";
+			String Sql = "";
 			if(startDate == null && endDate == null)
 			{
-				sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " + " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
-						+ " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " + " and TP.USER_ID in (select id from grm.grm_user where leader=" + UserID
-						+ " ) and TP.SUPPLIER_ID=s.id and PF.COM_ID=c.com_id and C.DOCUMENT_ID=TP.DOCUMENT_ID  and PF.ISSUED_TO_ID=" + UserID + " and PF.FEEDBACK_RECIEVED=0 and PF.ISSUED_BY_ID=u.id  and PF.FEEDBACK_TYPE=tft.id ";
+				Sql = " SELECT DISTINCT pl.name pl_name, s.name supplier_name, u.full_name issuer_nam";
+				Sql = Sql + "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
+				Sql = Sql + "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
+				Sql = Sql + " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
+				Sql = Sql + "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = " + UserID + ") ";
+				Sql = Sql + "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
+				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID + " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
+				Sql = Sql + "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID";
+				// sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " +
+				// " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
+				// + " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " +
+				// " and TP.USER_ID in (select id from grm.grm_user where leader=" + UserID
+				// + " ) and TP.SUPPLIER_ID=s.id and PF.COM_ID=c.com_id and C.DOCUMENT_ID=TP.DOCUMENT_ID  and PF.ISSUED_TO_ID=" + UserID +
+				// " and PF.FEEDBACK_RECIEVED=0 and PF.ISSUED_BY_ID=u.id  and PF.FEEDBACK_TYPE=tft.id ";
 			}
 			else
 			{
-				sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " + " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
-						+ " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " + " and TP.USER_ID in (select id from grm.grm_user where leader=" + UserID
-						+ " ) and TP.SUPPLIER_ID=s.id and PF.COM_ID=c.com_id and C.DOCUMENT_ID=TP.DOCUMENT_ID  and PF.ISSUED_TO_ID=" + UserID
-						+ " and PF.FEEDBACK_RECIEVED=0 and PF.ISSUED_BY_ID=u.id  and PF.FEEDBACK_TYPE=tft.id AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
+				Sql = " SELECT DISTINCT pl.name pl_name, s.name supplier_name, u.full_name issuer_nam";
+				Sql = Sql + "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
+				Sql = Sql + "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
+				Sql = Sql + " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
+				Sql = Sql + "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = " + UserID + ") ";
+				Sql = Sql + "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
+				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID + " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
+				Sql = Sql + "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID" + " AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
+				// sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " +
+				// " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
+				// + " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " +
+				// " and TP.USER_ID in (select id from grm.grm_user where leader=" + UserID
+				// + " ) and TP.SUPPLIER_ID=s.id and PF.COM_ID=c.com_id and C.DOCUMENT_ID=TP.DOCUMENT_ID  and PF.ISSUED_TO_ID=" + UserID
+				// + " and PF.FEEDBACK_RECIEVED=0 and PF.ISSUED_BY_ID=u.id  and PF.FEEDBACK_TYPE=tft.id AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" +
+				// start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
 			}
-			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 
 		}finally
 		{
@@ -1917,19 +1939,19 @@ public class DataDevQueryUtil
 			}
 
 			Set<Document> docsSet = new HashSet<Document>();
-			Criteria partsFeedbackCriteria = session.createCriteria(PartsFeedback.class);
+			Criteria partsFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
 			partsFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			partsFeedbackCriteria.add(Restrictions.eq("issuedToId", issuedToId));
+			partsFeedbackCriteria.add(Restrictions.eq("issuedTo", issuedToId));
 			if(startDate != null && endDate != null)
 			{
 				partsFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
 			}
-			List<PartsFeedback> partsFeedbacks = partsFeedbackCriteria.list();
-			if((partsFeedbacks != null))
+			List<ParametricFeedbackCycle> parametricfeedbackcycles = partsFeedbackCriteria.list();
+			if((parametricfeedbackcycles != null))
 			{
-				for(int i = 0; i < partsFeedbacks.size(); i++)
+				for(int i = 0; i < parametricfeedbackcycles.size(); i++)
 				{
-					docsSet.add(partsFeedbacks.get(i).getPartComponent().getDocument());
+					docsSet.add(parametricfeedbackcycles.get(i).getParametricFeedback().getDocument());
 				}
 			}
 			if(!docsSet.isEmpty())
@@ -2649,9 +2671,11 @@ public class DataDevQueryUtil
 			{
 				ParaFeedbackStatus paraFeedbackAction = null;
 				ParaFeedbackStatus paraFeedbackStatus = null;
+				ParaIssueType paraIssueType = null;
 				ParametricFeedback FBObj = new ParametricFeedback();
 				ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 				ParaFeedbackAction feedbackAction = null;
+				TrackingFeedbackType trackingFeedbackType = null;
 				PartInfoDTO partInfo = parts.get(i);
 				String partNum = partInfo.getPN();
 				String vendorName = partInfo.getSupplierName();
@@ -2677,8 +2701,22 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
 				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria.uniqueResult();
-				parametricFeedbackCycle.setFeedbackRecieved(1l);
-				session.saveOrUpdate(parametricFeedbackCycle);
+				if(parametricFeedbackCycle != null)
+				{
+					parametricFeedbackCycle.setFeedbackRecieved(1l);
+					session.saveOrUpdate(parametricFeedbackCycle);
+				}
+				if(feedbackTypeStr.isEmpty())
+				{
+					criteria = session.createCriteria(ParaIssueType.class);
+					System.out.println(feedbackTypeStr);
+					criteria.add(Restrictions.eq("issueType", feedbackTypeStr));
+					paraIssueType = (ParaIssueType) criteria.uniqueResult();
+				}
+
+				Document document = null;
+
+				document = ParaQueryUtil.getDocumnetByPdfUrl(partInfo.getPdfUrl());
 
 				String fbStatus = StatusName.inprogress;
 				String FBAction = feedbackStatus;
@@ -2699,9 +2737,29 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("feedbackStatus", fbStatus));
 				paraFeedbackStatus = (ParaFeedbackStatus) criteria.uniqueResult();//
 
-				FBObj = parametricFeedbackCycle.getParametricFeedback();
-				FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+				criteria = session.createCriteria(TrackingFeedbackType.class);
+				System.out.println(partInfo.getFbtype());
+				criteria.add(Restrictions.eq("name", partInfo.getFbtype()));
+				trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
 
+				if(parametricFeedbackCycle != null)
+				{
+					FBObj = parametricFeedbackCycle.getParametricFeedback();
+					FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+				}
+				else if(parametricFeedbackCycle == null)
+				{
+					FBObj.setId(System.nanoTime());
+					if(paraIssueType != null)
+						FBObj.setParaIssueType(paraIssueType);
+					FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+					FBObj.setStoreDate(new Date());
+					FBObj.setFbInitiator(issuedByUser.getId());
+					FBObj.setTrackingFeedbackType(trackingFeedbackType);
+					FBObj.setItemId(component.getComId());
+					FBObj.setType("P");
+					FBObj.setDocument(document);
+				}
 				FBCyc.setId(System.nanoTime());
 				FBCyc.setParametricFeedback(FBObj);
 				FBCyc.setFbItemValue(component.getPartNumber());
@@ -2986,7 +3044,7 @@ public class DataDevQueryUtil
 			TrackingFeedbackType feedbackType = getFeedbackType(feedbackTypeStr);
 			Criteria cr = session.createCriteria(ParametricFeedbackCycle.class);
 			cr.createAlias("parametricFeedback", "Feedback");
-			cr.add(Restrictions.eq("Feedback.trackingFeedbackType", feedbackType.getId()));
+			cr.add(Restrictions.eq("Feedback.trackingFeedbackType", feedbackType));
 			cr.add(Restrictions.eq("feedbackRecieved", 0l));
 			List<PartsFeedback> partsFeedback = cr.list();
 			if(partsFeedback != null)
