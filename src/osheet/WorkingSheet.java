@@ -1692,7 +1692,7 @@ public class WorkingSheet
 				partInfo.setFamilycross(famCross);
 				partInfo.setMask(mask);
 				partInfo.setGeneric(generic);
-
+				partInfo.setFbtype(StatusName.internal);
 				if("Rejected".equals(status))
 				{
 					if("".equals(comment))
@@ -1705,6 +1705,7 @@ public class WorkingSheet
 					{
 						partInfo.setFeedBackStatus("Rejected");
 						partInfo.setFeedBackCycleType("Wrong Data");
+						// partInfo.setFbtype("Wrong Data");
 						feedbackParts.add(partInfo);
 						if(acceptedPdfs.contains(pdfUrl))
 						{
