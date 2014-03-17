@@ -146,7 +146,7 @@ public class DataDevQueryUtil
 		try
 		{
 
-			String sql = "  SELECT   DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name, st.NAME doc_status    FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st   WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)           AND tp.TRACKING_TASK_STATUS_ID IN (3)           AND tp.supplier_id = s.id           AND tp.tracking_task_type_id = ttt.id           AND u.id = tp.user_id           AND st.id = tp.TRACKING_TASK_STATUS_ID           and QA_USER_ID="
+			String sql = "  SELECT   DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name    FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st   WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)           AND tp.TRACKING_TASK_STATUS_ID IN (3)           AND tp.supplier_id = s.id           AND tp.tracking_task_type_id = ttt.id           AND u.id = tp.user_id           AND st.id = tp.TRACKING_TASK_STATUS_ID           and QA_USER_ID="
 					+ grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,AUTOMATION2.Get_PL_Type(P.ID )";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
 			for(int i = 0; i < list2.size(); i++)
@@ -341,26 +341,36 @@ public class DataDevQueryUtil
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<String> row = null;
 		ArrayList<Object[]> list2 = null;
+		TrackingTaskStatus taskStatus = null;
 		Session session = SessionUtil.getSession();
 		try
 		{
-
-			String sql = "";
+			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", StatusName.tlReview));
+			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
+			String SqlStatement = "";
 			if(startDate == null && endDate == null)
 			{
-				sql = " SELECT DISTINCT p.name pl,  s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,st.NAME doc_status " + " FROM   Tracking_Parametric tp, pl p, supplier s,tracking_task_type ttt,grm.GRM_USER u,TRACKING_TASK_STATUS st "
-						+ " WHERE  tp.pl_id = p.id and tp.tracking_task_type_id in(0,1,4,12,14)AND tp.TRACKING_TASK_STATUS_ID in(3,4,29) AND tp.supplier_id = s.id AND "
-						+ " tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id  AND st.id= tp.TRACKING_TASK_STATUS_ID AND tp.user_id IN " + " (SELECT   id FROM   grm.GRM_USER   WHERE   Leader =" + grmUser.getId() + ")"
-						+ " GROUP BY   p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+				SqlStatement = " SELECT DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_N";
+				SqlStatement = SqlStatement + "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
+				SqlStatement = SqlStatement + "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
+				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
+				SqlStatement = SqlStatement + "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
+				SqlStatement = SqlStatement + "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = " + UserID + ") GROU";
+				SqlStatement = SqlStatement + "P BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
 			}
 			else
 			{
-				sql = " SELECT DISTINCT p.name pl,  s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,st.NAME doc_status " + " FROM   Tracking_Parametric tp, pl p, supplier s,tracking_task_type ttt,grm.GRM_USER u,TRACKING_TASK_STATUS st "
-						+ " WHERE  tp.pl_id = p.id and tp.tracking_task_type_id in(0,1,4,12,14)AND tp.TRACKING_TASK_STATUS_ID in(3,4,29) AND tp.supplier_id = s.id AND "
-						+ " tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id  AND st.id= tp.TRACKING_TASK_STATUS_ID AND tp.user_id IN " + " (SELECT   id FROM   grm.GRM_USER   WHERE   Leader =" + grmUser.getId() + ")"
-						+ " AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY') GROUP BY   p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+				SqlStatement = " SELECT DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_N";
+				SqlStatement = SqlStatement + "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
+				SqlStatement = SqlStatement + "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
+				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
+				SqlStatement = SqlStatement + "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
+				SqlStatement = SqlStatement + "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = " + UserID + ")";
+				SqlStatement = SqlStatement + "AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY') GROUP BY   p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+
 			}
-			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+			list2 = (ArrayList<Object[]>) session.createSQLQuery(SqlStatement).list();
 			// for (int i = 0; i < list2.size(); i++) {
 			// Object[] data = list2.get(i);
 			// row = new ArrayList<String>();
@@ -453,7 +463,7 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, String[] statuses, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority)
+	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status)
 	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -477,31 +487,12 @@ public class DataDevQueryUtil
 
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 
-			// if(!status.equals("All"))
-			// {
-			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-
-			// else
-			// {
-			// statusCriteria.add(Restrictions.eq("name", status));
-			// }
-			// TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-			// criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
-			// }
-			// else
-			// {// temp (case status="All")
-
-			// }
-
-			if(statuses.length != 0)
+			if(!status.equals("All"))
 			{
 				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.in("name", statuses));
-				List<TrackingTaskStatus> statusdtos = statusCriteria.list();
-
-				TrackingTaskStatus taskStatus[] = statusdtos.toArray(new TrackingTaskStatus[0]);
-
-				criteria.add(Restrictions.in("trackingTaskStatus", statusdtos));
+				statusCriteria.add(Restrictions.eq("name", status));
+				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
+				criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
 			}
 
 			if(!(usersId.length == 0) && usersId != null)
@@ -597,7 +588,8 @@ public class DataDevQueryUtil
 			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
 			{
 				List<Document> docs = getFeedbackDocs(feedbackTypeStr);
-				criteria.add(Restrictions.in("document", docs));
+				if(!docs.isEmpty())
+					criteria.add(Restrictions.in("document", docs));
 			}
 			List list = criteria.list();
 			for(int i = 0; i < list.size(); i++)
@@ -3949,10 +3941,10 @@ public class DataDevQueryUtil
 		try
 		{
 
-			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name, st.NAME doc_status  "
-					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  " + " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
-					+ "      AND tp.TRACKING_TASK_STATUS_ID IN (15)  " + "         AND tp.supplier_id = s.id  " + "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     "
-					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name " + "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
+					+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     " + "      AND tp.TRACKING_TASK_STATUS_ID IN (15)  " + "         AND tp.supplier_id = s.id  "
+					+ "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     " + "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId()
+					+ " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
 			for(int i = 0; i < list2.size(); i++)
 			{
