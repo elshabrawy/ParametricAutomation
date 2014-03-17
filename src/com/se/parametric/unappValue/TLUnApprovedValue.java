@@ -360,7 +360,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	public void updateFlags(ArrayList<String> flags)
 	{
 		alertsPanel.updateFlags(flags);
-		TLfeedBack.alertsPanel.updateFlags(flags);
+		TLUnApprovedValueFeedback.alertsPanel.updateFlags(flags);
 
 	}
 
