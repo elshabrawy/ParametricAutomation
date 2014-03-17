@@ -51,6 +51,7 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
+import com.se.parametric.util.StatusName;
 import com.sun.star.ucb.Priority;
 import com.se.parametric.autoFill.AutoFill;
 
@@ -550,40 +551,39 @@ public class Developement extends JPanel implements ActionListener
 					loading.frame.dispose();
 					return;
 				}
-				
-					for(int i = 0; i < separationValues.size(); i++)
+
+				for(int i = 0; i < separationValues.size(); i++)
+				{
+					row = separationValues.get(i);
+
+					String plName = row.get(0);
+					String featureName = row.get(3);
+					String featureFullValue = row.get(4);
+
+					try
 					{
-						row = separationValues.get(i);
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
 
-						String plName = row.get(0);
-						String featureName = row.get(3);
-						String featureFullValue = row.get(4);
-
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+					}catch(ArrayIndexOutOfBoundsException ex)
+					{
 						try
 						{
-							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
-
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-						}catch(ArrayIndexOutOfBoundsException ex)
+							Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+							cell.setText(ex.getMessage());
+						}catch(Exception e)
 						{
-							try
-							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-								cell.setText(ex.getMessage());
-							}catch(Exception e)
-							{
-								e.printStackTrace();
-							}
-							ex.printStackTrace();
-						}catch(Exception ex)
-						{
-							ex.printStackTrace();
+							e.printStackTrace();
 						}
-						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
-						appValues.add(featureFullValue);
+						ex.printStackTrace();
+					}catch(Exception ex)
+					{
+						ex.printStackTrace();
 					}
-					JOptionPane.showMessageDialog(null, "Approved Saving Done");
-				
+					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+					appValues.add(featureFullValue);
+				}
+				JOptionPane.showMessageDialog(null, "Approved Saving Done");
 
 			}
 
@@ -638,7 +638,7 @@ public class Developement extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, new String[] { "Assigned" }, startDate, endDate, null, "assigned", priority);
+			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, "", "assigned", priority, StatusName.assigned);
 
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
