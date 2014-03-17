@@ -41,6 +41,7 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
+import com.se.parametric.util.StatusName;
 import com.sun.star.ucb.Priority;
 
 public class Update extends JPanel implements ActionListener
@@ -249,7 +250,7 @@ public class Update extends JPanel implements ActionListener
 				// TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 				TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 				pdfUrl = tableInfoDTO.getPdfUrl();
-				docsInfo = ParaQueryUtil.getParametricPLsByPdfUrl(pdfUrl,userId);
+				docsInfo = ParaQueryUtil.getParametricPLsByPdfUrl(pdfUrl, userId);
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
 				for(int i = 0; i < docsInfo.size(); i++)
@@ -264,8 +265,8 @@ public class Update extends JPanel implements ActionListener
 					if(docInfo.getTaskType().contains("NPI"))
 					{
 						ws.setNPIflag(true);
-//						pdfId = ParaQueryUtil.getPdfId(pdfUrl, suppName);
-//						newsLink = DataDevQueryUtil.getNewsLink(pdfId);
+						// pdfId = ParaQueryUtil.getPdfId(pdfUrl, suppName);
+						// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
 						newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
 					}
 					String taxonomies = "";
@@ -406,11 +407,11 @@ public class Update extends JPanel implements ActionListener
 				long pdfId = -1;
 				if(tableRecord.getTaskType().contains("NPI"))
 				{
-//					pdfId = ParaQueryUtil.getPdfId(pdfUrl, supplierName);
-//					if(pdfId != -1)
-//					{
-//						newsLink = DataDevQueryUtil.getNewsLink(pdfId);
-//					}
+					// pdfId = ParaQueryUtil.getPdfId(pdfUrl, supplierName);
+					// if(pdfId != -1)
+					// {
+					// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
+					// }
 					newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
 				}
 				String taxonomies = "";
@@ -539,7 +540,7 @@ public class Update extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, new String[] {"Assigned"}, startDate, endDate, null, "assigned", priority);
+			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, null, "assigned", priority, StatusName.assigned);
 
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
