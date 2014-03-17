@@ -9,10 +9,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import com.se.parametric.dto.GrmUserDTO;
 
-
 public class AlertsPanel extends JPanel
 {
-	JLabel npiLabel, fbLabel, npiValue, fbValue, newLabel, newValue, backlogLabel, backlogValue, appLabel, appValue, appFBLabel, appFBValue, tlRLabel, tlRValue;
+	JLabel npiLabel, fbLabel, npiValue, fbValue, newLabel, newValue, backlogLabel, backlogValue, appNewLabel, appNewValue, appnpiLabel, appnpiValue, appNewFBLabel, appNewFBValue, appnpiFBLabel, appnpiFBValue, tlRLabel, tlRValue;
 
 	GrmUserDTO userDTO;
 
@@ -45,19 +44,32 @@ public class AlertsPanel extends JPanel
 		fbValue = new JLabel("" + 0);
 		setLabelProperties(fbValue, y, true);
 		y += 32;
-		appLabel = new JLabel("App Values :");
-		setLabelProperties(appLabel, y, false);
+		
+		appNewLabel = new JLabel("App New :");
+		setLabelProperties(appNewLabel, y, false);
 		y += 25;
-		appValue = new JLabel("" + 0);
-		setLabelProperties(appValue, y, true);
+		appNewValue = new JLabel("" + 0);
+		setLabelProperties(appNewValue, y, true);
 		y += 32;
-		appFBLabel = new JLabel("App Values FB :");
-		setLabelProperties(appFBLabel, y, false);
+		appnpiLabel = new JLabel("App NPI :");
+		setLabelProperties(appnpiLabel, y, false);
 		y += 25;
-		appFBValue = new JLabel("" + 0);
-		setLabelProperties(appFBValue, y, true);
-
+		appnpiValue = new JLabel("" + 0);
+		setLabelProperties(appnpiValue, y, true);
 		y += 32;
+		appNewFBLabel = new JLabel("App FB New :");
+		setLabelProperties(appNewFBLabel, y, false);
+		y += 25;
+		appNewFBValue = new JLabel("" + 0);
+		setLabelProperties(appNewFBValue, y, true);
+		y += 32;
+		appnpiFBLabel = new JLabel("App FB NPI :");
+		setLabelProperties(appnpiFBLabel, y, false);
+		y += 25;
+		appnpiFBValue = new JLabel("" + 0);
+		setLabelProperties(appnpiFBValue, y, true);
+		y += 32;
+		
 		tlRLabel = new JLabel("TL Review:");
 		setLabelProperties(tlRLabel, y, false);
 		y += 25;
@@ -85,12 +97,16 @@ public class AlertsPanel extends JPanel
 		}
 		else
 		{
-			add(appLabel);
-			add(appValue);
+			add(appNewLabel);
+			add(appNewValue);
+			add(appnpiLabel);
+			add(appnpiValue);
 		}
-		
-		add(appFBLabel);
-		add(appFBValue);
+
+		add(appNewFBLabel);
+		add(appNewFBValue);
+		add(appnpiFBLabel);
+		add(appnpiFBValue);
 
 	}
 
@@ -113,15 +129,19 @@ public class AlertsPanel extends JPanel
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		// ArrayList<String> flags=ParaQueryUtil.getAlerts(userDTO.getId(),1,3);
+//		 ArrayList<String> flags=ParaQueryUtil.getAlerts(userDTO.getId(),1,3);
 		npiValue.setText(flags.get(0));
 		npiValue.setForeground(Color.RED);
 		newValue.setText(flags.get(1));
 		backlogValue.setText(flags.get(2));
 		fbValue.setText(flags.get(3));
 		fbValue.setForeground(Color.RED);
-		appValue.setText(flags.get(4));
-		appFBValue.setText(flags.get(5));
+		appNewValue.setText(flags.get(4));
+		appnpiValue.setText(flags.get(5));
+		appNewFBValue.setText(flags.get(6));
+		appnpiFBValue.setText(flags.get(7));
+		appNewFBValue.setForeground(Color.RED);
+		appnpiFBValue.setForeground(Color.RED);
 	}
 
 }
