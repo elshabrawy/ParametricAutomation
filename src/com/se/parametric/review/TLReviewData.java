@@ -65,7 +65,7 @@ public class TLReviewData extends JPanel implements ActionListener
 	int width, height;
 	GrmUserDTO userDTO;
 	String[] statuses;
-	
+
 	public TLReviewData(GrmUserDTO userDTO)
 	{
 		setLayout(null);
@@ -79,7 +79,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
-		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "Status" };
+		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
@@ -196,26 +196,31 @@ public class TLReviewData extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if(status.equals("All"))
-				{
-					/******* all combo box items except all in statuses[]******/
-	                int count = filterPanel.comboBoxItems[4].getItemCount();
-	                StringBuilder builder = new StringBuilder();
-	                for (int i = 0; i < count; i++) {
-	                	
-	                	if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-	                	{	builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-		                    if (i < count - 1) {
-		                        builder.append(", ");
-		                    }
-	                    }
-	                }
-					statuses=builder.toString().split(", ");
-				}else{
-					
-					statuses=new String[]{status};
-				}
+				// String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+				// if(status.equals("All"))
+				// {
+				// /******* all combo box items except all in statuses[] ******/
+				// int count = filterPanel.comboBoxItems[4].getItemCount();
+				// StringBuilder builder = new StringBuilder();
+				// for(int i = 0; i < count; i++)
+				// {
+				//
+				// if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
+				// {
+				// builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
+				// if(i < count - 1)
+				// {
+				// builder.append(", ");
+				// }
+				// }
+				// }
+				// statuses = builder.toString().split(", ");
+				// }
+				// else
+				// {
+				//
+				// statuses = new String[] { status };
+				// }
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -225,7 +230,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, statuses, startDate, endDate, null, "finished", null);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
@@ -291,14 +296,14 @@ public class TLReviewData extends JPanel implements ActionListener
 					String supplierName = combos[1].getSelectedItem().toString();
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
-					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
-					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
-						thread.stop();
-						loading.frame.dispose();
-						return;
-					}
+					// String status = combos[4].getSelectedItem().toString();
+					// if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
+					// {
+					// JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
+					// thread.stop();
+					// loading.frame.dispose();
+					// return;
+					// }
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -319,7 +324,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					{
 						teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() });
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, new Long[] { document.getId() });
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
