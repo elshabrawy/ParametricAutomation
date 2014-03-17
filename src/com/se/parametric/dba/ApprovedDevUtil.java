@@ -2094,27 +2094,11 @@ public class ApprovedDevUtil
 				sup = true;
 				if(typ == false)
 				{
-					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
-					if(Datatype.equals("Data"))
-					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('" + StatusName.tlReview + "'),getTaskstatusId('" + StatusName.qaReview + "'),getTaskstatusId('" + StatusName.finshed + "')) )";
-					}
-					else
-					{
-						sql += " ) ";
-					}
+					sql += "  SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "')) ";
 				}
 				else
 				{
-					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "') ";
-					if(Datatype.equals("Data"))
-					{
-						sql += " and TRACKING_TASK_STATUS_ID in (getTaskstatusId('" + StatusName.tlReview + "'),getTaskstatusId('" + StatusName.qaReview + "'),getTaskstatusId('" + StatusName.finshed + "')) )";
-					}
-					else
-					{
-						sql += " ) ";
-					}
+					sql += " and SUPPLIER_ID in GETSUPPLIERID('" + supplierName + "')) ";
 				}
 			}
 			if(typ == true && sup == false)
