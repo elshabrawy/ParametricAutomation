@@ -76,7 +76,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
-		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "Status" };
+		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -159,27 +159,27 @@ public class QAFeedBack extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+				// String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 
-				if(status.equals("All"))
-				{
-					/******* all combo box items except all in statuses[] ******/
-					int count = filterPanel.comboBoxItems[4].getItemCount();
-					StringBuilder builder = new StringBuilder();
-					for(int i = 0; i < count; i++)
-					{
-
-						if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-						{
-							builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-							if(i < count - 1)
-							{
-								builder.append(", ");
-							}
-						}
-					}
-					statuses = builder.toString().split(", ");
-				}
+				// if(status.equals("All"))
+				// {
+				// /******* all combo box items except all in statuses[] ******/
+				// int count = filterPanel.comboBoxItems[4].getItemCount();
+				// StringBuilder builder = new StringBuilder();
+				// for(int i = 0; i < count; i++)
+				// {
+				//
+				// if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
+				// {
+				// builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
+				// if(i < count - 1)
+				// {
+				// builder.append(", ");
+				// }
+				// }
+				// }
+				// statuses = builder.toString().split(", ");
+				// }
 
 				if(!userName.equals("All"))
 				{
@@ -198,7 +198,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, statuses, startDate, endDate, null, "QAReview", null);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)

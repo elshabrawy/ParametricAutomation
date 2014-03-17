@@ -167,29 +167,30 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 
 			// sheetPanel.add(arg0)
 			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			row.add("PL Name");
-			row.add("Part Name");
-			row.add("Pdf Url");
-			row.add("Feature Name");
-			row.add("Feature Value");
-			row.add("Feature Unit");
-			row.add("Sign");
-			row.add("Value");
-			row.add("Type");
-			row.add("Condition");
-			row.add("Multiplier");
-			row.add("Unit");
-			row.add("QA Status");
-			row.add("QA Comment");
-			row.add("c_Action");
-			row.add("P_Action");
-			row.add("ROOT_CAUSE");
-			row.add("ACTION_DUE_DATE");
-			row.add("FeedBack Type");
-			row.add("Para Status");
-			row.add("Para Comment");
-			row.add("Old QA Status");
-			row.add("Old QA Comment");
+			row.add("PL Name");//0
+			row.add("Part Name");//1
+			row.add("Pdf Url");//2
+			row.add("Feature Name");//3
+			row.add("Feature Value");//4
+			row.add("Feature Unit");//5
+			row.add("Sign");//6
+			row.add("Value");//7
+			row.add("Type");//8
+			row.add("Condition");//9
+			row.add("Multiplier");//10
+			row.add("Unit");//11
+			row.add("QA Status");//12
+			row.add("QA Comment");//13
+			row.add("c_Action");//14
+			row.add("P_Action");//15
+			row.add("ROOT_CAUSE");//16
+			row.add("ACTION_DUE_DATE");//17
+			row.add("Issue Type");// 18
+			row.add("FeedBack Type");//19
+			row.add("Para Status");//20
+			row.add("Para Comment");//21
+			row.add("Old QA Status");//22
+			row.add("Old QA Comment");//23
 
 			wsMap.put("Unapproved Values", ws);
 			wsMap.get("Unapproved Values");
@@ -216,6 +217,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				row.add(obj.getPAction());
 				row.add(obj.getRootCause());
 				row.add(obj.getActionDueDate());
+				row.add(obj.getIssueType());
 				row.add(obj.getFbType());
 				row.add(obj.getFbStatus());
 				row.add(obj.getComment());

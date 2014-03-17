@@ -48,7 +48,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel,flowChart;
+	JPanel tabSheet, selectionPanel, flowChart;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -83,7 +83,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
-//		buttonLabels.add("Feedback History");
+		// buttonLabels.add("Feedback History");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -111,7 +111,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		QAAppfeedBack.setBounds(width - 110, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
-		
+
 		save.setBounds(3, 80, 85, 29);
 		validate = new JButton("Validate");
 		validate.setBounds(3, 46, 85, 29);
@@ -227,6 +227,18 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 					String work = wsMap.get(wsName).getSelectedCellValue();
 					ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
 					int updateFlag = 1;
+
+					for(int i = 0; i < result.size(); i++)
+					{
+						ArrayList<String> newValReq = result.get(i);
+						if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(12).equals("Wrong Value")) && newValReq.get(13).trim().isEmpty())
+						{
+							JOptionPane.showMessageDialog(null, " You Must Write Comment with Status Wrong Separation,Wrong Value Check row : " + (i + 1));
+							thread.stop();
+							loading.frame.dispose();
+							return;
+						}
+					}
 					/** Team Leader approved and send to QA */
 					for(int i = 0; i < result.size(); i++)
 					{
