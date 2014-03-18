@@ -314,7 +314,7 @@ public class QAReviewData extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(null, true);
+						ws.setTLReviewHeader(null, true);
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						ws.writeReviewData(plData, 2, 3);
 						k++;
@@ -401,7 +401,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, status, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setReviewHeader(null, true);
+					ws.setTLReviewHeader(null, true);
 
 					// ArrayList<String> sheetHeader = ws.getHeader();
 					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
