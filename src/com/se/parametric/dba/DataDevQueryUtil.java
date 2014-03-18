@@ -145,10 +145,19 @@ public class DataDevQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
+			TrackingTaskStatus taskStatus = null;
+			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", StatusName.qaReview));
+			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
 
-			String sql = "  SELECT   DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name    FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st   WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)           AND tp.TRACKING_TASK_STATUS_ID IN (3)           AND tp.supplier_id = s.id           AND tp.tracking_task_type_id = ttt.id           AND u.id = tp.user_id           AND st.id = tp.TRACKING_TASK_STATUS_ID           and QA_USER_ID="
-					+ grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,AUTOMATION2.Get_PL_Type(P.ID )";
-			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+			String Sql = " SELECT DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, tt";
+			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name FROM Tracking_Parametric tp, pl p, supplier";
+			Sql = Sql + " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
+			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AN";
+			Sql = Sql + "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
+			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL";
+			Sql = Sql + "_NAME, st.NAME, AUTOMATION2.Get_PL_Type(P.ID )";
+			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list2.size(); i++)
 			{
 				Object[] data = list2.get(i);
