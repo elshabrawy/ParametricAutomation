@@ -338,7 +338,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(null, false);
+						ws.setTLReviewHeader(null, false);
 						// ArrayList<String> sheetHeader = ws.getHeader();
 						// int devCommentIndex = sheetHeader.indexOf("Dev Comment");
 						// int qaCommentIndex = sheetHeader.indexOf("QA Comment");
@@ -441,7 +441,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 					if(DataDevQueryUtil.isNPITaskType(teamMembers, pl, supplierName, taskType, status, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setReviewHeader(null, false);
+					ws.setTLReviewHeader(null, false);
 
 					// ArrayList<String> sheetHeader = ws.getHeader();
 					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
