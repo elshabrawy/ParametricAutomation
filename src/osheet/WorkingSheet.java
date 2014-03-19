@@ -747,7 +747,92 @@ public class WorkingSheet
 
 	}
 
-	
+	public void setQAReviewHeader(List additionalCols, boolean isQA)
+	{
+		try
+		{
+			// Pl pl, String pdfUrl
+			// Pl pl = trackingParametric.getPl();
+			// List<FeatureDTO> plfets = ParaQueryUtil.getPlFeautres(pl, false);
+
+			HeaderList = new ArrayList<Cell>();
+			Cell cell = getCellByPosission(0, StatrtRecord);
+			cell.setText("Taxonomy");
+			HeaderList.add(cell);
+			cell = getCellByPosission(1, StatrtRecord);
+			cell.setText("Pl Type");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(2, StatrtRecord);
+			cell.setText("Eng Name");
+			HeaderList.add(cell);
+			cell = getCellByPosission(3, StatrtRecord);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(4, StatrtRecord);
+			cell.setText("Comment");
+			HeaderList.add(cell);
+			cell = getCellByPosission(5, StatrtRecord);
+			cell.setText("Task Type");
+			HeaderList.add(cell);
+			cell = getCellByPosission(6, StatrtRecord);
+			cell.setText("Supplier Name");
+			HeaderList.add(cell);
+			cell = getCellByPosission(7, StatrtRecord);
+			cell.setText("Done Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(8, StatrtRecord);
+			cell.setText("Extraction Flag");
+			HeaderList.add(cell);
+			setDevHeader(false, isQA);
+			if(additionalCols != null)
+			{
+				int startCol = HeaderList.size();
+				for(int i = 0; i < additionalCols.size(); i++)
+				{
+					cell = getCellByPosission(startCol + i, StatrtRecord);
+					cell.setText(additionalCols.get(i).toString());
+					HeaderList.add(cell);
+				}
+			}
+			statusValues.add("Approved");
+			statusValues.add("Rejected");
+			if(!isQA)
+				statusValues.add("Updated");
+			// setMainHeaders();
+			// System.out.println("Pl Features:" + plfets.size());
+			//
+			// for (FeatureDTO featureDTO : plfets) {
+			// int currentCol = HeaderList.size();
+			// cell = getCellByPosission(currentCol, StatrtRecord);
+			// cell.setText(featureDTO.getFeatureName());
+			// if (featureDTO.getUnit() != null) {
+			// String uint = featureDTO.getUnit();
+			// Cell cellunit = getCellByPosission(currentCol, StatrtRecord - 1);
+			// cellunit.setText(uint);
+			// }
+			// List<String> appValues = featureDTO.getFeatureapprovedvalue();
+			// ApprovedFeatuer.put(featureDTO.getFeatureName(), appValues);
+			// System.out.println(featureDTO.getFeatureName() + " AppValues size=" + appValues.size());
+			// cell.SetApprovedValues(appValues, sheet.getCellRangeByPosition(currentCol,));
+			// HeaderList.add(cell);
+			// // currentCol++;
+			// }
+			// setValidationHeaders();
+			// int lastColNum = HeaderList.size() + 4;
+			// String lastColumn = getColumnName(lastColNum);
+			// String hdrUintRange = "A" + 1 + ":" + lastColumn + 2;
+			// xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			// setRangColor(xHdrUnitrange, 0xB0AEAE);
+
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
+		}
+
+	}
+
 	public void updateApprovedValues()
 	{
 		try
@@ -1754,7 +1839,6 @@ public class WorkingSheet
 				{
 					partInfo.setFeedbackType("Acquisition");
 				}
-
 				partInfo.setPN(pn);
 				partInfo.setSupplierName(vendorName);
 				partInfo.setStatus(status);
@@ -1790,7 +1874,6 @@ public class WorkingSheet
 						}
 						rejectedPdfs.add(pdfUrl);
 					}
-
 				}
 				else if("Approved".equals(status))
 				{
@@ -1802,25 +1885,14 @@ public class WorkingSheet
 				}
 				else if("Updated".equals(status))
 				{
-					// // List<String> fetVals = row.subList(10, 54);
-					// List<String> fetVals = partData.subList(startParametricFT, endParametricFT);
-					// Map<String, String> fetsMap = new HashMap<String, String>();
-					// for (int j = 0; j < fetNames.size(); j++) {
-					// String fetName = fetNames.get(j);
-					// String fetVal = fetVals.get(j);
-					// fetsMap.put(fetName, fetVal);
-					// }
-					// partInfo.setFetValues(fetsMap);
+
 					partInfo.setFetValues(readRowValues(partData));
 					DataDevQueryUtil.updateParamtric(partInfo);
-					// ParaQueryUtil.updateParametricReviewData(fetNames, fetVals, partInfo);
 					if(!rejectedPdfs.contains(pdfUrl))
 					{
 						acceptedPdfs.add(pdfUrl);
 					}
 				}
-
-				// ParaQueryUtil.updateDocStatus( teamLeaderName, row);
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
 			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview, teamLeaderName);
