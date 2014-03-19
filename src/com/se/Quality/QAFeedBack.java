@@ -289,7 +289,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 						}
 					}
 
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback);
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback);
 					// String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
@@ -415,7 +415,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				{
 					status = StatusName.qaFeedback;
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null, userDTO.getId(), StatusName.qaFeedback);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType,  startDate, endDate, null, userDTO.getId(), StatusName.qaFeedback);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();

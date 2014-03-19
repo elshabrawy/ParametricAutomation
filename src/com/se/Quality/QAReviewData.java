@@ -78,9 +78,11 @@ public class QAReviewData extends JPanel implements ActionListener
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAReviewFilterData(userDTO);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		// PDFURL PL Name Supplier Name No. of Parts per PDF No. of Done Parts per PDF No. of parts per PL No. of Done parts per PL PL_Type
+		// Development Method QA tools checks Task Type DevUserName Date
 
 		selectionPanel = new JPanel();
-		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
+		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
 		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
@@ -175,24 +177,6 @@ public class QAReviewData extends JPanel implements ActionListener
 						startDate = filterPanel.jDateChooser1.getDate();
 						endDate = filterPanel.jDateChooser2.getDate();
 					}
-
-					// if(status.equals("All"))
-					// {
-					// /******* all combo box items except all in statuses[]******/
-					// int count = filterPanel.comboBoxItems[4].getItemCount();
-					// StringBuilder builder = new StringBuilder();
-					// for (int i = 0; i < count; i++) {
-					//
-					// if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-					// { builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-					// if (i < count - 1) {
-					// builder.append(", ");
-					// }
-					// }
-					// }
-					// statuses=builder.toString().split(", ");
-					// }
-
 					if(!userName.equals("All"))
 					{
 						long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -257,19 +241,10 @@ public class QAReviewData extends JPanel implements ActionListener
 				try
 				{
 					JComboBox[] combos = filterPanel.comboBoxItems;
-
 					String plName = combos[0].getSelectedItem().toString();
 					String supplierName = combos[1].getSelectedItem().toString();
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
-					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
-					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
-						thread.stop();
-						loading.frame.dispose();
-						return;
-					}
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -301,7 +276,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							// System.out.println("Element at " + i + " = " + element);
 						}
 					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaReview);
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaReview);
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
@@ -314,13 +289,14 @@ public class QAReviewData extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setTLReviewHeader(null, true);
+						ws.setQAReviewHeader(null, true);
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						ws.writeReviewData(plData, 2, 3);
+						ws.writeReviewData(plData, 2, 4);
 						k++;
 					}
 					tablePanel.loadedPdfs.add(pdfUrl);
 					tablePanel.setTableData1(0, tablePanel.selectedData);
+
 				}catch(Exception ex)
 				{
 					ex.printStackTrace();
@@ -358,15 +334,6 @@ public class QAReviewData extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
-				{
-					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
-					thread.stop();
-					loading.frame.dispose();
-					return;
-				}
-
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -384,11 +351,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				if("All".equals(status))
-				{
-					status = StatusName.qaReview;
-				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, status, startDate, endDate, null, userDTO.getId(), StatusName.qaReview);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, null, userDTO.getId(), StatusName.qaReview);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -398,36 +361,10 @@ public class QAReviewData extends JPanel implements ActionListener
 					ws = new WorkingSheet(sheetpanel, pl, k);
 					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 					wsMap.put(pl, ws);
-					// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
-					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, status, startDate, endDate, null))
+					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, StatusName.qaReview, startDate, endDate, null))
 						ws.setNPIflag(true);
 					ws.setTLReviewHeader(null, true);
-
-					// ArrayList<String> sheetHeader = ws.getHeader();
-					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
-					// int qaCommentIndex = sheetHeader.indexOf("QA Comment")+4;
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					// for (int j = 0; j < plData.size(); j++) {
-					// ArrayList<String> sheetRecord = plData.get(j);
-					// // String partNumber = sheetRecord.get(6);
-					// supplierName = sheetRecord.get(5);
-					// // Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-					// // Component com = ParaQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-					// // status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-					// // String comment = ParaQueryUtil.getFeedbackCommentByComId(com.getComId());
-					// // GrmUserDTO issuer = ParaQueryUtil.getFeedbackIssuerByComId(com.getComId());
-					// // for (int l = 0; l < 6; l++) {
-					// // sheetRecord.add("");
-					// // }
-					// // if ("Parametric".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(devCommentIndex, comment);
-					// // } else if ("Quality Group".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(qaCommentIndex, comment);
-					// // }
-					// // sheetRecord.set(1, issuer.getFullName());
-					// // sheetRecord.set(2, status);
-					// // plData.set(j, sheetRecord);
-					// }
 					ws.writeReviewData(plData, 2, 3);
 					k++;
 				}
