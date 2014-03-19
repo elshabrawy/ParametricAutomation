@@ -196,31 +196,6 @@ public class TLReviewData extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				// String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				// if(status.equals("All"))
-				// {
-				// /******* all combo box items except all in statuses[] ******/
-				// int count = filterPanel.comboBoxItems[4].getItemCount();
-				// StringBuilder builder = new StringBuilder();
-				// for(int i = 0; i < count; i++)
-				// {
-				//
-				// if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-				// {
-				// builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-				// if(i < count - 1)
-				// {
-				// builder.append(", ");
-				// }
-				// }
-				// }
-				// statuses = builder.toString().split(", ");
-				// }
-				// else
-				// {
-				//
-				// statuses = new String[] { status };
-				// }
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -232,8 +207,6 @@ public class TLReviewData extends JPanel implements ActionListener
 				}
 				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
 			{
@@ -270,12 +243,6 @@ public class TLReviewData extends JPanel implements ActionListener
 				loading.frame.dispose();
 				return;
 			}
-
-			// if (wsMap.get("Separation") !=null) {
-			// ws=wsMap.get("Separation");
-			// ws = new WorkingSheet(separationPanel, "Separation");
-			// }
-
 			int[] selectedPdfs = tablePanel.table.getSelectedRows();
 			int selectedPdfsCount = selectedPdfs.length;
 			if(selectedPdfsCount == 0)
@@ -296,14 +263,6 @@ public class TLReviewData extends JPanel implements ActionListener
 					String supplierName = combos[1].getSelectedItem().toString();
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
-					// String status = combos[4].getSelectedItem().toString();
-					// if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
-					// {
-					// JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
-					// thread.stop();
-					// loading.frame.dispose();
-					// return;
-					// }
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -331,39 +290,13 @@ public class TLReviewData extends JPanel implements ActionListener
 
 					for(String pl : reviewData.keySet())
 					{
-						// wsMap=
 						ws = new WorkingSheet(sheetpanel, pl, k);
 						sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
 						wsMap.put(pl, ws);
-						// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
 						ws.setTLReviewHeader(null, false);
-						// ArrayList<String> sheetHeader = ws.getHeader();
-						// int devCommentIndex = sheetHeader.indexOf("Dev Comment");
-						// int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						// for (int j = 0; j < plData.size(); j++) {
-						// ArrayList<String> sheetRecord = plData.get(j);
-						// // String partNumber = sheetRecord.get(6);
-						// supplierName = sheetRecord.get(5);
-						// // Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-						// // Component com = ParaQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-						// // status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-						// // String comment = ParaQueryUtil.getFeedbackCommentByComId(com.getComId());
-						// // GrmUserDTO issuer = ParaQueryUtil.getFeedbackIssuerByComId(com.getComId());
-						// // for (int l = 0; l < 6; l++) {
-						// // sheetRecord.add("");
-						// // }
-						// // if ("Parametric".equalsIgnoreCase(issuer.getGroupName())) {
-						// // sheetRecord.set(devCommentIndex, comment);
-						// // } else if ("Quality Group".equalsIgnoreCase(issuer.getGroupName())) {
-						// // sheetRecord.set(qaCommentIndex, comment);
-						// // }
-						// // sheetRecord.set(1, issuer.getFullName());
-						// // sheetRecord.set(2, status);
-						// // plData.set(j, sheetRecord);
-						// }
 						ws.writeReviewData(plData, 2, 3);
 						k++;
 					}
@@ -406,15 +339,6 @@ public class TLReviewData extends JPanel implements ActionListener
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				if((!"All".equals(status) & (!StatusName.tlReview.equals(status))))
-				{
-					JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly TL Review pdfs can be loaded");
-					thread.stop();
-					loading.frame.dispose();
-					return;
-				}
-
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -424,11 +348,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 				}
-				if("All".equals(status))
-				{
-					status = StatusName.tlReview;
-				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, status, startDate, endDate, null);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, null);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -438,36 +358,10 @@ public class TLReviewData extends JPanel implements ActionListener
 					ws = new WorkingSheet(sheetpanel, pl, k);
 					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 					wsMap.put(pl, ws);
-					// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
-					if(DataDevQueryUtil.isNPITaskType(teamMembers, pl, supplierName, taskType, status, startDate, endDate, null))
+					if(DataDevQueryUtil.isNPITaskType(teamMembers, pl, supplierName, taskType, StatusName.tlReview, startDate, endDate, null))
 						ws.setNPIflag(true);
 					ws.setTLReviewHeader(null, false);
-
-					// ArrayList<String> sheetHeader = ws.getHeader();
-					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
-					// int qaCommentIndex = sheetHeader.indexOf("QA Comment")+4;
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					// for (int j = 0; j < plData.size(); j++) {
-					// ArrayList<String> sheetRecord = plData.get(j);
-					// // String partNumber = sheetRecord.get(6);
-					// supplierName = sheetRecord.get(5);
-					// // Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-					// // Component com = ParaQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-					// // status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-					// // String comment = ParaQueryUtil.getFeedbackCommentByComId(com.getComId());
-					// // GrmUserDTO issuer = ParaQueryUtil.getFeedbackIssuerByComId(com.getComId());
-					// // for (int l = 0; l < 6; l++) {
-					// // sheetRecord.add("");
-					// // }
-					// // if ("Parametric".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(devCommentIndex, comment);
-					// // } else if ("Quality Group".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(qaCommentIndex, comment);
-					// // }
-					// // sheetRecord.set(1, issuer.getFullName());
-					// // sheetRecord.set(2, status);
-					// // plData.set(j, sheetRecord);
-					// }
 					ws.writeReviewData(plData, 2, 3);
 					k++;
 				}
