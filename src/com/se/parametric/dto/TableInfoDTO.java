@@ -1,6 +1,8 @@
 package com.se.parametric.dto;
 
-public class TableInfoDTO
+import java.util.Comparator;
+
+public class TableInfoDTO implements Comparable<TableInfoDTO>
 {
 
 	private String pdfUrl;
@@ -28,6 +30,72 @@ public class TableInfoDTO
 	private String taxPath;
 	private int pagesCount;
 	private long pdfId;
+	private int PDFParts;
+	private int PDFDoneParts;
+	private int PLParts;
+	private int PLDoneParts;
+	private int PLFeatures;
+	private String PlType;
+
+	public String getPlType()
+	{
+		return PlType;
+	}
+
+	public void setPlType(String plType)
+	{
+		PlType = plType;
+	}
+
+	public int getPLFeatures()
+	{
+		return PLFeatures;
+	}
+
+	public void setPLFeatures(int pLFeatures)
+	{
+		PLFeatures = pLFeatures;
+	}
+
+	public int getPDFParts()
+	{
+		return PDFParts;
+	}
+
+	public void setPDFParts(int pDFParts)
+	{
+		PDFParts = pDFParts;
+	}
+
+	public int getPDFDoneParts()
+	{
+		return PDFDoneParts;
+	}
+
+	public void setPDFDoneParts(int pDFDoneParts)
+	{
+		PDFDoneParts = pDFDoneParts;
+	}
+
+	public int getPLParts()
+	{
+		return PLParts;
+	}
+
+	public void setPLParts(int pLParts)
+	{
+		PLParts = pLParts;
+	}
+
+	public int getPLDoneParts()
+	{
+		return PLDoneParts;
+	}
+
+	public void setPLDoneParts(int pLDoneParts)
+	{
+		PLDoneParts = pLDoneParts;
+	}
 
 	public long getPdfId()
 	{
@@ -277,6 +345,36 @@ public class TableInfoDTO
 	public void setPriority(String priority)
 	{
 		this.priority = priority;
+	}
+
+	@Override
+	public int compareTo(TableInfoDTO obj2)
+	{
+		int result = 0;
+		if(this.getPDFParts() > obj2.getPDFParts())
+		{
+			result = -1;
+		}
+		else if(this.getPDFParts() < obj2.getPDFParts())
+		{
+			result = 1;
+		}
+		else if(this.getPDFParts() == obj2.getPDFParts())
+		{
+			if(this.getPLParts() > obj2.getPLParts())
+			{
+				result = -1;
+			}
+			else if(this.getPLParts() < obj2.getPLParts())
+			{
+				result = 1;
+			}
+			else if(this.getPLParts() == obj2.getPLParts())
+			{
+				result = 0;
+			}
+		}
+		return result;
 	}
 
 }
