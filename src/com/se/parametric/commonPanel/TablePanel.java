@@ -12,18 +12,25 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.DefaultRowSorter;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import com.se.parametric.dto.TableInfoDTO;
 
@@ -68,10 +75,10 @@ public class TablePanel extends JPanel implements ActionListener
 		recordsPerPage = (int) ((height - 60) * 1.0 / 25);
 		String[][] tableData = new String[recordsPerPage][header.length];
 		// String[][] tableData = new String[20][header.length];
-
 		table = new JTable();
 		table.setRowHeight(25);
 		table.setModel(new DefaultTableModel(tableData, header));
+		table.setAutoCreateColumnsFromModel(false);
 		table.getTableHeader().setReorderingAllowed(true);
 		// table.setBounds(0, 524, width , height);
 
@@ -513,6 +520,7 @@ public class TablePanel extends JPanel implements ActionListener
 			}
 		}
 	}
+
 }
 
 // package com.se.parametric.commonPanel;
