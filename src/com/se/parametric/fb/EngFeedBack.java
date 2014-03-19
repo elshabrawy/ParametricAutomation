@@ -84,18 +84,11 @@ public class EngFeedBack extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserFeedbackData(userDTO, null, null);
 		selectionPanel = new JPanel();
-		// String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts", "InfectedTaxonomies", "Comment",
-		// "TaskType",
-		// "Extracted", "Date" };
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts", "InfectedTaxonomies", "Date" };
 		String[] filterHeader = { "PL Name", "Supplier", "Feedback Type", "Issued By" };
-		// tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 6) / 10));
-		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 4) / 10));
-		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
 		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10));
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
@@ -194,9 +187,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 			String issuedBy = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 
 			tablePanel.selectedData = DataDevQueryUtil.getDevFeedbackPDF(userId, plName, supplierName, issuedBy, feedbackType, startDate, endDate);
-
-			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			tablePanel.setTableData1(0, tablePanel.selectedData);
 
 		}
@@ -277,7 +267,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment"), false);
+						ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment", "Old Eng Comment"), false);
 						ws.statusValues.remove(0);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int tlCommentIndex = sheetHeader.indexOf("TL Comment");
@@ -286,6 +276,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						int Pactionindex = sheetHeader.indexOf("P_Action");
 						int RootcauseIndex = sheetHeader.indexOf("RootCause");
 						int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
+						int oldCommentIndex = sheetHeader.indexOf("Old Eng Comment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
@@ -298,6 +289,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 																																	// of tl and QA
 							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+							String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
 							ParaFeedbackAction action = null;
 							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
 							if(action != null)
@@ -313,6 +305,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 							}
 							sheetRecord.set(tlCommentIndex, tlComment);
 							sheetRecord.set(qaCommentIndex, qaComment);
+							sheetRecord.set(oldCommentIndex, lastEngcomment);
 							sheetRecord.set(2, feedCom.get(1));
 							plData.set(j, sheetRecord);
 						}
