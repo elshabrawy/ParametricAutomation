@@ -3,6 +3,7 @@ package com.se.parametric.dba;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -241,6 +242,7 @@ public class DataDevQueryUtil
 		ArrayList<Object[]> result = new ArrayList<Object[]>();
 		String start = "";
 		String end = "";
+		TrackingTaskStatus taskStatus = null;
 		if(startDate != null)
 		{
 			start = new SimpleDateFormat("MM/dd/yyyy").format(startDate);
@@ -250,23 +252,18 @@ public class DataDevQueryUtil
 		{
 			end = new SimpleDateFormat("MM/dd/yyyy").format(endDate);
 		}
-		// row = new ArrayList<Object>();
-		// row.add(grmUser);
-		// result.add(row);
 		Session session = SessionUtil.getSession();
+		Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+		cri.add(Restrictions.eq("name", StatusName.engFeedback));
+		taskStatus = (TrackingTaskStatus) cri.uniqueResult();
 
-		// String sql = " select PL.NAME pl, S.NAME supplier, tft.name, u.full_name issued_by  from parts_feedback pf, "
-		// + " component c, supplier s, supplier_pl spl, pl pl, grm.grm_user u, tracking_feedback_type tft where issued_to_id ="
-		// + grmUser.getId()
-		// + " and PF.FEEDBACK_RECIEVED=0 and pf.com_id=c.com_id and C.SUPPLIER_PL_ID=SPL.ID and SPL.SUPPLIER_ID=S.ID and SPL.PL_ID=PL.ID "
-		// + " and PF.ISSUED_BY_ID=U.ID and pf.feedback_type=tft.id group by s.name, pl.name, u.full_name, tft.name";
 		String sql = "";
 		if(startDate == null && endDate == null)
 		{
 			sql = " SELECT DISTINCT PL.NAME pl_name, s.name supplier_name, TFT.NAME feedback_name";
 			sql = sql + ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
 			sql = sql + "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
-			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID + " AND TP.TRACKING_TASK_STATUS_ID = 14 ";
+			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID + " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
 			sql = sql + "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
 			sql = sql + "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
 			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND FBc.ISSUED_TO = " + UserID + " AND FB.ID = FBC.P";
@@ -277,30 +274,16 @@ public class DataDevQueryUtil
 			sql = " SELECT DISTINCT PL.NAME pl_name, s.name supplier_name, TFT.NAME feedback_name";
 			sql = sql + ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
 			sql = sql + "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
-			sql = sql + "_feedback_type tft WHERE TP.USER_ID = 117 AND TP.TRACKING_TASK_STATUS_ID = 14 ";
+			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID + " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
 			sql = sql + "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
 			sql = sql + "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
 			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('" + startDate + "', 'MM/DD/YYYY')";
 			sql = sql + " AND TO_DATE ('" + endDate + "', 'MM/DD/YYYY') AND FBc.ISSUE";
-			sql = sql + "D_TO = 117 AND FB.ID = FBC.PARA_FEEDBACK_ID";
+			sql = sql + "D_TO = " + UserID + " AND FB.ID = FBC.PARA_FEEDBACK_ID";
 		}
 
 		System.out.println("Server Mesage   " + sql);
 		result = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
-		// for (int i = 0; i < result.size(); i++) {
-		// Object[] partFeedback = result.get(i);
-		// Object feedbackTypeObj = partFeedback[2];
-		// if (feedbackTypeObj != null) {
-		// if ("2".equals(feedbackTypeObj.toString())) {
-		// partFeedback[2] = "Wrong Data";
-		// } else {
-		// partFeedback[2] = feedbackTypeObj.toString();
-		// }
-		// } else {
-		// partFeedback[2] = "";
-		// }
-		// result.set(i, partFeedback);
-		// }
 		session.close();
 		return result;
 
@@ -314,7 +297,6 @@ public class DataDevQueryUtil
 		try
 		{
 			SQLQuery query = session.createSQLQuery("select distinct issued_by_id from parts_feedback where feedback_recieved=0 and issued_to_id=" + userId);
-			// System.out.println(query.toString());
 			List<BigDecimal> list = query.list();
 			if(list != null)
 			{
@@ -474,7 +456,6 @@ public class DataDevQueryUtil
 
 	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status)
 	{
-		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
 		{
@@ -493,7 +474,6 @@ public class DataDevQueryUtil
 
 		try
 		{
-
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 
 			if(!status.equals("All"))
@@ -529,15 +509,6 @@ public class DataDevQueryUtil
 				}
 
 			}
-			// System.out.println(criteria.list().size());
-
-			// if(status != null && !status.equals("All")) // it's original
-			// {
-			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			// statusCriteria.add(Restrictions.eq("name", status));
-			// TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-			// criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
-			// }
 			if(extracted != null && !extracted.equals("All"))
 			{
 				System.out.println(extracted);
@@ -617,8 +588,22 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
+				List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId());
+				docInfo.setPDFParts(noparts.get(0));
+				docInfo.setPLParts(noparts.get(1));
+				int fets = 0;
+				try
+				{
+					fets = ParaQueryUtil.getPlFeautrecount(obj.getPl().getName());
+				}catch(Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				docInfo.setPLFeatures(fets);
+				Pl pltype = ParaQueryUtil.getPLType(obj.getPl());
+				docInfo.setPlType(pltype.getName());
 				Date date = obj.getFinishedDate();
-
 				if(inputType.equals("assigned"))
 				{
 					date = obj.getAssignedDate();
@@ -630,11 +615,57 @@ public class DataDevQueryUtil
 
 				tableData.add(docInfo);
 			}
+			Collections.sort(tableData);
+
 		}finally
 		{
 			session.close();
 		}
 		return tableData;
+	}
+
+	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid)
+	{
+		Session session = null;
+		List<Integer> result = new ArrayList<>();
+		int count = 0;
+		try
+		{
+			session = SessionUtil.getSession();
+			SQLQuery query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  AUTOMATION2.PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + "");
+			Object obj = query.uniqueResult();
+			if(obj != null)
+			{
+				result.add(Integer.parseInt(obj.toString()));
+			}
+			else
+			{
+				result.add(0);
+			}
+			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */count(COM_ID)  FROM   AUTOMATION2.PART_COMPONENT x " + " WHERE   x.SUPPLIER_PL_ID in (select /*+ INDEX(y PL_ID_IDX) */ ID from supplier_pl y where y.PL_ID ="
+					+ plid + ")");
+			obj = query.uniqueResult();
+			if(obj != null)
+			{
+				result.add(Integer.parseInt(obj.toString()));
+			}
+			else
+			{
+				result.add(0);
+			}
+
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}finally
+		{
+			if((session != null) && (session.isOpen()))
+			{
+				session.close();
+			}
+		}
+		return result;
+
 	}
 
 	public static ArrayList<TableInfoDTO> getShowAllData(long userId, String plName, String vendorName, String type, String extracted, String status, Date startDate, Date endDate, String priority)
@@ -1088,7 +1119,7 @@ public class DataDevQueryUtil
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12,15)");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi + "'),getTaskTypeId('" + StatusName.npiTransferred + "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
 				}
 				else
 				{
@@ -1097,14 +1128,6 @@ public class DataDevQueryUtil
 			}
 			if(!(usersId.length == 0) && usersId != null)
 			{
-				// String users = "";
-				// for (int i = 0; i < usersId.length; i++) {
-				// if (i == usersId.length - 1) {
-				// users = users + usersId[i];
-				// } else {
-				// users = users + usersId[i] + ",";
-				// }
-				// }
 				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
 			}
 			if(docsIds != null && docsIds.length > 0)
@@ -1118,8 +1141,6 @@ public class DataDevQueryUtil
 
 				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
-				// qury = qury +
-				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
 			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
@@ -1307,12 +1328,6 @@ public class DataDevQueryUtil
 						plData.add(partData);
 					}
 					allData.put(plout, plData);
-					// plData = new ArrayList<ArrayList<String>>();
-					// if (!partData.isEmpty()) {
-					// partData.add(desc);
-					// plData.add(partData);
-					// allData.put(plout, plData);
-					// }
 				}
 
 				lastPart = data[4].toString();
@@ -1353,14 +1368,7 @@ public class DataDevQueryUtil
 			}
 			if(!(usersId.length == 0) && usersId != null)
 			{
-				// String users = "";
-				// for (int i = 0; i < usersId.length; i++) {
-				// if (i == usersId.length - 1) {
-				// users = users + usersId[i];
-				// } else {
-				// users = users + usersId[i] + ",";
-				// }
-				// }
+
 				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
 
 			}
@@ -1626,8 +1634,7 @@ public class DataDevQueryUtil
 
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId, String plName, String vendorName, String type, String status, Date startDate, Date endDate, Long[] docsIds, Long qaUser, String availableStatus)
-			throws Exception
+	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId, String plName, String vendorName, String type, Date startDate, Date endDate, Long[] docsIds, Long qaUser, String availableStatus) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
@@ -1636,12 +1643,29 @@ public class DataDevQueryUtil
 		try
 		{
 			StringBuffer qury = new StringBuffer();
-			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME,Get_family_crossName(C.FAMILY_CROSS_ID) family_Cross , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value(c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG,GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
-					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 "
-					+
-
-					"and T.QA_USER_ID =" + qaUser + " and T.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + availableStatus + "') ");
+			String Sql = "";
+			Sql = " SELECT GET_PL_NAME (t.PL_ID) plName, getuserName (T.USER_ID), GetTaskTypeName";
+			Sql = Sql + " (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,";
+			Sql = Sql + " C.PART_NUMBER, FAM.NAME, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cros";
+			Sql = Sql + "s, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PA";
+			Sql = Sql + "RT_NUMBER) MASK, c.NPI_FLAG, GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) n";
+			Sql = Sql + "ewsLike, c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, F.NAME fetNam";
+			Sql = Sql + "e, G.GROUP_FULL_VALUE fetVal, t.ASSIGNED_DATE, GetTaskStatusName (TRACKING_TAS";
+			Sql = Sql + "K_STATUS_ID) task_Status, C.COM_ID, R.PL_FEATURE_ID, R.GROUP_APPROVED_VALUE_ID";
+			Sql = Sql + ", t.DOCUMENT_ID, t.PL_ID FROM TRACKING_PARAMETRIC T, Part_COMPONENT c, family ";
+			Sql = Sql + "fam, PARAMETRIC_REVIEW_DATA r, pl_feature_unit pf, feature f, PARAMETRIC_APPRO";
+			Sql = Sql + "VED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID AND T.SUPPLIER_PL_ID = C.SUPPL";
+			Sql = Sql + "IER_PL_ID AND c.COM_ID = R.COM_ID AND C.FAMILY_ID = FAM.ID AND R.PL_FEATURE_ID";
+			Sql = Sql + " = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID AND T.QA_US";
+			Sql = Sql + "ER_ID = " + qaUser + " AND T.TRACKING_TASK_STATUS_ID = getTaskstatusId ('" + availableStatus + "')";
+			qury.append(Sql);
+			// "  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME,Get_family_crossName(C.FAMILY_CROSS_ID) family_Cross , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value(c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG,GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
+			// + " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
+			// +
+			// " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 "
+			// +
+			//
+			// "and T.QA_USER_ID =" + qaUser + " and T.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + availableStatus + "') ");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -1650,15 +1674,15 @@ public class DataDevQueryUtil
 			{
 				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
 			}
-			if(status != null && !status.equals("All"))
-			{
-				qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
-			}
+			// if(status != null && !status.equals("All"))
+			// {
+			// qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
+			// }
 			if(type != null && !type.equals("All"))
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12,15)");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi + "'),getTaskTypeId('" + StatusName.npiTransferred + "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
 				}
 				else
 				{
@@ -1667,14 +1691,6 @@ public class DataDevQueryUtil
 			}
 			if(!(usersId.length == 0) && usersId != null)
 			{
-				// String users = "";
-				// for (int i = 0; i < usersId.length; i++) {
-				// if (i == usersId.length - 1) {
-				// users = users + usersId[i];
-				// } else {
-				// users = users + usersId[i] + ",";
-				// }
-				// }
 				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
 			}
 			if(docsIds != null && docsIds.length > 0)
@@ -1782,10 +1798,12 @@ public class DataDevQueryUtil
 					{
 						allData.put(lastPl, plData);
 					}
-					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type, status, startDate, endDate, docsIds);
+					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type, availableStatus, startDate, endDate, docsIds);
 					partData = new ArrayList<String>();
 					/** Pl Name */
 					partData.add(data[0].toString());
+					/** Pl Type */
+					partData.add(plType);
 					/** user name */
 					partData.add(data[1].toString());
 					/** Status */
@@ -1795,6 +1813,10 @@ public class DataDevQueryUtil
 					/** Task Type */
 					partData.add(data[2].toString());
 					/** Supplier */
+					partData.add(data[3].toString());
+					/** Done flag */
+					partData.add(data[3].toString());
+					/** Extraction flag */
 					partData.add(data[3].toString());
 					/** Part Number */
 					partData.add(data[4].toString());
@@ -1834,18 +1856,13 @@ public class DataDevQueryUtil
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
 							/** ALU */
 							partData.add((data[10] == null) ? "" : data[10].toString());
-
 						}
 						/** pdf url */
 						partData.add(data[12].toString());
-
 					}
 					plFets = plFetsMap.get(plout);
 					partData.addAll(plFets);
 					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
-					// x= plFets.indexOf(data[10].toString());
-					// partData.add(data[11].toString()); /* fet Value */
-
 				}
 
 				if(i == result.size() - 1)
@@ -1872,12 +1889,6 @@ public class DataDevQueryUtil
 						plData.add(partData);
 					}
 					allData.put(plout, plData);
-					// plData = new ArrayList<ArrayList<String>>();
-					// if (!partData.isEmpty()) {
-					// partData.add(desc);
-					// plData.add(partData);
-					// allData.put(plout, plData);
-					// }
 				}
 
 				lastPart = data[4].toString();
@@ -2147,9 +2158,6 @@ public class DataDevQueryUtil
 			Set<Document> docsSet = new HashSet<Document>();
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("parametricUserId", userId));
-			// if (!(userId.length == 0) && userId != null) {
-			// criteria.add(Restrictions.eq("parametricUserId", userId));
-			// }
 			if(startDate != null && endDate != null)
 			{
 				criteria.add(Expression.between("finishedDate", startDate, endDate));
@@ -2185,8 +2193,6 @@ public class DataDevQueryUtil
 			{
 				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
 				ParametricFeedbackCriteria.add(Restrictions.eq("Feedback.trackingFeedbackType", ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr)));
-
-				// ParametricFeedbackCriteria.add(Restrictions.eq("feedbackTypeId", ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr)));
 			}
 
 			List<ParametricFeedbackCycle> parametricfeedbackCycles = ParametricFeedbackCriteria.list();
@@ -2226,9 +2232,6 @@ public class DataDevQueryUtil
 				}
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
-
-				// String comment = getFeedbackCommentByDocID(obj.getDocument().getId());
-				// docInfo.setComment(comment);
 				tableData.add(docInfo);
 			}
 
@@ -2501,7 +2504,6 @@ public class DataDevQueryUtil
 			// getTrackingTaskStatus(session, status);
 			for(int i = 0; i < pdfSet.size(); i++)
 			{
-
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfSet.get(i), session);
 				criteria.add(Restrictions.eq("document", document));
@@ -2510,7 +2512,6 @@ public class DataDevQueryUtil
 				{
 					criteria.add(Restrictions.eq("supplier", ParaQueryUtil.getSupplierByExactName(session, supplierName)));
 				}
-
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
 				track.setQaReviewDate(new Date());
@@ -2519,8 +2520,6 @@ public class DataDevQueryUtil
 				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
 				track.setQaUserId(qaUserId);
 				track.setFinishedDate(ParaQueryUtil.getDate());
-				// if(StatusName.qaReview.equals(status))
-				// {
 				// // if document has opened feedbacks
 				// don't transfere to QA Team
 				GrmUser issuedByUser = null;
@@ -3992,6 +3991,36 @@ public class DataDevQueryUtil
 		}
 		else
 			return null;
+	}
+
+	public static String getlastengComment(Long issuedby, long comid)
+	{
+		Session session = null;
+		String comment = "";
+		try
+		{
+			session = SessionUtil.getSession();
+			ParametricFeedbackCycle appFB = null;
+			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+			feedBCri.add(Restrictions.eq("issuedBy", issuedby));
+			feedBCri.createAlias("parametricFeedback", "feedback");
+			feedBCri.add(Restrictions.eq("feedback.itemId", comid));
+			feedBCri.addOrder(Order.desc("storeDate"));
+			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
+			{
+				appFB = (ParametricFeedbackCycle) feedBCri.list().get(0);
+				comment = appFB.getFbComment() == null ? "" : appFB.getFbComment();
+			}
+			else
+				comment = "";
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+		}
+		return comment;
 	}
 
 }

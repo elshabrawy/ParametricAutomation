@@ -5288,6 +5288,35 @@ public class ParaQueryUtil
 		}
 	}
 
+	public static int getPlFeautrecount(String Plname) throws Exception
+	{
+		Session session = SessionUtil.getSession();
+		int fets = 0;
+		try
+		{
+			Criteria criteria = session.createCriteria(PlFeature.class);
+			criteria.add(Restrictions.eq("pl", getPlByPlName(session, Plname)));
+			criteria.createCriteria("feature").add(
+					Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME", "Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description", "Introduction Name",
+							"Pin Count", "Supplier Package", "ROHS", "Life Cycle" })));
+			criteria.add(Restrictions.isNotNull("columnName"));
+			criteria.add(Restrictions.ne("columnName", "man_id"));
+
+			if(criteria.list() != null)
+				fets = criteria.list().size();
+			else
+				fets = 0;
+
+			return fets;
+		}catch(Exception e)
+		{
+			throw ParametricDevServerUtil.getCatchException(e);
+		}finally
+		{
+			session.close();
+		}
+	}
+
 	public static List getParametricReviewData(Long groupID, Session session)
 	{
 
