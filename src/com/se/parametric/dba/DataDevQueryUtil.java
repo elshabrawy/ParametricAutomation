@@ -454,7 +454,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status)
+	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
+			String pltype)
 	{
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
@@ -484,7 +485,7 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
 			}
 
-			if(!(usersId.length == 0) && usersId != null)
+			if(!(usersId.length == 0) && usersId[0] != 0 && usersId != null)
 			{
 				criteria.add(Restrictions.in("parametricUserId", usersId));
 			}
@@ -571,6 +572,12 @@ public class DataDevQueryUtil
 				if(!docs.isEmpty())
 					criteria.add(Restrictions.in("document", docs));
 			}
+			String sql = "";
+			if(pltype != null && !pltype.equals("All"))
+			{
+				sql = " AUTOMATION2.Get_PL_Type(this_.PL_ID)='" + pltype + "'";
+				criteria.add(Restrictions.sqlRestriction(sql));
+			}
 			List list = criteria.list();
 			for(int i = 0; i < list.size(); i++)
 			{
@@ -601,8 +608,8 @@ public class DataDevQueryUtil
 					e.printStackTrace();
 				}
 				docInfo.setPLFeatures(fets);
-				Pl pltype = ParaQueryUtil.getPLType(obj.getPl());
-				docInfo.setPlType(pltype.getName());
+				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
+				docInfo.setPlType(Pltype.getName());
 				Date date = obj.getFinishedDate();
 				if(inputType.equals("assigned"))
 				{
@@ -1634,7 +1641,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId, String plName, String vendorName, String type, Date startDate, Date endDate, Long[] docsIds, Long qaUser, String availableStatus) throws Exception
+	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId, String plName, String vendorName, String type, Date startDate, Date endDate, Long[] docsIds, Long qaUser, String availableStatus, String Pltype)
+			throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
@@ -1652,7 +1660,8 @@ public class DataDevQueryUtil
 			Sql = Sql + "ewsLike, c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, F.NAME fetNam";
 			Sql = Sql + "e, G.GROUP_FULL_VALUE fetVal, t.ASSIGNED_DATE, GetTaskStatusName (TRACKING_TAS";
 			Sql = Sql + "K_STATUS_ID) task_Status, C.COM_ID, R.PL_FEATURE_ID, R.GROUP_APPROVED_VALUE_ID";
-			Sql = Sql + ", t.DOCUMENT_ID, t.PL_ID FROM TRACKING_PARAMETRIC T, Part_COMPONENT c, family ";
+			Sql = Sql + ", t.DOCUMENT_ID, t.PL_ID,Decode(C.DONEFLAG,null,'No',0,'No',1,'Yes')  DONEFLAG,";
+			Sql = Sql + " Decode(C.EXTRACTIONFLAG,null,'No',0,'No',1,'Yes') EXTRACTIONFLAG FROM TRACKING_PARAMETRIC T, Part_COMPONENT c, family ";
 			Sql = Sql + "fam, PARAMETRIC_REVIEW_DATA r, pl_feature_unit pf, feature f, PARAMETRIC_APPRO";
 			Sql = Sql + "VED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID AND T.SUPPLIER_PL_ID = C.SUPPL";
 			Sql = Sql + "IER_PL_ID AND c.COM_ID = R.COM_ID AND C.FAMILY_ID = FAM.ID AND R.PL_FEATURE_ID";
@@ -1669,6 +1678,10 @@ public class DataDevQueryUtil
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
+			}
+			if(Pltype != null && !Pltype.equals("All"))
+			{
+				qury.append("  AND AUTOMATION2.Get_PL_Type(T.PL_ID)='" + Pltype + "'");
 			}
 			if(!vendorName.equals("All") && vendorName != null)
 			{
@@ -1806,18 +1819,18 @@ public class DataDevQueryUtil
 					partData.add(plType);
 					/** user name */
 					partData.add(data[1].toString());
-					/** Status */
-					partData.add("");
-					/** Comment */
-					partData.add("");
+//					/** Status */
+//					partData.add("");
+//					/** Comment */
+//					partData.add("");
 					/** Task Type */
 					partData.add(data[2].toString());
 					/** Supplier */
 					partData.add(data[3].toString());
 					/** Done flag */
-					partData.add(data[3].toString());
+					partData.add(data[22].toString());
 					/** Extraction flag */
-					partData.add(data[3].toString());
+					partData.add(data[23].toString());
 					/** Part Number */
 					partData.add(data[4].toString());
 					/** family */
@@ -1829,7 +1842,7 @@ public class DataDevQueryUtil
 
 						partData.add(data[6] != null ? data[6].toString() : "");
 						/** generic */
-						partData.add(data[7].toString());
+						partData.add(data[7] != null ? data[7].toString() : "");
 						/** Mask */
 						partData.add((data[8] == null) ? "" : data[8].toString());
 
@@ -3958,7 +3971,7 @@ public class DataDevQueryUtil
 			{
 				Object[] data = list2.get(i);
 				row = new ArrayList<String>();
-				for(int j = 0; j < 5; j++)
+				for(int j = 0; j < 4; j++)
 				{
 					row.add((data[j] == null) ? "" : data[j].toString());
 					// System.out.println((data[j] == null) ? "" : data[j].toString());
