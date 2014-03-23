@@ -766,22 +766,22 @@ public class WorkingSheet
 			cell = getCellByPosission(2, StatrtRecord);
 			cell.setText("Eng Name");
 			HeaderList.add(cell);
+//			cell = getCellByPosission(3, StatrtRecord);
+//			cell.setText("Status");
+//			HeaderList.add(cell);
+//			cell = getCellByPosission(4, StatrtRecord);
+//			cell.setText("Comment");
+//			HeaderList.add(cell);
 			cell = getCellByPosission(3, StatrtRecord);
-			cell.setText("Status");
-			HeaderList.add(cell);
-			cell = getCellByPosission(4, StatrtRecord);
-			cell.setText("Comment");
-			HeaderList.add(cell);
-			cell = getCellByPosission(5, StatrtRecord);
 			cell.setText("Task Type");
 			HeaderList.add(cell);
-			cell = getCellByPosission(6, StatrtRecord);
+			cell = getCellByPosission(4, StatrtRecord);
 			cell.setText("Supplier Name");
 			HeaderList.add(cell);
-			cell = getCellByPosission(7, StatrtRecord);
+			cell = getCellByPosission(5, StatrtRecord);
 			cell.setText("Done Flag");
 			HeaderList.add(cell);
-			cell = getCellByPosission(8, StatrtRecord);
+			cell = getCellByPosission(6, StatrtRecord);
 			cell.setText("Extraction Flag");
 			HeaderList.add(cell);
 			setDevHeader(false, isQA);
@@ -795,10 +795,12 @@ public class WorkingSheet
 					HeaderList.add(cell);
 				}
 			}
-			statusValues.add("Approved");
-			statusValues.add("Rejected");
-			if(!isQA)
-				statusValues.add("Updated");
+			statusValues.add("A");
+			statusValues.add("S");
+			statusValues.add("R");
+			statusValues.add("W");
+			statusValues.add("F");
+			// A/S/R/W/F
 			// setMainHeaders();
 			// System.out.println("Pl Features:" + plfets.size());
 			//
