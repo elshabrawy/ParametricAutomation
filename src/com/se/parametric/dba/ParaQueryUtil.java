@@ -6285,7 +6285,7 @@ public class ParaQueryUtil
 					}
 					else
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 1l }));
+						cri.createCriteria("trackingTaskType").add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l, 15l })));
 					}
 					if(!cri.list().isEmpty())
 						count++;
@@ -6341,7 +6341,7 @@ public class ParaQueryUtil
 					}
 					else
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 1l }));
+						cri.createCriteria("trackingTaskType").add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l, 15l })));
 					}
 					if(!cri.list().isEmpty())
 						count++;
