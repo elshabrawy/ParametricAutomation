@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -297,7 +298,9 @@ public class EngFeedBack extends JPanel implements ActionListener
 								sheetRecord.set(Cactionindex, action.getCAction());
 								sheetRecord.set(Pactionindex, action.getPAction());
 								sheetRecord.set(RootcauseIndex, action.getRootCause());
-								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+								Date date = action.getActionDueDate();
+								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+								sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
 							}
 							for(int l = 0; l < 6; l++)
 							{
@@ -544,7 +547,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 		frame.setTitle("Eng Feedback");
 		GrmUserDTO uDTO = new GrmUserDTO();
 		uDTO.setId(376);
-		uDTO.setFullName("Salah Shiha");
+		uDTO.setFullName("Mohammad Attia");
 		// uDTO.setId(117);
 		// uDTO.setFullName("Abeer Mohamady");
 		GrmRole role = new GrmRole();
