@@ -638,7 +638,7 @@ public class Developement extends JPanel implements ActionListener
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 			String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, "", "assigned", priority, StatusName.assigned);
+			tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, "", "assigned", priority, StatusName.assigned,"");
 
 			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
