@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -184,7 +185,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					}
 					else
 					{
-						ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
 						int size = model.getSize();
 						users = new Long[size - 1];
 						for(int i = 1; i < size; i++)
@@ -194,7 +195,7 @@ public class QAReviewData extends JPanel implements ActionListener
 								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 						}
 					}
-					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaReview);
+					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaReview, plType);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
@@ -242,9 +243,10 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					JComboBox[] combos = filterPanel.comboBoxItems;
 					String plName = combos[0].getSelectedItem().toString();
-					String supplierName = combos[1].getSelectedItem().toString();
-					String taskType = combos[2].getSelectedItem().toString();
-					String userName = combos[3].getSelectedItem().toString();
+					String supplierName = combos[2].getSelectedItem().toString();
+					String taskType = combos[3].getSelectedItem().toString();
+					String userName = combos[4].getSelectedItem().toString();
+					String pltype = combos[1].getSelectedItem().toString();
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -265,7 +267,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					else
 					{
 						// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-						ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
 						int size = model.getSize();
 						users = new Long[size - 1];
 						for(int i = 1; i < size; i++)
@@ -276,7 +278,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							// System.out.println("Element at " + i + " = " + element);
 						}
 					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaReview);
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaReview, pltype);
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
@@ -289,9 +291,23 @@ public class QAReviewData extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setQAReviewHeader(null, true);
+						ws.setQAReviewHeader(Arrays.asList("Status", "Comment"), true);
+						ArrayList<String> sheetHeader = ws.getHeader();
+						int statusIndex = sheetHeader.indexOf("Status");
+						int CommentIndex = sheetHeader.indexOf("Comment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						ws.writeReviewData(plData, 2, 4);
+						for(int j = 0; j < plData.size(); j++)
+						{
+
+							ArrayList<String> sheetRecord = plData.get(j);
+							for(int l = 0; l < 2; l++)
+							{
+								sheetRecord.add("");
+							}
+							sheetRecord.set(statusIndex, "");
+							sheetRecord.set(CommentIndex, "");
+						}
+						ws.writeReviewData(plData, 2, statusIndex + 1);
 						k++;
 					}
 					tablePanel.loadedPdfs.add(pdfUrl);
@@ -331,9 +347,10 @@ public class QAReviewData extends JPanel implements ActionListener
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
 				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+				String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+				String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+				String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+				String pltype = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 				if(!userName.equals("All"))
 				{
 					long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -351,7 +368,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, null, userDTO.getId(), StatusName.qaReview);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, null, userDTO.getId(), StatusName.qaReview, pltype);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -363,9 +380,23 @@ public class QAReviewData extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, StatusName.qaReview, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setTLReviewHeader(null, true);
+					ws.setQAReviewHeader(Arrays.asList("Status", "Comment"), true);
+					ArrayList<String> sheetHeader = ws.getHeader();
+					int statusIndex = sheetHeader.indexOf("Status");
+					int CommentIndex = sheetHeader.indexOf("Comment");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					ws.writeReviewData(plData, 2, 3);
+					for(int j = 0; j < plData.size(); j++)
+					{
+
+						ArrayList<String> sheetRecord = plData.get(j);
+						for(int l = 0; l < 2; l++)
+						{
+							sheetRecord.add("");
+						}
+						sheetRecord.set(statusIndex, "");
+						sheetRecord.set(CommentIndex, "");
+					}
+					ws.writeReviewData(plData, 2, statusIndex + 1);
 					k++;
 				}
 			}catch(Exception e)
@@ -408,7 +439,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		// uDTO.setId(32);
 		// uDTO.setFullName("Hatem Hussien");
 		uDTO.setId(80);
-		uDTO.setFullName("Shady");
+		uDTO.setFullName("mahmoud_hamdy");
 		// uDTO.setId(121);
 		// uDTO.setFullName("Ahmad_rahim");
 		GrmRole role = new GrmRole();

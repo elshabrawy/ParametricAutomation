@@ -198,7 +198,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback,"");
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -249,14 +249,14 @@ public class QAFeedBack extends JPanel implements ActionListener
 					String supplierName = combos[1].getSelectedItem().toString();
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
-					String status = combos[4].getSelectedItem().toString();
-					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
-					{
-						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
-						thread.stop();
-						loading.frame.dispose();
-						return;
-					}
+//					String status = combos[4].getSelectedItem().toString();
+//					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
+//					{
+//						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
+//						thread.stop();
+//						loading.frame.dispose();
+//						return;
+//					}
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -289,7 +289,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 						}
 					}
 
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback);
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback, "");
 					// String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
@@ -415,7 +415,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				{
 					status = StatusName.qaFeedback;
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType,  startDate, endDate, null, userDTO.getId(), StatusName.qaFeedback);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, null, userDTO.getId(), StatusName.qaFeedback, "");
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
