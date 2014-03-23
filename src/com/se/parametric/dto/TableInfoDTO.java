@@ -361,15 +361,15 @@ public class TableInfoDTO implements Comparable<TableInfoDTO>
 		}
 		else if(this.getPDFParts() == obj2.getPDFParts())
 		{
-			if(this.getPLParts() > obj2.getPLParts())
+			if(this.getPDFDoneParts() > obj2.getPDFDoneParts())
 			{
 				result = -1;
 			}
-			else if(this.getPLParts() < obj2.getPLParts())
+			else if(this.getPDFDoneParts() < obj2.getPDFDoneParts())
 			{
 				result = 1;
 			}
-			else if(this.getPLParts() == obj2.getPLParts())
+			else if(this.getPDFDoneParts() == obj2.getPDFDoneParts())
 			{
 				result = 0;
 			}
