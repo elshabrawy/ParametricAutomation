@@ -80,7 +80,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110, (((height - 100) * 7) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
 		alertsPanel = new AlertsPanel(TLDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
@@ -138,7 +138,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			
+
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
