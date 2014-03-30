@@ -799,7 +799,7 @@ public class WorkingSheet
 			statusValues.add("S");
 			statusValues.add("R");
 			statusValues.add("W");
-			statusValues.add("F");
+			statusValues.add("Fast");
 			// A/S/R/W/F
 			// setMainHeaders();
 			// System.out.println("Pl Features:" + plfets.size());
@@ -839,8 +839,9 @@ public class WorkingSheet
 	{
 		try
 		{
-			//PDFURL	Online Datasheet	Pl_Type	PL Name	No. of Parts per PDF
-			//No. of Done Parts per PDF	No. of parts per PL	No. of Done parts per PL	COM_ID	Part	Supplier Name	Task Name	Status	DevUserName	Date	QA Flag	QA Comment	Done Flag	PN in DS	Keywords in DS
+			// PDFURL Online Datasheet Pl_Type PL Name No. of Parts per PDF
+			// No. of Done Parts per PDF No. of parts per PL No. of Done parts per PL COM_ID Part Supplier Name Task Name Status DevUserName Date QA
+			// Flag QA Comment Done Flag PN in DS Keywords in DS
 
 			HeaderList = new ArrayList<Cell>();
 			Cell cell = getCellByPosission(0, StatrtRecord);
@@ -900,8 +901,8 @@ public class WorkingSheet
 			cell = getCellByPosission(18, StatrtRecord);
 			cell.setText("Keywords in DS");
 			HeaderList.add(cell);
-			
-			//QA Flag	QA Comment	Done Flag	PN in DS	Keywords in DS
+
+			// QA Flag QA Comment Done Flag PN in DS Keywords in DS
 			setDevHeader(false, true);
 			if(additionalCols != null)
 			{
@@ -918,7 +919,6 @@ public class WorkingSheet
 			statusValues.add("R");
 			statusValues.add("W");
 			statusValues.add("F");
-			
 
 		}catch(Exception ex)
 		{
