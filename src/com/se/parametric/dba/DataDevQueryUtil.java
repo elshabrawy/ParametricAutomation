@@ -62,6 +62,7 @@ import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.AppContext;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.PartInfoDTO;
+import com.se.parametric.dto.SummaryDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.StatusName;
 
@@ -595,9 +596,11 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
-				List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId());
+				List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
 				docInfo.setPDFParts(noparts.get(0));
 				docInfo.setPLParts(noparts.get(1));
+				docInfo.setPDFDoneParts(noparts.get(2));
+				docInfo.setPLDoneParts(noparts.get(3));
 				int fets = 0;
 				try
 				{
@@ -631,14 +634,19 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid)
+	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid, Long[] usersId, String status)
 	{
 		Session session = null;
 		List<Integer> result = new ArrayList<>();
+		TrackingTaskStatus trackingTaskstatus = null;
 		int count = 0;
 		try
 		{
+
 			session = SessionUtil.getSession();
+			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", status));
+			trackingTaskstatus = (TrackingTaskStatus) cri.uniqueResult();
 			SQLQuery query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  AUTOMATION2.PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + "");
 			Object obj = query.uniqueResult();
 			if(obj != null)
@@ -649,8 +657,49 @@ public class DataDevQueryUtil
 			{
 				result.add(0);
 			}
-			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */count(COM_ID)  FROM   AUTOMATION2.PART_COMPONENT x " + " WHERE   x.SUPPLIER_PL_ID in (select /*+ INDEX(y PL_ID_IDX) */ ID from supplier_pl y where y.PL_ID ="
-					+ plid + ")");
+			String users = "";
+			if(usersId.length > 0)
+			{
+				users += "And Z.USER_ID in (";
+				for(int u = 0; u < usersId.length; u++)
+				{
+					users += "" + usersId[u] + ",";
+				}
+				users = users.substring(0, users.length() - 1);
+				users += ")";
+			}
+			String Sql = "";
+			Sql = " SELECT /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */ COUNT (COM_ID) FROM AUTOMATION";
+			Sql = Sql + "2.PART_COMPONENT x, TRACKING_PARAMETRIC z WHERE x.SUPPLIER_PL_ID IN (SELECT /*";
+			Sql = Sql + "+ INDEX(y PL_ID_IDX) */ ID FROM supplier_pl y WHERE y.PL_ID = " + plid + ") AND X.DOCUME";
+			Sql = Sql + "NT_ID = Z.DOCUMENT_ID AND Z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + "";
+			query = session.createSQLQuery(Sql);
+			obj = query.uniqueResult();
+			if(obj != null)
+			{
+				result.add(Integer.parseInt(obj.toString()));
+			}
+			else
+			{
+				result.add(0);
+			}
+
+			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  AUTOMATION2.PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + " and DONEFLAG = 1");
+			obj = query.uniqueResult();
+			if(obj != null)
+			{
+				result.add(Integer.parseInt(obj.toString()));
+			}
+			else
+			{
+				result.add(0);
+			}
+
+			Sql = " SELECT /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */ COUNT (COM_ID) FROM AUTOMATION";
+			Sql = Sql + "2.PART_COMPONENT x, TRACKING_PARAMETRIC z WHERE x.SUPPLIER_PL_ID IN (SELECT /*";
+			Sql = Sql + "+ INDEX(y PL_ID_IDX) */ ID FROM supplier_pl y WHERE y.PL_ID = " + plid + ") AND X.DONEFLAG = 1 AND X.DOCUME";
+			Sql = Sql + "NT_ID = Z.DOCUMENT_ID AND Z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + "";
+			query = session.createSQLQuery(Sql);
 			obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -1721,6 +1770,7 @@ public class DataDevQueryUtil
 				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
 			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
+			// Medical Application|DD Review|Minimum Storage Temperature
 
 			System.out.println(qury.toString());
 			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
@@ -1819,10 +1869,10 @@ public class DataDevQueryUtil
 					partData.add(plType);
 					/** user name */
 					partData.add(data[1].toString());
-//					/** Status */
-//					partData.add("");
-//					/** Comment */
-//					partData.add("");
+					// /** Status */
+					// partData.add("");
+					// /** Comment */
+					// partData.add("");
 					/** Task Type */
 					partData.add(data[2].toString());
 					/** Supplier */
@@ -2702,10 +2752,10 @@ public class DataDevQueryUtil
 				GrmUser issuedByUser = ParaQueryUtil.getGRMUserByName(issuedByName);
 				GrmUser issuedToUser = ParaQueryUtil.getGRMUserByName(issuedToName);
 				long issedto = issuedToUser.getId();
-				if(!partInfo.getFbtype().equals(StatusName.internal))
-				{
-					issedto = ParaQueryUtil.getTLByUserID(issuedByUser.getId());
-				}
+				// if(!partInfo.getFbtype().equals(StatusName.internal))
+				// {
+				// issedto = ParaQueryUtil.getTLByUserID(issuedByUser.getId());
+				// }
 				Date date = ParaQueryUtil.getDate();
 
 				Criteria criteria = session.createCriteria(ParametricFeedbackCycle.class);
@@ -2713,12 +2763,6 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 				criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
-				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria.uniqueResult();
-				if(parametricFeedbackCycle != null)
-				{
-					parametricFeedbackCycle.setFeedbackRecieved(1l);
-					session.saveOrUpdate(parametricFeedbackCycle);
-				}
 				if(feedbackTypeStr.isEmpty())
 				{
 					criteria = session.createCriteria(ParaIssueType.class);
@@ -2755,8 +2799,11 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("name", partInfo.getFbtype()));
 				trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
 
+				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria.uniqueResult();
 				if(parametricFeedbackCycle != null)
 				{
+					parametricFeedbackCycle.setFeedbackRecieved(1l);
+					session.saveOrUpdate(parametricFeedbackCycle);
 					FBObj = parametricFeedbackCycle.getParametricFeedback();
 					FBObj.setParaFeedbackStatus(paraFeedbackStatus);
 				}
@@ -2795,68 +2842,6 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(FBObj);
 				session.saveOrUpdate(FBCyc);
 
-				// Criteria partsFeedbackCriteria = session.createCriteria(PartsFeedback.class);
-				// partsFeedbackCriteria.add(Restrictions.eq("partComponent", component));
-				// // partsFeedbackCriteria.add(Restrictions.eq("fbComment", comment));
-				// partsFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
-				// // partsFeedbackCriteria.add(Restrictions.eq("issuedById", issuedToUser.getId()));
-				// partsFeedbackCriteria.add(Restrictions.eq("issuedToId", issuedByUser.getId()));
-				//
-				// PartsFeedback oldFeedback = (PartsFeedback) partsFeedbackCriteria.uniqueResult();
-				//
-				// TrackingFeedbackType feedbackType = null;
-				// if(feedbackTypeStr != null)
-				// {
-				// feedbackType = ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr);
-				// }
-
-				// PartsFeedback partsFeedback = new PartsFeedback();
-				// partsFeedback.setId(QueryUtil.getRandomID());
-				// partsFeedback.setFbComment(comment);
-				// partsFeedback.setTrackingFeedbackType(feedbackType);
-				// partsFeedback.setPartComponent(component);
-				// partsFeedback.setIssuedById(issuedByUser.getId());
-				// partsFeedback.setIssuedToId(issuedToUser.getId());
-				// partsFeedback.setStoreDate(date);
-				// partsFeedback.setTrackingTaskStatus(trackingTaskStatus);
-				// System.err.println("user team " + issuedByUser.getGrmGroup().getGrmTeam().getName());
-
-				// if(partInfo.getFeedBackSource().equals("QA")) //issue source QA and approve eng so send to QA
-				// {
-				// Long issueQAEngID=ParaQueryUtil.getIssueFirstSenderID(partNum, vendorName);
-				// partInfo.setIssuedTo(ParaQueryUtil.getGRMUser(issueQAEngID).getFullName());
-				// }
-
-				// if("Feedback Closed".equals(feedbackStatus))
-				// {
-				// if((partInfo.getFeedBackSource().equals("QA") && issuedByUser.getGrmGroup().getGrmTeam().getName().equals("QUALITY"))
-				// || (partInfo.getFeedBackSource().equals("Internal") && issuedByUser.getGrmGroup().getGrmTeam().getName().equals("Parametric")))
-				// partsFeedback.setFeedbackRecieved(1l);
-				// }
-				// else
-				// {
-				// partsFeedback.setFeedbackRecieved(0l);
-				// }
-
-				// if(oldFeedback != null)
-				// {
-				// partsFeedback.setFlowSource(oldFeedback.getFlowSource());
-				// oldFeedback.setFeedbackRecieved(1l); // it's answered
-				// session.saveOrUpdate(oldFeedback);
-				// if(feedbackTypeStr == null)
-				// {
-				// partsFeedback.setTrackingFeedbackType(oldFeedback.getTrackingFeedbackType());
-				// }
-				// }
-				// else
-				// {
-				// TrackingFeedbackType thisFlowSource = null;
-				// thisFlowSource = ParaQueryUtil.getTrackingFeedbackType(flowSource);
-				// partsFeedback.setFlowSource(thisFlowSource);
-				// }
-				// session.saveOrUpdate(partsFeedback);
-
-				// session.beginTransaction().commit();
 			}
 		}catch(Exception ex)
 		{
@@ -4034,6 +4019,147 @@ public class DataDevQueryUtil
 			session.close();
 		}
 		return comment;
+	}
+
+	public static void saveQAFlag(List<PartInfoDTO> allParts)
+	{
+		Session session = null;
+		PartComponent component = null;
+		try
+		{
+			session = SessionUtil.getSession();
+			for(PartInfoDTO pa : allParts)
+			{
+				Criteria cri = session.createCriteria(PartComponent.class);
+				cri.add(Restrictions.eq("partNumber", pa.getPN()));
+				component = (PartComponent) cri.uniqueResult();
+				if(component != null)
+					component.setQaflag(pa.getStatus());
+				session.saveOrUpdate(component);
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+		}
+
+	}
+
+	public static void addpdfstosummary(Document doc)
+	{
+		Session session = null;
+		TrackingParametric track = null;
+		TrackingTaskStatus status = null;
+		try
+		{
+			session = SessionUtil.getSession();
+			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", StatusName.waitingsummary));
+			status = (TrackingTaskStatus) cri.uniqueResult();
+
+			cri = session.createCriteria(TrackingParametric.class);
+			cri.add(Restrictions.eq("document", doc));
+			track = (TrackingParametric) cri.uniqueResult();
+			if(track != null)
+				track.setTrackingTaskStatus(status);
+			session.saveOrUpdate(track);
+
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+		}
+
+	}
+
+	public static ArrayList<SummaryDTO> getsummarydata(Date startDate, Date endDate, GrmUserDTO userDTO)
+	{
+		Session session = SessionUtil.getSession();
+		ArrayList<SummaryDTO> alldata = new ArrayList<>();
+		SQLQuery query = null;
+		try
+		{
+			StringBuffer qury = new StringBuffer();
+			String Sql = "";
+			Sql = " SELECT GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
+			Sql = Sql + "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
+			Sql = Sql + " C.COM_ID, C.PART_NUMBER, GETSUPPLIERNAME (t.supplier_id) supName, GetTaskType";
+			Sql = Sql + "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
+			Sql = Sql + "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
+			Sql = Sql + "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
+			Sql = Sql + "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
+			Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID = " + userDTO.getId() + " AND T.TRACK";
+			Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary + "')";
+			qury.append(Sql);
+			// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
+			// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12
+
+			if(startDate != null && endDate != null)
+			{
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				qury.append(dateRangeCond);
+
+			}
+			System.out.println(qury.toString());
+			Long[] users = ParaQueryUtil.getusersbyqualityandstatus(userDTO, StatusName.waitingsummary);
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			for(int i = 0; i < result.size(); i++)
+			{
+				Object[] data = result.get(i);
+				SummaryDTO summary = new SummaryDTO();
+				summary.setPdfUrl(data[0] == null ? "" : data[0].toString());
+				summary.setOnlineLink(data[1] == null ? "" : data[1].toString());
+				summary.setPlType(data[2] == null ? "" : data[2].toString());
+				summary.setPlName(data[3] == null ? "" : data[3].toString());
+				summary.setComid(Long.valueOf(data[4].toString()));
+				summary.setPart(data[5] == null ? "" : data[5].toString());
+				summary.setSupplier(data[6] == null ? "" : data[6].toString());
+				summary.setTaskType(data[7] == null ? "" : data[7].toString());
+				summary.setDevUserName(data[8] == null ? "" : data[8].toString());
+				summary.setDate(data[9] == null ? "" : data[9].toString());
+				summary.setQAflag(data[10] == null ? "" : data[10].toString());
+				String comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()), userDTO.getId());
+
+				summary.setDoneflag(data[11] == null ? "" : data[11].toString());
+				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[12].toString()), Long.valueOf(data[13].toString()), users, StatusName.qaReview);
+				summary.setPDFParts(noparts.get(0));
+				summary.setPDFDoneParts(noparts.get(1));
+				summary.setPLParts(noparts.get(2));
+				summary.setPLDoneParts(noparts.get(3));
+
+				alldata.add(summary);
+			}
+
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static String getfbcommentbycomidanduser(Long itemid, long userid)
+	{
+		ParametricFeedbackCycle parametricfeedbackcycle = null;
+		Session session = null;
+		session = SessionUtil.getSession();
+		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
+		cri.add(Restrictions.eq("issuedBy", userid));
+		cri.add(Restrictions.eq("feedbackRecieved", 0l));
+		cri.createAlias("parametricFeedback", "feedback");
+		cri.add(Restrictions.eq("feedback.itemId", itemid));
+		parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
+		if(parametricfeedbackcycle != null)
+		{
+			return parametricfeedbackcycle.getFbComment();
+		}
+		else
+			return "";
 	}
 
 }

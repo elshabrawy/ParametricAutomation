@@ -6444,4 +6444,33 @@ public class ParaQueryUtil
 
 	}
 
+	public static Long[] getusersbyqualityandstatus(GrmUserDTO userDTO, String status)
+	{
+		Long[] users = null;
+		try
+		{
+
+			TrackingTaskStatus task = null;
+			Session session = SessionUtil.getSession();
+			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", status));
+			task = (TrackingTaskStatus) cri.uniqueResult();
+			String Sql = "";
+			Sql = " SELECT DISTINCT U.ID user_id FROM Tracking_Parametric tp, grm.GRM_USER u";
+			Sql = Sql + ", TRACKING_TASK_STATUS st WHERE tp.TRACKING_TASK_STATUS_ID IN (" + task.getId() + ") AND u.id";
+			Sql = Sql + " = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND QA_USER_ID = " + userDTO.getId() + " ";
+			Sql = Sql + " GROUP BY U.ID";
+			List<Object> result = session.createQuery(Sql).list();
+			users = new Long[session.createQuery(Sql).list().size()];
+			for(int i = 0; i < result.size(); i++)
+			{
+				users[i] = (Long) result.get(i);
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return users;
+	}
+
 }
