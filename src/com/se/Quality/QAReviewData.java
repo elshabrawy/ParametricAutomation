@@ -359,7 +359,7 @@ public class QAReviewData extends JPanel implements ActionListener
 								sheetRecord.add("");
 							}
 							String qaflag =  DataDevQueryUtil.getqaflagbypart(sheetHeader.get(partIndex));
-							sheetRecord.set(statusIndex, "");
+							sheetRecord.set(statusIndex, qaflag);
 							sheetRecord.set(CommentIndex, "");
 							sheetRecord.set(WrongFeatureIndex, "");
 						}
