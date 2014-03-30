@@ -596,21 +596,25 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
-				List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
-				docInfo.setPDFParts(noparts.get(0));
-				docInfo.setPLParts(noparts.get(1));
-				docInfo.setPDFDoneParts(noparts.get(2));
-				docInfo.setPLDoneParts(noparts.get(3));
-				int fets = 0;
-				try
+				if(inputType.equals("QAReview"))
 				{
-					fets = ParaQueryUtil.getPlFeautrecount(obj.getPl().getName());
-				}catch(Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
+					docInfo.setPDFParts(noparts.get(0));
+					docInfo.setPLParts(noparts.get(1));
+					docInfo.setPDFDoneParts(noparts.get(2));
+					docInfo.setPLDoneParts(noparts.get(3));
+
+					int fets = 0;
+					try
+					{
+						fets = ParaQueryUtil.getPlFeautrecount(obj.getPl().getName());
+					}catch(Exception e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					docInfo.setPLFeatures(fets);
 				}
-				docInfo.setPLFeatures(fets);
 				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
 				docInfo.setPlType(Pltype.getName());
 				Date date = obj.getFinishedDate();
