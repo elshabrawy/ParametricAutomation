@@ -76,7 +76,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
-		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name" };
+		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name", "PDF Status" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -188,7 +188,12 @@ public class QAReviewData extends JPanel implements ActionListener
 			else
 			{
 				String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				// String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
+				String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
+				if(status == "All")
+				{
+					status = StatusName.qaReview;
+				}
+
 				Date startDate = null;
 				Date endDate = null;
 				try
@@ -215,7 +220,7 @@ public class QAReviewData extends JPanel implements ActionListener
 								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 						}
 					}
-					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaReview, plType);
+					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
@@ -289,6 +294,11 @@ public class QAReviewData extends JPanel implements ActionListener
 					String taskType = combos[3].getSelectedItem().toString();
 					String userName = combos[4].getSelectedItem().toString();
 					String pltype = combos[1].getSelectedItem().toString();
+					String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
+					if(status == "All")
+					{
+						status = StatusName.qaReview;
+					}
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
@@ -320,7 +330,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							// System.out.println("Element at " + i + " = " + element);
 						}
 					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaReview, pltype);
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), status, pltype);
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();
@@ -336,6 +346,7 @@ public class QAReviewData extends JPanel implements ActionListener
 						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int statusIndex = sheetHeader.indexOf("Status");
+						int partIndex = sheetHeader.indexOf("Part Number");
 						int CommentIndex = sheetHeader.indexOf("Comment");
 						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
@@ -347,6 +358,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							{
 								sheetRecord.add("");
 							}
+							String qaflag =  DataDevQueryUtil.getqaflagbypart(sheetHeader.get(partIndex));
 							sheetRecord.set(statusIndex, "");
 							sheetRecord.set(CommentIndex, "");
 							sheetRecord.set(WrongFeatureIndex, "");

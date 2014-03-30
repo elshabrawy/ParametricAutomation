@@ -80,7 +80,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10),false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
@@ -198,7 +198,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback,"");
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback, null);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -249,14 +249,14 @@ public class QAFeedBack extends JPanel implements ActionListener
 					String supplierName = combos[1].getSelectedItem().toString();
 					String taskType = combos[2].getSelectedItem().toString();
 					String userName = combos[3].getSelectedItem().toString();
-//					String status = combos[4].getSelectedItem().toString();
-//					if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
-//					{
-//						JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
-//						thread.stop();
-//						loading.frame.dispose();
-//						return;
-//					}
+					// String status = combos[4].getSelectedItem().toString();
+					// if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
+					// {
+					// JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
+					// thread.stop();
+					// loading.frame.dispose();
+					// return;
+					// }
 					wsMap.clear();
 					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					String pdfUrl = docInfoDTO.getPdfUrl();
