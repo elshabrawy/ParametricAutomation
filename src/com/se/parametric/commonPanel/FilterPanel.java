@@ -45,10 +45,11 @@ public class FilterPanel extends JPanel implements ActionListener
 	public Date endDate = null;
 	public JButton filterButton = new JButton("Do Filter");
 	public JButton refreshButton = new JButton("Refresh Filter");
+	public JButton addsummary = new JButton("Add to Summary");
 	public ArrayList<Object[]> filterList;
 	JLabel counts = new JLabel();
 
-	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height)
+	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height,boolean isQA)
 	{
 		for(int i=0;i<list.size();i++){
 			for(int j=0;j<list.get(i).length;j++){
@@ -147,6 +148,12 @@ public class FilterPanel extends JPanel implements ActionListener
 		refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
 		comboPanel.add(refreshButton);
 		comboPanel.add(filterButton);
+		if(isQA)
+		{
+			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
+			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
+			comboPanel.add(addsummary);
+		}
 		counts.setBounds(width - 100, height - 100, 100, 30);
 		comboPanel.add(counts);
 		this.add(comboPanel);
