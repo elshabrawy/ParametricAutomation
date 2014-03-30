@@ -96,7 +96,7 @@ public class Update extends JPanel implements ActionListener
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		// filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
