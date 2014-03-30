@@ -153,25 +153,25 @@ public class DataDevQueryUtil
 			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
 
 			String Sql = " SELECT DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, tt";
-			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name FROM Tracking_Parametric tp, pl p, supplier";
+			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary + "' FROM Tracking_Parametric tp, pl p, supplier";
 			Sql = Sql + " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
 			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AN";
 			Sql = Sql + "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
 			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL";
 			Sql = Sql + "_NAME, st.NAME, AUTOMATION2.Get_PL_Type(P.ID )";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
-			for(int i = 0; i < list2.size(); i++)
-			{
-				Object[] data = list2.get(i);
-				row = new ArrayList<String>();
-				for(int j = 0; j < 5; j++)
-				{
-					row.add((data[j] == null) ? "" : data[j].toString());
-					// System.out.println((data[j] == null) ? "" : data[j].toString());
-				}
-				// row.add((data[3] == null) ? "Not Extracted" : "Extracted");
-				result.add(row);
-			}
+			// for(int i = 0; i < list2.size(); i++)
+			// {
+			// Object[] data = list2.get(i);
+			// row = new ArrayList<String>();
+			// for(int j = 0; j < 5; j++)
+			// {
+			// row.add((data[j] == null) ? "" : data[j].toString());
+			// // System.out.println((data[j] == null) ? "" : data[j].toString());
+			// }
+			// row.add(StatusName.waitingsummary);
+			// result.add(row);
+			// }
 		}finally
 		{
 			session.close();
@@ -4160,6 +4160,34 @@ public class DataDevQueryUtil
 		}
 		else
 			return "";
+	}
+
+	public static String getqaflagbypart(String partnum)
+	{
+		Session session = null;
+		PartComponent component = null;
+		String flag = "";
+		try
+		{
+			session = SessionUtil.getSession();
+
+			Criteria cri = session.createCriteria(PartComponent.class);
+			cri.add(Restrictions.eq("partNumber", partnum));
+			component = (PartComponent) cri.uniqueResult();
+			if(component != null)
+				flag = component.getQaflag();
+			else
+				flag = "";
+
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+		}
+		return flag;
+
 	}
 
 }
