@@ -9,13 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javafx.scene.chart.PieChart.Data;
-
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,10 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-
 import com.se.automation.db.client.mapping.Document;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
@@ -39,24 +31,24 @@ import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dev.Developement;
-import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
+import com.se.parametric.dto.SummaryDTO;
 import com.se.parametric.dto.TableInfoDTO;
-import com.se.parametric.review.TLReviewData;
 import com.se.parametric.util.StatusName;
 
 public class QAReviewData extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
-	// SheetPanel separationPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel;
-	JPanel devSheetButtonPanel, separationButtonPanel;
+	SheetPanel SummaryPanel = new SheetPanel();
+	JPanel tabSheet, selectionPanel, Summarytab;
+	JPanel devSheetButtonPanel, summaryButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	JButton save;
+	JButton validate;
+	JButton summarysave;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
@@ -88,11 +80,11 @@ public class QAReviewData extends JPanel implements ActionListener
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), true);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
-		buttonLabels.add("Load All");
+		buttonLabels.add("Summary");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -115,11 +107,20 @@ public class QAReviewData extends JPanel implements ActionListener
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, width, height - 100);
 		tabSheet = new JPanel();
+		Summarytab = new JPanel();
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
 		devSheetButtonPanel.setLayout(null);
+
+		validate = new JButton("Validate");
+		validate.setBounds(3, 40, 95, 29);
+		validate.setForeground(new Color(25, 25, 112));
+		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
+		validate.addActionListener(this);
+		devSheetButtonPanel.add(validate);
+
 		save = new JButton("Save");
 		save.setBounds(3, 80, 95, 29);
 		save.setForeground(new Color(25, 25, 112));
@@ -127,6 +128,24 @@ public class QAReviewData extends JPanel implements ActionListener
 		save.addActionListener(this);
 		devSheetButtonPanel.add(save);
 
+		summaryButtonPanel = new JPanel();
+		summaryButtonPanel.setBackground(new Color(211, 211, 211));
+		summaryButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		summaryButtonPanel.setBounds(width - 120, 0, 110, height / 3);
+		summaryButtonPanel.setLayout(null);
+
+		summarysave = new JButton("Save");
+		summarysave.setBounds(3, 40, 95, 29);
+		summarysave.setForeground(new Color(25, 25, 112));
+		summarysave.setFont(new Font("Tahoma", Font.BOLD, 11));
+		summarysave.addActionListener(this);
+		summaryButtonPanel.add(summarysave);
+
+		Summarytab.setLayout(null);
+		SummaryPanel.setBounds(0, 0, width - 120, height - 125);
+		Summarytab.add(SummaryPanel);
+		Summarytab.add(summaryButtonPanel);
+		Summarytab.add(alertsPanel2);
 		// filterPanel.comboBoxItems[1].setSelectedIndex(1);
 		tabSheet.setLayout(null);
 		sheetpanel.setBounds(0, 0, width - 120, height - 125);
@@ -136,11 +155,12 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
+		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
-
+		filterPanel.addsummary.addActionListener(this);
 	}
 
 	@Override
@@ -211,9 +231,31 @@ public class QAReviewData extends JPanel implements ActionListener
 			filterPanel.refreshFilters();
 
 		}
+		else if(event.getSource() == filterPanel.addsummary)
+		{
+			try
+			{
+
+				ArrayList<TableInfoDTO> data = tablePanel.selectedData;
+				for(int i = 0; i < data.size(); i++)
+				{
+					String pdfUrl = data.get(i).getPdfUrl();
+					Document doc = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+					if(doc != null)
+						DataDevQueryUtil.addpdfstosummary(doc);
+				}
+
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "error in data");
+			}
+			JOptionPane.showMessageDialog(null, "Sucessfully added");
+		}
 		/**
 		 * Load Data development Sheet
 		 */
+		// <editor-fold defaultstate="collapsed" desc="Generated Code">
 		else if(event.getActionCommand().equals("Load PDF"))
 		{
 			boolean ok = false;
@@ -291,21 +333,23 @@ public class QAReviewData extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setQAReviewHeader(Arrays.asList("Status", "Comment"), true);
+						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int statusIndex = sheetHeader.indexOf("Status");
 						int CommentIndex = sheetHeader.indexOf("Comment");
+						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
 
 							ArrayList<String> sheetRecord = plData.get(j);
-							for(int l = 0; l < 2; l++)
+							for(int l = 0; l < 4; l++)
 							{
 								sheetRecord.add("");
 							}
 							sheetRecord.set(statusIndex, "");
 							sheetRecord.set(CommentIndex, "");
+							sheetRecord.set(WrongFeatureIndex, "");
 						}
 						ws.writeReviewData(plData, 2, statusIndex + 1);
 						k++;
@@ -320,6 +364,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 			}
 		}
+		// </editor-fold>
 		/**
 		 * Load All PDFs review and development Sheet
 		 */
@@ -380,21 +425,23 @@ public class QAReviewData extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, StatusName.qaReview, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setQAReviewHeader(Arrays.asList("Status", "Comment"), true);
+					ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int statusIndex = sheetHeader.indexOf("Status");
 					int CommentIndex = sheetHeader.indexOf("Comment");
+					int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
 
 						ArrayList<String> sheetRecord = plData.get(j);
-						for(int l = 0; l < 2; l++)
+						for(int l = 0; l < 4; l++)
 						{
 							sheetRecord.add("");
 						}
 						sheetRecord.set(statusIndex, "");
 						sheetRecord.set(CommentIndex, "");
+						sheetRecord.set(WrongFeatureIndex, "");
 					}
 					ws.writeReviewData(plData, 2, statusIndex + 1);
 					k++;
@@ -404,7 +451,46 @@ public class QAReviewData extends JPanel implements ActionListener
 				e.printStackTrace();
 			}
 		}
+		else if(event.getActionCommand().equals("Summary"))
+		{
+			Date startDate = null;
+			Date endDate = null;
+			boolean ok = false;
+			if(SummaryPanel.isOpened())
+				ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
 
+			if(sheetpanel.isOpened() && ok == false)
+			{
+				thread.stop();
+				loading.frame.dispose();
+				return;
+			}
+			if(filterPanel.jDateChooser1.isEnabled())
+			{
+				startDate = filterPanel.jDateChooser1.getDate();
+				endDate = filterPanel.jDateChooser2.getDate();
+			}
+			ArrayList<SummaryDTO> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
+			tabbedPane.setSelectedIndex(2);
+			SummaryPanel.openOfficeDoc();
+
+			ws = new WorkingSheet(SummaryPanel, "Summary");
+			sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			ws.setSummaryHeader(null);
+		}
+
+		else if(event.getSource() == summarysave)
+		{
+			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+
+				}
+			}
+		}
 		/**
 		 * Save Parts Action
 		 */
@@ -417,6 +503,19 @@ public class QAReviewData extends JPanel implements ActionListener
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
 					wsMap.get(wsName).saveQAReviewAction(QAName, "Rev");
+				}
+			}
+		}
+		else if(event.getSource() == validate)
+		{
+			System.out.println("~~~~~~~ Start Validation Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					WorkingSheet ws = wsMap.get(wsName);
+					ws.validateQAReview();
 				}
 			}
 		}

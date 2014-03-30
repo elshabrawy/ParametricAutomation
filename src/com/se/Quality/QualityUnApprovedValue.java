@@ -79,7 +79,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
