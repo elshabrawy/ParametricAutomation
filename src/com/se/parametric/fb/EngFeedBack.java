@@ -90,7 +90,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10),false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
