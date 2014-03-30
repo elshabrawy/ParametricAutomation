@@ -766,12 +766,12 @@ public class WorkingSheet
 			cell = getCellByPosission(2, StatrtRecord);
 			cell.setText("Eng Name");
 			HeaderList.add(cell);
-//			cell = getCellByPosission(3, StatrtRecord);
-//			cell.setText("Status");
-//			HeaderList.add(cell);
-//			cell = getCellByPosission(4, StatrtRecord);
-//			cell.setText("Comment");
-//			HeaderList.add(cell);
+			// cell = getCellByPosission(3, StatrtRecord);
+			// cell.setText("Status");
+			// HeaderList.add(cell);
+			// cell = getCellByPosission(4, StatrtRecord);
+			// cell.setText("Comment");
+			// HeaderList.add(cell);
 			cell = getCellByPosission(3, StatrtRecord);
 			cell.setText("Task Type");
 			HeaderList.add(cell);
@@ -831,6 +831,98 @@ public class WorkingSheet
 		{
 			ex.printStackTrace();
 			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
+		}
+
+	}
+
+	public void setSummaryHeader(List additionalCols)
+	{
+		try
+		{
+			//PDFURL	Online Datasheet	Pl_Type	PL Name	No. of Parts per PDF
+			//No. of Done Parts per PDF	No. of parts per PL	No. of Done parts per PL	COM_ID	Part	Supplier Name	Task Name	Status	DevUserName	Date	QA Flag	QA Comment	Done Flag	PN in DS	Keywords in DS
+
+			HeaderList = new ArrayList<Cell>();
+			Cell cell = getCellByPosission(0, StatrtRecord);
+			cell.setText("PDFURL");
+			HeaderList.add(cell);
+			cell = getCellByPosission(1, StatrtRecord);
+			cell.setText("Online Datasheet");
+			HeaderList.add(cell);
+			cell = getCellByPosission(2, StatrtRecord);
+			cell.setText("Pl Type");
+			HeaderList.add(cell);
+			cell = getCellByPosission(3, StatrtRecord);
+			cell.setText("PL Name");
+			HeaderList.add(cell);
+			cell = getCellByPosission(4, StatrtRecord);
+			cell.setText("PdfParts");
+			HeaderList.add(cell);
+			cell = getCellByPosission(5, StatrtRecord);
+			cell.setText("PdfDoneParts");
+			HeaderList.add(cell);
+			cell = getCellByPosission(6, StatrtRecord);
+			cell.setText("PlParts");
+			HeaderList.add(cell);
+			cell = getCellByPosission(7, StatrtRecord);
+			cell.setText("PlDoneParts");
+			HeaderList.add(cell);
+			cell = getCellByPosission(8, StatrtRecord);
+			cell.setText("COM_ID");
+			HeaderList.add(cell);
+			cell = getCellByPosission(9, StatrtRecord);
+			cell.setText("Part");
+			HeaderList.add(cell);
+			cell = getCellByPosission(10, StatrtRecord);
+			cell.setText("Supplier Name");
+			HeaderList.add(cell);
+			cell = getCellByPosission(11, StatrtRecord);
+			cell.setText("Task Name");
+			HeaderList.add(cell);
+			cell = getCellByPosission(12, StatrtRecord);
+			cell.setText("DevUserName");
+			HeaderList.add(cell);
+			cell = getCellByPosission(13, StatrtRecord);
+			cell.setText("Date");
+			HeaderList.add(cell);
+			cell = getCellByPosission(14, StatrtRecord);
+			cell.setText("QA Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(15, StatrtRecord);
+			cell.setText("QA Comment");
+			HeaderList.add(cell);
+			cell = getCellByPosission(16, StatrtRecord);
+			cell.setText("Done Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(17, StatrtRecord);
+			cell.setText("PN in DS");
+			HeaderList.add(cell);
+			cell = getCellByPosission(18, StatrtRecord);
+			cell.setText("Keywords in DS");
+			HeaderList.add(cell);
+			
+			//QA Flag	QA Comment	Done Flag	PN in DS	Keywords in DS
+			setDevHeader(false, true);
+			if(additionalCols != null)
+			{
+				int startCol = HeaderList.size();
+				for(int i = 0; i < additionalCols.size(); i++)
+				{
+					cell = getCellByPosission(startCol + i, StatrtRecord);
+					cell.setText(additionalCols.get(i).toString());
+					HeaderList.add(cell);
+				}
+			}
+			statusValues.add("A");
+			statusValues.add("S");
+			statusValues.add("R");
+			statusValues.add("W");
+			statusValues.add("F");
+			
+
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 
 	}
@@ -1692,106 +1784,120 @@ public class WorkingSheet
 
 	public void saveQAReviewAction(String QAName, String screen)
 	{
-
-		try
+		if(canSave)
 		{
-			List<String> rejectedPdfs = new ArrayList<String>();
-			List<String> acceptedPdfs = new ArrayList<String>();
-			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
-			ArrayList<String> sheetHeader = getHeader();
-			// List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
-			ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
-			for(int i = 0; i < fileData.size(); i++)
+			try
 			{
-				PartInfoDTO partInfo = new PartInfoDTO();
-				ArrayList<String> partData = fileData.get(i);
-				String status = partData.get(2);
-				String comment = partData.get(3);
-				String vendorName = partData.get(5);
-				String plName = partData.get(0);
-				String tlName = com.se.parametric.dba.ParaQueryUtil.getTeamLeaderNameByMember(partData.get(1));
-				pn = partData.get(PartCell);
-				pdfUrl = partData.get(pdfCellNo);
-				family = partData.get(familyCell);
-				mask = partData.get(maskCellNo);
-				desc = partData.get(descriptionColumn);
-				if(plType.equals("Semiconductor"))
+				List<String> rejectedPdfs = new ArrayList<String>();
+				List<String> acceptedPdfs = new ArrayList<String>();
+				List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
+				List<PartInfoDTO> AllParts = new ArrayList<PartInfoDTO>();
+				ArrayList<String> sheetHeader = getHeader();
+				int statusIndex = sheetHeader.indexOf("Status");
+				int CommentIndex = sheetHeader.indexOf("Comment");
+				int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
+				String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
+				for(int i = 0; i < fileData.size(); i++)
 				{
-					famCross = partData.get(famCrossCellNo);
-					generic = partData.get(genericCellNo);
-				}
-				if(NPIFlag)
-					NPIPart = partData.get(npiCellNo);
-				if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
-				{
-					partInfo.setFeedbackType("LUT");
-				}
-				else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
-				{
-					partInfo.setFeedbackType("Acquisition");
-				}
-
-				partInfo.setPN(pn);
-				partInfo.setSupplierName(vendorName);
-				partInfo.setStatus(status);
-				partInfo.setComment(comment);
-				partInfo.setIssuedBy(QAName);
-				partInfo.setIssuedTo(tlName);
-				partInfo.setPlName(selectedPL);
-				partInfo.setNPIFlag(NPIPart);
-				partInfo.setDescription(desc);
-				partInfo.setPdfUrl(pdfUrl);
-				partInfo.setFamily(family);
-				partInfo.setFamilycross(famCross);
-				partInfo.setMask(mask);
-				partInfo.setGeneric(generic);
-
-				if("Rejected".equals(status))
-				{
-					if("".equals(comment))
+					PartInfoDTO partInfo = new PartInfoDTO();
+					ArrayList<String> partData = fileData.get(i);
+					String status = partData.get(statusIndex);
+					String WrongFeatures = partData.get(WrongFeatureIndex);
+					String comment = partData.get(CommentIndex);
+					String vendorName = partData.get(4);
+					String plName = partData.get(0);
+					String tlName = com.se.parametric.dba.ParaQueryUtil.getTeamLeaderNameByMember(partData.get(1));
+					pn = partData.get(PartCell);
+					pdfUrl = partData.get(pdfCellNo);
+					family = partData.get(familyCell);
+					mask = partData.get(maskCellNo);
+					desc = partData.get(descriptionColumn);
+					if(plType.equals("Semiconductor"))
 					{
-						System.out.println("Comment shouldn't be null");
-						JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
-						return;
+						famCross = partData.get(famCrossCellNo);
+						generic = partData.get(genericCellNo);
 					}
-					else
+					if(NPIFlag)
+						NPIPart = partData.get(npiCellNo);
+					if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
 					{
-						partInfo.setFeedBackStatus(StatusName.reject);
-						partInfo.setFeedBackCycleType(StatusName.wrongData);
-						feedbackParts.add(partInfo);
-						if(acceptedPdfs.contains(pdfUrl))
+						partInfo.setFeedbackType("LUT");
+					}
+					else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
+					{
+						partInfo.setFeedbackType("Acquisition");
+					}
+
+					partInfo.setPN(pn);
+					partInfo.setSupplierName(vendorName);
+					// partInfo.setStatus(status);
+					partInfo.setComment(comment);
+					partInfo.setIssuedBy(QAName);
+					partInfo.setIssuedTo(tlName);
+					partInfo.setPlName(selectedPL);
+					partInfo.setNPIFlag(NPIPart);
+					partInfo.setDescription(desc);
+					partInfo.setPdfUrl(pdfUrl);
+					partInfo.setFamily(family);
+					partInfo.setFamilycross(famCross);
+					partInfo.setMask(mask);
+					partInfo.setGeneric(generic);
+
+					if("W".equals(status) || "R".equals(status))
+					{
+						if("".equals(comment))
 						{
-							acceptedPdfs.remove(pdfUrl);
+							System.out.println("Comment shouldn't be null");
+							JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
+							return;
 						}
-						rejectedPdfs.add(pdfUrl);
-					}
+						else
+						{
+							partInfo.setFbtype(StatusName.QA);
+							partInfo.setStatus(status);
+							partInfo.setFeedBackStatus(StatusName.reject);
+							partInfo.setFeedBackCycleType(StatusName.wrongData);
+							feedbackParts.add(partInfo);
+							AllParts.add(partInfo);
+							if(acceptedPdfs.contains(pdfUrl))
+							{
+								acceptedPdfs.remove(pdfUrl);
+							}
+							rejectedPdfs.add(pdfUrl);
+						}
 
-				}
-				else if("Approved".equals(status))
-				{
-					if(screen.equals("FB"))
-					{
-						partInfo.setFeedBackStatus(StatusName.fbClosed);
-						feedbackParts.add(partInfo);
 					}
-					if(!rejectedPdfs.contains(pdfUrl))
+					else if("S".equals(status) || "A".equals(status) || "F".equals(status))
 					{
-						acceptedPdfs.add(pdfUrl);
-					}
+						partInfo.setStatus(status);
+						AllParts.add(partInfo);
+						if(screen.equals("FB"))
+						{
+							partInfo.setFeedBackStatus(StatusName.fbClosed);
+							feedbackParts.add(partInfo);
+						}
+						if(!rejectedPdfs.contains(pdfUrl))
+						{
+							acceptedPdfs.add(pdfUrl);
+						}
 
+					}
 				}
+				DataDevQueryUtil.saveQAFlag(AllParts);
+				DataDevQueryUtil.savePartsFeedback(feedbackParts);
+				// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
+				// DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere, QAName);
+				// DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
+				JOptionPane.showMessageDialog(null, "Saving Data Finished");
+			}catch(Exception e)
+			{
+				JOptionPane.showMessageDialog(null, "Can't Save Data");
+				e.printStackTrace();
 			}
-			// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
-			DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere, QAName);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
-			JOptionPane.showMessageDialog(null, "Saving Data Finished");
-		}catch(Exception e)
-		{
-			JOptionPane.showMessageDialog(null, "Can't Save Data");
-			e.printStackTrace();
 		}
+		else
+			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 
 	}
 
@@ -1963,12 +2069,13 @@ public class WorkingSheet
 					partInfo.setFeedbackType("Acquisition");
 				}
 
+				String tlname = ParaQueryUtil.getTeamLeaderNameByMember(devName);
 				partInfo.setPN(pn);
 				partInfo.setSupplierName(vendorName);
 				partInfo.setStatus(status);
 				partInfo.setComment(comment);
 				partInfo.setIssuedBy(devName);
-				partInfo.setIssuedTo(issuedTo);
+				partInfo.setIssuedTo(tlname);
 				partInfo.setPlName(selectedPL);
 				partInfo.setNPIFlag(NPIPart);
 				partInfo.setDescription(desc);
@@ -2011,14 +2118,6 @@ public class WorkingSheet
 				else if("Updated".equals(status))
 				{
 
-					// List<String> fetVals = row.subList(startParametricFT, endParametricFT);
-					// Map<String, String> fetsMap = new HashMap<String, String>();
-					// for (int j = 0; j < fetNames.size(); j++) {
-					// String fetName = fetNames.get(j);
-					// String fetVal = fetVals.get(j);
-					// fetsMap.put(fetName, fetVal);
-					// }
-					// partInfo.setFetValues(fetsMap);
 					partInfo.setFetValues(readRowValues(partData));
 					if((issuedTo != null) && (!"".equals(issuedTo)))
 					{
@@ -2036,8 +2135,6 @@ public class WorkingSheet
 
 			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback, devName);
-			// DataDevQueryUtil.savePartsFeedback(updatedParts, null, "Approved","ENG");
-			// DataDevQueryUtil.savePartsFeedback(rejectedParts, null, "Rejected","ENG");
 
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
@@ -3141,6 +3238,109 @@ public class WorkingSheet
 		this.endParametricFT = endParametricFT;
 	}
 
+	public void validateQAReview()
+	{
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		XCellRange xcellrange = null;
+		int lastColNum = HeaderList.size();
+		String lastColumn = getColumnName(lastColNum);
+		ArrayList<String> sheetHeader = getHeader();
+		int statusIndex = sheetHeader.indexOf("Status");
+		int CommentIndex = sheetHeader.indexOf("Comment");
+		int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+		int ValidationCommentIndex = sheetHeader.indexOf("Validation Comment");
+		int plIndex = sheetHeader.indexOf("Taxonomy");
+		canSave = true;
+		int lastRow = getLastRow();
+		for(int i = 3; i < lastRow + 1; i++)
+		{
+			try
+			{
+				String error = "";
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				XCell wrongfetCell;
+				XCell PlCell;
+				XCell statusCell = xcellrange.getCellByPosition(statusIndex, 0);
+				String status = getCellText(statusCell).getString();
+				XCell commentCell = xcellrange.getCellByPosition(CommentIndex, 0);
+				String comment = getCellText(commentCell).getString();
+				wrongfetCell = xcellrange.getCellByPosition(WrongFeatureIndex, 0);
+				String wrongfeatures = getCellText(wrongfetCell).getString();
+				PlCell = xcellrange.getCellByPosition(plIndex, 0);
+				String Plname = getCellText(PlCell).getString();
+				setCellColore(wrongfetCell, 0xFFFFFF);
+				setCellColore(commentCell, 0xFFFFFF);
+				if(status.equals("R") || status.equals("W"))
+				{
+					if(wrongfeatures.trim().equals(""))
+					{
+						error += "Wrong Features is empty |";
+						// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Wrong Features is empty");
+						setCellColore(wrongfetCell, 0xD2254D);
+						canSave = false;
+						// break;
+					}
+					if(comment.trim().equals(""))
+					{
+						error += "Wrong Comment |";
+						// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Wrong Comment");
+						setCellColore(commentCell, 0xD2254D);
+						canSave = false;
+						// break;
+					}
+					else
+					{
+						if(wrongfeatures.contains("|"))
+						{
+							String[] features = wrongfeatures.split("\\|");
+							if(features.length > 0)
+							{
+								List<String> plfets = ParaQueryUtil.getPlFeautreNames(Plname);
+								for(int f = 0; f < features.length; f++)
+								{
+									if(!plfets.contains(features[f]))
+									{
+										error += "Feature No (" + (f + 1) + ") is wrong |";
+										// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Feature No (" + (f + 1) +
+										// ") is wrong");
+										setCellColore(wrongfetCell, 0xD2254D);
+										canSave = false;
+										break;
+									}
+								}
+							}
+						}
+						else
+						{
+							// String[] features = wrongfeatures.split("|");
+							List<String> plfets = ParaQueryUtil.getPlFeautreNames(Plname);
+							if(!plfets.contains(wrongfeatures))
+							{
+								error += "Feature is wrong |";
+								// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Feature is wrong");
+								setCellColore(wrongfetCell, 0xD2254D);
+								canSave = false;
+								break;
+							}
+						}
+					}
+					if(!canSave)
+					{
+						getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
+					}
+					else
+						getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
+
+				}
+			}catch(Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
 	// public void saveQAFeedBackAction(String QAName)
 	// {
 	//
