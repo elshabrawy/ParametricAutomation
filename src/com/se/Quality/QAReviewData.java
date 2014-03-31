@@ -358,7 +358,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							{
 								sheetRecord.add("");
 							}
-							String qaflag =  DataDevQueryUtil.getqaflagbypart(sheetHeader.get(partIndex));
+							String qaflag = DataDevQueryUtil.getqaflagbypart(sheetHeader.get(partIndex));
 							sheetRecord.set(statusIndex, qaflag);
 							sheetRecord.set(CommentIndex, "");
 							sheetRecord.set(WrongFeatureIndex, "");
@@ -380,89 +380,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		/**
 		 * Load All PDFs review and development Sheet
 		 */
-		else if(event.getActionCommand().equals("Load All"))
-		{
-			Date startDate = null;
-			Date endDate = null;
 
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opening are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-
-			try
-			{
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				String pltype = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				if(!userName.equals("All"))
-				{
-					long userId = ParaQueryUtil.getUserIdByExactName(userName);
-					users = new Long[] { userId };
-				}
-				else
-				{
-					ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-					int size = model.getSize();
-					users = new Long[size - 1];
-					for(int i = 1; i < size; i++)
-					{
-						Object element = model.getElementAt(i);
-						if(element != null && !element.equals("All"))
-							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-					}
-				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, null, userDTO.getId(), StatusName.qaReview, pltype);
-				int k = 0;
-				tabbedPane.setSelectedIndex(1);
-				sheetpanel.openOfficeDoc();
-				wsMap.clear();
-				for(String pl : reviewData.keySet())
-				{
-					ws = new WorkingSheet(sheetpanel, pl, k);
-					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-					wsMap.put(pl, ws);
-					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, StatusName.qaReview, startDate, endDate, null))
-						ws.setNPIflag(true);
-					ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
-					ArrayList<String> sheetHeader = ws.getHeader();
-					int statusIndex = sheetHeader.indexOf("Status");
-					int CommentIndex = sheetHeader.indexOf("Comment");
-					int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
-					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					for(int j = 0; j < plData.size(); j++)
-					{
-
-						ArrayList<String> sheetRecord = plData.get(j);
-						for(int l = 0; l < 4; l++)
-						{
-							sheetRecord.add("");
-						}
-						sheetRecord.set(statusIndex, "");
-						sheetRecord.set(CommentIndex, "");
-						sheetRecord.set(WrongFeatureIndex, "");
-					}
-					ws.writeReviewData(plData, 2, statusIndex + 1);
-					k++;
-				}
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
 		else if(event.getActionCommand().equals("Summary"))
 		{
 			Date startDate = null;
@@ -471,7 +389,7 @@ public class QAReviewData extends JPanel implements ActionListener
 			if(SummaryPanel.isOpened())
 				ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
 
-			if(sheetpanel.isOpened() && ok == false)
+			if(SummaryPanel.isOpened() && ok == false)
 			{
 				thread.stop();
 				loading.frame.dispose();
@@ -482,13 +400,25 @@ public class QAReviewData extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			ArrayList<SummaryDTO> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
+			wsMap.clear();
+			ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
 			tabbedPane.setSelectedIndex(2);
 			SummaryPanel.openOfficeDoc();
 
 			ws = new WorkingSheet(SummaryPanel, "Summary");
-			sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			SummaryPanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			wsMap.put("Summary", ws);
 			ws.setSummaryHeader(null);
+			ArrayList<String> sheetHeader = ws.getHeader();
+			int statusIndex = sheetHeader.indexOf("New QA Flag");
+			for(int i = 0; i < data.size(); i++)
+			{
+				ArrayList<String> datarow = data.get(i);
+				datarow.add("");
+				String keyword = "";
+				datarow.set(datarow.size() - 1, "");
+			}
+			ws.writeReviewData(data, 2, statusIndex + 1);
 		}
 
 		else if(event.getSource() == summarysave)
@@ -497,7 +427,7 @@ public class QAReviewData extends JPanel implements ActionListener
 			wsMap.keySet();
 			for(String wsName : wsMap.keySet())
 			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
+				if(wsName == "Summary")
 				{
 
 				}
@@ -528,6 +458,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					WorkingSheet ws = wsMap.get(wsName);
 					ws.validateQAReview();
+					JOptionPane.showMessageDialog(null, "Validation Done");
 				}
 			}
 		}
@@ -584,4 +515,88 @@ public class QAReviewData extends JPanel implements ActionListener
 		alertsPanel2.updateFlags(flags);
 
 	}
+	// else if(event.getActionCommand().equals("Load All"))
+	// {
+	// Date startDate = null;
+	// Date endDate = null;
+	//
+	// boolean ok = false;
+	// if(sheetpanel.isOpened())
+	// ok = ParaQueryUtil.getDialogMessage("another PDF is opening are you need to replace this", "Confermation Dailog");
+	//
+	// if(sheetpanel.isOpened() && ok == false)
+	// {
+	// thread.stop();
+	// loading.frame.dispose();
+	// return;
+	// }
+	//
+	// try
+	// {
+	// if(filterPanel.jDateChooser1.isEnabled())
+	// {
+	// startDate = filterPanel.jDateChooser1.getDate();
+	// endDate = filterPanel.jDateChooser2.getDate();
+	// }
+	// String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+	// String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+	// String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+	// String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+	// String pltype = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+	// if(!userName.equals("All"))
+	// {
+	// long userId = ParaQueryUtil.getUserIdByExactName(userName);
+	// users = new Long[] { userId };
+	// }
+	// else
+	// {
+	// ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+	// int size = model.getSize();
+	// users = new Long[size - 1];
+	// for(int i = 1; i < size; i++)
+	// {
+	// Object element = model.getElementAt(i);
+	// if(element != null && !element.equals("All"))
+	// users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+	// }
+	// }
+	// Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate,
+	// null, userDTO.getId(), StatusName.qaReview, pltype);
+	// int k = 0;
+	// tabbedPane.setSelectedIndex(1);
+	// sheetpanel.openOfficeDoc();
+	// wsMap.clear();
+	// for(String pl : reviewData.keySet())
+	// {
+	// ws = new WorkingSheet(sheetpanel, pl, k);
+	// sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+	// wsMap.put(pl, ws);
+	// if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, StatusName.qaReview, startDate, endDate, null))
+	// ws.setNPIflag(true);
+	// ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
+	// ArrayList<String> sheetHeader = ws.getHeader();
+	// int statusIndex = sheetHeader.indexOf("Status");
+	// int CommentIndex = sheetHeader.indexOf("Comment");
+	// int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+	// ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+	// for(int j = 0; j < plData.size(); j++)
+	// {
+	//
+	// ArrayList<String> sheetRecord = plData.get(j);
+	// for(int l = 0; l < 4; l++)
+	// {
+	// sheetRecord.add("");
+	// }
+	// sheetRecord.set(statusIndex, "");
+	// sheetRecord.set(CommentIndex, "");
+	// sheetRecord.set(WrongFeatureIndex, "");
+	// }
+	// ws.writeReviewData(plData, 2, statusIndex + 1);
+	// k++;
+	// }
+	// }catch(Exception e)
+	// {
+	// e.printStackTrace();
+	// }
+	// }
 }
