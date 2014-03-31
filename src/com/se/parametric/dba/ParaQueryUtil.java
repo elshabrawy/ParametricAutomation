@@ -6458,13 +6458,14 @@ public class ParaQueryUtil
 			String Sql = "";
 			Sql = " SELECT DISTINCT U.ID user_id FROM Tracking_Parametric tp, grm.GRM_USER u";
 			Sql = Sql + ", TRACKING_TASK_STATUS st WHERE tp.TRACKING_TASK_STATUS_ID IN (" + task.getId() + ") AND u.id";
-			Sql = Sql + " = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND QA_USER_ID = " + userDTO.getId() + " ";
+			Sql = Sql + " = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND tp.QA_USER_ID  = " + userDTO.getId() + " ";
 			Sql = Sql + " GROUP BY U.ID";
-			List<Object> result = session.createQuery(Sql).list();
-			users = new Long[session.createQuery(Sql).list().size()];
+			List<Object> result = session.createSQLQuery(Sql).list();
+			users = new Long[session.createSQLQuery(Sql).list().size()];
 			for(int i = 0; i < result.size(); i++)
 			{
-				users[i] = (Long) result.get(i);
+				BigDecimal id = (BigDecimal) result.get(i);
+				users[i] = Long.valueOf(id.toString());
 			}
 		}catch(Exception e)
 		{
