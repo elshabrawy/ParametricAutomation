@@ -887,23 +887,26 @@ public class WorkingSheet
 			cell.setText("Date");
 			HeaderList.add(cell);
 			cell = getCellByPosission(14, StatrtRecord);
-			cell.setText("QA Flag");
+			cell.setText("Old QA Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(15, StatrtRecord);
-			cell.setText("QA Comment");
+			cell.setText("New QA Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(16, StatrtRecord);
-			cell.setText("Done Flag");
+			cell.setText("QA Comment");
 			HeaderList.add(cell);
 			cell = getCellByPosission(17, StatrtRecord);
-			cell.setText("PN in DS");
+			cell.setText("Done Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(18, StatrtRecord);
+			cell.setText("PN in DS");
+			HeaderList.add(cell);
+			cell = getCellByPosission(19, StatrtRecord);
 			cell.setText("Keywords in DS");
 			HeaderList.add(cell);
 
 			// QA Flag QA Comment Done Flag PN in DS Keywords in DS
-			setDevHeader(false, true);
+			// setDevHeader(false, true);
 			if(additionalCols != null)
 			{
 				int startCol = HeaderList.size();
@@ -916,8 +919,6 @@ public class WorkingSheet
 			}
 			statusValues.add("A");
 			statusValues.add("S");
-			statusValues.add("R");
-			statusValues.add("W");
 			statusValues.add("F");
 
 		}catch(Exception ex)
@@ -1807,7 +1808,7 @@ public class WorkingSheet
 					String comment = partData.get(CommentIndex);
 					String vendorName = partData.get(4);
 					String plName = partData.get(0);
-					String tlName = com.se.parametric.dba.ParaQueryUtil.getTeamLeaderNameByMember(partData.get(1));
+					String tlName = ParaQueryUtil.getTeamLeaderNameByMember(partData.get(2));
 					pn = partData.get(PartCell);
 					pdfUrl = partData.get(pdfCellNo);
 					family = partData.get(familyCell);
