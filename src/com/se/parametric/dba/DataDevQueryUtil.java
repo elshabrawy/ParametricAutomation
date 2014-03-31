@@ -160,18 +160,6 @@ public class DataDevQueryUtil
 			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL";
 			Sql = Sql + "_NAME, st.NAME, AUTOMATION2.Get_PL_Type(P.ID )";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
-			// for(int i = 0; i < list2.size(); i++)
-			// {
-			// Object[] data = list2.get(i);
-			// row = new ArrayList<String>();
-			// for(int j = 0; j < 5; j++)
-			// {
-			// row.add((data[j] == null) ? "" : data[j].toString());
-			// // System.out.println((data[j] == null) ? "" : data[j].toString());
-			// }
-			// row.add(StatusName.waitingsummary);
-			// result.add(row);
-			// }
 		}finally
 		{
 			session.close();
@@ -1721,13 +1709,7 @@ public class DataDevQueryUtil
 			Sql = Sql + " = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID AND T.QA_US";
 			Sql = Sql + "ER_ID = " + qaUser + " AND T.TRACKING_TASK_STATUS_ID = getTaskstatusId ('" + availableStatus + "')";
 			qury.append(Sql);
-			// "  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME,Get_family_crossName(C.FAMILY_CROSS_ID) family_Cross , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value(c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG,GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
-			// + " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-			// +
-			// " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 "
-			// +
-			//
-			// "and T.QA_USER_ID =" + qaUser + " and T.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + availableStatus + "') ");
+
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -1740,10 +1722,6 @@ public class DataDevQueryUtil
 			{
 				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
 			}
-			// if(status != null && !status.equals("All"))
-			// {
-			// qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
-			// }
 			if(type != null && !type.equals("All"))
 			{
 				if(type.equals("NPI"))
@@ -4080,10 +4058,11 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<SummaryDTO> getsummarydata(Date startDate, Date endDate, GrmUserDTO userDTO)
+	public static ArrayList<ArrayList<String>> getsummarydata(Date startDate, Date endDate, GrmUserDTO userDTO)
 	{
 		Session session = SessionUtil.getSession();
-		ArrayList<SummaryDTO> alldata = new ArrayList<>();
+		// ArrayList<SummaryDTO> alldata = new ArrayList<>();
+		ArrayList<ArrayList<String>> allsummary = new ArrayList<>();
 		SQLQuery query = null;
 		try
 		{
@@ -4116,35 +4095,38 @@ public class DataDevQueryUtil
 			for(int i = 0; i < result.size(); i++)
 			{
 				Object[] data = result.get(i);
-				SummaryDTO summary = new SummaryDTO();
-				summary.setPdfUrl(data[0] == null ? "" : data[0].toString());
-				summary.setOnlineLink(data[1] == null ? "" : data[1].toString());
-				summary.setPlType(data[2] == null ? "" : data[2].toString());
-				summary.setPlName(data[3] == null ? "" : data[3].toString());
-				summary.setComid(Long.valueOf(data[4].toString()));
-				summary.setPart(data[5] == null ? "" : data[5].toString());
-				summary.setSupplier(data[6] == null ? "" : data[6].toString());
-				summary.setTaskType(data[7] == null ? "" : data[7].toString());
-				summary.setDevUserName(data[8] == null ? "" : data[8].toString());
-				summary.setDate(data[9] == null ? "" : data[9].toString());
-				summary.setQAflag(data[10] == null ? "" : data[10].toString());
+				ArrayList<String> summary = new ArrayList<String>();
+				summary.add(data[0] == null ? "" : data[0].toString());// pdfurl_0
+				summary.add(data[1] == null ? "" : data[1].toString());// onlinelink_1
+				summary.add(data[2] == null ? "" : data[2].toString());// pltype_2
+				summary.add(data[3] == null ? "" : data[3].toString());// plName_3
+
+				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()), Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
+				summary.add(noparts.get(0).toString());// PDFParts_4
+				summary.add(noparts.get(2).toString());// PDFDoneParts_5
+				summary.add(noparts.get(1).toString());// PLparts_6
+				summary.add(noparts.get(3).toString());// PLDoneParts_7
+
+				summary.add(data[4].toString());// COM_ID_8
+				summary.add(data[5] == null ? "" : data[5].toString());// PART_NUMBER_9
+				summary.add(data[6] == null ? "" : data[6].toString());// supName_10
+				summary.add(data[7] == null ? "" : data[7].toString());// task_type_11
+				summary.add(data[8] == null ? "" : data[8].toString());// username_12
+				summary.add(data[9] == null ? "" : data[9].toString());// DATE_13
+				summary.add(data[10] == null ? "" : data[10].toString());// OLDQAFLAG_14
+				summary.add("");// NEWQAFLAG_15
 				String comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()), userDTO.getId());
-
-				summary.setDoneflag(data[11] == null ? "" : data[11].toString());
-				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[12].toString()), Long.valueOf(data[13].toString()), users, StatusName.qaReview);
-				summary.setPDFParts(noparts.get(0));
-				summary.setPDFDoneParts(noparts.get(1));
-				summary.setPLParts(noparts.get(2));
-				summary.setPLDoneParts(noparts.get(3));
-
-				alldata.add(summary);
+				summary.add(comment);// QAcomment_16
+				summary.add(data[11] == null ? "" : data[11].toString());// DONEFLAG_17
+				summary.add(data[12] == null ? "" : data[12].toString());// EXTRACTIONFLAG_18
+				allsummary.add(summary);
 			}
 
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return allsummary;
 	}
 
 	private static String getfbcommentbycomidanduser(Long itemid, long userid)
