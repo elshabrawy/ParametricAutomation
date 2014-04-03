@@ -1,10 +1,13 @@
 package com.se.Quality;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -49,6 +52,7 @@ public class QAReviewData extends JPanel implements ActionListener
 	JButton save;
 	JButton validate;
 	JButton summarysave;
+	JButton summaryvalidate;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
@@ -59,6 +63,7 @@ public class QAReviewData extends JPanel implements ActionListener
 	long userId;
 	int width, height;
 	GrmUserDTO userDTO;
+	boolean summarydata = false;
 	static AlertsPanel alertsPanel, alertsPanel1, alertsPanel2;
 
 	public QAReviewData(GrmUserDTO userDTO)
@@ -135,11 +140,18 @@ public class QAReviewData extends JPanel implements ActionListener
 		summaryButtonPanel.setLayout(null);
 
 		summarysave = new JButton("Save");
-		summarysave.setBounds(3, 40, 95, 29);
+		summarysave.setBounds(3, 80, 95, 29);
 		summarysave.setForeground(new Color(25, 25, 112));
 		summarysave.setFont(new Font("Tahoma", Font.BOLD, 11));
 		summarysave.addActionListener(this);
 		summaryButtonPanel.add(summarysave);
+
+		summaryvalidate = new JButton("Validate");
+		summaryvalidate.setBounds(3, 40, 95, 29);
+		summaryvalidate.setForeground(new Color(25, 25, 112));
+		summaryvalidate.setFont(new Font("Tahoma", Font.BOLD, 11));
+		summaryvalidate.addActionListener(this);
+		summaryButtonPanel.add(summaryvalidate);
 
 		Summarytab.setLayout(null);
 		SummaryPanel.setBounds(0, 0, width - 120, height - 125);
@@ -177,70 +189,17 @@ public class QAReviewData extends JPanel implements ActionListener
 		 * **/
 		if(event.getSource() == filterPanel.filterButton)
 		{
-			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-			String plType = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-			String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-			String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			if(taskType.equals("All"))
-			{
-				JOptionPane.showMessageDialog(null, "Please Select Task Type");
-			}
-			else
-			{
-				String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
-				if(status == "All")
-				{
-					status = StatusName.qaReview;
-				}
-
-				Date startDate = null;
-				Date endDate = null;
-				try
-				{
-					if(filterPanel.jDateChooser1.isEnabled())
-					{
-						startDate = filterPanel.jDateChooser1.getDate();
-						endDate = filterPanel.jDateChooser2.getDate();
-					}
-					if(!userName.equals("All"))
-					{
-						long userId = ParaQueryUtil.getUserIdByExactName(userName);
-						users = new Long[] { userId };
-					}
-					else
-					{
-						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
-						int size = model.getSize();
-						users = new Long[size - 1];
-						for(int i = 1; i < size; i++)
-						{
-							Object element = model.getElementAt(i);
-							if(element != null && !element.equals("All"))
-								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-						}
-					}
-					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType);
-					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-					tablePanel.setTableData1(0, tablePanel.selectedData);
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
+			dofilter();
 		}
 		else if(event.getSource() == filterPanel.refreshButton)
 		{
-
 			filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO);
 			filterPanel.refreshFilters();
-
 		}
 		else if(event.getSource() == filterPanel.addsummary)
 		{
 			try
 			{
-
 				ArrayList<TableInfoDTO> data = tablePanel.selectedData;
 				for(int i = 0; i < data.size(); i++)
 				{
@@ -257,134 +216,25 @@ public class QAReviewData extends JPanel implements ActionListener
 			}
 			JOptionPane.showMessageDialog(null, "Sucessfully added");
 		}
-		/**
-		 * Load Data development Sheet
-		 */
-		// <editor-fold defaultstate="collapsed" desc="Generated Code">
+
+		// Load pdf
 		else if(event.getActionCommand().equals("Load PDF"))
 		{
 			boolean ok = false;
 			if(sheetpanel.isOpened())
 				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
 			if(sheetpanel.isOpened() && ok == false)
 			{
 				thread.stop();
 				loading.frame.dispose();
 				return;
 			}
-
-			int[] selectedPdfs = tablePanel.table.getSelectedRows();
-			int selectedPdfsCount = selectedPdfs.length;
-			if(selectedPdfsCount == 0)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select PDF First");
-			}
-			else if(selectedPdfsCount > 1)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select One PDF");
-			}
-			else
-			{
-				try
-				{
-					JComboBox[] combos = filterPanel.comboBoxItems;
-					String plName = combos[0].getSelectedItem().toString();
-					String supplierName = combos[2].getSelectedItem().toString();
-					String taskType = combos[3].getSelectedItem().toString();
-					String userName = combos[4].getSelectedItem().toString();
-					String pltype = combos[1].getSelectedItem().toString();
-					String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
-					if(status == "All")
-					{
-						status = StatusName.qaReview;
-					}
-					wsMap.clear();
-					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-					String pdfUrl = docInfoDTO.getPdfUrl();
-					Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-
-					Date startDate = null, endDate = null;
-					if(filterPanel.jDateChooser1.isEnabled())
-					{
-						startDate = filterPanel.jDateChooser1.getDate();
-						endDate = filterPanel.jDateChooser2.getDate();
-					}
-					System.out.println(pdfUrl);
-					if(!userName.equals("All"))
-					{
-						long userId = ParaQueryUtil.getUserIdByExactName(userName);
-						users = new Long[] { userId };
-					}
-					else
-					{
-						// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
-						int size = model.getSize();
-						users = new Long[size - 1];
-						for(int i = 1; i < size; i++)
-						{
-							Object element = model.getElementAt(i);
-							if(element != null && !element.equals("All"))
-								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-							// System.out.println("Element at " + i + " = " + element);
-						}
-					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), status, pltype);
-					int k = 0;
-					tabbedPane.setSelectedIndex(1);
-					sheetpanel.openOfficeDoc();
-
-					for(String pl : reviewData.keySet())
-					{
-						// wsMap=
-						ws = new WorkingSheet(sheetpanel, pl, k);
-						sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
-						wsMap.put(pl, ws);
-						if(docInfoDTO.getTaskType().contains("NPI"))
-							ws.setNPIflag(true);
-						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
-						ArrayList<String> sheetHeader = ws.getHeader();
-						int statusIndex = sheetHeader.indexOf("Status");
-						int partIndex = sheetHeader.indexOf("Part Number");
-						int CommentIndex = sheetHeader.indexOf("Comment");
-						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
-						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						for(int j = 0; j < plData.size(); j++)
-						{
-
-							ArrayList<String> sheetRecord = plData.get(j);
-							for(int l = 0; l < 4; l++)
-							{
-								sheetRecord.add("");
-							}
-							String qaflag = DataDevQueryUtil.getqaflagbypart(sheetHeader.get(partIndex));
-							sheetRecord.set(statusIndex, qaflag);
-							sheetRecord.set(CommentIndex, "");
-							sheetRecord.set(WrongFeatureIndex, "");
-						}
-						ws.writeReviewData(plData, 2, statusIndex + 1);
-						k++;
-					}
-					tablePanel.loadedPdfs.add(pdfUrl);
-					tablePanel.setTableData1(0, tablePanel.selectedData);
-
-				}catch(Exception ex)
-				{
-					ex.printStackTrace();
-				}
-
-			}
+			loadpdf();
 		}
-		// </editor-fold>
-		/**
-		 * Load All PDFs review and development Sheet
-		 */
 
+		// Load summary
 		else if(event.getActionCommand().equals("Summary"))
 		{
-			Date startDate = null;
-			Date endDate = null;
 			boolean ok = false;
 			if(SummaryPanel.isOpened())
 				ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
@@ -395,66 +245,17 @@ public class QAReviewData extends JPanel implements ActionListener
 				loading.frame.dispose();
 				return;
 			}
-			if(filterPanel.jDateChooser1.isEnabled())
-			{
-				startDate = filterPanel.jDateChooser1.getDate();
-				endDate = filterPanel.jDateChooser2.getDate();
-			}
-			wsMap.clear();
-			ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
-			tabbedPane.setSelectedIndex(2);
-			SummaryPanel.openOfficeDoc();
-
-			ws = new WorkingSheet(SummaryPanel, "Summary");
-			SummaryPanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			wsMap.put("Summary", ws);
-			ws.setSummaryHeader(null);
-			ArrayList<String> sheetHeader = ws.getHeader();
-			int statusIndex = sheetHeader.indexOf("New QA Flag");
-			for(int i = 0; i < data.size(); i++)
-			{
-				ArrayList<String> datarow = data.get(i);
-				datarow.add("");
-				String keyword = "";
-				datarow.set(datarow.size() - 1, "");
-			}
-			ws.writeReviewData(data, 2, statusIndex + 1);
+			loadsummary();
 		}
 
-		else if(event.getSource() == summarysave)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "Summary")
-				{
-
-				}
-			}
-		}
-		/**
-		 * Save Parts Action
-		 */
-		else if(event.getSource() == save)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).saveQAReviewAction(QAName, "Rev");
-				}
-			}
-		}
+		// validate sample
 		else if(event.getSource() == validate)
 		{
 			System.out.println("~~~~~~~ Start Validation Data ~~~~~~~");
 			wsMap.keySet();
 			for(String wsName : wsMap.keySet())
 			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
+				if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
 				{
 					WorkingSheet ws = wsMap.get(wsName);
 					ws.validateQAReview();
@@ -462,9 +263,285 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 		}
+		// save sample
+		else if(event.getSource() == save)
+		{
+			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
+				{
+					wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+				}
+			}
+		}
+		// validate summary
+		else if(event.getSource() == summaryvalidate)
+		{
+			System.out.println("~~~~~~~ Start validate Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName == "Summary")
+				{
+					WorkingSheet ws = wsMap.get(wsName);
+					ws.validateQASummary();
+					JOptionPane.showMessageDialog(null, "Validation Done");
+				}
+			}
+		}
+		// save summary
+		else if(event.getSource() == summarysave)
+		{
+			System.out.println("~~~~~~~ Start saving summary ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName == "Summary")
+				{
+					WorkingSheet ws = wsMap.get(wsName);
+					// ws.validateQASummary(summarydata);
+					JOptionPane.showMessageDialog(null, "Saving Done");
+				}
+			}
+		}
 
 		thread.stop();
 		loading.frame.dispose();
+	}
+
+	private void loadsummary()
+	{
+		Date startDate = null;
+		Date endDate = null;
+
+		if(filterPanel.jDateChooser1.isEnabled())
+		{
+			startDate = filterPanel.jDateChooser1.getDate();
+			endDate = filterPanel.jDateChooser2.getDate();
+		}
+
+		wsMap.clear();
+		ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
+		tabbedPane.setSelectedIndex(2);
+		SummaryPanel.openOfficeDoc();
+
+		ws = new WorkingSheet(SummaryPanel, "Summary");
+		SummaryPanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+		wsMap.put("Summary", ws);
+		ws.setSummaryHeader(Arrays.asList("Validation Comment"));
+
+		ArrayList<String> sheetHeader = ws.getHeader();
+		int statusIndex = sheetHeader.indexOf("Final QA Flag");
+		for(int i = 0; i < data.size(); i++)
+		{
+			ArrayList<String> datarow = data.get(i);
+			datarow.add("");
+			String keyword = "";
+			datarow.set(datarow.size() - 1, "");
+		}
+		ws.writeReviewData(data, 2, statusIndex + 1);
+
+	}
+
+	private void dofilter()
+	{
+		String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+		String plType = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+		String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+		String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+		if(taskType.equals("All"))
+		{
+			JOptionPane.showMessageDialog(null, "Please Select Task Type");
+		}
+		else
+		{
+			String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+			String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
+			if(status.equals("All"))
+			{
+				status = StatusName.qaReview;
+				summarydata = false;
+			}
+			else if(status.equals(StatusName.waitingsummary))
+			{
+				summarydata = true;
+			}
+
+			Date startDate = null;
+			Date endDate = null;
+			try
+			{
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				if(!userName.equals("All"))
+				{
+					long userId = ParaQueryUtil.getUserIdByExactName(userName);
+					users = new Long[] { userId };
+				}
+				else
+				{
+					ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
+					int size = model.getSize();
+					users = new Long[size - 1];
+					for(int i = 1; i < size; i++)
+					{
+						Object element = model.getElementAt(i);
+						if(element != null && !element.equals("All"))
+							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+					}
+				}
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType);
+				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+				tablePanel.setTableData1(0, tablePanel.selectedData);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private void loadpdf()
+	{
+		int[] selectedPdfs = tablePanel.table.getSelectedRows();
+		int selectedPdfsCount = selectedPdfs.length;
+		if(selectedPdfsCount == 0)
+		{
+			JOptionPane.showMessageDialog(null, "Please Select PDF First");
+		}
+		else if(selectedPdfsCount > 1)
+		{
+			JOptionPane.showMessageDialog(null, "Please Select One PDF");
+		}
+		else
+		{
+			try
+			{
+				JComboBox[] combos = filterPanel.comboBoxItems;
+				String plName = combos[0].getSelectedItem().toString();
+				String supplierName = combos[2].getSelectedItem().toString();
+				String taskType = combos[3].getSelectedItem().toString();
+				String userName = combos[4].getSelectedItem().toString();
+				String pltype = combos[1].getSelectedItem().toString();
+				String status = "";
+				if(!summarydata)
+				{
+					status = StatusName.qaReview;
+				}
+				else
+				{
+					status = StatusName.waitingsummary;
+				}
+				wsMap.clear();
+				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+				String pdfUrl = docInfoDTO.getPdfUrl();
+				Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+
+				Date startDate = null, endDate = null;
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				System.out.println(pdfUrl);
+				if(!userName.equals("All"))
+				{
+					long userId = ParaQueryUtil.getUserIdByExactName(userName);
+					users = new Long[] { userId };
+				}
+				else
+				{
+					// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+					ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
+					int size = model.getSize();
+					users = new Long[size - 1];
+					for(int i = 1; i < size; i++)
+					{
+						Object element = model.getElementAt(i);
+						if(element != null && !element.equals("All"))
+							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+						// System.out.println("Element at " + i + " = " + element);
+					}
+				}
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), status, pltype);
+				int k = 0;
+				tabbedPane.setSelectedIndex(1);
+				sheetpanel.openOfficeDoc();
+
+				for(String pl : reviewData.keySet())
+				{
+					// wsMap=
+					ws = new WorkingSheet(sheetpanel, pl, k);
+					sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
+					wsMap.put(pl, ws);
+					if(docInfoDTO.getTaskType().contains("NPI"))
+						ws.setNPIflag(true);
+					ArrayList<String> sheetHeader = null;
+					int statusIndex = 0;
+					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+					if(summarydata)
+					{
+						ws.setQAReviewHeader(Arrays.asList("Old Flag", "Status", "Wrong Feature", "Comment", "Validation Comment"), true);
+						sheetHeader = ws.getHeader();
+						statusIndex = sheetHeader.indexOf("Status");
+						int oldflagindex = sheetHeader.indexOf("Old Flag");
+						int partIndex = sheetHeader.indexOf("Part Number");
+						int CommentIndex = sheetHeader.indexOf("Comment");
+						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+						for(int j = 0; j < plData.size(); j++)
+						{
+							ArrayList<String> sheetRecord = plData.get(j);
+							for(int l = 0; l < 5; l++)
+							{
+								sheetRecord.add("");
+							}
+							String qaflag = DataDevQueryUtil.getqaflagbypart(sheetRecord.get(partIndex));
+							sheetRecord.set(oldflagindex, qaflag);
+							// ParaQueryUtil.getComponentByPartAndSupplierAndDocument(partNumber, documentId, session);
+							String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
+							sheetRecord.set(CommentIndex, comment);
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(sheetRecord.get(partIndex).toString(), userDTO.getId());
+							sheetRecord.set(WrongFeatureIndex, wrongfeatures);
+						}
+					}
+					else if(!summarydata)
+					{
+						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
+						sheetHeader = ws.getHeader();
+						statusIndex = sheetHeader.indexOf("Status");
+						int CommentIndex = sheetHeader.indexOf("Comment");
+						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+						for(int j = 0; j < plData.size(); j++)
+						{
+							ArrayList<String> sheetRecord = plData.get(j);
+							for(int l = 0; l < 4; l++)
+							{
+								sheetRecord.add("");
+							}
+							sheetRecord.set(statusIndex, "");
+							sheetRecord.set(CommentIndex, "");
+							sheetRecord.set(WrongFeatureIndex, "");
+						}
+					}
+
+					ws.writeReviewData(plData, 2, statusIndex + 1);
+
+					k++;
+				}
+				tablePanel.loadedPdfs.add(pdfUrl);
+				tablePanel.setTableData1(0, tablePanel.selectedData);
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+
+		}
+
 	}
 
 	public static void main(String[] args)
