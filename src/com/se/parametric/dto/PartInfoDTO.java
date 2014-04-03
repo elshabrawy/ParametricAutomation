@@ -42,6 +42,17 @@ public class PartInfoDTO
 	private String PAction;
 	private String RootCause;
 	private String ActinDueDate;
+	private String WrongFeatures;
+
+	public String getWrongFeatures()
+	{
+		return WrongFeatures;
+	}
+
+	public void setWrongFeatures(String wrongFeatures)
+	{
+		WrongFeatures = wrongFeatures;
+	}
 
 	public String getCAction()
 	{
