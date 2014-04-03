@@ -13,55 +13,36 @@ import java.util.Properties;
 import java.util.Set;
 import javax.swing.JOptionPane;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.property.Getter;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.WorksheetDocument;
-
-import com.se.automation.db.ParametricQueryUtil;
-import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
-import com.se.automation.db.client.dto.PlfeatureValuesDTO;
 import com.se.automation.db.client.mapping.Document;
-import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
-import com.se.automation.db.client.mapping.SupplierUrl;
 import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dba.ParametricDevServerUtil;
-import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.FeatureDTO;
-import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
-import com.se.parametric.util.PDDRow;
 import com.se.parametric.util.StatusName;
 import com.se.parametric.util.ValidatePart;
-import com.sun.deploy.ui.FancyButton;
-import com.sun.star.beans.Property;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XPropertySetInfo;
 import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.sheet.CellDeleteMode;
 import com.sun.star.sheet.XCellRangeAddressable;
-import com.sun.star.sheet.XCellRangesQuery;
-import com.sun.star.sheet.XSheetCellRanges;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.table.XCell;
 import com.sun.star.table.XCellRange;
 import com.sun.star.text.XText;
-import com.sun.star.uno.Any;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XInterface;
 import com.sun.star.util.CellProtection;
 
 public class WorkingSheet
@@ -887,10 +868,10 @@ public class WorkingSheet
 			cell.setText("Date");
 			HeaderList.add(cell);
 			cell = getCellByPosission(14, StatrtRecord);
-			cell.setText("Old QA Flag");
+			cell.setText("Sample QA Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(15, StatrtRecord);
-			cell.setText("New QA Flag");
+			cell.setText("Final QA Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(16, StatrtRecord);
 			cell.setText("QA Comment");
@@ -917,9 +898,16 @@ public class WorkingSheet
 					HeaderList.add(cell);
 				}
 			}
+			int lastColNum = HeaderList.size();
+			String lastColumn = getColumnName(lastColNum);
+			String hdrUintRange = "A" + 1 + ":" + lastColumn + 2;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			// setRangColor(xHdrUnitrange, 0xB0AEAE);
+			setRangProtected(xHdrUnitrange, 0xB0AEAE);
+
 			statusValues.add("A");
 			statusValues.add("S");
-			statusValues.add("F");
+			statusValues.add("Fast");
 
 		}catch(Exception ex)
 		{
@@ -1783,7 +1771,7 @@ public class WorkingSheet
 
 	}
 
-	public void saveQAReviewAction(String QAName, String screen)
+	public void saveQAReviewAction(String QAName, String screen, boolean summarydata)
 	{
 		if(canSave)
 		{
@@ -1791,9 +1779,16 @@ public class WorkingSheet
 			{
 				List<String> rejectedPdfs = new ArrayList<String>();
 				List<String> acceptedPdfs = new ArrayList<String>();
+				List<String> changedparts = new ArrayList<>();
 				List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 				List<PartInfoDTO> AllParts = new ArrayList<PartInfoDTO>();
 				ArrayList<String> sheetHeader = getHeader();
+				int oldflagIndex = 0;
+				String oldflag = "";
+				if(summarydata)
+				{
+					oldflagIndex = sheetHeader.indexOf("Old Flag");
+				}
 				int statusIndex = sheetHeader.indexOf("Status");
 				int CommentIndex = sheetHeader.indexOf("Comment");
 				int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
@@ -1845,6 +1840,14 @@ public class WorkingSheet
 					partInfo.setMask(mask);
 					partInfo.setGeneric(generic);
 
+					if(summarydata)
+					{
+						oldflag = partData.get(oldflagIndex);
+						if(!oldflag.isEmpty() && !status.isEmpty() && (oldflag.equals("R") || oldflag.equals("W")))
+						{
+							changedparts.add(pn);
+						}
+					}
 					if("W".equals(status) || "R".equals(status))
 					{
 						if("".equals(comment))
@@ -1859,6 +1862,7 @@ public class WorkingSheet
 							partInfo.setStatus(status);
 							partInfo.setFeedBackStatus(StatusName.reject);
 							partInfo.setFeedBackCycleType(StatusName.wrongData);
+							partInfo.setWrongFeatures(WrongFeatures);
 							feedbackParts.add(partInfo);
 							AllParts.add(partInfo);
 							if(acceptedPdfs.contains(pdfUrl))
@@ -1867,7 +1871,6 @@ public class WorkingSheet
 							}
 							rejectedPdfs.add(pdfUrl);
 						}
-
 					}
 					else if("S".equals(status) || "A".equals(status) || "F".equals(status))
 					{
@@ -1882,14 +1885,14 @@ public class WorkingSheet
 						{
 							acceptedPdfs.add(pdfUrl);
 						}
-
 					}
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
-				// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "QA");
-				// DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere, QAName);
-				// DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
+				if(summarydata)
+				{
+					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
+				}
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
@@ -3272,6 +3275,7 @@ public class WorkingSheet
 				String Plname = getCellText(PlCell).getString();
 				setCellColore(wrongfetCell, 0xFFFFFF);
 				setCellColore(commentCell, 0xFFFFFF);
+
 				if(status.equals("R") || status.equals("W"))
 				{
 					if(wrongfeatures.trim().equals(""))
@@ -3326,14 +3330,14 @@ public class WorkingSheet
 							}
 						}
 					}
-					if(!canSave)
-					{
-						getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
-					}
-					else
-						getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
-
 				}
+				if(!canSave)
+				{
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
+				}
+				else
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
+
 			}catch(Exception e)
 			{
 				// TODO Auto-generated catch block
@@ -3342,6 +3346,61 @@ public class WorkingSheet
 
 		}
 	}
+
+	public void validateQASummary()
+	{
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		XCellRange xcellrange = null;
+		int lastColNum = HeaderList.size();
+		String lastColumn = getColumnName(lastColNum);
+		ArrayList<String> sheetHeader = getHeader();
+		int sampleflagIndex = sheetHeader.indexOf("Sample QA Flag");
+		int finalflagIndex = sheetHeader.indexOf("Final QA Flag");
+		int ValidationCommentIndex = sheetHeader.indexOf("Validation Comment");
+
+		canSave = true;
+		int lastRow = getLastRow();
+		for(int i = 3; i < lastRow + 1; i++)
+		{
+			try
+			{
+				String error = "";
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				XCell sampleflagCell = xcellrange.getCellByPosition(sampleflagIndex, 0);
+				String sampleflag = getCellText(sampleflagCell).getString();
+				XCell finalflagCell = xcellrange.getCellByPosition(finalflagIndex, 0);
+				String finalflag = getCellText(finalflagCell).getString();
+				setCellColore(sampleflagCell, 0xFFFFFF);
+				setCellColore(finalflagCell, 0xFFFFFF);
+				if(!finalflag.isEmpty() && (finalflag.equals("R") || finalflag.equals("W")) || (!finalflag.equals("A") && !finalflag.equals("S") && !finalflag.equals("Fast")))
+				{
+					error += "Finalflag Must be in (A,S,Fast) |";
+					setCellColore(finalflagCell, 0xD2254D);
+					canSave = false;
+				}
+				if(finalflag.trim().equals("") && sampleflag.trim().equals(""))
+				{
+					error += "No flag of this part |";
+					setCellColore(finalflagCell, 0xD2254D);
+					canSave = false;
+				}
+				if(!canSave)
+				{
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
+				}
+				else
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
+
+			}catch(Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	// public void saveQAFeedBackAction(String QAName)
 	// {
 	//
