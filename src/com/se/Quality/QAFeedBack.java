@@ -517,7 +517,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 			{
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
-					wsMap.get(wsName).saveQAReviewAction(QAName, "FB");
+					wsMap.get(wsName).saveQAReviewAction(QAName, "FB", false);
 				}
 			}
 		}
