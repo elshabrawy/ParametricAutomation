@@ -38,6 +38,7 @@ import com.se.automation.db.client.mapping.MapGeneric;
 import com.se.automation.db.client.mapping.MasterFamilyGeneric;
 import com.se.automation.db.client.mapping.MasterPartMask;
 import com.se.automation.db.client.mapping.ParaFeedbackAction;
+import com.se.automation.db.client.mapping.ParaFeedbackFets;
 import com.se.automation.db.client.mapping.ParaFeedbackStatus;
 import com.se.automation.db.client.mapping.ParaIssueType;
 import com.se.automation.db.client.mapping.ParametricApprovedGroup;
@@ -2704,7 +2705,7 @@ public class DataDevQueryUtil
 		}
 	}
 
-	public static void savePartsFeedback(List<PartInfoDTO> parts)
+	public static void savePartsFeedback(List<PartInfoDTO> parts, boolean pdfsttus)
 	{
 		Session session = null;
 
@@ -4129,7 +4130,7 @@ public class DataDevQueryUtil
 		return allsummary;
 	}
 
-	private static String getfbcommentbycomidanduser(Long itemid, long userid)
+	public static String getfbcommentbycomidanduser(Long itemid, long userid)
 	{
 		ParametricFeedbackCycle parametricfeedbackcycle = null;
 		Session session = null;
@@ -4176,4 +4177,71 @@ public class DataDevQueryUtil
 
 	}
 
+	public static String getfbwrongfets(Long itemid, long userid)
+	{
+		ParametricFeedbackCycle parametricfeedbackcycle = null;
+		Session session = null;
+		String wrongFeatures = "";
+		session = SessionUtil.getSession();
+		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
+		cri.add(Restrictions.eq("issuedBy", userid));
+		cri.add(Restrictions.eq("feedbackRecieved", 0l));
+		cri.createAlias("parametricFeedback", "feedback");
+		cri.add(Restrictions.eq("feedback.itemId", itemid));
+		parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
+		if(parametricfeedbackcycle != null)
+		{
+			cri = session.createCriteria(ParaFeedbackFets.class);
+			cri.add(Restrictions.eq("parametricFeedback", parametricfeedbackcycle.getParametricFeedback()));
+			List<ParaFeedbackFets> fets = cri.list();
+			if(!fets.isEmpty())
+			{
+				for(int i = 0; i < fets.size(); i++)
+				{
+					wrongFeatures += ParaQueryUtil.fets.get(i).getFetId().toString() + "|";
+				}
+				wrongFeatures = wrongFeatures.substring(0, wrongFeatures.length() - 1);
+			}
+		}
+		else
+			wrongFeatures = "";
+
+		return wrongFeatures;
+
+	}
+
+	public static void deleteoldfeedbacks(List<String> changedparts, String issuedby)
+	{
+		ParametricFeedbackCycle parametricfeedbackcycle = null;
+		Session session = null;
+		String wrongFeatures = "";
+		session = SessionUtil.getSession();
+		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
+		for(int p = 0; p < changedparts.size(); p++)
+		{
+
+			cri.add(Restrictions.eq("issuedBy", issuedby));
+			cri.add(Restrictions.eq("feedbackRecieved", 0l));
+			cri.createAlias("parametricFeedback", "feedback");
+			cri.add(Restrictions.eq("feedback.itemId", Long.valueOf(changedparts.get(p))));
+			parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
+			if(parametricfeedbackcycle != null)
+			{
+				cri = session.createCriteria(ParaFeedbackFets.class);
+				cri.add(Restrictions.eq("parametricFeedback", parametricfeedbackcycle.getParametricFeedback()));
+				List<Object> fets = cri.list();
+				if(!fets.isEmpty())
+				{
+					for(int i = 0; i < fets.size(); i++)
+					{
+						session.d
+					}
+					wrongFeatures = wrongFeatures.substring(0, wrongFeatures.length() - 1);
+				}
+			}
+			else
+				wrongFeatures = "";
+		}
+
+	}
 }
