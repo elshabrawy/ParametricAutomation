@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.Supplier;
@@ -43,6 +44,17 @@ public class PartInfoDTO
 	private String RootCause;
 	private String ActinDueDate;
 	private String WrongFeatures;
+	private PartComponent component;
+
+	public PartComponent getComponent()
+	{
+		return component;
+	}
+
+	public void setComponent(PartComponent component)
+	{
+		this.component = component;
+	}
 
 	public String getWrongFeatures()
 	{
