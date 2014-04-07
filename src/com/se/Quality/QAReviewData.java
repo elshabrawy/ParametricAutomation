@@ -198,23 +198,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		}
 		else if(event.getSource() == filterPanel.addsummary)
 		{
-			try
-			{
-				ArrayList<TableInfoDTO> data = tablePanel.selectedData;
-				for(int i = 0; i < data.size(); i++)
-				{
-					String pdfUrl = data.get(i).getPdfUrl();
-					Document doc = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-					if(doc != null)
-						DataDevQueryUtil.addpdfstosummary(doc);
-				}
-
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, "error in data");
-			}
-			JOptionPane.showMessageDialog(null, "Sucessfully added");
+			addtosummary();
 		}
 
 		// Load pdf
@@ -301,7 +285,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				if(wsName == "Summary")
 				{
 					WorkingSheet ws = wsMap.get(wsName);
-					// ws.validateQASummary(summarydata);
+					 ws.saveQASummary(QAName);
 					JOptionPane.showMessageDialog(null, "Saving Done");
 				}
 			}
@@ -309,6 +293,28 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		thread.stop();
 		loading.frame.dispose();
+	}
+
+	private void addtosummary()
+	{
+		try
+		{
+			ArrayList<TableInfoDTO> data = tablePanel.selectedData;
+			for(int i = 0; i < data.size(); i++)
+			{
+				String pdfUrl = data.get(i).getPdfUrl();
+				Document doc = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+				if(doc != null)
+					DataDevQueryUtil.addpdfstosummary(doc);
+			}
+
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "error in data");
+		}
+		JOptionPane.showMessageDialog(null, "Sucessfully added");
+
 	}
 
 	private void loadsummary()
