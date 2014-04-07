@@ -1865,6 +1865,8 @@ public class DataDevQueryUtil
 					partData.add(data[22].toString());
 					/** Extraction flag */
 					partData.add(data[23].toString());
+					/** com_id */
+					partData.add(data[17].toString());
 					/** Part Number */
 					partData.add(data[4].toString());
 					/** family */
@@ -2590,6 +2592,37 @@ public class DataDevQueryUtil
 
 	}
 
+	public static void saveTrackingParamtric(Map<String, List<String>> pdfSet, String status) throws Exception
+	{
+		Session session = SessionUtil.getSession();
+		try
+		{
+			// getTrackingTaskStatus(session, status);
+			for(String pdf : pdfSet.keySet())
+			{
+				Criteria criteria = session.createCriteria(TrackingParametric.class);
+				Document document = ParaQueryUtil.getDocumentBySeUrl(pdf, session);
+				criteria.add(Restrictions.eq("document", document));
+				criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
+				if(pdfSet.get(pdf).get(1) != null && pdfSet.get(pdf).get(1).equals(""))
+				{
+					criteria.add(Restrictions.eq("supplier", ParaQueryUtil.getSupplierByExactName(session, pdfSet.get(pdf).get(1))));
+				}
+				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
+				System.err.println("Track Id=" + track.getId());
+				track.setQaReviewDate(new Date());
+				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, status);
+				track.setTrackingTaskStatus(trackingTaskStatus);
+				session.saveOrUpdate(track);
+			}
+
+		}finally
+		{
+			session.close();
+		}
+
+	}
+
 	public static void saveQAPartsFeedback(List<PartInfoDTO> parts, String flowSource)
 	{
 		Session session = null;
@@ -2712,7 +2745,6 @@ public class DataDevQueryUtil
 
 		try
 		{
-
 			session = SessionUtil.getSession();
 			for(int i = 0; i < parts.size(); i++)
 			{
@@ -2732,7 +2764,7 @@ public class DataDevQueryUtil
 				String feedbackStatus = partInfo.getFeedBackStatus();
 				String feedbackTypeStr = partInfo.getFeedBackCycleType();
 				String wrongfeatures = partInfo.getWrongFeatures();
-				PartComponent component = getComponentByPartNumberAndSupplierName(partNum, vendorName, session);
+				PartComponent component = partInfo.getComponent();
 				GrmUser issuedByUser = ParaQueryUtil.getGRMUserByName(issuedByName);
 				GrmUser issuedToUser = ParaQueryUtil.getGRMUserByName(issuedToName);
 				long issedto = issuedToUser.getId();
@@ -2828,15 +2860,31 @@ public class DataDevQueryUtil
 					if(wrongfeatures.contains("|"))
 					{
 						String[] fets = wrongfeatures.split("\\|");
-						for(String fet : fets)
+						for(int f = 0; f < fets.length; f++)
 						{
-							ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
-							Feature feature = ParaQueryUtil.getFeatureByName(fet);
-							paraFeedbackfets.setId(System.nanoTime());
-							paraFeedbackfets.setFeature(feature);
-							paraFeedbackfets.setparaFeedbackId(FBObj);
-							paraFeedbackfets.setStatus(1l);
-							session.saveOrUpdate(paraFeedbackfets);
+							if(comment.contains("|"))
+							{
+								String[] comments = comment.split("\\|");
+								ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
+								Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+								paraFeedbackfets.setId(System.nanoTime());
+								paraFeedbackfets.setFeature(feature);
+								paraFeedbackfets.setparaFeedbackId(FBObj);
+								paraFeedbackfets.setStatus(1l);
+								paraFeedbackfets.setFetComment(comments[f]);
+								session.saveOrUpdate(paraFeedbackfets);
+							}
+							else
+							{
+								ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
+								Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+								paraFeedbackfets.setId(System.nanoTime());
+								paraFeedbackfets.setFeature(feature);
+								paraFeedbackfets.setparaFeedbackId(FBObj);
+								paraFeedbackfets.setStatus(1l);
+								paraFeedbackfets.setFetComment(comment);
+								session.saveOrUpdate(paraFeedbackfets);
+							}
 						}
 					}
 					else
@@ -3559,8 +3607,30 @@ public class DataDevQueryUtil
 		}
 	}
 
+	public static PartComponent getComponentBycomid(Long comid) throws Exception
+	{
+		Session session = SessionUtil.getSession();
+		try
+		{
+			Criteria crit = session.createCriteria(PartComponent.class);
+			crit.add(Restrictions.eq("comId", comid));
+			PartComponent component = (PartComponent) crit.uniqueResult();
+			return component;
+		}catch(Exception ex)
+		{
+			throw ParametricDevServerUtil.getCatchException(ex);
+		}finally
+		{
+			session.close();
+		}
+	}
+
 	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber, String suppliername, Session session)
 	{
+		if(session == null)
+		{
+			session = SessionUtil.getSession();
+		}
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		crit.add(Restrictions.eq("partNumber", partnumber));
 		crit.createCriteria("supplierPl").createCriteria("supplier").add(Restrictions.eq("name", suppliername));
@@ -4040,9 +4110,7 @@ public class DataDevQueryUtil
 			session = SessionUtil.getSession();
 			for(PartInfoDTO pa : allParts)
 			{
-				Criteria cri = session.createCriteria(PartComponent.class);
-				cri.add(Restrictions.eq("partNumber", pa.getPN()));
-				component = (PartComponent) cri.uniqueResult();
+				component = pa.getComponent();
 				if(component != null)
 					component.setQaflag(pa.getStatus());
 				session.saveOrUpdate(component);
