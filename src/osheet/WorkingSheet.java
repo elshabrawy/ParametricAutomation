@@ -1,6 +1,7 @@
 package osheet;
 
 import java.awt.Color;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
@@ -764,6 +766,9 @@ public class WorkingSheet
 			HeaderList.add(cell);
 			cell = getCellByPosission(6, StatrtRecord);
 			cell.setText("Extraction Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(7, StatrtRecord);
+			cell.setText("Comid");
 			HeaderList.add(cell);
 			setDevHeader(false, isQA);
 			if(additionalCols != null)
@@ -1791,6 +1796,7 @@ public class WorkingSheet
 				}
 				int statusIndex = sheetHeader.indexOf("Status");
 				int CommentIndex = sheetHeader.indexOf("Comment");
+				int ComidIndex = sheetHeader.indexOf("Comid");
 				int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 				String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
@@ -1804,6 +1810,7 @@ public class WorkingSheet
 					String vendorName = partData.get(4);
 					String plName = partData.get(0);
 					String tlName = ParaQueryUtil.getTeamLeaderNameByMember(partData.get(2));
+					String comid = partData.get(ComidIndex);
 					pn = partData.get(PartCell);
 					pdfUrl = partData.get(pdfCellNo);
 					family = partData.get(familyCell);
@@ -1824,10 +1831,11 @@ public class WorkingSheet
 					{
 						partInfo.setFeedbackType("Acquisition");
 					}
+					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
 
 					partInfo.setPN(pn);
 					partInfo.setSupplierName(vendorName);
-					// partInfo.setStatus(status);
+					partInfo.setComponent(component);
 					partInfo.setComment(comment);
 					partInfo.setIssuedBy(QAName);
 					partInfo.setIssuedTo(tlName);
@@ -1872,7 +1880,7 @@ public class WorkingSheet
 							rejectedPdfs.add(pdfUrl);
 						}
 					}
-					else if("S".equals(status) || "A".equals(status) || "F".equals(status))
+					else if("S".equals(status) || "A".equals(status) || "Fast".equals(status))
 					{
 						partInfo.setStatus(status);
 						AllParts.add(partInfo);
@@ -1894,6 +1902,76 @@ public class WorkingSheet
 					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
 				}
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
+			}catch(Exception e)
+			{
+				JOptionPane.showMessageDialog(null, "Can't Save Data");
+				e.printStackTrace();
+			}
+		}
+		else
+			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+
+	}
+
+	public void saveQASummary(String QAName)
+	{
+		if(canSave)
+		{
+			try
+			{
+				Map<String, List<String>> pdfs = new HashMap<String, List<String>>();
+				// List<String> pdfs = new ArrayList<>();
+				List<String> changedparts = new ArrayList<>();
+				List<PartInfoDTO> AllParts = new ArrayList<PartInfoDTO>();
+				ArrayList<String> sheetHeader = getHeader();
+
+				String oldflag = "";
+				int oldflagIndex = sheetHeader.indexOf("Sample QA Flag");
+				int statusIndex = sheetHeader.indexOf("Final QA Flag");
+				int ComidIndex = sheetHeader.indexOf("COM_ID");
+				int partIndex = sheetHeader.indexOf("Part");
+				int pdfIndex = sheetHeader.indexOf("PDFURL");
+				int plIndex = sheetHeader.indexOf("PL Name");
+				int supplierIndex = sheetHeader.indexOf("Supplier Name");
+				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
+
+				for(int i = 0; i < fileData.size(); i++)
+				{
+					PartInfoDTO partInfo = new PartInfoDTO();
+					ArrayList<String> partData = fileData.get(i);
+					String status = partData.get(statusIndex);
+					String comid = partData.get(ComidIndex);
+					String pn = partData.get(partIndex);
+					String pdf = partData.get(pdfIndex);
+					String pl = partData.get(plIndex);
+					String supplier = partData.get(supplierIndex);
+					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+					partInfo.setComponent(component);
+					partInfo.setIssuedBy(QAName);
+
+					List<String> data = new ArrayList<>();
+					data.add(pl);
+					data.add(supplier);
+					if(!pdfs.containsKey(pdf))
+						pdfs.put(pdf, data);
+					oldflag = partData.get(oldflagIndex);
+					if(!oldflag.isEmpty() && !status.isEmpty() && (oldflag.equals("R") || oldflag.equals("W")))
+					{
+						changedparts.add(pn);
+					}
+					if("S".equals(status) || "A".equals(status) || "Fast".equals(status))
+					{
+						partInfo.setStatus(status);
+						AllParts.add(partInfo);
+					}
+				}
+
+				DataDevQueryUtil.saveQAFlag(AllParts);
+				if(!changedparts.isEmpty())
+					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
+
+				DataDevQueryUtil.saveTrackingParamtric(pdfs, StatusName.summaryengine);
+				// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
 				JOptionPane.showMessageDialog(null, "Can't Save Data");
@@ -3276,7 +3354,7 @@ public class WorkingSheet
 				setCellColore(wrongfetCell, 0xFFFFFF);
 				setCellColore(commentCell, 0xFFFFFF);
 
-				if(status.equals("R") || status.equals("W"))
+				if(status.equals("R"))
 				{
 					if(wrongfeatures.trim().equals(""))
 					{
@@ -3314,6 +3392,16 @@ public class WorkingSheet
 										break;
 									}
 								}
+								if(comment.contains("|"))
+								{
+									String[] comments = comment.split("\\|");
+									if(features.length != comments.length)
+									{
+										error += "comment must be as count as the features |";
+										setCellColore(commentCell, 0xD2254D);
+										canSave = false;
+									}
+								}
 							}
 						}
 						else
@@ -3329,6 +3417,17 @@ public class WorkingSheet
 								break;
 							}
 						}
+					}
+				}
+				if(status.equals("W"))
+				{
+					if(comment.trim().equals(""))
+					{
+						error += "Wrong Comment |";
+						// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Wrong Comment");
+						setCellColore(commentCell, 0xD2254D);
+						canSave = false;
+						// break;
 					}
 				}
 				if(!canSave)
@@ -3373,7 +3472,7 @@ public class WorkingSheet
 				String finalflag = getCellText(finalflagCell).getString();
 				setCellColore(sampleflagCell, 0xFFFFFF);
 				setCellColore(finalflagCell, 0xFFFFFF);
-				if(!finalflag.isEmpty() && (finalflag.equals("R") || finalflag.equals("W")) || (!finalflag.equals("A") && !finalflag.equals("S") && !finalflag.equals("Fast")))
+				if((finalflag.equals("R") || finalflag.equals("W")) || (!finalflag.isEmpty() && !finalflag.equals("A") && !finalflag.equals("S") && !finalflag.equals("Fast")))
 				{
 					error += "Finalflag Must be in (A,S,Fast) |";
 					setCellColore(finalflagCell, 0xD2254D);
