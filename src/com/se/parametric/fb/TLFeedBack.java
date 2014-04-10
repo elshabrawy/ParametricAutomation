@@ -204,8 +204,6 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String documentStatus = StatusName.tlFeedback;
 				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
 			{
@@ -242,120 +240,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				loading.frame.dispose();
 				return;
 			}
-			int[] selectedPdfs = tablePanel.table.getSelectedRows();
-			int selectedPdfsCount = selectedPdfs.length;
-			if(selectedPdfsCount == 0)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select PDF First");
-			}
-			else if(selectedPdfsCount > 1)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select One PDF");
-			}
-			else
-			{
-				try
-				{
-					wsMap.clear();
-					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-					String pdfUrl = docInfoDTO.getPdfUrl();
-					Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-					JComboBox[] combos = filterPanel.comboBoxItems;
-					String plName = combos[0].getSelectedItem().toString();
-					String supplierName = combos[1].getSelectedItem().toString();
-					String issuerName = combos[2].getSelectedItem().toString();
-					String feedbackType = combos[3].getSelectedItem().toString();
-					String documentStatus = StatusName.tlFeedback;
-					Date startDate = null, endDate = null;
-					if(filterPanel.jDateChooser1.isEnabled())
-					{
-						startDate = filterPanel.jDateChooser1.getDate();
-						endDate = filterPanel.jDateChooser2.getDate();
-					}
-					System.out.println(pdfUrl);
-
-					// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(issuers,
-					// plName, supplierName, null, documentStatus, startDate, endDate, new Long[] { document.getId() });
-
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackType, issuerName, startDate, endDate,
-							new Long[] { document.getId() }, userDTO.getId());
-					int k = 0;
-					tabbedPane.setSelectedIndex(1);
-					sheetpanel.openOfficeDoc();
-
-					for(String pl : reviewData.keySet())
-					{
-						ws = new WorkingSheet(sheetpanel, pl, k);
-						sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-						wsMap.put(pl, ws);
-						if(docInfoDTO.getTaskType().contains("NPI"))
-							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment", "BY", "Issue_Source"), false);
-						ArrayList<String> sheetHeader = ws.getHeader();
-						int devCommentIndex = sheetHeader.indexOf("Dev Comment");
-						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
-						int issuerIndex = sheetHeader.indexOf("Issue_Source");
-						int sentBYIndex = sheetHeader.indexOf("BY");
-						int Cactionindex = sheetHeader.indexOf("C_Action");
-						int Pactionindex = sheetHeader.indexOf("P_Action");
-						int RootcauseIndex = sheetHeader.indexOf("RootCause");
-						int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
-						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						for(int j = 0; j < plData.size(); j++)
-						{
-							ArrayList<String> sheetRecord = plData.get(j);
-							String partNumber = sheetRecord.get(11);
-							supplierName = sheetRecord.get(10);
-							// Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-							// PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
-							// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-							// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);// feedcom 0 is
-																															// unused since we
-																															// show comments
-																															// of tl and QA
-
-							String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(new Long(feedCom.get(3)));
-							ParaFeedbackAction action = null;
-							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
-							if(action != null)
-							{
-								sheetRecord.set(Cactionindex, action.getCAction());
-								sheetRecord.set(Pactionindex, action.getPAction());
-								sheetRecord.set(RootcauseIndex, action.getRootCause());
-								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
-							}
-							for(int l = 0; l < 7; l++)
-							{
-								sheetRecord.add("");
-							}
-							// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-							// {
-							sheetRecord.set(devCommentIndex, engComment);
-							// }
-							// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-							// {
-							sheetRecord.set(qaCommentIndex, QAComment);
-							// }
-							sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-							sheetRecord.set(sentBYIndex, senderDTO.getFullName());
-							sheetRecord.set(2, feedCom.get(1));
-							plData.set(j, sheetRecord);
-						}
-						ws.writeReviewData(plData, 2, 4);
-						k++;
-					}
-					tablePanel.loadedPdfs.add(pdfUrl);
-					tablePanel.setTableData1(0, tablePanel.selectedData);
-				}catch(Exception ex)
-				{
-					ex.printStackTrace();
-				}
-
-			}
+			loadpdf();
 		}
 		/**
 		 * Load All PDFs review and development Sheet
@@ -372,87 +257,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				loading.frame.dispose();
 				return;
 			}
-			JComboBox[] combos = filterPanel.comboBoxItems;
-
-			try
-			{
-				String plName = combos[0].getSelectedItem().toString();
-				String supplierName = combos[1].getSelectedItem().toString();
-				String issuerName = combos[2].getSelectedItem().toString();
-				String feedbackTypeStr = combos[3].getSelectedItem().toString();
-				Long[] docsIds = DataDevQueryUtil.getFeedbackDocIds(feedbackTypeStr);
-				String documentStatus = StatusName.tlFeedback;
-				Date startDate = null, endDate = null;
-				wsMap.clear();
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackTypeStr, issuerName, startDate, endDate, null, userDTO.getId());
-				// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(teamMembers,
-				// plName,
-				// supplierName, null, documentStatus, startDate, endDate, docsIds);
-				int k = 0;
-				tabbedPane.setSelectedIndex(1);
-				sheetpanel.openOfficeDoc();
-				for(String pl : reviewData.keySet())
-				{
-					ws = new WorkingSheet(sheetpanel, pl, k);
-					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pl + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-					wsMap.put(pl, ws);
-					if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
-						ws.setNPIflag(true);
-					ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment", "BY", "Issue_Source"), false);
-					ArrayList<String> sheetHeader = ws.getHeader();
-					int devCommentIndex = sheetHeader.indexOf("Dev Comment");
-					int qaCommentIndex = sheetHeader.indexOf("QA Comment");
-					int issuerIndex = sheetHeader.indexOf("Issue_Source");
-					int sentBYIndex = sheetHeader.indexOf("BY");
-					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					for(int j = 0; j < plData.size(); j++)
-					{
-						ArrayList<String> sheetRecord = plData.get(j);
-						String partNumber = sheetRecord.get(6);
-						supplierName = sheetRecord.get(5);
-						Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-						PartComponent com = DataDevQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-						// status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-						// String comment = DataDevQueryUtil.getFeedbackCommentByComId(com.getComId());
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is unused
-																																// since we show
-																																// comments of tl and
-																																// QA
-
-						String QAComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "QUALITY", null, ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-						String engComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
-						GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-
-						for(int l = 0; l < 7; l++)
-						{
-							sheetRecord.add("");
-						}
-						// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-						// {
-						sheetRecord.set(devCommentIndex, engComment);
-						// }
-						// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-						// {
-						sheetRecord.set(qaCommentIndex, QAComment);
-						// }
-						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-						sheetRecord.set(sentBYIndex, senderDTO.getFullName());
-						// sheetRecord.set(2, status);
-						plData.set(j, sheetRecord);
-					}
-					ws.writeReviewData(plData, 2, 3);
-					k++;
-				}
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
+			loadallpdf();
 		}
 		/**
 		 * Validate Parts Action
@@ -465,7 +270,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 			{
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
-					wsMap.get(wsName).validateParts(true);
+					wsMap.get(wsName).validateTLFBParts(true);
 				}
 			}
 			JOptionPane.showMessageDialog(null, "Validation Finished");
@@ -490,81 +295,278 @@ public class TLFeedBack extends JPanel implements ActionListener
 		 * **/
 		else if(event.getActionCommand().equals("Separation"))
 		{
-			input = new ArrayList<ArrayList<String>>();
-			tabbedPane.setSelectedIndex(2);
-			row = new ArrayList<String>();
-			row.add("PL_Name");
-			row.add("Part");
-			row.add("Datasheet");
-			row.add("Feature Name");
-			row.add("Feature Value");
-			row.add("Feature Unit");
-			row.add("Sign");
-			row.add("Value");
-			row.add("Type");
-			row.add("Condition");
-			row.add("Multiplier");
-			row.add("Unit");
-			if(wsMap.get("Separation") != null)
-			{
-				wsMap.remove("Separation");
-			}
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					System.out.println("Sheet Name:" + wsName);
-					input = wsMap.get(wsName).getUnApprovedValues(input);
-				}
-			}
-			separationPanel.openOfficeDoc();
-			ws = new WorkingSheet(separationPanel, "Separation");
-			separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			ws.setSeparationHeader(row);
-			ws.writeSheetData(input, 1);
-			wsMap.put("Separation", ws);
+			loadseparation();
 		}
 		/**
 		 * Save Separation Action
 		 */
 		else if(event.getActionCommand().equals(" Save "))
 		{
-			tabbedPane.setSelectedIndex(2);
-			separationValues = wsMap.get("Separation").readSpreadsheet(1);
-			if(separationValues.isEmpty())
-			{
-				tabbedPane.setSelectedIndex(1);
-				JOptionPane.showMessageDialog(null, "All Values are Approved");
-
-			}
-			else
-			{
-				for(int i = 0; i < separationValues.size(); i++)
-				{
-					row = separationValues.get(i);
-
-					String plName = row.get(0);
-					String featureName = row.get(3);
-					String featureFullValue = row.get(4);
-					List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
-					try
-					{
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
-					}
-
-					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
-					appValues.add(featureFullValue);
-				}
-				JOptionPane.showMessageDialog(null, "Approved Saving Done");
-			}
-
+			saveseparation();
 		}
 
 		thread.stop();
 		loading.frame.dispose();
+	}
+
+	public void saveseparation()
+	{
+		ArrayList<String> row;
+		tabbedPane.setSelectedIndex(2);
+		separationValues = wsMap.get("Separation").readSpreadsheet(1);
+		if(separationValues.isEmpty())
+		{
+			tabbedPane.setSelectedIndex(1);
+			JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+		}
+		else
+		{
+			for(int i = 0; i < separationValues.size(); i++)
+			{
+				row = separationValues.get(i);
+
+				String plName = row.get(0);
+				String featureName = row.get(3);
+				String featureFullValue = row.get(4);
+				List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+				try
+				{
+					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+				}catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+
+				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+				appValues.add(featureFullValue);
+			}
+			JOptionPane.showMessageDialog(null, "Approved Saving Done");
+		}
+	}
+
+	public void loadseparation()
+	{
+		ArrayList<String> row;
+		input = new ArrayList<ArrayList<String>>();
+		tabbedPane.setSelectedIndex(2);
+		row = new ArrayList<String>();
+		row.add("PL_Name");
+		row.add("Part");
+		row.add("Datasheet");
+		row.add("Feature Name");
+		row.add("Feature Value");
+		row.add("Feature Unit");
+		row.add("Sign");
+		row.add("Value");
+		row.add("Type");
+		row.add("Condition");
+		row.add("Multiplier");
+		row.add("Unit");
+		if(wsMap.get("Separation") != null)
+		{
+			wsMap.remove("Separation");
+		}
+		for(String wsName : wsMap.keySet())
+		{
+			if(wsName != "LoadAllData" && wsName != "Separation")
+			{
+				System.out.println("Sheet Name:" + wsName);
+				input = wsMap.get(wsName).getUnApprovedValues(input);
+			}
+		}
+		separationPanel.openOfficeDoc();
+		ws = new WorkingSheet(separationPanel, "Separation");
+		separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+		ws.setSeparationHeader(row);
+		ws.writeSheetData(input, 1);
+		wsMap.put("Separation", ws);
+	}
+
+	public void loadallpdf()
+	{
+		JComboBox[] combos = filterPanel.comboBoxItems;
+
+		try
+		{
+			String plName = combos[0].getSelectedItem().toString();
+			String supplierName = combos[1].getSelectedItem().toString();
+			String issuerName = combos[2].getSelectedItem().toString();
+			String feedbackTypeStr = combos[3].getSelectedItem().toString();
+			// Long[] docsIds = DataDevQueryUtil.getFeedbackDocIds(feedbackTypeStr);
+			String documentStatus = StatusName.tlFeedback;
+			Date startDate = null, endDate = null;
+			wsMap.clear();
+			if(filterPanel.jDateChooser1.isEnabled())
+			{
+				startDate = filterPanel.jDateChooser1.getDate();
+				endDate = filterPanel.jDateChooser2.getDate();
+			}
+			Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackTypeStr, issuerName, startDate, endDate, null, userDTO.getId());
+			// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(teamMembers,
+			// plName,
+			// supplierName, null, documentStatus, startDate, endDate, docsIds);
+			int k = 0;
+			tabbedPane.setSelectedIndex(1);
+			sheetpanel.openOfficeDoc();
+			for(String pl : reviewData.keySet())
+			{
+				ws = new WorkingSheet(sheetpanel, pl, k);
+				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pl + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				wsMap.put(pl, ws);
+				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
+					ws.setNPIflag(true);
+				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator"), false);
+				ArrayList<String> sheetHeader = ws.getHeader();
+				int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
+				int issuerIndex = sheetHeader.indexOf("Issue Initiator");
+				int sentBYIndex = sheetHeader.indexOf("Issued By");
+				int Cactionindex = sheetHeader.indexOf("C_Action");
+				int Pactionindex = sheetHeader.indexOf("P_Action");
+				int RootcauseIndex = sheetHeader.indexOf("RootCause");
+				int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
+				int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
+				int fbcommentindex = sheetHeader.indexOf("FBComment");
+				ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+				for(int j = 0; j < plData.size(); j++)
+				{
+					ArrayList<String> sheetRecord = plData.get(j);
+					String partNumber = sheetRecord.get(13);
+					supplierName = sheetRecord.get(12);
+
+					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+					String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+					GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(partNumber, feedbackIssuer.getId());
+					ParaFeedbackAction action = null;
+					action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+					if(action != null)
+					{
+						sheetRecord.set(Cactionindex, action.getCAction());
+						sheetRecord.set(Pactionindex, action.getPAction());
+						sheetRecord.set(RootcauseIndex, action.getRootCause());
+						sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+					}
+					for(int l = 0; l < 8; l++)
+					{
+						sheetRecord.add("");
+					}
+					sheetRecord.set(lstTLcommentIndex, lstTlComment);
+					sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+					sheetRecord.set(sentBYIndex, feedCom.get(1));
+					sheetRecord.set(wrongfetsindex, wrongfeatures);
+					sheetRecord.set(fbcommentindex, feedCom.get(0));
+					plData.set(j, sheetRecord);
+				}
+				ws.writeReviewData(plData, 2, 3);
+				k++;
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void loadpdf()
+	{
+		int[] selectedPdfs = tablePanel.table.getSelectedRows();
+		int selectedPdfsCount = selectedPdfs.length;
+		if(selectedPdfsCount == 0)
+		{
+			JOptionPane.showMessageDialog(null, "Please Select PDF First");
+		}
+		else if(selectedPdfsCount > 1)
+		{
+			JOptionPane.showMessageDialog(null, "Please Select One PDF");
+		}
+		else
+		{
+			try
+			{
+				wsMap.clear();
+				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+				String pdfUrl = docInfoDTO.getPdfUrl();
+				Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+				JComboBox[] combos = filterPanel.comboBoxItems;
+				String plName = combos[0].getSelectedItem().toString();
+				String supplierName = combos[1].getSelectedItem().toString();
+				String issuerName = combos[2].getSelectedItem().toString();
+				String feedbackType = combos[3].getSelectedItem().toString();
+				String documentStatus = StatusName.tlFeedback;
+				Date startDate = null, endDate = null;
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				System.out.println(pdfUrl);
+
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackType, issuerName, startDate, endDate,
+						new Long[] { document.getId() }, userDTO.getId());
+				int k = 0;
+				tabbedPane.setSelectedIndex(1);
+				sheetpanel.openOfficeDoc();
+
+				for(String pl : reviewData.keySet())
+				{
+					ws = new WorkingSheet(sheetpanel, pl, k);
+					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+					wsMap.put(pl, ws);
+					if(docInfoDTO.getTaskType().contains("NPI"))
+						ws.setNPIflag(true);
+					ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator"), false);
+					ArrayList<String> sheetHeader = ws.getHeader();
+					int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
+					int issuerIndex = sheetHeader.indexOf("Issue Initiator");
+					int sentBYIndex = sheetHeader.indexOf("Issued By");
+					int Cactionindex = sheetHeader.indexOf("C_Action");
+					int Pactionindex = sheetHeader.indexOf("P_Action");
+					int RootcauseIndex = sheetHeader.indexOf("RootCause");
+					int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
+					int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
+					int fbcommentindex = sheetHeader.indexOf("FBComment");
+					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+					for(int j = 0; j < plData.size(); j++)
+					{
+						ArrayList<String> sheetRecord = plData.get(j);
+						String partNumber = sheetRecord.get(13);
+						supplierName = sheetRecord.get(12);
+
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(partNumber, feedbackIssuer.getId());
+						ParaFeedbackAction action = null;
+						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+						if(action != null)
+						{
+							sheetRecord.set(Cactionindex, action.getCAction());
+							sheetRecord.set(Pactionindex, action.getPAction());
+							sheetRecord.set(RootcauseIndex, action.getRootCause());
+							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+						}
+						for(int l = 0; l < 8; l++)
+						{
+							sheetRecord.add("");
+						}
+						sheetRecord.set(lstTLcommentIndex, lstTlComment);
+						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+						sheetRecord.set(sentBYIndex, feedCom.get(1));
+						sheetRecord.set(wrongfetsindex, wrongfeatures);
+						sheetRecord.set(fbcommentindex, feedCom.get(0));
+						plData.set(j, sheetRecord);
+					}
+					ws.writeReviewData(plData, 2, 4);
+					k++;
+				}
+				tablePanel.loadedPdfs.add(pdfUrl);
+				tablePanel.setTableData1(0, tablePanel.selectedData);
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+
+		}
 	}
 
 	public static void main(String[] args)
@@ -616,4 +618,5 @@ public class TLFeedBack extends JPanel implements ActionListener
 		alertsPanel2.updateFlags(flags);
 
 	}
+
 }
