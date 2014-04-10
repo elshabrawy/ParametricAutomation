@@ -557,10 +557,6 @@ public class WorkingSheet
 	{
 		try
 		{
-			// Pl pl, String pdfUrl
-			// Pl pl = trackingParametric.getPl();
-			// List<FeatureDTO> plfets = ParaQueryUtil.getPlFeautres(pl, false);
-
 			HeaderList = new ArrayList<Cell>();
 			Cell cell = getCellByPosission(0, StatrtRecord);
 			cell.setText("Taxonomy");
@@ -650,6 +646,88 @@ public class WorkingSheet
 		{
 			ex.printStackTrace();
 			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
+		}
+
+	}
+
+	public void setTLFBHeader(List additionalCols, boolean isQA)
+	{
+		try
+		{
+			HeaderList = new ArrayList<Cell>();
+			Cell cell = getCellByPosission(0, StatrtRecord);
+			cell.setText("Taxonomy");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(1, StatrtRecord);
+			cell.setText("Feedback Type");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(2, StatrtRecord);
+			cell.setText("Issued By");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(3, StatrtRecord);
+			cell.setText("Status");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(4, StatrtRecord);
+			cell.setText("Comment");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(5, StatrtRecord);
+			cell.setText("Wrong Features");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(6, StatrtRecord);
+			cell.setText("FBComment");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(7, StatrtRecord);
+			cell.setText("C_Action");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(8, StatrtRecord);
+			cell.setText("P_Action");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(9, StatrtRecord);
+			cell.setText("RootCause");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(10, StatrtRecord);
+			cell.setText("ActionDueDate");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(11, StatrtRecord);
+			cell.setText("Task Type");
+			HeaderList.add(cell);
+			cell = getCellByPosission(12, StatrtRecord);
+			cell.setText("Supplier Name");
+			HeaderList.add(cell);
+
+			setDevHeader(false, isQA);
+			if(additionalCols != null)
+			{
+				int startCol = HeaderList.size();
+				for(int i = 0; i < additionalCols.size(); i++)
+				{
+					cell = getCellByPosission(startCol + i, StatrtRecord);
+					cell.setText(additionalCols.get(i).toString());
+					HeaderList.add(cell);
+				}
+			}
+			statusValues.add("Updated");
+			statusValues.add("Approved Eng.");
+			statusValues.add("Wrong Data");
+			statusValues.add("Reject QA");
+			statusValues.add("Accept QA & Forward");
+			// statusValues.add("Approved");
+			// statusValues.add("Rejected");
+
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 
 	}
@@ -1673,6 +1751,315 @@ public class WorkingSheet
 
 			}
 			JOptionPane.showMessageDialog(null, "Validation Finished");
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public ArrayList<ArrayList<String>> validateTLFBParts(boolean update)
+	{
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		XCellRange xcellrange = null;
+		int lastColNum = HeaderList.size();
+		String lastColumn = getColumnName(lastColNum);
+		canSave = true;
+		try
+		{
+			int lastRow = getLastRow() + 1;
+			part: for(int i = 3; i < lastRow; i++)
+			{
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				System.out.println("Selected range " + seletedRange);
+				String famCross = "", generic = "";
+
+				ArrayList<String> header = getHeader();
+				int partcell = header.indexOf("Part Number");
+				int statuscellidx = header.indexOf("Status");
+				int commentcellidx = header.indexOf("Comment");
+				int supcell = header.indexOf("Supplier Name");
+				int famcell = header.indexOf("Family");
+				int maskcell = header.indexOf("Mask");
+				int fbtypeidx = header.indexOf("Feedback Type");
+				int Cactionindex = header.indexOf("C_Action");
+				int Pactionindex = header.indexOf("P_Action");
+				int RootcauseIndex = header.indexOf("RootCause");
+				int Actionduedateindex = header.indexOf("ActionDueDate");
+				int wrongfetsindex = header.indexOf("Wrong Features");
+				int Taxonomyindex = header.indexOf("Taxonomy");
+
+				boolean appFlag = true;
+				XCell pnCell = xcellrange.getCellByPosition(partcell, 0);
+				String pn = getCellText(pnCell).getString();
+				XCell suppCell = xcellrange.getCellByPosition(supcell, 0);
+				String supplierName = getCellText(suppCell).getString();
+				XCell famCell = xcellrange.getCellByPosition(famcell, 0);
+				String family = getCellText(famCell).getString();
+				XCell maskCell = xcellrange.getCellByPosition(maskcell, 0);
+				String mask = getCellText(maskCell).getString();
+				XCell TaxonomyCell = xcellrange.getCellByPosition(Taxonomyindex, 0);
+				String Taxonomy = getCellText(TaxonomyCell).getString();
+				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+
+				if(plType.equals("Semiconductor"))
+				{
+					XCell genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+					XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+					generic = getCellText(genCell).getString();
+					famCross = getCellText(famCrossCell).getString();
+				}
+				XCell statusCell = xcellrange.getCellByPosition(statuscellidx, 0);
+				String status = getCellText(statusCell).getString();
+				XCell commentCell = xcellrange.getCellByPosition(commentcellidx, 0);
+				String comment = getCellText(commentCell).getString();
+				XCell descCell = xcellrange.getCellByPosition(descriptionColumn, 0);
+				String desc = getCellText(descCell).getString();
+				XCell fbtypeCell = xcellrange.getCellByPosition(fbtypeidx, 0);
+				String fbtype = getCellText(fbtypeCell).getString();
+
+				XCell CactionCell = xcellrange.getCellByPosition(Cactionindex, 0);
+				String Caction = getCellText(CactionCell).getString();
+				XCell PactionCell = xcellrange.getCellByPosition(Pactionindex, 0);
+				String Paction = getCellText(PactionCell).getString();
+				XCell RootcauseCell = xcellrange.getCellByPosition(RootcauseIndex, 0);
+				String Rootcause = getCellText(RootcauseCell).getString();
+				XCell ActionduedateCell = xcellrange.getCellByPosition(Actionduedateindex, 0);
+				String Actionduedate = getCellText(ActionduedateCell).getString();
+				XCell wrongfetsCell = xcellrange.getCellByPosition(wrongfetsindex, 0);
+				String wrongfets = getCellText(wrongfetsCell).getString();
+
+				setCellColore(statusCell, 0xFFFFFF);
+				setCellColore(commentCell, 0xFFFFFF);
+				setCellColore(CactionCell, 0xFFFFFF);
+				setCellColore(PactionCell, 0xFFFFFF);
+				setCellColore(RootcauseCell, 0xFFFFFF);
+				setCellColore(ActionduedateCell, 0xFFFFFF);
+				setCellColore(pnCell, 0xFFFFFF);
+				setCellColore(famCell, 0xFFFFFF);
+				setCellColore(maskCell, 0xFFFFFF);
+				System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
+
+				/***** validate that PN and supplier not found on component or LUT or acquisition ******/
+
+				if(pn.isEmpty())
+				{
+					return result;
+				}
+				if(!update)
+				{
+					boolean isRejectedPN = partvalidation.isRejectedPNAndSupplier(pn, supplierName);
+					if(isRejectedPN)
+					{
+						setCellColore(pnCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						if(partvalidation.getStatus().equals("Reject, contains unaccepted character In Part Number") || partvalidation.getStatus().equals("Reject, Found Before"))
+							canSave = false;
+						continue part;
+					}
+				}
+				else
+				{
+					if(status.equals("Reject QA") && !fbtype.equals("QA"))
+					{
+						// JOptionPane.showMessageDialog(null, "  in row :" + (i + 1));
+						partvalidation.setStatus("You Can Reject QA on QA Feedback only");
+						setCellColore(statusCell, 0xD2254D);
+						setCellColore(fbtypeCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					if(status.equals("Accept QA & Forward") && !fbtype.equals("QA"))
+					{
+						// JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
+						partvalidation.setStatus("You Can Accept QA & Forward on QA Feedback only");
+						setCellColore(statusCell, 0xD2254D);
+						setCellColore(fbtypeCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+
+					if(status.equals("Wrong Data") && !fbtype.equals("Internal"))
+					{
+						// JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
+						partvalidation.setStatus("You Can set Wrong Data on Internal Feedback only");
+						setCellColore(statusCell, 0xD2254D);
+						setCellColore(fbtypeCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					if(status.equals("Approved Eng.") && !fbtype.equals("Internal"))
+					{
+						// JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
+						partvalidation.setStatus("You Can set Approved Eng. on Internal Feedback only");
+						setCellColore(statusCell, 0xD2254D);
+						setCellColore(fbtypeCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+
+					if(status.equals("Updated") && fbtype.equals("QA"))
+					{
+						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty() || Actionduedate.isEmpty())
+						{
+							// JOptionPane.showMessageDialog(null,
+							// " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
+							partvalidation.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
+							setCellColore(CactionCell, 0xD2254D);
+							setCellColore(PactionCell, 0xD2254D);
+							setCellColore(RootcauseCell, 0xD2254D);
+							setCellColore(ActionduedateCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+							continue part;
+						}
+						if(!Actionduedate.isEmpty())
+						{
+							if(ApprovedDevUtil.isThisDateValid(Actionduedate, "DD/MM/YYYY") == false)
+							{
+								// JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
+								setCellColore(ActionduedateCell, 0xD2254D);
+								partvalidation.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
+								writeValidtionStatus(xcellrange, false);
+								canSave = false;
+								continue part;
+							}
+						}
+					}
+
+					// if((status.equals("Approved") && !comment.equals("")) || (status.equals("Rejected") && comment.equals("")))
+					if((status.equals("Reject QA") || status.equals("Wrong Data")) && comment.equals(""))
+					{
+						partvalidation.setStatus("Wrong Comment");
+						setCellColore(commentCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					if((status.equals("Reject QA") || status.equals("Wrong Data")) && !comment.equals(""))
+					{
+						if(!wrongfets.isEmpty())
+						{
+							if(wrongfets.contains("|"))
+							{
+								if(comment.contains("|"))
+								{
+									String[] features = wrongfets.split("\\|");
+									String[] comments = comment.split("\\|");
+									if(features.length != comments.length)
+									{
+										partvalidation.setStatus("comment must be as count as the features");
+										setCellColore(commentCell, 0xD2254D);
+										writeValidtionStatus(xcellrange, false);
+										canSave = false;
+										continue part;
+									}
+								}
+								else
+								{
+									partvalidation.setStatus("comment must be as count as the features");
+									setCellColore(commentCell, 0xD2254D);
+									writeValidtionStatus(xcellrange, false);
+									canSave = false;
+									continue part;
+								}
+							}
+						}
+					}
+				}
+				if(!update || (update && status.equals("Updated")))
+				{
+					/****** validate that Family not null *****/
+					if(family.isEmpty())
+					{
+						partvalidation.setStatus("Empty Family");
+						setCellColore(famCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**** validate that mask not null ***/
+					if(mask.isEmpty())
+					{
+						partvalidation.setStatus("Empty Mask)");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					else if(mask.length() != pn.length())
+					{
+						partvalidation.setStatus("Wrong Mask Length");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**
+					 * validate that generic and family Cross not null
+					 */
+					if(plType.equals("Semiconductor"))
+					{
+						XCell genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+						XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+						generic = getCellText(genCell).getString();
+						famCross = getCellText(famCrossCell).getString();
+						if(generic.isEmpty() || famCross.isEmpty())
+						{
+							partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+							setCellColore(genCell, 0xD2254D);
+							setCellColore(famCrossCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+							continue part;
+						}
+					}
+					/**
+					 * Description Validation
+					 */
+					if(desc == null || desc.isEmpty())
+					{
+						partvalidation.setStatus("Empty Description");
+						setCellColore(descCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					else if(partvalidation.checkDescription(desc))
+					{
+						setCellColore(descCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**** validate that Feature values are approved and Not Blank ***/
+
+					// boolean haveSpaces = fetValsHaveSpaces(xcellrange, endParametricFT);
+					// if(haveSpaces)
+					// {
+					// canSave = false;
+					// writeValidtionStatus(xcellrange, false);
+					// continue part;
+					// }
+
+					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
+					if(!appFlag)
+					{
+						writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						continue part;
+					}
+				}
+
+				writeValidtionStatus(xcellrange, true);
+
+			}
+			// JOptionPane.showMessageDialog(null, "Validation Finished");
 		}catch(Exception e)
 		{
 			e.printStackTrace();
