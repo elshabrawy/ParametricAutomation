@@ -26,8 +26,6 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.apache.avro.io.parsing.Symbol.Alternative;
 import org.hibernate.Session;
-import org.jgroups.tests.UnicastTest.StartData;
-
 import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
