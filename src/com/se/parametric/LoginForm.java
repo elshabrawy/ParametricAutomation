@@ -46,6 +46,7 @@ public class LoginForm extends JFrame
 				try
 				{
 					loginframe = new LoginForm();
+					loginframe.setTitle("Parametric Automation");
 					loginframe.setVisible(true);
 				}catch(Exception e)
 				{
