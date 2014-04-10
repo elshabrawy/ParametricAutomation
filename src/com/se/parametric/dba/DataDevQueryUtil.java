@@ -1439,18 +1439,12 @@ public class DataDevQueryUtil
 			ParametricFeedbackCriteria.add(Restrictions.eq("feedback.type", "P"));
 			if((feedbackType != null) && (!"All".equals(feedbackType)))
 			{
-				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
-				ParametricFeedbackCriteria.add(Restrictions.eq("Feedback.trackingFeedbackType", ParaQueryUtil.getTrackingFeedbackType(feedbackType)));
-
-				// TrackingFeedbackType feedbackTypeObj = getFeedbackType(feedbackType);
-				// partsFeedbackCriteria.add(Restrictions.eq("feedbackTypeId", feedbackTypeObj));
-
+				ParametricFeedbackCriteria.add(Restrictions.eq("feedback.trackingFeedbackType", ParaQueryUtil.getTrackingFeedbackType(feedbackType)));
 			}
 			if((issuedby != null) && (!"All".equals(issuedby)))
 			{
 				GrmUser issuer = ParaQueryUtil.getGRMUserByName(issuedby);
 				ParametricFeedbackCriteria.add(Restrictions.eq("issuedBy", issuer.getId()));
-
 			}
 
 			List<ParametricFeedbackCycle> parametricfeedbackcycle = ParametricFeedbackCriteria.list();
@@ -1476,8 +1470,6 @@ public class DataDevQueryUtil
 
 				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
-				// qury = qury +
-				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
 			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
@@ -1582,6 +1574,10 @@ public class DataDevQueryUtil
 					/** Status */
 					partData.add("");
 					/** Comment */
+					partData.add("");
+					/** Wrong Features */
+					partData.add("");
+					/** FBComment */
 					partData.add("");
 					/** C_action */
 					partData.add("");
@@ -1966,9 +1962,6 @@ public class DataDevQueryUtil
 			{
 				criteria.add(Restrictions.in("parametricUserId", usersId));
 			}
-			// if (startDate != null && endDate != null) {
-			// criteria.add(Expression.between("assignedDate", startDate, endDate));
-			// }
 			if(status != null && !status.equals("All"))
 			{
 				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
@@ -2610,7 +2603,12 @@ public class DataDevQueryUtil
 				}
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
-				track.setQaReviewDate(new Date());
+				// track.setQaReviewDate(new Date());
+				TrackingTaskType taskType = track.getTrackingTaskType();
+				Pl pl = track.getPl();
+				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
+				track.setQaUserId(qaUserId);
+				track.setQaReviewDate(ParaQueryUtil.getDate());
 				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, status);
 				track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
@@ -2855,7 +2853,7 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(FBObj);
 				session.saveOrUpdate(FBCyc);
 				session.beginTransaction().commit();
-				if(!wrongfeatures.isEmpty())
+				if(wrongfeatures != null && !wrongfeatures.isEmpty())
 				{
 					if(wrongfeatures.contains("|"))
 					{
@@ -2869,9 +2867,10 @@ public class DataDevQueryUtil
 								Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
 								paraFeedbackfets.setId(System.nanoTime());
 								paraFeedbackfets.setFeature(feature);
-								paraFeedbackfets.setparaFeedbackId(FBObj);
+								paraFeedbackfets.setParaFeedbackId(FBObj);
 								paraFeedbackfets.setStatus(1l);
 								paraFeedbackfets.setFetComment(comments[f]);
+								paraFeedbackfets.setStoreDate(new Date());
 								session.saveOrUpdate(paraFeedbackfets);
 							}
 							else
@@ -2880,9 +2879,10 @@ public class DataDevQueryUtil
 								Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
 								paraFeedbackfets.setId(System.nanoTime());
 								paraFeedbackfets.setFeature(feature);
-								paraFeedbackfets.setparaFeedbackId(FBObj);
+								paraFeedbackfets.setParaFeedbackId(FBObj);
 								paraFeedbackfets.setStatus(1l);
 								paraFeedbackfets.setFetComment(comment);
+								paraFeedbackfets.setStoreDate(new Date());
 								session.saveOrUpdate(paraFeedbackfets);
 							}
 						}
@@ -2893,9 +2893,10 @@ public class DataDevQueryUtil
 						Feature feature = ParaQueryUtil.getFeatureByName(wrongfeatures);
 						paraFeedbackfets.setId(System.nanoTime());
 						paraFeedbackfets.setFeature(feature);
-						paraFeedbackfets.setparaFeedbackId(FBObj);
+						paraFeedbackfets.setParaFeedbackId(FBObj);
 						paraFeedbackfets.setStatus(1l);
 						paraFeedbackfets.setFetComment(comment);
+						paraFeedbackfets.setStoreDate(new Date());
 						session.saveOrUpdate(paraFeedbackfets);
 					}
 
@@ -3102,12 +3103,12 @@ public class DataDevQueryUtil
 			cr.createAlias("parametricFeedback", "Feedback");
 			cr.add(Restrictions.eq("Feedback.trackingFeedbackType", feedbackType));
 			cr.add(Restrictions.eq("feedbackRecieved", 0l));
-			List<PartsFeedback> partsFeedback = cr.list();
+			List<ParametricFeedbackCycle> partsFeedback = cr.list();
 			if(partsFeedback != null)
 			{
 				for(int i = 0; i < partsFeedback.size(); i++)
 				{
-					Document document = partsFeedback.get(i).getPartComponent().getDocument();
+					Document document = partsFeedback.get(i).getParametricFeedback().getDocument();
 					docs.add(document);
 				}
 			}
@@ -3896,31 +3897,42 @@ public class DataDevQueryUtil
 	public static GrmUserDTO getLastFeedbackCycleSenderByComId(long comID)
 	{
 		Session session = null;
+		Session session2 = null;
 		GrmUserDTO userDto = new GrmUserDTO();
+		GrmUser user = new GrmUser();
+		String comment = "";
 		try
 		{
+			session2 = com.se.grm.db.SessionUtil.getSession();
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("SELECT u.full_name, g.name FROM parts_feedback pf, grm.grm_user u, grm.grm_group g WHERE com_id =" + comID
-					+ " AND PF.issued_by_id = u.id AND PF.STORE_DATE =( SELECT max(P.STORE_DATE) FROM AUTOMATION2.PARTS_FEEDBACK P where com_id = pf.com_id) AND pf.feedback_recieved = 0 AND u.GROUP_ID = g.id");
-			Object[] objArr = (Object[]) query.uniqueResult();
-			if(objArr != null)
+			ParametricFeedbackCycle appFB = null;
+			Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
+			feedBCri.createAlias("parametricFeedback", "feedback");
+			feedBCri.add(Restrictions.eq("feedback.itemId", comID));
+			feedBCri.add(Restrictions.eq("feedbackRecieved", 0l));
+			if(feedBCri.list() != null && !feedBCri.list().isEmpty())
 			{
-				String userName = objArr[0].toString();
-				String groupName = objArr[1].toString();
-				userDto.setFullName(userName);
-				userDto.setGroupName(groupName);
+				List<ParametricFeedbackCycle> fb = (List<ParametricFeedbackCycle>) feedBCri.list();
+				user = ParaQueryUtil.getUserByUserId(fb.get(0).getIssuedBy(), session2);
+				if(user != null)
+				{
+					userDto.setId(user.getId());
+					userDto.setGrmGroup(user.getGrmGroup());
+					userDto.setGroupName(user.getGrmGroup().getName());
+					userDto.setFullName(user.getFullName());
+				}
 			}
-
+			else
+				return null;
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 		}finally
 		{
-			if((session != null) && (session.isOpen()))
-			{
-				session.close();
-			}
+			session.close();
+			session2.close();
 		}
+
 		return userDto;
 	}
 
@@ -4071,7 +4083,7 @@ public class DataDevQueryUtil
 			return null;
 	}
 
-	public static String getlastengComment(Long issuedby, long comid)
+	public static String getlastengComment(long comid, Long issuedby)
 	{
 		Session session = null;
 		String comment = "";
@@ -4262,7 +4274,7 @@ public class DataDevQueryUtil
 			return "";
 	}
 
-	public static String getqaflagbypart(String partnum)
+	public static String getqaflagbycomid(String comid)
 	{
 		Session session = null;
 		PartComponent component = null;
@@ -4272,7 +4284,7 @@ public class DataDevQueryUtil
 			session = SessionUtil.getSession();
 
 			Criteria cri = session.createCriteria(PartComponent.class);
-			cri.add(Restrictions.eq("partNumber", partnum));
+			cri.add(Restrictions.eq("comId", Long.valueOf(comid)));
 			component = (PartComponent) cri.uniqueResult();
 			if(component != null)
 				flag = component.getQaflag();
