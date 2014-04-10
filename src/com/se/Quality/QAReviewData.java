@@ -285,7 +285,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				if(wsName == "Summary")
 				{
 					WorkingSheet ws = wsMap.get(wsName);
-					 ws.saveQASummary(QAName);
+					ws.saveQASummary(QAName);
 					JOptionPane.showMessageDialog(null, "Saving Done");
 				}
 			}
@@ -499,6 +499,8 @@ public class QAReviewData extends JPanel implements ActionListener
 						int partIndex = sheetHeader.indexOf("Part Number");
 						int CommentIndex = sheetHeader.indexOf("Comment");
 						int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+						int ComidIndex = sheetHeader.indexOf("Comid");
+
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
@@ -506,9 +508,8 @@ public class QAReviewData extends JPanel implements ActionListener
 							{
 								sheetRecord.add("");
 							}
-							String qaflag = DataDevQueryUtil.getqaflagbypart(sheetRecord.get(partIndex));
+							String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
 							sheetRecord.set(oldflagindex, qaflag);
-							// ParaQueryUtil.getComponentByPartAndSupplierAndDocument(partNumber, documentId, session);
 							String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
 							sheetRecord.set(CommentIndex, comment);
 							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(sheetRecord.get(partIndex).toString(), userDTO.getId());
