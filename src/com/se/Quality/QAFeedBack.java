@@ -150,57 +150,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 			Date endDate = null;
 			try
 			{
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				// String status = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-
-				// if(status.equals("All"))
-				// {
-				// /******* all combo box items except all in statuses[] ******/
-				// int count = filterPanel.comboBoxItems[4].getItemCount();
-				// StringBuilder builder = new StringBuilder();
-				// for(int i = 0; i < count; i++)
-				// {
-				//
-				// if(!filterPanel.comboBoxItems[4].getItemAt(i).equals("All"))
-				// {
-				// builder.append(filterPanel.comboBoxItems[4].getItemAt(i));
-				// if(i < count - 1)
-				// {
-				// builder.append(", ");
-				// }
-				// }
-				// }
-				// statuses = builder.toString().split(", ");
-				// }
-
-				if(!userName.equals("All"))
-				{
-					long userId = ParaQueryUtil.getUserIdByExactName(userName);
-					users = new Long[] { userId };
-				}
-				else
-				{
-					ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-					int size = model.getSize();
-					users = new Long[size - 1];
-					for(int i = 1; i < size; i++)
-					{
-						Object element = model.getElementAt(i);
-						if(element != null && !element.equals("All"))
-							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-					}
-				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback, null);
-				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-				tablePanel.setTableData1(0, tablePanel.selectedData);
+				dofilter(startDate, endDate);
 			}catch(Exception e)
 			{
 				e.printStackTrace();
@@ -243,112 +193,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 			{
 				try
 				{
-					JComboBox[] combos = filterPanel.comboBoxItems;
-
-					String plName = combos[0].getSelectedItem().toString();
-					String supplierName = combos[1].getSelectedItem().toString();
-					String taskType = combos[2].getSelectedItem().toString();
-					String userName = combos[3].getSelectedItem().toString();
-					// String status = combos[4].getSelectedItem().toString();
-					// if((!"All".equals(status) & (!StatusName.qaReview.equals(status))))
-					// {
-					// JOptionPane.showMessageDialog(null, "Invalid PDF Status\nOnly QA Approval pdfs can be loaded");
-					// thread.stop();
-					// loading.frame.dispose();
-					// return;
-					// }
-					wsMap.clear();
-					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-					String pdfUrl = docInfoDTO.getPdfUrl();
-					Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-
-					Date startDate = null, endDate = null;
-					if(filterPanel.jDateChooser1.isEnabled())
-					{
-						startDate = filterPanel.jDateChooser1.getDate();
-						endDate = filterPanel.jDateChooser2.getDate();
-					}
-					System.out.println(pdfUrl);
-					if(!userName.equals("All"))
-					{
-						long userId = ParaQueryUtil.getUserIdByExactName(userName);
-						users = new Long[] { userId };
-					}
-					else
-					{
-						// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-						ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
-						int size = model.getSize();
-						users = new Long[size - 1];
-						for(int i = 1; i < size; i++)
-						{
-							Object element = model.getElementAt(i);
-							if(element != null && !element.equals("All"))
-								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-							// System.out.println("Element at " + i + " = " + element);
-						}
-					}
-
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback, "");
-					// String tlComment=DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(),"Parametric",userDTO.getId());
-					int k = 0;
-					tabbedPane.setSelectedIndex(1);
-					sheetpanel.openOfficeDoc();
-
-					for(String pl : reviewData.keySet())
-					{
-
-						ws = new WorkingSheet(sheetpanel, pl, k);
-						sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
-						wsMap.put(pl, ws);
-						if(docInfoDTO.getTaskType().contains("NPI"))
-							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("TL Status", "TLComment"), true);
-
-						ArrayList<String> sheetHeader = ws.getHeader();
-						int tlstatusIndex = sheetHeader.indexOf("TL Status");
-						int tlCommentIndex = sheetHeader.indexOf("TLComment");
-						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-
-						for(int j = 0; j < plData.size(); j++)
-						{
-							ArrayList<String> sheetRecord = plData.get(j);
-							String partNumber = sheetRecord.get(6);
-							supplierName = sheetRecord.get(5);
-							// Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-							PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));// feedcom 0 is
-																																	// unused since we
-																																	// show comments
-																																	// of tl and QA
-
-							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
-							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
-							GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
-
-							for(int l = 0; l < 7; l++)
-							{
-								sheetRecord.add("");
-							}
-							// if("Parametric".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-							// {
-							// sheetRecord.set(devCommentIndex, engComment);
-							// }
-							// else if("Quality Group".equalsIgnoreCase(feedbackIssuer.getGroupName()))
-							// {
-							sheetRecord.set(tlCommentIndex, feedCom.get(0));
-							sheetRecord.set(tlstatusIndex, feedCom.get(5));
-							// }
-							// sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-							// sheetRecord.set(sentBYIndex, senderDTO.getFullName());
-							// sheetRecord.set(2, status);
-							plData.set(j, sheetRecord);
-						}
-						ws.writeReviewData(plData, 2, 3);
-						k++;
-					}
-					tablePanel.loadedPdfs.add(pdfUrl);
-					tablePanel.setTableData1(0, tablePanel.selectedData);
+					loadpdf(selectedPdfs);
 				}catch(Exception ex)
 				{
 					ex.printStackTrace();
@@ -430,31 +275,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 						ws.setNPIflag(true);
 					ws.setReviewHeader(Arrays.asList("TL Status", "TLComment"), true);
 
-					// ArrayList<String> sheetHeader = ws.getHeader();
-					// int devCommentIndex = sheetHeader.indexOf("Dev Comment")+4;
-					// int qaCommentIndex = sheetHeader.indexOf("QA Comment")+4;
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					// for (int j = 0; j < plData.size(); j++) {
-					// ArrayList<String> sheetRecord = plData.get(j);
-					// // String partNumber = sheetRecord.get(6);
-					// supplierName = sheetRecord.get(5);
-					// // Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
-					// // Component com = ParaQueryUtil.getComponentByPartNumAndSupplier(partNumber, supplier);
-					// // status = ParaQueryUtil.getPartStatusByComId(com.getComId());
-					// // String comment = ParaQueryUtil.getFeedbackCommentByComId(com.getComId());
-					// // GrmUserDTO issuer = ParaQueryUtil.getFeedbackIssuerByComId(com.getComId());
-					// // for (int l = 0; l < 6; l++) {
-					// // sheetRecord.add("");
-					// // }
-					// // if ("Parametric".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(devCommentIndex, comment);
-					// // } else if ("Quality Group".equalsIgnoreCase(issuer.getGroupName())) {
-					// // sheetRecord.set(qaCommentIndex, comment);
-					// // }
-					// // sheetRecord.set(1, issuer.getFullName());
-					// // sheetRecord.set(2, status);
-					// // plData.set(j, sheetRecord);
-					// }
+
 
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int tlstatusIndex = sheetHeader.indexOf("TL Status");
@@ -524,6 +346,131 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 		thread.stop();
 		loading.frame.dispose();
+	}
+
+	private void loadpdf(int[] selectedPdfs) throws Exception
+	{
+		JComboBox[] combos = filterPanel.comboBoxItems;
+
+		String plName = combos[0].getSelectedItem().toString();
+		String supplierName = combos[1].getSelectedItem().toString();
+		String taskType = combos[2].getSelectedItem().toString();
+		String userName = combos[3].getSelectedItem().toString();
+
+		wsMap.clear();
+		TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+		String pdfUrl = docInfoDTO.getPdfUrl();
+		Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+
+		Date startDate = null, endDate = null;
+		if(filterPanel.jDateChooser1.isEnabled())
+		{
+			startDate = filterPanel.jDateChooser1.getDate();
+			endDate = filterPanel.jDateChooser2.getDate();
+		}
+		System.out.println(pdfUrl);
+		if(!userName.equals("All"))
+		{
+			long userId = ParaQueryUtil.getUserIdByExactName(userName);
+			users = new Long[] { userId };
+		}
+		else
+		{
+			// teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+			ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+			int size = model.getSize();
+			users = new Long[size - 1];
+			for(int i = 1; i < size; i++)
+			{
+				Object element = model.getElementAt(i);
+				if(element != null && !element.equals("All"))
+					users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+				// System.out.println("Element at " + i + " = " + element);
+			}
+		}
+
+		Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), StatusName.qaFeedback, "");
+		
+		int k = 0;
+		tabbedPane.setSelectedIndex(1);
+		sheetpanel.openOfficeDoc();
+
+		for(String pl : reviewData.keySet())
+		{
+
+			ws = new WorkingSheet(sheetpanel, pl, k);
+			sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
+			wsMap.put(pl, ws);
+			if(docInfoDTO.getTaskType().contains("NPI"))
+				ws.setNPIflag(true);
+			ws.setReviewHeader(Arrays.asList("TL Status", "TLComment"), true);
+
+			ArrayList<String> sheetHeader = ws.getHeader();
+			int tlstatusIndex = sheetHeader.indexOf("TL Status");
+			int tlCommentIndex = sheetHeader.indexOf("TLComment");
+			ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+
+			for(int j = 0; j < plData.size(); j++)
+			{
+				ArrayList<String> sheetRecord = plData.get(j);
+				String partNumber = sheetRecord.get(6);
+				supplierName = sheetRecord.get(5);
+				// Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
+				PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, supplierName);
+				ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(5));
+
+				String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(com.getComId(), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(feedCom.get(6)));
+				GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(com.getComId());
+				GrmUserDTO senderDTO = DataDevQueryUtil.getLastFeedbackCycleSenderByComId(com.getComId());
+
+				for(int l = 0; l < 7; l++)
+				{
+					sheetRecord.add("");
+				}
+				
+				sheetRecord.set(tlCommentIndex, feedCom.get(0));
+				sheetRecord.set(tlstatusIndex, feedCom.get(5));
+				
+				plData.set(j, sheetRecord);
+			}
+			ws.writeReviewData(plData, 2, 3);
+			k++;
+		}
+		tablePanel.loadedPdfs.add(pdfUrl);
+		tablePanel.setTableData1(0, tablePanel.selectedData);
+	}
+
+	private void dofilter(Date startDate, Date endDate) throws Exception
+	{
+		if(filterPanel.jDateChooser1.isEnabled())
+		{
+			startDate = filterPanel.jDateChooser1.getDate();
+			endDate = filterPanel.jDateChooser2.getDate();
+		}
+		String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+		String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+		String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+		String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+		if(!userName.equals("All"))
+		{
+			long userId = ParaQueryUtil.getUserIdByExactName(userName);
+			users = new Long[] { userId };
+		}
+		else
+		{
+			ComboBoxModel model = filterPanel.comboBoxItems[3].getModel();
+			int size = model.getSize();
+			users = new Long[size - 1];
+			for(int i = 1; i < size; i++)
+			{
+				Object element = model.getElementAt(i);
+				if(element != null && !element.equals("All"))
+					users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+			}
+		}
+		tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback, null);
+		System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+		tablePanel.setTableData1(0, tablePanel.selectedData);
 	}
 
 	public static void main(String[] args)
