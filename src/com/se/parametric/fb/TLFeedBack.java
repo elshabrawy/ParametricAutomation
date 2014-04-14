@@ -416,7 +416,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				wsMap.put(pl, ws);
 				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
 					ws.setNPIflag(true);
-				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator"), false);
+				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."), false);
 				ArrayList<String> sheetHeader = ws.getHeader();
 				int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 				int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -427,11 +427,12 @@ public class TLFeedBack extends JPanel implements ActionListener
 				int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 				int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 				int fbcommentindex = sheetHeader.indexOf("FBComment");
+				int engindex = sheetHeader.indexOf("Develop Eng.");
 				ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 				for(int j = 0; j < plData.size(); j++)
 				{
 					ArrayList<String> sheetRecord = plData.get(j);
-					String partNumber = sheetRecord.get(13);
+					String partNumber = sheetRecord.get(14);
 					supplierName = sheetRecord.get(12);
 
 					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
@@ -453,6 +454,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					}
 					sheetRecord.set(lstTLcommentIndex, lstTlComment);
 					sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+					sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
 					sheetRecord.set(sentBYIndex, feedCom.get(1));
 					sheetRecord.set(wrongfetsindex, wrongfeatures);
 					sheetRecord.set(fbcommentindex, feedCom.get(0));
@@ -514,7 +516,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(docInfoDTO.getTaskType().contains("NPI"))
 						ws.setNPIflag(true);
-					ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator"), false);
+					ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."), false);
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 					int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -525,17 +527,19 @@ public class TLFeedBack extends JPanel implements ActionListener
 					int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 					int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 					int fbcommentindex = sheetHeader.indexOf("FBComment");
+					int engindex = sheetHeader.indexOf("Develop Eng.");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
 						ArrayList<String> sheetRecord = plData.get(j);
-						String partNumber = sheetRecord.get(13);
+						String partNumber = sheetRecord.get(14);
 						supplierName = sheetRecord.get(12);
 
 						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
 						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
 						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
 						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(partNumber, feedbackIssuer.getId());
+
 						ParaFeedbackAction action = null;
 						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
 						if(action != null)
@@ -551,6 +555,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						}
 						sheetRecord.set(lstTLcommentIndex, lstTlComment);
 						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+						sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
 						sheetRecord.set(sentBYIndex, feedCom.get(1));
 						sheetRecord.set(wrongfetsindex, wrongfeatures);
 						sheetRecord.set(fbcommentindex, feedCom.get(0));

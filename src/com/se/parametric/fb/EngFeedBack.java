@@ -22,18 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
-import org.hibernate.mapping.Set;
-
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.ParaFeedbackAction;
-import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.Supplier;
-import com.se.automation.db.client.mapping.TrackingFeedbackType;
-import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -90,7 +82,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10),false);
+		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
@@ -278,19 +270,22 @@ public class EngFeedBack extends JPanel implements ActionListener
 						int RootcauseIndex = sheetHeader.indexOf("RootCause");
 						int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 						int oldCommentIndex = sheetHeader.indexOf("Old Eng Comment");
+						int partnumIndex = sheetHeader.indexOf("Part Number");
+						int supIndex = sheetHeader.indexOf("Supplier Name");
+						int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
+						int fbcommentindex = sheetHeader.indexOf("FBComment");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							String partNumber = sheetRecord.get(11);
-
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(10));// feedcom 0 is
-																																	// unused since we
-																																	// show comments
-																																	// of tl and QA
+							String partNumber = sheetRecord.get(partnumIndex);
+							String supplier = sheetRecord.get(supIndex);
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplier);
 							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(partNumber, feedbackIssuer.getId());
 							ParaFeedbackAction action = null;
 							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
 							if(action != null)
@@ -310,6 +305,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(qaCommentIndex, qaComment);
 							sheetRecord.set(oldCommentIndex, lastEngcomment);
 							sheetRecord.set(2, feedCom.get(1));
+							sheetRecord.set(wrongfetsindex, wrongfeatures);
+							sheetRecord.set(fbcommentindex, feedCom.get(0));
 							plData.set(j, sheetRecord);
 						}
 						ws.writeReviewData(plData, 2, 4);
