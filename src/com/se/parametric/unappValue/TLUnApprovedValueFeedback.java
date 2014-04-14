@@ -388,7 +388,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								// ParaQueryUtil.saveTLApproved(result.get(i));
 								if(oldValReq.getFbType().equals("QA"))
 								{
-
 									oldValReq.setCAction(newValReq.get(14));
 									oldValReq.setPAction(newValReq.get(15));
 									oldValReq.setRootCause(newValReq.get(16));
