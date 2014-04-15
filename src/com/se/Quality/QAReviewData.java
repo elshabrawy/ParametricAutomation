@@ -512,7 +512,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							sheetRecord.set(oldflagindex, qaflag);
 							String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
 							sheetRecord.set(CommentIndex, comment);
-							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(sheetRecord.get(partIndex).toString(), userDTO.getId());
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
 							sheetRecord.set(WrongFeatureIndex, wrongfeatures);
 						}
 					}
