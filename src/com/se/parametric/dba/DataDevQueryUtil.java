@@ -3497,12 +3497,12 @@ public class DataDevQueryUtil
 			// + "')");
 			String sql = "";
 			sql = " SELECT FB_COMMENT, u.full_name, U.GROUP_ID, FB.ITEM_ID, FB.FEEDBACK_TYPE , s.";
-			sql = sql + "name status_name FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
-			sql = sql + "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s";
+			sql = sql + "name status_name,fbs.FEEDBACK_STATUS FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
+			sql = sql + "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s,PARA_FEEDBACK_STATUS fbs";
 			sql = sql + " WHERE c.com_id = FB.ITEM_ID AND FBC.ISSUED_BY = u.id AND FBC.FEEDBACK_RECIEVE";
 			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber + "' AND C.SUPPLIER_ID = AUTOMATION2.GETSUPPLIERID";
-			sql = sql + " ('" + supName + "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_S";
-			sql = sql + "TATUS_ID = S.ID AND T.DOCUMENT_ID = FB.DOCUMENT_ID";
+			sql = sql + " ('" + supName + "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_STATUS_ID = S.ID ";
+			sql = sql + "AND T.DOCUMENT_ID = FB.DOCUMENT_ID and fbs.ID = FBc.FEEDBACK_ACTION";
 			SQLQuery query = session.createSQLQuery(sql);
 			List<Object[]> list = query.list();
 
@@ -3522,6 +3522,7 @@ public class DataDevQueryUtil
 			feed.add(objArr[3].toString());
 			feed.add(objArr[4].toString());// feedback source
 			feed.add(objArr[5].toString());// feedback status add by Ahmed Makram
+			feed.add(objArr[6].toString()); // feedback action by mohamed gawad
 
 		}catch(Exception e)
 		{
@@ -4113,16 +4114,16 @@ public class DataDevQueryUtil
 		try
 		{
 
-			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name " + "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
-					+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     " + "      AND tp.TRACKING_TASK_STATUS_ID IN (15)  " + "         AND tp.supplier_id = s.id  "
-					+ "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     " + "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId()
-					+ " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,AUTOMATION2.Get_PL_Type(P.ID ) "
+					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  " + " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
+					+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qaFeedback + "')  " + "         AND tp.supplier_id = s.id  " + "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     "
+					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
 			for(int i = 0; i < list2.size(); i++)
 			{
 				Object[] data = list2.get(i);
 				row = new ArrayList<String>();
-				for(int j = 0; j < 4; j++)
+				for(int j = 0; j < 5; j++)
 				{
 					row.add((data[j] == null) ? "" : data[j].toString());
 					// System.out.println((data[j] == null) ? "" : data[j].toString());
@@ -4376,21 +4377,22 @@ public class DataDevQueryUtil
 
 	}
 
-	public static String getfbwrongfets(String itemid, long userid)
+	public static String getfbwrongfets(long itemid, long userid)
 	{
-		ParametricFeedbackCycle parametricfeedbackcycle = null;
+		ParametricFeedback parametricfeedback = null;
 		Session session = null;
 		String wrongFeatures = "";
 		session = SessionUtil.getSession();
-		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
-		cri.add(Restrictions.eq("issuedBy", userid));
-		cri.add(Restrictions.eq("feedbackRecieved", 0l));
-		cri.add(Restrictions.eq("fbItemValue", itemid));
-		parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
-		if(parametricfeedbackcycle != null)
+		Criteria cri = session.createCriteria(ParametricFeedback.class);
+		cri.add(Restrictions.eq("fbInitiator", userid));
+		cri.createAlias("paraFeedbackStatus", "paraFeedbackStatus");
+		cri.add(Restrictions.eq("paraFeedbackStatus.feedbackStatus", "Inprogress"));
+		cri.add(Restrictions.eq("itemId", itemid));
+		parametricfeedback = (ParametricFeedback) cri.uniqueResult();
+		if(parametricfeedback != null)
 		{
 			cri = session.createCriteria(ParaFeedbackFets.class);
-			cri.add(Restrictions.eq("paraFeedbackId", parametricfeedbackcycle.getParametricFeedback()));
+			cri.add(Restrictions.eq("paraFeedbackId", parametricfeedback));
 			List<ParaFeedbackFets> fets = cri.list();
 			if(!fets.isEmpty())
 			{
