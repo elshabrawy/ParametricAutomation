@@ -772,6 +772,9 @@ public class WorkingSheet
 			cell = getCellByPosission(5, StatrtRecord);
 			cell.setText("Supplier Name");
 			HeaderList.add(cell);
+			cell = getCellByPosission(6, StatrtRecord);
+			cell.setText("Comid");
+			HeaderList.add(cell);
 			setDevHeader(false, isQA);
 			if(additionalCols != null)
 			{
@@ -1816,8 +1819,8 @@ public class WorkingSheet
 				String mask = getCellText(maskCell).getString();
 				XCell TaxonomyCell = xcellrange.getCellByPosition(Taxonomyindex, 0);
 				String Taxonomy = getCellText(TaxonomyCell).getString();
-				XCell genCell = xcellrange.getCellByPosition(genericCellNo, 0);
-				XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+				XCell genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
+				XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
 				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
 
 				if(plType.equals("Semiconductor"))
@@ -2097,6 +2100,291 @@ public class WorkingSheet
 		return result;
 	}
 
+	public ArrayList<ArrayList<String>> validateEngFBParts(boolean update)
+	{
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		XCellRange xcellrange = null;
+		int lastColNum = HeaderList.size();
+		String lastColumn = getColumnName(lastColNum);
+		canSave = true;
+		try
+		{
+			int lastRow = getLastRow() + 1;
+			part: for(int i = 3; i < lastRow; i++)
+			{
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				System.out.println("Selected range " + seletedRange);
+				String famCross = "", generic = "";
+
+				ArrayList<String> header = getHeader();
+				int partcell = header.indexOf("Part Number");
+				int statuscellidx = header.indexOf("Status");
+				int commentcellidx = header.indexOf("Comment");
+				int supcell = header.indexOf("Supplier Name");
+				int famcell = header.indexOf("Family");
+				int maskcell = header.indexOf("Mask");
+				int Taxonomyindex = header.indexOf("Taxonomy");
+				int fbtypeidx = header.indexOf("Feedback Type");
+				int Cactionindex = header.indexOf("C_Action");
+				int Pactionindex = header.indexOf("P_Action");
+				int RootcauseIndex = header.indexOf("RootCause");
+				int Actionduedateindex = header.indexOf("ActionDueDate");
+				int wrongfetsindex = header.indexOf("Wrong Features");
+				int genericCellNoindex = header.indexOf("Generic");
+				int famCrossCellNoindex = header.indexOf("Family Cross");
+
+				boolean appFlag = true;
+				XCell pnCell = xcellrange.getCellByPosition(partcell, 0);
+				String pn = getCellText(pnCell).getString();
+				XCell suppCell = xcellrange.getCellByPosition(supcell, 0);
+				String supplierName = getCellText(suppCell).getString();
+				XCell famCell = xcellrange.getCellByPosition(famcell, 0);
+				String family = getCellText(famCell).getString();
+				XCell maskCell = xcellrange.getCellByPosition(maskcell, 0);
+				String mask = getCellText(maskCell).getString();
+				XCell TaxonomyCell = xcellrange.getCellByPosition(Taxonomyindex, 0);
+				String Taxonomy = getCellText(TaxonomyCell).getString();
+				XCell genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
+				XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
+				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+
+				if(plType.equals("Semiconductor"))
+				{
+
+					generic = getCellText(genCell).getString();
+					famCross = getCellText(famCrossCell).getString();
+				}
+				XCell statusCell = xcellrange.getCellByPosition(statuscellidx, 0);
+				String status = getCellText(statusCell).getString();
+				XCell commentCell = xcellrange.getCellByPosition(commentcellidx, 0);
+				String comment = getCellText(commentCell).getString();
+				XCell descCell = xcellrange.getCellByPosition(descriptionColumn, 0);
+				String desc = getCellText(descCell).getString();
+				XCell fbtypeCell = xcellrange.getCellByPosition(fbtypeidx, 0);
+				String fbtype = getCellText(fbtypeCell).getString();
+
+				XCell CactionCell = xcellrange.getCellByPosition(Cactionindex, 0);
+				String Caction = getCellText(CactionCell).getString();
+				XCell PactionCell = xcellrange.getCellByPosition(Pactionindex, 0);
+				String Paction = getCellText(PactionCell).getString();
+				XCell RootcauseCell = xcellrange.getCellByPosition(RootcauseIndex, 0);
+				String Rootcause = getCellText(RootcauseCell).getString();
+				XCell ActionduedateCell = xcellrange.getCellByPosition(Actionduedateindex, 0);
+				String Actionduedate = getCellText(ActionduedateCell).getString();
+				XCell wrongfetsCell = xcellrange.getCellByPosition(wrongfetsindex, 0);
+				String wrongfets = getCellText(wrongfetsCell).getString();
+
+				setCellColore(statusCell, 0xFFFFFF);
+				setCellColore(commentCell, 0xFFFFFF);
+				setCellColore(CactionCell, 0xFFFFFF);
+				setCellColore(PactionCell, 0xFFFFFF);
+				setCellColore(RootcauseCell, 0xFFFFFF);
+				setCellColore(ActionduedateCell, 0xFFFFFF);
+				setCellColore(pnCell, 0xFFFFFF);
+				setCellColore(famCell, 0xFFFFFF);
+				setCellColore(maskCell, 0xFFFFFF);
+				setCellColore(fbtypeCell, 0xFFFFFF);
+				System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
+
+				/***** validate that PN and supplier not found on component or LUT or acquisition ******/
+
+				if(pn.isEmpty())
+				{
+					return result;
+				}
+				if(!update)
+				{
+					boolean isRejectedPN = partvalidation.isRejectedPNAndSupplier(pn, supplierName);
+					if(isRejectedPN)
+					{
+						setCellColore(pnCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						if(partvalidation.getStatus().equals("Reject, contains unaccepted character In Part Number") || partvalidation.getStatus().equals("Reject, Found Before"))
+							canSave = false;
+						continue part;
+					}
+				}
+				else
+				{
+
+					if(status.equals("Updated") && fbtype.equals("QA"))
+					{
+						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty() || Actionduedate.isEmpty())
+						{
+							// JOptionPane.showMessageDialog(null,
+							// " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
+							partvalidation.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
+							setCellColore(CactionCell, 0xD2254D);
+							setCellColore(PactionCell, 0xD2254D);
+							setCellColore(RootcauseCell, 0xD2254D);
+							setCellColore(ActionduedateCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+							continue part;
+						}
+						if(!Actionduedate.isEmpty())
+						{
+							if(ApprovedDevUtil.isThisDateValid(Actionduedate, "DD/MM/YYYY") == false)
+							{
+								// JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
+								setCellColore(ActionduedateCell, 0xD2254D);
+								partvalidation.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
+								writeValidtionStatus(xcellrange, false);
+								canSave = false;
+								continue part;
+							}
+						}
+					}
+
+					// if((status.equals("Approved") && !comment.equals("")) || (status.equals("Rejected") && comment.equals("")))
+					if(status.equals("Rejected") && comment.equals(""))
+					{
+						partvalidation.setStatus("Wrong Comment");
+						setCellColore(commentCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					if(status.equals("Rejected") && !comment.equals(""))
+					{
+						if(!wrongfets.isEmpty())
+						{
+							if(wrongfets.contains("|"))
+							{
+								if(comment.contains("|"))
+								{
+									String[] features = wrongfets.split("\\|");
+									String[] comments = comment.split("\\|");
+									if(features.length != comments.length)
+									{
+										partvalidation.setStatus("comment must be as count as the features");
+										setCellColore(commentCell, 0xD2254D);
+										writeValidtionStatus(xcellrange, false);
+										canSave = false;
+										continue part;
+									}
+									if(status.equals("Rejected"))
+									{
+										for(String com : comments)
+										{
+											if(!com.equalsIgnoreCase("notissue") && !com.equalsIgnoreCase("issue"))
+											{
+												partvalidation.setStatus("comment must be (Issue , notissue)");
+												setCellColore(commentCell, 0xD2254D);
+												writeValidtionStatus(xcellrange, false);
+												canSave = false;
+												continue part;
+											}
+										}
+									}
+								}
+								else
+								{
+									partvalidation.setStatus("comment must be as count as the features");
+									setCellColore(commentCell, 0xD2254D);
+									writeValidtionStatus(xcellrange, false);
+									canSave = false;
+									continue part;
+								}
+							}
+						}
+					}
+				}
+				if(!update || (update && status.equals("Updated")))
+				{
+					/****** validate that Family not null *****/
+					if(family.isEmpty())
+					{
+						partvalidation.setStatus("Empty Family");
+						setCellColore(famCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**** validate that mask not null ***/
+					if(mask.isEmpty())
+					{
+						partvalidation.setStatus("Empty Mask)");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					else if(mask.length() != pn.length())
+					{
+						partvalidation.setStatus("Wrong Mask Length");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**
+					 * validate that generic and family Cross not null
+					 */
+					if(plType.equals("Semiconductor"))
+					{
+
+						generic = getCellText(genCell).getString();
+						famCross = getCellText(famCrossCell).getString();
+						if(generic.isEmpty() || famCross.isEmpty())
+						{
+							partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+							setCellColore(genCell, 0xD2254D);
+							setCellColore(famCrossCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+							continue part;
+						}
+					}
+					/**
+					 * Description Validation
+					 */
+					if(desc == null || desc.isEmpty())
+					{
+						partvalidation.setStatus("Empty Description");
+						setCellColore(descCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					else if(partvalidation.checkDescription(desc))
+					{
+						setCellColore(descCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
+					/**** validate that Feature values are approved and Not Blank ***/
+
+					// boolean haveSpaces = fetValsHaveSpaces(xcellrange, endParametricFT);
+					// if(haveSpaces)
+					// {
+					// canSave = false;
+					// writeValidtionStatus(xcellrange, false);
+					// continue part;
+					// }
+
+					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
+					if(!appFlag)
+					{
+						writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						continue part;
+					}
+				}
+
+				writeValidtionStatus(xcellrange, true);
+
+			}
+			// JOptionPane.showMessageDialog(null, "Validation Finished");
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public void saveParts(boolean update)
 	{
 		if(!canSave)
@@ -2215,6 +2503,14 @@ public class WorkingSheet
 				int CommentIndex = sheetHeader.indexOf("Comment");
 				int ComidIndex = sheetHeader.indexOf("Comid");
 				int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
+				int partcell = sheetHeader.indexOf("Part Number");
+				int engidx = sheetHeader.indexOf("Eng Name");
+				int pdfidx = sheetHeader.indexOf("PDF URL");
+				int supcell = sheetHeader.indexOf("Supplier Name");
+				int famcell = sheetHeader.indexOf("Family");
+				int maskcell = sheetHeader.indexOf("Mask");
+				int Taxonomyindex = sheetHeader.indexOf("Taxonomy");
+
 				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 				String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
 				for(int i = 0; i < fileData.size(); i++)
@@ -2224,14 +2520,14 @@ public class WorkingSheet
 					String status = partData.get(statusIndex);
 					String WrongFeatures = partData.get(WrongFeatureIndex);
 					String comment = partData.get(CommentIndex);
-					String vendorName = partData.get(4);
-					String plName = partData.get(0);
-					String tlName = ParaQueryUtil.getTeamLeaderNameByMember(partData.get(2));
+					String vendorName = partData.get(supcell);
+					String plName = partData.get(Taxonomyindex);
+					String tlName = ParaQueryUtil.getTeamLeaderNameByMember(partData.get(engidx));
 					String comid = partData.get(ComidIndex);
-					pn = partData.get(PartCell);
-					pdfUrl = partData.get(pdfCellNo);
-					family = partData.get(familyCell);
-					mask = partData.get(maskCellNo);
+					pn = partData.get(partcell);
+					pdfUrl = partData.get(pdfidx);
+					family = partData.get(famcell);
+					mask = partData.get(maskcell);
 					desc = partData.get(descriptionColumn);
 					if(plType.equals("Semiconductor"))
 					{
@@ -2314,6 +2610,7 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
+				
 				if(summarydata)
 				{
 					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
@@ -2414,6 +2711,17 @@ public class WorkingSheet
 			List<String> acceptedPdfs = new ArrayList<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
+
+			int partcell = sheetHeader.indexOf("Part Number");
+			int statuscellidx = sheetHeader.indexOf("Status");
+			int commentcellidx = sheetHeader.indexOf("Comment");
+			int supcell = sheetHeader.indexOf("Supplier Name");
+			int famcell = sheetHeader.indexOf("Family");
+			int maskcell = sheetHeader.indexOf("Mask");
+			int Taxonomyindex = sheetHeader.indexOf("Taxonomy");
+			int engindex = sheetHeader.indexOf("Eng Name");
+			int pdfindex = sheetHeader.indexOf("PDF URL");
+			int ComidIndex = sheetHeader.indexOf("Comid");
 			// List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
 			ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
@@ -2421,15 +2729,16 @@ public class WorkingSheet
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
 				ArrayList<String> partData = fileData.get(i);
-				String status = partData.get(2);
-				String comment = partData.get(3);
-				String vendorName = partData.get(5);
-				String plName = partData.get(0);
-				String engName = partData.get(1);
-				pn = partData.get(PartCell);
-				pdfUrl = partData.get(pdfCellNo);
-				family = partData.get(familyCell);
-				mask = partData.get(maskCellNo);
+				String status = partData.get(statuscellidx);
+				String comment = partData.get(commentcellidx);
+				String vendorName = partData.get(supcell);
+				String plName = partData.get(Taxonomyindex);
+				String engName = partData.get(engindex);
+				String comid = partData.get(ComidIndex);
+				pn = partData.get(partcell);
+				pdfUrl = partData.get(pdfindex);
+				family = partData.get(famcell);
+				mask = partData.get(maskcell);
 				desc = partData.get(descriptionColumn);
 				if(plType.equals("Semiconductor"))
 				{
@@ -2461,6 +2770,8 @@ public class WorkingSheet
 				partInfo.setMask(mask);
 				partInfo.setGeneric(generic);
 				partInfo.setFbtype(StatusName.internal);
+				PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+				partInfo.setComponent(component);
 				if("Rejected".equals(status))
 				{
 					if("".equals(comment))
@@ -2471,8 +2782,8 @@ public class WorkingSheet
 					}
 					else
 					{
-						partInfo.setFeedBackStatus("Rejected");
-						partInfo.setFeedBackCycleType("Wrong Data");
+						partInfo.setFeedBackStatus(StatusName.reject);
+						partInfo.setFeedBackCycleType(StatusName.wrongData);
 						// partInfo.setFbtype("Wrong Data");
 						feedbackParts.add(partInfo);
 						if(acceptedPdfs.contains(pdfUrl))
@@ -2532,25 +2843,44 @@ public class WorkingSheet
 			List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
 
+			int issuerIndex = sheetHeader.indexOf("Issued By");
+
+			int Cactionindex = sheetHeader.indexOf("C_Action");
+			int Pactionindex = sheetHeader.indexOf("P_Action");
+			int RootcauseIndex = sheetHeader.indexOf("RootCause");
+			int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
+			int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
+			int partcell = sheetHeader.indexOf("Part Number");
+			int statuscellidx = sheetHeader.indexOf("Status");
+			int commentcellidx = sheetHeader.indexOf("Comment");
+			int supcell = sheetHeader.indexOf("Supplier Name");
+			int famcell = sheetHeader.indexOf("Family");
+			int maskcell = sheetHeader.indexOf("Mask");
+			int Taxonomyindex = sheetHeader.indexOf("Taxonomy");
+			int fbtypeindex = sheetHeader.indexOf("Feedback Type");
+			int pdfindex = sheetHeader.indexOf("PDF URL");
+			int comidindex = sheetHeader.indexOf("Comid");
 			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
 				ArrayList<String> partData = sheetData.get(i);
-				String status = partData.get(3);
-				String comment = partData.get(4);
-				String vendorName = partData.get(10);
-				String plName = partData.get(0);
-				String issuedTo = partData.get(2);
-				String fbtype = partData.get(1);
-				String CAction = partData.get(5);
-				String PAction = partData.get(6);
-				String RootCause = partData.get(7);
-				String ActinDueDate = partData.get(8);
-				pn = partData.get(PartCell);
-				pdfUrl = partData.get(pdfCellNo);
-				family = partData.get(familyCell);
-				mask = partData.get(maskCellNo);
+				String status = partData.get(statuscellidx);
+				String comment = partData.get(commentcellidx);
+				String vendorName = partData.get(supcell);
+				String plName = partData.get(Taxonomyindex);
+				String issuedTo = partData.get(issuerIndex);
+				String fbtype = partData.get(fbtypeindex);
+				String CAction = partData.get(Cactionindex);
+				String PAction = partData.get(Pactionindex);
+				String RootCause = partData.get(RootcauseIndex);
+				String ActinDueDate = partData.get(Actionduedateindex);
+				String wrongfets = partData.get(wrongfetsindex);
+				String comid = partData.get(comidindex);
+				pn = partData.get(partcell);
+				pdfUrl = partData.get(pdfindex);
+				family = partData.get(famcell);
+				mask = partData.get(maskcell);
 				desc = partData.get(descriptionColumn);
 				if(plType.equals("Semiconductor"))
 				{
@@ -2588,10 +2918,16 @@ public class WorkingSheet
 				partInfo.setPAction(PAction);
 				partInfo.setRootCause(RootCause);
 				partInfo.setActinDueDate(ActinDueDate);
-				if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
+				partInfo.setWrongFeatures(wrongfets);
+				PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+				partInfo.setComponent(component);
+				if(ActinDueDate != null && !ActinDueDate.isEmpty())
 				{
-					JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
-					return;
+					if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
+					{
+						JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+						return;
+					}
 				}
 				if("Rejected".equals(status))
 				{
