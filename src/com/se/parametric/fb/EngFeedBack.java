@@ -260,10 +260,10 @@ public class EngFeedBack extends JPanel implements ActionListener
 						wsMap.put(pl, ws);
 						if(docInfoDTO.getTaskType().contains("NPI"))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment", "Old Eng Comment"), false);
+						ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
 						ws.statusValues.remove(0);
 						ArrayList<String> sheetHeader = ws.getHeader();
-						int tlCommentIndex = sheetHeader.indexOf("TL Comment");
+						//int tlCommentIndex = sheetHeader.indexOf("TL Comment");
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 						int Cactionindex = sheetHeader.indexOf("C_Action");
 						int Pactionindex = sheetHeader.indexOf("P_Action");
@@ -282,7 +282,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 							String supplier = sheetRecord.get(supIndex);
 							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplier);
 							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
-							String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+							//String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
 							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
 							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
@@ -301,7 +301,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 							{
 								sheetRecord.add("");
 							}
-							sheetRecord.set(tlCommentIndex, tlComment);
+						//	sheetRecord.set(tlCommentIndex, tlComment);
 							sheetRecord.set(qaCommentIndex, qaComment);
 							sheetRecord.set(oldCommentIndex, lastEngcomment);
 							sheetRecord.set(2, feedCom.get(1));
@@ -365,33 +365,32 @@ public class EngFeedBack extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null, StatusName.engFeedback, startDate, endDate, null))
 						ws.setNPIflag(true);
-					ws.setReviewHeader(Arrays.asList("TL Comment", "QA Comment"), false);
+					ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
 					ws.statusValues.remove(0);
 					ArrayList<String> sheetHeader = ws.getHeader();
-					int tlCommentIndex = sheetHeader.indexOf("TL Comment");
+					//int tlCommentIndex = sheetHeader.indexOf("TL Comment");
 					int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 					int Cactionindex = sheetHeader.indexOf("C_Action");
 					int Pactionindex = sheetHeader.indexOf("P_Action");
 					int RootcauseIndex = sheetHeader.indexOf("RootCause");
 					int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
+					int oldCommentIndex = sheetHeader.indexOf("Old Eng Comment");
+					int partnumIndex = sheetHeader.indexOf("Part Number");
+					int supIndex = sheetHeader.indexOf("Supplier Name");
+					int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
+					int fbcommentindex = sheetHeader.indexOf("FBComment");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
 						ArrayList<String> sheetRecord = plData.get(j);
-						String partNumber = sheetRecord.get(11);
-						// supplierName = sheetRecord.get(5);
-						// Supplier supplier = ParaQueryUtil.getSupplierByName(sheetRecord.get(10));
-						// PartComponent com = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNumber, sheetRecord.get(10));
-
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, sheetRecord.get(10));// feedcom 0 is
-						// unused since we
-						// show comments
-						// of tl and QA
-						String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Quality_Parametric", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
-						String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
-
-						// String comment = DataDevQueryUtil.getFeedbackCommentByComId(new Long(feedCom.get(3)));
-						// GrmUserDTO issuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+						String partNumber = sheetRecord.get(partnumIndex);
+						String supplier = sheetRecord.get(supIndex);
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplier);
+						String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+						//String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+						String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
 						ParaFeedbackAction action = null;
 						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
 						if(action != null)
@@ -399,17 +398,20 @@ public class EngFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(Cactionindex, action.getCAction());
 							sheetRecord.set(Pactionindex, action.getPAction());
 							sheetRecord.set(RootcauseIndex, action.getRootCause());
-							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+							Date date = action.getActionDueDate();
+							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+							sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
 						}
 						for(int l = 0; l < 6; l++)
 						{
 							sheetRecord.add("");
 						}
-
-						sheetRecord.set(tlCommentIndex, tlComment);
+					//	sheetRecord.set(tlCommentIndex, tlComment);
 						sheetRecord.set(qaCommentIndex, qaComment);
+						sheetRecord.set(oldCommentIndex, lastEngcomment);
 						sheetRecord.set(2, feedCom.get(1));
-						// sheetRecord.set(2, status);
+						sheetRecord.set(wrongfetsindex, wrongfeatures);
+						sheetRecord.set(fbcommentindex, feedCom.get(0));
 						plData.set(j, sheetRecord);
 					}
 					ws.writeReviewData(plData, 2, 4);
@@ -440,7 +442,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
 					WorkingSheet ws = wsMap.get(wsName);
-					ws.validateParts(true);
+					ws.validateEngFBParts(true);
 				}
 
 			}
@@ -543,8 +545,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 		frame.setSize(width, height);
 		frame.setTitle("Eng Feedback");
 		GrmUserDTO uDTO = new GrmUserDTO();
-		uDTO.setId(376);
-		uDTO.setFullName("Mohammad Attia");
+		uDTO.setId(112);
+		uDTO.setFullName("Amira Shaalan");
 		// uDTO.setId(117);
 		// uDTO.setFullName("Abeer Mohamady");
 		GrmRole role = new GrmRole();

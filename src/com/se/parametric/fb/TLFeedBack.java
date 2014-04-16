@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -22,14 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.ParaFeedbackAction;
-import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.Supplier;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -202,7 +195,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String documentStatus = StatusName.tlFeedback;
-				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId);
+				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId,issuer);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -589,8 +582,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		// uDTO.setFullName("Ahmed Hamdy");
 		// uDTO.setId(46);
 		// uDTO.setFullName("Ahmed Rizk");
-		uDTO.setId(121);
-		uDTO.setFullName("Ahmad_rahim");
+		uDTO.setId(39);
+		uDTO.setFullName("Fatma El-Refay");
 		GrmRole role = new GrmRole();
 		role.setId(1l);
 		GrmGroup group = new GrmGroup();
