@@ -6220,7 +6220,7 @@ public class ParaQueryUtil
 				cri.add(Restrictions.in("document", docs));
 				List<ParametricApprovedGroup> groups = null;
 				groups = cri.list();
-				if(groups != null)
+				if(groups != null && !groups.isEmpty())
 				{
 					List<String> groupsvalue = new ArrayList<>();
 					for(int i = 0; i < groups.size(); i++)

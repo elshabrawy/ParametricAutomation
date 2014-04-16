@@ -42,6 +42,7 @@ import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.client.mapping.ParaFeedbackFets;
 import com.se.automation.db.client.mapping.ParaFeedbackStatus;
 import com.se.automation.db.client.mapping.ParaIssueType;
+import com.se.automation.db.client.mapping.ParaSummaryStatus;
 import com.se.automation.db.client.mapping.ParametricApprovedGroup;
 import com.se.automation.db.client.mapping.ParametricFeedback;
 import com.se.automation.db.client.mapping.ParametricFeedbackCycle;
@@ -1302,6 +1303,8 @@ public class DataDevQueryUtil
 					partData.add(data[2].toString());
 					/** Supplier */
 					partData.add(data[3].toString());
+					/** comid */
+					partData.add(data[17].toString());
 					/** Part Number */
 					partData.add(data[4].toString());
 					/** family */
@@ -1950,7 +1953,7 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getTlReviewFeedbackPDFs(Long[] usersId, String plName, String vendorName, String status, Date startDate, Date endDate, String feedbackTypeStr, long issuedToId)
+	public static ArrayList<TableInfoDTO> getTlReviewFeedbackPDFs(Long[] usersId, String plName, String vendorName, String status, Date startDate, Date endDate, String feedbackTypeStr, long issuedToId, String issuer)
 	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -1998,6 +2001,11 @@ public class DataDevQueryUtil
 			Criteria partsFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
 			partsFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 			partsFeedbackCriteria.add(Restrictions.eq("issuedTo", issuedToId));
+			if(issuer != null && !issuer.equals("All"))
+			{
+				GrmUser issuedby = ParaQueryUtil.getGRMUserByName(issuer);
+				partsFeedbackCriteria.add(Restrictions.eq("issuedBy", issuedby.getId()));
+			}
 			if(startDate != null && endDate != null)
 			{
 				partsFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
@@ -2772,7 +2780,7 @@ public class DataDevQueryUtil
 
 				Criteria criteria = null;
 
-				if(!feedbackTypeStr.isEmpty())
+				if(feedbackTypeStr != null && !feedbackTypeStr.isEmpty())
 				{
 					criteria = session.createCriteria(ParaIssueType.class);
 					System.out.println(feedbackTypeStr);
@@ -2858,122 +2866,12 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(FBObj);
 				session.saveOrUpdate(FBCyc);
 				session.beginTransaction().commit();
-				if(parametricFeedbackCycle == null)
+				if(wrongfeatures != null && !wrongfeatures.isEmpty())
+					savewrongfeatures(session, FBObj, comment, wrongfeatures, parametricFeedbackCycle);
+				if(fbStatus.equals(StatusName.closed))
 				{
-					if(wrongfeatures != null && !wrongfeatures.isEmpty())
-					{
-						if(wrongfeatures.contains("|"))
-						{
-							String[] fets = wrongfeatures.split("\\|");
-							for(int f = 0; f < fets.length; f++)
-							{
-								if(comment.contains("|"))
-								{
-									String[] comments = comment.split("\\|");
-									ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
-									Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
-									paraFeedbackfets.setId(System.nanoTime());
-									paraFeedbackfets.setFeature(feature);
-									paraFeedbackfets.setParaFeedbackId(FBObj);
-									paraFeedbackfets.setStatus(1l);
-									paraFeedbackfets.setFetComment(comments[f]);
-									paraFeedbackfets.setStoreDate(new Date());
-									session.saveOrUpdate(paraFeedbackfets);
-								}
-								else
-								{
-									ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
-									Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
-									paraFeedbackfets.setId(System.nanoTime());
-									paraFeedbackfets.setFeature(feature);
-									paraFeedbackfets.setParaFeedbackId(FBObj);
-									paraFeedbackfets.setStatus(1l);
-									paraFeedbackfets.setFetComment(comment);
-									paraFeedbackfets.setStoreDate(new Date());
-									session.saveOrUpdate(paraFeedbackfets);
-								}
-							}
-						}
-						else
-						{
-							ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
-							Feature feature = ParaQueryUtil.getFeatureByName(wrongfeatures);
-							paraFeedbackfets.setId(System.nanoTime());
-							paraFeedbackfets.setFeature(feature);
-							paraFeedbackfets.setParaFeedbackId(FBObj);
-							paraFeedbackfets.setStatus(1l);
-							paraFeedbackfets.setFetComment(comment);
-							paraFeedbackfets.setStoreDate(new Date());
-							session.saveOrUpdate(paraFeedbackfets);
-						}
-
-					}
-				}
-				else if(parametricFeedbackCycle != null)
-				{
-					if(wrongfeatures != null && !wrongfeatures.isEmpty())
-					{
-						if(wrongfeatures.contains("|"))
-						{
-							String[] fets = wrongfeatures.split("\\|");
-							for(int f = 0; f < fets.length; f++)
-							{
-								if(comment.contains("|"))
-								{
-									String[] comments = comment.split("\\|");
-									criteria = session.createCriteria(ParaFeedbackFets.class);
-									criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
-									List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
-									Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
-									for(ParaFeedbackFets fet : paraFeedbackfets)
-									{
-										if(fet.getFeature().getName().equals(feature.getName()))
-										{
-											if(comments[f].equalsIgnoreCase("notIssue"))
-												fet.setStatus(0l);
-											session.saveOrUpdate(fet);
-											break;
-										}
-									}
-								}
-								else
-								{
-									criteria = session.createCriteria(ParaFeedbackFets.class);
-									criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
-									List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
-									Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
-									for(ParaFeedbackFets fet : paraFeedbackfets)
-									{
-										if(fet.getFeature().getName().equals(feature.getName()))
-										{
-											if(comment.equalsIgnoreCase("notIssue"))
-												fet.setStatus(0l);
-											session.saveOrUpdate(fet);
-											break;
-										}
-									}
-								}
-							}
-						}
-						else
-						{
-							criteria = session.createCriteria(ParaFeedbackFets.class);
-							criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
-							List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
-							Feature feature = ParaQueryUtil.getFeatureByName(wrongfeatures);
-							for(ParaFeedbackFets fet : paraFeedbackfets)
-							{
-								if(fet.getFeature().getName().equals(feature.getName()))
-								{
-									if(comment.equalsIgnoreCase("notIssue"))
-										fet.setStatus(0l);
-									session.saveOrUpdate(fet);
-									break;
-								}
-							}
-						}
-
-					}
+					System.err.println("edit in summary status");
+					editfbsummarybyclosedfb(FBObj, session);
 				}
 			}
 		}catch(Exception ex)
@@ -2984,6 +2882,176 @@ public class DataDevQueryUtil
 			if((session != null) && (session.isOpen()))
 			{
 				session.close();
+			}
+		}
+	}
+
+	private static void editfbsummarybyclosedfb(ParametricFeedback fBObj, Session session)
+	{
+		double defectiveparts = 0;
+		double defectRatePart = 0;
+		double defectivecells = 0;
+		double defectRatecell = 0;
+		long sampleparts = 0l;
+		long testedcells = 0l;
+		int fetsnotissue = 0;
+		int fetsissue = 0;
+		ParaSummaryStatus parasummarystatus = fBObj.getParaSummaryStatus();
+		Criteria cri = session.createCriteria(ParaFeedbackFets.class);
+		cri.add(Restrictions.eq("paraFeedbackId", fBObj));
+		int fets = cri.list() == null ? 0 : cri.list().size();
+		if(fets > 0)
+		{
+			cri = session.createCriteria(ParaFeedbackFets.class);
+			cri.add(Restrictions.eq("paraFeedbackId", fBObj));
+			cri.add(Restrictions.eq("status", 0l));
+			fetsnotissue = cri.list() == null ? 0 : cri.list().size();
+			cri = session.createCriteria(ParaFeedbackFets.class);
+			cri.add(Restrictions.eq("paraFeedbackId", fBObj));
+			cri.add(Restrictions.eq("status", 1l));
+			fetsissue = cri.list() == null ? 0 : cri.list().size();
+			if(fetsissue > 0)
+				defectiveparts = parasummarystatus.getDefectiveParts();
+			else
+				defectiveparts = parasummarystatus.getDefectiveParts() - 1;
+		}
+		sampleparts = parasummarystatus.getSampleParts();
+		testedcells = parasummarystatus.getTotalTestedCells();
+		defectRatePart = defectiveparts / (sampleparts == 0l ? 1l : sampleparts);
+		defectivecells = parasummarystatus.getDefectiveCells() - fetsnotissue;
+		defectRatecell = defectivecells / (testedcells == 0l ? 1l : testedcells);
+		parasummarystatus.setDefectiveParts(defectiveparts);
+		parasummarystatus.setDefectRatePart(defectRatePart);
+		parasummarystatus.setDefectiveCells(defectivecells);
+		parasummarystatus.setDefectRateCell(defectRatecell);
+		session.saveOrUpdate(parasummarystatus);
+		session.beginTransaction().commit();
+	}
+
+	private static void savewrongfeatures(Session session, ParametricFeedback FBObj, String comment, String wrongfeatures, ParametricFeedbackCycle parametricFeedbackCycle)
+	{
+		Criteria criteria;
+		if(parametricFeedbackCycle == null)
+		{
+			if(wrongfeatures != null && !wrongfeatures.isEmpty())
+			{
+				if(wrongfeatures.contains("|"))
+				{
+					String[] fets = wrongfeatures.split("\\|");
+					for(int f = 0; f < fets.length; f++)
+					{
+						if(comment.contains("|"))
+						{
+							String[] comments = comment.split("\\|");
+							ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
+							Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+							paraFeedbackfets.setId(System.nanoTime());
+							paraFeedbackfets.setFeature(feature);
+							paraFeedbackfets.setParaFeedbackId(FBObj);
+							paraFeedbackfets.setStatus(1l);
+							paraFeedbackfets.setFetComment(comments[f]);
+							paraFeedbackfets.setStoreDate(new Date());
+							session.saveOrUpdate(paraFeedbackfets);
+						}
+						else
+						{
+							ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
+							Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+							paraFeedbackfets.setId(System.nanoTime());
+							paraFeedbackfets.setFeature(feature);
+							paraFeedbackfets.setParaFeedbackId(FBObj);
+							paraFeedbackfets.setStatus(1l);
+							paraFeedbackfets.setFetComment(comment);
+							paraFeedbackfets.setStoreDate(new Date());
+							session.saveOrUpdate(paraFeedbackfets);
+						}
+					}
+				}
+				else
+				{
+					ParaFeedbackFets paraFeedbackfets = new ParaFeedbackFets();
+					Feature feature = ParaQueryUtil.getFeatureByName(wrongfeatures);
+					paraFeedbackfets.setId(System.nanoTime());
+					paraFeedbackfets.setFeature(feature);
+					paraFeedbackfets.setParaFeedbackId(FBObj);
+					paraFeedbackfets.setStatus(1l);
+					paraFeedbackfets.setFetComment(comment);
+					paraFeedbackfets.setStoreDate(new Date());
+					session.saveOrUpdate(paraFeedbackfets);
+				}
+
+			}
+		}
+		else if(parametricFeedbackCycle != null)
+		{
+			if(wrongfeatures != null && !wrongfeatures.isEmpty())
+			{
+				if(wrongfeatures.contains("|"))
+				{
+					String[] fets = wrongfeatures.split("\\|");
+					for(int f = 0; f < fets.length; f++)
+					{
+						if(comment.contains("|"))
+						{
+							String[] comments = comment.split("\\|");
+							criteria = session.createCriteria(ParaFeedbackFets.class);
+							criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
+							List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
+							Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+							for(ParaFeedbackFets fet : paraFeedbackfets)
+							{
+								if(fet.getFeature().getName().equals(feature.getName()))
+								{
+									if(comments[f].equalsIgnoreCase("notIssue"))
+										fet.setStatus(0l);
+									else if(comments[f].equalsIgnoreCase("Issue"))
+										fet.setStatus(1l);
+									session.saveOrUpdate(fet);
+									break;
+								}
+							}
+						}
+						else
+						{
+							criteria = session.createCriteria(ParaFeedbackFets.class);
+							criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
+							List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
+							Feature feature = ParaQueryUtil.getFeatureByName(fets[f]);
+							for(ParaFeedbackFets fet : paraFeedbackfets)
+							{
+								if(fet.getFeature().getName().equals(feature.getName()))
+								{
+									if(comment.equalsIgnoreCase("notIssue"))
+										fet.setStatus(0l);
+									else if(comment.equalsIgnoreCase("Issue"))
+										fet.setStatus(1l);
+									session.saveOrUpdate(fet);
+									break;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					criteria = session.createCriteria(ParaFeedbackFets.class);
+					criteria.add(Restrictions.eq("paraFeedbackId", FBObj));
+					List<ParaFeedbackFets> paraFeedbackfets = criteria.list();
+					Feature feature = ParaQueryUtil.getFeatureByName(wrongfeatures);
+					for(ParaFeedbackFets fet : paraFeedbackfets)
+					{
+						if(fet.getFeature().getName().equals(feature.getName()))
+						{
+							if(comment.equalsIgnoreCase("notIssue"))
+								fet.setStatus(0l);
+							else if(comment.equalsIgnoreCase("Issue"))
+								fet.setStatus(1l);
+							session.saveOrUpdate(fet);
+							break;
+						}
+					}
+				}
+
 			}
 		}
 	}
