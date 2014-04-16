@@ -51,6 +51,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	JButton save;
+	JButton Validate;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
@@ -110,6 +111,15 @@ public class QAFeedBack extends JPanel implements ActionListener
 		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
 		devSheetButtonPanel.setLayout(null);
+		
+		
+		Validate = new JButton("Validate");
+		Validate.setBounds(3, 40, 95, 29);
+		Validate.setForeground(new Color(25, 25, 112));
+		Validate.setFont(new Font("Tahoma", Font.BOLD, 11));
+		Validate.addActionListener(this);
+		devSheetButtonPanel.add(Validate);
+		
 		save = new JButton("Save");
 		save.setBounds(3, 80, 95, 29);
 		save.setForeground(new Color(25, 25, 112));
@@ -238,6 +248,18 @@ public class QAFeedBack extends JPanel implements ActionListener
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
 					wsMap.get(wsName).saveQAReviewAction(QAName, "FB", false);
+				}
+			}
+		}
+		else if(event.getSource() == Validate)
+		{
+			System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
+			wsMap.keySet();
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					wsMap.get(wsName).validateQAReview();
 				}
 			}
 		}
@@ -480,9 +502,9 @@ public class QAFeedBack extends JPanel implements ActionListener
 		// uDTO.setId(121);
 		// uDTO.setFullName("Ahmad_rahim");
 		GrmRole role = new GrmRole();
-		role.setId(1l);
+		role.setId(3l);
 		GrmGroup group = new GrmGroup();
-		group.setId(101l);
+		group.setId(23l);
 		uDTO.setGrmRole(role);
 		uDTO.setGrmGroup(group);
 		QAFeedBack devPanel = new QAFeedBack(uDTO);

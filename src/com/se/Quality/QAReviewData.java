@@ -1,13 +1,10 @@
 package com.se.Quality;
 
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,7 +32,6 @@ import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
-import com.se.parametric.dto.SummaryDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.StatusName;
 
@@ -569,9 +565,9 @@ public class QAReviewData extends JPanel implements ActionListener
 		// uDTO.setId(121);
 		// uDTO.setFullName("Ahmad_rahim");
 		GrmRole role = new GrmRole();
-		role.setId(1l);
+		role.setId(3l);
 		GrmGroup group = new GrmGroup();
-		group.setId(101l);
+		group.setId(23l);
 		uDTO.setGrmRole(role);
 		uDTO.setGrmGroup(group);
 		QAReviewData devPanel = new QAReviewData(uDTO);
