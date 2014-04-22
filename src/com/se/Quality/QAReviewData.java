@@ -33,6 +33,7 @@ import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 
 public class QAReviewData extends JPanel implements ActionListener
@@ -40,7 +41,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 	SheetPanel sheetpanel = new SheetPanel();
 	SheetPanel SummaryPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel, Summarytab;
+	JPanel tabSheet, selectionPanel, Summarytab,flowChart;
 	JPanel devSheetButtonPanel, summaryButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
@@ -161,9 +162,12 @@ public class QAReviewData extends JPanel implements ActionListener
 		tabSheet.add(devSheetButtonPanel);
 		tabSheet.add(alertsPanel1);
 
+		flowChart = new ImagePanel("Development-chart.jpg");
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
+		tabbedPane.addTab("Development Flow", null, flowChart, null);
+		
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
