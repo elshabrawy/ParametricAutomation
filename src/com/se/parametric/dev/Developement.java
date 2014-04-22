@@ -49,6 +49,7 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 import com.sun.star.ucb.Priority;
 import com.se.parametric.autoFill.AutoFill;
@@ -64,7 +65,7 @@ public class Developement extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel selectionPanel, tabSheet, separationTab, alerts;
+	JPanel selectionPanel, tabSheet, separationTab, alerts,flowChart;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	// Update mainInfo = new Update();
 	JTabbedPane tabbedPane;
@@ -206,9 +207,10 @@ public class Developement extends JPanel implements ActionListener
 		separationTab.add(separationPanel);
 		separationTab.add(separationButtonsPanel);
 		separationTab.add(alertsPanel2);
-
+		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, width, height - 100);
+		
 		add(tabbedPane);
 
 		// ArrayList<String> sheetButtonLabels = new ArrayList<String>();
@@ -229,6 +231,8 @@ public class Developement extends JPanel implements ActionListener
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
+		flowChart = new ImagePanel("Development-chart.jpg");
+		tabbedPane.addTab("Development Flow", null, flowChart, null);
 	}
 
 	@Override
