@@ -100,7 +100,7 @@ public class ImagePanel extends JPanel
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		frame.setSize(width, height);
 		frame.setTitle("Image");
-		ImagePanel devPanel = new ImagePanel("src/images/QASeparation.jpg");
+		ImagePanel devPanel = new ImagePanel("Development-chart.jpg");
 		frame.getContentPane().add(devPanel);
 		frame.show();
 
