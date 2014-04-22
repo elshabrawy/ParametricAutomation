@@ -40,6 +40,7 @@ import com.se.parametric.dev.Developement;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
+import com.se.parametric.util.ImagePanel;
 import com.se.parametric.util.StatusName;
 
 public class TLReviewData extends JPanel implements ActionListener
@@ -47,7 +48,7 @@ public class TLReviewData extends JPanel implements ActionListener
 
 	SheetPanel sheetpanel = new SheetPanel();
 	SheetPanel separationPanel = new SheetPanel();
-	JPanel tabSheet, separationTab, selectionPanel;
+	JPanel tabSheet, separationTab, selectionPanel,flowChart;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
@@ -163,6 +164,8 @@ public class TLReviewData extends JPanel implements ActionListener
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
+		flowChart = new ImagePanel("Development-chart.jpg");
+		tabbedPane.addTab("Development Flow", null, flowChart, null);
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
