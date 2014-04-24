@@ -421,12 +421,13 @@ public class TLFeedBack extends JPanel implements ActionListener
 				int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 				int fbcommentindex = sheetHeader.indexOf("FBComment");
 				int engindex = sheetHeader.indexOf("Develop Eng.");
+				int FBStatusindex = sheetHeader.indexOf("FBStatus");
 				ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 				for(int j = 0; j < plData.size(); j++)
 				{
 					ArrayList<String> sheetRecord = plData.get(j);
-					String partNumber = sheetRecord.get(14);
-					supplierName = sheetRecord.get(12);
+					String partNumber = sheetRecord.get(15);
+					supplierName = sheetRecord.get(13);
 
 					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
 					String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
@@ -445,6 +446,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					{
 						sheetRecord.add("");
 					}
+					sheetRecord.set(FBStatusindex, feedCom.get(6));
 					sheetRecord.set(lstTLcommentIndex, lstTlComment);
 					sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
 					sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
@@ -520,13 +522,14 @@ public class TLFeedBack extends JPanel implements ActionListener
 					int Actionduedateindex = sheetHeader.indexOf("ActionDueDate");
 					int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 					int fbcommentindex = sheetHeader.indexOf("FBComment");
+					int FBStatusindex = sheetHeader.indexOf("FBStatus");
 					int engindex = sheetHeader.indexOf("Develop Eng.");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
 						ArrayList<String> sheetRecord = plData.get(j);
-						String partNumber = sheetRecord.get(14);
-						supplierName = sheetRecord.get(12);
+						String partNumber = sheetRecord.get(15);
+						supplierName = sheetRecord.get(13);
 
 						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
 						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
@@ -542,10 +545,11 @@ public class TLFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(RootcauseIndex, action.getRootCause());
 							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
 						}
-						for(int l = 0; l < 8; l++)
+						for(int l = 0; l < 9; l++)
 						{
 							sheetRecord.add("");
 						}
+						sheetRecord.set(FBStatusindex, feedCom.get(6));
 						sheetRecord.set(lstTLcommentIndex, lstTlComment);
 						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
 						sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
@@ -582,8 +586,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		// uDTO.setFullName("Ahmed Hamdy");
 		// uDTO.setId(46);
 		// uDTO.setFullName("Ahmed Rizk");
-		uDTO.setId(39);
-		uDTO.setFullName("Fatma El-Refay");
+		uDTO.setId(121);
+		uDTO.setFullName("Ahmad_Rahim");
 		GrmRole role = new GrmRole();
 		role.setId(1l);
 		GrmGroup group = new GrmGroup();

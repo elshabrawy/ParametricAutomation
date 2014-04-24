@@ -273,6 +273,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						int supIndex = sheetHeader.indexOf("Supplier Name");
 						int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 						int fbcommentindex = sheetHeader.indexOf("FBComment");
+						int FBStatusindex = sheetHeader.indexOf("FBStatus");
 						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 						for(int j = 0; j < plData.size(); j++)
 						{
@@ -296,11 +297,11 @@ public class EngFeedBack extends JPanel implements ActionListener
 								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 								sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
 							}
-							for(int l = 0; l < 6; l++)
+							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
 							}
-						//	sheetRecord.set(tlCommentIndex, tlComment);
+							sheetRecord.set(FBStatusindex, feedCom.get(6));
 							sheetRecord.set(qaCommentIndex, qaComment);
 							sheetRecord.set(oldCommentIndex, lastEngcomment);
 							sheetRecord.set(2, feedCom.get(1));
@@ -378,6 +379,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 					int supIndex = sheetHeader.indexOf("Supplier Name");
 					int wrongfetsindex = sheetHeader.indexOf("Wrong Features");
 					int fbcommentindex = sheetHeader.indexOf("FBComment");
+					int FBStatusindex = sheetHeader.indexOf("FBStatus");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = 0; j < plData.size(); j++)
 					{
@@ -401,11 +403,11 @@ public class EngFeedBack extends JPanel implements ActionListener
 							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 							sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
 						}
-						for(int l = 0; l < 6; l++)
+						for(int l = 0; l <7; l++)
 						{
 							sheetRecord.add("");
 						}
-					//	sheetRecord.set(tlCommentIndex, tlComment);
+						sheetRecord.set(FBStatusindex, feedCom.get(6));
 						sheetRecord.set(qaCommentIndex, qaComment);
 						sheetRecord.set(oldCommentIndex, lastEngcomment);
 						sheetRecord.set(2, feedCom.get(1));
