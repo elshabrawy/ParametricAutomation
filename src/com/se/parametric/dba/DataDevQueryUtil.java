@@ -1578,6 +1578,8 @@ public class DataDevQueryUtil
 					partData.add("");
 					/** Comment */
 					partData.add("");
+					/** FBStatus */
+					partData.add("");
 					/** Wrong Features */
 					partData.add("");
 					/** FBComment */
@@ -2443,7 +2445,8 @@ public class DataDevQueryUtil
 		{
 			String partNumber = partInfo.getPN();
 			String vendorName = partInfo.getSupplierName();
-			PartComponent com = getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
+			PartComponent com = partInfo.getComponent();
+			// getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
 
 			if(com == null)
 			{
@@ -2482,7 +2485,7 @@ public class DataDevQueryUtil
 			else
 				com.setNpiFlag(0l);
 
-			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
+			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty() && partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
 			{
 				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
 				if(gen == null)
