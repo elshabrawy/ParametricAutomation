@@ -579,36 +579,40 @@ public class WorkingSheet
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(5, StatrtRecord);
-			cell.setText("Wrong Features");
+			cell.setText("FBStatus");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(6, StatrtRecord);
-			cell.setText("FBComment");
+			cell.setText("Wrong Features");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(7, StatrtRecord);
-			cell.setText("C_Action");
+			cell.setText("FBComment");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(8, StatrtRecord);
-			cell.setText("P_Action");
+			cell.setText("C_Action");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(9, StatrtRecord);
-			cell.setText("RootCause");
+			cell.setText("P_Action");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(10, StatrtRecord);
-			cell.setText("ActionDueDate");
+			cell.setText("RootCause");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(11, StatrtRecord);
+			cell.setText("ActionDueDate");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(12, StatrtRecord);
 			cell.setText("Task Type");
 			HeaderList.add(cell);
-			cell = getCellByPosission(12, StatrtRecord);
+			cell = getCellByPosission(13, StatrtRecord);
 			cell.setText("Supplier Name");
 			HeaderList.add(cell);
-			cell = getCellByPosission(13, StatrtRecord);
+			cell = getCellByPosission(14, StatrtRecord);
 			cell.setText("Comid");
 			HeaderList.add(cell);
 
@@ -687,36 +691,40 @@ public class WorkingSheet
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(5, StatrtRecord);
-			cell.setText("Wrong Features");
+			cell.setText("FBStatus");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(6, StatrtRecord);
-			cell.setText("FBComment");
+			cell.setText("Wrong Features");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(7, StatrtRecord);
-			cell.setText("C_Action");
+			cell.setText("FBComment");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(8, StatrtRecord);
-			cell.setText("P_Action");
+			cell.setText("C_Action");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(9, StatrtRecord);
-			cell.setText("RootCause");
+			cell.setText("P_Action");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(10, StatrtRecord);
-			cell.setText("ActionDueDate");
+			cell.setText("RootCause");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(11, StatrtRecord);
+			cell.setText("ActionDueDate");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(12, StatrtRecord);
 			cell.setText("Task Type");
 			HeaderList.add(cell);
-			cell = getCellByPosission(12, StatrtRecord);
+			cell = getCellByPosission(13, StatrtRecord);
 			cell.setText("Supplier Name");
 			HeaderList.add(cell);
-			cell = getCellByPosission(13, StatrtRecord);
+			cell = getCellByPosission(14, StatrtRecord);
 			cell.setText("Comid");
 			HeaderList.add(cell);
 			setDevHeader(false, isQA);
@@ -1819,8 +1827,12 @@ public class WorkingSheet
 				String mask = getCellText(maskCell).getString();
 				XCell TaxonomyCell = xcellrange.getCellByPosition(Taxonomyindex, 0);
 				String Taxonomy = getCellText(TaxonomyCell).getString();
-				XCell genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
-				XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
+				XCell genCell = null;
+				XCell famCrossCell = null;
+				if(genericCellNoindex != -1)
+					genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
+				if(famCrossCellNoindex != -1)
+					famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
 				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
 
 				if(plType.equals("Semiconductor"))
@@ -2145,8 +2157,12 @@ public class WorkingSheet
 				String mask = getCellText(maskCell).getString();
 				XCell TaxonomyCell = xcellrange.getCellByPosition(Taxonomyindex, 0);
 				String Taxonomy = getCellText(TaxonomyCell).getString();
-				XCell genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
-				XCell famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
+				XCell genCell = null;
+				XCell famCrossCell = null;
+				if(genericCellNoindex != -1)
+					genCell = xcellrange.getCellByPosition(genericCellNoindex, 0);
+				if(famCrossCellNoindex != -1)
+					famCrossCell = xcellrange.getCellByPosition(famCrossCellNoindex, 0);
 				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
 
 				if(plType.equals("Semiconductor"))
@@ -2610,7 +2626,7 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
-				
+
 				if(summarydata)
 				{
 					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
@@ -2886,6 +2902,9 @@ public class WorkingSheet
 				{
 					famCross = partData.get(famCrossCellNo);
 					generic = partData.get(genericCellNo);
+					partInfo.setFamilycross(famCross);
+					partInfo.setGeneric(generic);
+
 				}
 				if(NPIFlag)
 					NPIPart = partData.get(npiCellNo);
@@ -2910,9 +2929,8 @@ public class WorkingSheet
 				partInfo.setDescription(desc);
 				partInfo.setPdfUrl(pdfUrl);
 				partInfo.setFamily(family);
-				partInfo.setFamilycross(famCross);
 				partInfo.setMask(mask);
-				partInfo.setGeneric(generic);
+
 				partInfo.setFbtype(fbtype);
 				partInfo.setCAction(CAction);
 				partInfo.setPAction(PAction);
@@ -3044,6 +3062,8 @@ public class WorkingSheet
 				{
 					famCross = partData.get(famCrossCellNo);
 					generic = partData.get(genericCellNo);
+					partInfo.setFamilycross(famCross);
+					partInfo.setGeneric(generic);
 				}
 				if(NPIFlag)
 					NPIPart = partData.get(npiCellNo);
@@ -3065,9 +3085,7 @@ public class WorkingSheet
 				partInfo.setDescription(desc);
 				partInfo.setPdfUrl(pdfUrl);
 				partInfo.setFamily(family);
-				partInfo.setFamilycross(famCross);
 				partInfo.setMask(mask);
-				partInfo.setGeneric(generic);
 				partInfo.setFeedBackSource(issueSourceName);
 				partInfo.setStatus(status);
 				partInfo.setComment(comment);
