@@ -255,7 +255,7 @@ public class Update extends JPanel implements ActionListener
 				sheetpanel.openOfficeDoc();
 				for(int i = 0; i < docsInfo.size(); i++)
 				{
-					String newsLink = null;
+					List<String> newsData = null;
 					long pdfId = -1;
 					DocumentInfoDTO docInfo = docsInfo.get(i);
 					String suppName = docInfo.getSupplierName();
@@ -267,7 +267,7 @@ public class Update extends JPanel implements ActionListener
 						ws.setNPIflag(true);
 						// pdfId = ParaQueryUtil.getPdfId(pdfUrl, suppName);
 						// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
-						newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
+						newsData = DataDevQueryUtil.getNewsLink(pdfUrl);
 					}
 					String taxonomies = "";
 					List<Pl> pls = ParaQueryUtil.getPLsForPdf(pdfUrl);
@@ -277,7 +277,7 @@ public class Update extends JPanel implements ActionListener
 					}
 					taxonomies = taxonomies.substring(0, taxonomies.length() - 1);
 					ws.setDevHeader(true, false);
-					ws.setPdfInfo(pdfUrl, suppName, docInfo.getTitle(), newsLink, taxonomies, 2);
+					ws.setPdfInfo(pdfUrl, suppName, docInfo.getTitle(), newsData, taxonomies, 2);
 					// ws.setSupplierName(suppName);
 
 					ws.setExtractionData1(pdfUrl, suppName, plName, 2);
@@ -402,7 +402,7 @@ public class Update extends JPanel implements ActionListener
 				// String desc = doc.getTitle();
 				String desc = tableRecord.getTitle();
 				supplierName = tableRecord.getSupplierName();
-				String newsLink = "";
+				List<String> newsData = null;
 
 				long pdfId = -1;
 				if(tableRecord.getTaskType().contains("NPI"))
@@ -412,7 +412,7 @@ public class Update extends JPanel implements ActionListener
 					// {
 					// newsLink = DataDevQueryUtil.getNewsLink(pdfId);
 					// }
-					newsLink = DataDevQueryUtil.getNewsLink(pdfUrl);
+					newsData = DataDevQueryUtil.getNewsLink(pdfUrl);
 				}
 				String taxonomies = "";
 				// List<Pl> pls = ParaQueryUtil.getPLsForPdf(pdfUrl);
@@ -422,7 +422,7 @@ public class Update extends JPanel implements ActionListener
 				// }
 				// taxonomies = taxonomies.substring(0, taxonomies.length() - 1);
 				taxonomies = tableRecord.getTaxonomies();
-				ws.setPdfInfo(pdfUrl, supplierName, desc, newsLink, taxonomies, i + 2);
+				ws.setPdfInfo(pdfUrl, supplierName, desc, newsData, taxonomies, i + 2);
 				if(tableRecord.getExtracted().equals("Yes"))
 					ws.setExtractionData1(pdfUrl, supplierName, plName, i + 2);
 				System.out.println("PDF_No: " + i + " ~ Extr: " + tableRecord.getExtracted() + " ~ NPI: " + tableRecord.getTaskType());
