@@ -2042,62 +2042,6 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static long getGroupByApprovedParametricValue(ApprovedParametricValue val, Session session)
-	{
-		String queryString = "select OUTER_GROUP.GROUP_ID FROM parts_parametric_values_group outer_group," + " (SELECT   GROUP_ID inner_group_id" + "           FROM   parts_parametric_values_group"
-				+ "         WHERE   approved_parametric_values_id = " + val.getId() + " )inner_query  " + " where inner_query.inner_group_id = OUTER_GROUP.GROUP_ID" + " GROUP BY OUTER_GROUP.GROUP_ID" + " HAVING   COUNT (OUTER_GROUP.GROUP_ID) = 1";
-
-		SQLQuery query = session.createSQLQuery(queryString);
-		List<BigDecimal> list = query.list();
-		if(list.size() == 0)
-			return -1;
-		long groupId = list.get(0).longValue();
-		return groupId;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<Long> getGroupByApprovedParametricValue(ApprovedParametricValue val, String fullValue, Session session)
-	{
-		String queryString = "select OUTER_GROUP.GROUP_ID FROM parts_parametric_values_group outer_group, " + "(SELECT GROUP_ID inner_group_id" + " FROM parts_parametric_values_group" + " WHERE approved_parametric_values_id = " + val.getId()
-				+ ") inner_query" + " where inner_query.inner_group_id = OUTER_GROUP.GROUP_ID" + " AND OUTER_GROUP.GROUP_FULL_VALUE = '" + fullValue + "'" + " GROUP BY OUTER_GROUP.GROUP_ID";
-
-		SQLQuery query = session.createSQLQuery(queryString);
-		List<BigDecimal> list = query.list();
-		if(list.size() == 0)
-			return null;
-		List<Long> outList = new ArrayList<Long>();
-		for(BigDecimal big : list)
-		{
-			outList.add(big.longValue());
-		}
-		return outList;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getComponentList(long col, int from, int max, long groupId, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametric.class);
-		crit.add(Restrictions.eq("partsParametricValuesGroup" + col, groupId));
-		crit.setProjection(Projections.property("component"));
-		crit.setFirstResult(from);
-		crit.setMaxResults(max);
-		List<PartComponent> parts = crit.list();
-		return parts;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getComponentList(long col, int from, int max, List<Long> groupId, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametric.class);
-		crit.add(Restrictions.in("partsParametricValuesGroup" + col, groupId));
-		crit.setProjection(Projections.property("component"));
-		crit.setFirstResult(from);
-		crit.setMaxResults(max);
-		List<PartComponent> parts = crit.list();
-		return parts;
-	}
-
-	@SuppressWarnings("unchecked")
 	public static long getGroupByPkgApprovedParametricValue(PkgApprovedValue val, Session session)
 	{
 		String queryString = "select OUTER_GROUP.GROUP_ID FROM PKG_VALUE_GROUP outer_group," + " (SELECT   GROUP_ID inner_group_id" + " FROM   PKG_VALUE_GROUP" + " WHERE   pkg_approved_value_id = " + val.getId() + " )inner_query"
@@ -2123,15 +2067,6 @@ public class ParaQueryUtil
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static int getPartsCountByPartsParametricColumn(long col, long groupId, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametric.class);
-		crit.add(Restrictions.eq("partsParametricValuesGroup" + col, groupId));
-		crit.setProjection(Projections.count("id"));
-		List<Integer> count = crit.list();
-		return count.get(0);
-	}
 
 	@SuppressWarnings("unchecked")
 	public static int getPartsCountByPkgMainDataColumn(long col, long groupId, Session session)
@@ -5822,7 +5757,7 @@ public class ParaQueryUtil
 				headerList.add(fet.getFeatureName());
 			}
 			List<Map<String, Object>> components = new ArrayList<Map<String, Object>>();
-			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and TRACKING_TASK_STATUS_ID=3 and pl_id=" + pl.getId()
+			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and TRACKING_TASK_STATUS_ID=34 and pl_id=" + pl.getId()
 					+ ") and supplier_pl_id in ( select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
@@ -5855,8 +5790,8 @@ public class ParaQueryUtil
 				fetsMap.put("Pin Count", "");
 				fetsMap.put("Life Cycle", "");
 
-				query = session.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review," + " pl_feature_unit plFet, feature fet, PARTS_PARAMETRIC_VALUES_GROUP g where review.com_id=" + comId
-						+ " and review.pl_feature_id=plfet.id and plfet.fet_id=fet.id and review.group_approved_value_id=g.group_id(+)");
+				query = session.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review," + " pl_feature_unit plFet, feature fet, PARAMETRIC_APPROVED_GROUP g where review.com_id=" + comId 
+						+ " and review.pl_feature_id=plfet.id and plfet.fet_id=fet.id and review.group_approved_value_id=g.id(+)");
 				List<Object[]> paramFets = query.list();
 				for(int j = 0; j < paramFets.size(); j++)
 				{
@@ -5911,7 +5846,7 @@ public class ParaQueryUtil
 			Pl pl = getPlByPlName(session, plName);
 			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, AUTOMATION2.GETSUPPLIERBYDOC(c.document_id) sup_name, "
 					+ " AUTOMATION2.GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id="
-					+ userDto.getId() + " and tracking_task_status_id=3 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
+					+ userDto.getId() + " and tracking_task_status_id=34 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy HH:mm:ss");
