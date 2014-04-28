@@ -2064,23 +2064,30 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	public static String getNewsLink(String pdfURL)
+
+	public static List<String> getNewsLink(String pdfURL)
 	{
 		Session session = SessionUtil.getSession();
-		String newsLink = null;
+		String newsLink = null,newsDesc=null,newsDate=null;
+		List<String>newsData=new ArrayList<String>();
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select GETPDFURLbydoc(doc_id) from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
-			newsLink = (String) query.uniqueResult();
-
+			SQLQuery query = session.createSQLQuery("select GETPDFURLbydoc(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
+			Object[] list = (Object[]) query.uniqueResult();
+				newsLink = (list[0] == null) ? "" : list[0].toString();
+				newsDesc = (list[1] == null) ? "" : list[1].toString();
+				newsDate = (list[2] == null) ? "" : list[2].toString();
+				newsData.add(newsLink);
+				newsData.add(newsDesc);
+				newsData.add(newsDate);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}finally
 		{
-			session.close();
-			return newsLink;
+			session.close();		
 		}
+		return newsData;
 	}
 
 	public static String getNewsLinkold(long pdfId)
