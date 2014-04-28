@@ -90,6 +90,8 @@ public class WorkingSheet
 	private int pdfCellNo = 4;
 	private int npiCellNo;
 	private int newsCellNo;
+	private int newsDesCellNo;
+	private int newsDateCellNo;
 	private int valHeaderSize = 0;
 	private boolean NPIFlag = false;
 	private Properties culmns;
@@ -453,6 +455,14 @@ public class WorkingSheet
 				newsCellNo = HeaderList.size();
 				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 				cell.setText("News Link");
+				HeaderList.add(cell);
+				newsDesCellNo = HeaderList.size();
+				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
+				cell.setText("News Desc.");
+				HeaderList.add(cell);
+				newsDateCellNo = HeaderList.size();
+				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
+				cell.setText("News Date");
 				HeaderList.add(cell);
 			}
 			// convPartCellNo = HeaderList.size();
@@ -1044,15 +1054,19 @@ public class WorkingSheet
 
 	}
 
-	public void setPdfInfo(String url, String supplierName, String desc, String newsLink, String taxonomies, int rowNum)
+	public void setPdfInfo(String url, String supplierName, String desc, List<String> newsData, String taxonomies, int rowNum)
 	{
 		Cell cell;
 		try
 		{
-			if(newsLink != null)
+			if(newsData != null && !newsData.isEmpty())
 			{
 				cell = getCellByPosission(newsCellNo, rowNum);
-				cell.setText(newsLink);
+				cell.setText(newsData.get(0));
+				cell = getCellByPosission(newsDesCellNo, rowNum);
+				cell.setText(newsData.get(1));
+				cell = getCellByPosission(newsDateCellNo, rowNum);
+				cell.setText(newsData.get(2));
 			}
 
 			cell = getCellByPosission(pdfCellNo, rowNum);
