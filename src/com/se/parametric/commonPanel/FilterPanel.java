@@ -60,7 +60,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		}
 		this.filterList = list;
 		this.setLayout(null);
-		counts.setText("count is " + list.size());
+//		counts.setText("count is " + list.size());
 		ArrayList<Object[]> result;
 		if(list.isEmpty())
 		{
