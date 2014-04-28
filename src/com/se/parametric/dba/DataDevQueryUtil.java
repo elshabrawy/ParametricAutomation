@@ -29,6 +29,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.DocumentFeedback;
 import com.se.automation.db.client.mapping.Family;
@@ -2918,17 +2919,20 @@ public class DataDevQueryUtil
 			else
 				defectiveparts = parasummarystatus.getDefectiveParts() - 1;
 		}
-		sampleparts = parasummarystatus.getSampleParts();
-		testedcells = parasummarystatus.getTotalTestedCells();
-		defectRatePart = defectiveparts / (sampleparts == 0l ? 1l : sampleparts);
-		defectivecells = parasummarystatus.getDefectiveCells() - fetsnotissue;
-		defectRatecell = defectivecells / (testedcells == 0l ? 1l : testedcells);
-		parasummarystatus.setDefectiveParts(defectiveparts);
-		parasummarystatus.setDefectRatePart(defectRatePart);
-		parasummarystatus.setDefectiveCells(defectivecells);
-		parasummarystatus.setDefectRateCell(defectRatecell);
-		session.saveOrUpdate(parasummarystatus);
-		session.beginTransaction().commit();
+		if(parasummarystatus != null)
+		{
+			sampleparts = parasummarystatus.getSampleParts();
+			testedcells = parasummarystatus.getTotalTestedCells();
+			defectRatePart = defectiveparts / (sampleparts == 0l ? 1l : sampleparts);
+			defectivecells = parasummarystatus.getDefectiveCells() - fetsnotissue;
+			defectRatecell = defectivecells / (testedcells == 0l ? 1l : testedcells);
+			parasummarystatus.setDefectiveParts(defectiveparts);
+			parasummarystatus.setDefectRatePart(defectRatePart);
+			parasummarystatus.setDefectiveCells(defectivecells);
+			parasummarystatus.setDefectRateCell(defectRatecell);
+			session.saveOrUpdate(parasummarystatus);
+			session.beginTransaction().commit();
+		}
 	}
 
 	private static void savewrongfeatures(Session session, ParametricFeedback FBObj, String comment, String wrongfeatures, ParametricFeedbackCycle parametricFeedbackCycle)
@@ -4209,6 +4213,45 @@ public class DataDevQueryUtil
 		return list2;
 
 	}
+	public static ArrayList<Object[]> getQAchecksFilterData(GrmUserDTO grmUser)
+	{
+		Long UserID = grmUser.getId();
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		ArrayList<String> row = null;
+		ArrayList<Object[]> list2 = null;
+		Session session = SessionUtil.getSession();
+		try
+		{
+
+			String Sql ="";
+			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype, chkac.NAME sta";
+			Sql = Sql + "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
+			Sql = Sql + "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
+			Sql = Sql + "s WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('QA C";
+			Sql = Sql + "hecking') AND tp.supplier_id = s.id AND u.id = tp.user_id AND st.id = tp.TRACK";
+			Sql = Sql + "ING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp.DOCUMEN";
+			Sql = Sql + "T_ID AND chkac.ID = chp.ACTION_ID AND tp.USER_ID =359 GROUP BY s.name, P.name,";
+			Sql = Sql + " chks.NAME, chkac.NAME";
+			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
+			for(int i = 0; i < list2.size(); i++)
+			{
+				Object[] data = list2.get(i);
+				row = new ArrayList<String>();
+				for(int j = 0; j < 4; j++)
+				{
+					row.add((data[j] == null) ? "" : data[j].toString());
+					
+				}
+				
+				result.add(row);
+			}
+		}finally
+		{
+			session.close();
+		}
+		return list2;
+
+	}
 
 	public static ParaFeedbackAction getfeedBackActionByItem(long itemid, long userid)
 	{
@@ -4519,5 +4562,12 @@ public class DataDevQueryUtil
 
 		}
 
+	}
+
+	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status)
+	{
+		
+		
+		return null;
 	}
 }
