@@ -856,7 +856,7 @@ public class DataDevQueryUtil
 
 			StringBuffer qury = new StringBuffer();
 			qury.append(" SELECT  GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, GET_PL_NAME (t.PL_ID) plName,GETSUPPLIERNAME (t.supplier_id) supName, GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,"
-					+ " GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) user_Name,t.EXTRACTION_STATUS,t.PRIORIY,t.ASSIGNED_DATE ,d.TITLE,getallTaxbyDocID(t.DOCUMENT_ID) tax ,t.DOCUMENT_ID,t.pdf_id FROM  TRACKING_PARAMETRIC T,document d");
+					+ " GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) user_Name,t.EXTRACTION_STATUS,t.PRIORIY,t.ASSIGNED_DATE ,d.TITLE,getallTaxbyDocID(t.DOCUMENT_ID) tax ,t.DOCUMENT_ID FROM  TRACKING_PARAMETRIC T,document d");
 
 			qury.append(" where  t.document_id=d.id  and T.USER_ID =" + userId);
 			if(plName != null && !plName.equals("All"))
@@ -954,7 +954,7 @@ public class DataDevQueryUtil
 			StringBuffer qury = new StringBuffer();
 			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME ,GET_MSK_Value (c.MASK_ID, C.PART_NUMBER) MASK,Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
 					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 ");
+					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID  ");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -993,6 +993,7 @@ public class DataDevQueryUtil
 			}
 			if(startDate != null && endDate != null)
 			{
+				endDate.setDate(endDate.getDate() + 1);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
 
@@ -1153,7 +1154,7 @@ public class DataDevQueryUtil
 			StringBuffer qury = new StringBuffer();
 			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME,Get_family_crossName(C.FAMILY_CROSS_ID) family_Cross , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value(c.MASK_ID,C.PART_NUMBER) MASK,c.NPI_FLAG, GETNPINewsPDFURL (c.DOCUMENT_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
 					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARTS_PARAMETRIC_VALUES_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.GROUP_ID and G.APPROVED_VALUE_ORDER=1 ");
+					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -1188,6 +1189,7 @@ public class DataDevQueryUtil
 			}
 			if(startDate != null && endDate != null)
 			{
+				endDate.setDate(endDate.getDate() + 1);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
 
@@ -1325,8 +1327,13 @@ public class DataDevQueryUtil
 						{
 							/** NPI Flag */
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
-							/** ALU */
+							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 
 						}
 						/** pdf url */
@@ -1342,8 +1349,13 @@ public class DataDevQueryUtil
 						{
 							/** NPI Flag */
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
-							/** ALU */
+							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 
 						}
 						/** pdf url */
@@ -1890,8 +1902,13 @@ public class DataDevQueryUtil
 						{
 							/** NPI Flag */
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
-							/** ALU */
+							/** news link */
 							partData.add((data[10] == null) ? "" : data[10].toString());
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 
 						}
 						/** pdf url */
@@ -1907,8 +1924,13 @@ public class DataDevQueryUtil
 						{
 							/** NPI Flag */
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
-							/** ALU */
+							/** news link */
 							partData.add((data[10] == null) ? "" : data[10].toString());
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 						}
 						/** pdf url */
 						partData.add(data[12].toString());
@@ -2064,28 +2086,27 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-
 	public static List<String> getNewsLink(String pdfURL)
 	{
 		Session session = SessionUtil.getSession();
-		String newsLink = null,newsDesc=null,newsDate=null;
-		List<String>newsData=new ArrayList<String>();
+		String newsLink = null, newsDesc = null, newsDate = null;
+		List<String> newsData = new ArrayList<String>();
 		try
 		{
 			SQLQuery query = session.createSQLQuery("select GETPDFURLbydoc(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
 			Object[] list = (Object[]) query.uniqueResult();
-				newsLink = (list[0] == null) ? "" : list[0].toString();
-				newsDesc = (list[1] == null) ? "" : list[1].toString();
-				newsDate = (list[2] == null) ? "" : list[2].toString();
-				newsData.add(newsLink);
-				newsData.add(newsDesc);
-				newsData.add(newsDate);
+			newsLink = (list[0] == null) ? "" : list[0].toString();
+			newsDesc = (list[1] == null) ? "" : list[1].toString();
+			newsDate = (list[2] == null) ? "" : list[2].toString();
+			newsData.add(newsLink);
+			newsData.add(newsDesc);
+			newsData.add(newsDate);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}finally
 		{
-			session.close();		
+			session.close();
 		}
 		return newsData;
 	}
@@ -4220,6 +4241,7 @@ public class DataDevQueryUtil
 		return list2;
 
 	}
+
 	public static ArrayList<Object[]> getQAchecksFilterData(GrmUserDTO grmUser)
 	{
 		Long UserID = grmUser.getId();
@@ -4230,7 +4252,7 @@ public class DataDevQueryUtil
 		try
 		{
 
-			String Sql ="";
+			String Sql = "";
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype, chkac.NAME sta";
 			Sql = Sql + "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
 			Sql = Sql + "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
@@ -4247,9 +4269,9 @@ public class DataDevQueryUtil
 				for(int j = 0; j < 4; j++)
 				{
 					row.add((data[j] == null) ? "" : data[j].toString());
-					
+
 				}
-				
+
 				result.add(row);
 			}
 		}finally
@@ -4573,8 +4595,7 @@ public class DataDevQueryUtil
 
 	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status)
 	{
-		
-		
+
 		return null;
 	}
 }
