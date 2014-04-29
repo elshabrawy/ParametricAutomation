@@ -47,7 +47,7 @@ public class FilterPanel extends JPanel implements ActionListener
 	public JButton refreshButton = new JButton("Refresh Filter");
 	public JButton addsummary = new JButton("Add to Summary");
 	public ArrayList<Object[]> filterList;
-	JLabel counts = new JLabel();
+	//JLabel counts = new JLabel();
 
 	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height,boolean isQA)
 	{
@@ -154,8 +154,8 @@ public class FilterPanel extends JPanel implements ActionListener
 			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
 			comboPanel.add(addsummary);
 		}
-		counts.setBounds(width - 100, height - 100, 100, 30);
-		comboPanel.add(counts);
+		//counts.setBounds(width - 100, height - 100, 100, 30);
+	//	comboPanel.add(counts);
 		this.add(comboPanel);
 	}
 
@@ -275,7 +275,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		else if(obj instanceof JComboBox)
 		{
 			ArrayList<Object[]> result = getDistinct(getFilteredData(filterList));
-			counts.setText("count is " + result.size());
+			//counts.setText("count is " + result.size());
 			String initial[] = new String[comboBoxItems.length];
 			for(int j = 0; j < comboBoxItems.length; j++)
 			{

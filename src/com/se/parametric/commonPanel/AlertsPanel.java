@@ -20,19 +20,19 @@ public class AlertsPanel extends JPanel
 		this.userDTO = userDTO;
 		this.setLayout(null);
 		int y = 0;
-		npiLabel = new JLabel("NPI :");
+		npiLabel = new JLabel("NPI PDFs :");
 		setLabelProperties(npiLabel, y, false);
 		y += 25;
 		npiValue = new JLabel("" + 0);
 		setLabelProperties(npiValue, y, true);
 		y += 32;
-		newLabel = new JLabel("New :");
+		newLabel = new JLabel("New PDFs :");
 		setLabelProperties(newLabel, y, false);
 		y += 25;
 		newValue = new JLabel("" + 0);
 		setLabelProperties(newValue, y, true);
 		y += 32;
-		backlogLabel = new JLabel("Backlog :");
+		backlogLabel = new JLabel("Backlog PDFs:");
 		setLabelProperties(backlogLabel, y, false);
 		y += 25;
 		backlogValue = new JLabel("" + 0);
@@ -44,7 +44,7 @@ public class AlertsPanel extends JPanel
 		fbValue = new JLabel("" + 0);
 		setLabelProperties(fbValue, y, true);
 		y += 32;
-		
+
 		appNewLabel = new JLabel("App New :");
 		setLabelProperties(appNewLabel, y, false);
 		y += 25;
@@ -69,7 +69,7 @@ public class AlertsPanel extends JPanel
 		appnpiFBValue = new JLabel("" + 0);
 		setLabelProperties(appnpiFBValue, y, true);
 		y += 32;
-		
+
 		tlRLabel = new JLabel("TL Review:");
 		setLabelProperties(tlRLabel, y, false);
 		y += 25;
@@ -91,17 +91,17 @@ public class AlertsPanel extends JPanel
 		// long userGroup = 1;
 		long userRole = userDTO.getGrmRole().getId();
 		long userGroup = userDTO.getGrmGroup().getId();
-		if(userRole == 3 && userGroup == 1)
-		{
-			System.out.println(" No Approved");
-		}
-		else
-		{
-			add(appNewLabel);
-			add(appNewValue);
-			add(appnpiLabel);
-			add(appnpiValue);
-		}
+		// if(userRole == 3 && userGroup == 1)
+		// {
+		// System.out.println(" No Approved");
+		// }
+		// else
+		// {
+		add(appNewLabel);
+		add(appNewValue);
+		add(appnpiLabel);
+		add(appnpiValue);
+		// }
 
 		add(appNewFBLabel);
 		add(appNewFBValue);
@@ -129,7 +129,7 @@ public class AlertsPanel extends JPanel
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-//		 ArrayList<String> flags=ParaQueryUtil.getAlerts(userDTO.getId(),1,3);
+		// ArrayList<String> flags=ParaQueryUtil.getAlerts(userDTO.getId(),1,3);
 		npiValue.setText(flags.get(0));
 		npiValue.setForeground(Color.RED);
 		newValue.setText(flags.get(1));
