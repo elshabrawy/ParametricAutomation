@@ -665,10 +665,10 @@ public class DataDevQueryUtil
 				users += ")";
 			}
 			String Sql = "";
-			Sql = " SELECT /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */ COUNT (COM_ID) FROM AUTOMATION";
-			Sql = Sql + "2.PART_COMPONENT x, TRACKING_PARAMETRIC z WHERE x.SUPPLIER_PL_ID IN (SELECT /*";
-			Sql = Sql + "+ INDEX(y PL_ID_IDX) */ ID FROM supplier_pl y WHERE y.PL_ID = " + plid + ") AND X.DOCUME";
-			Sql = Sql + "NT_ID = Z.DOCUMENT_ID AND Z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + "";
+			Sql = " SELECT /*+ INDEX(x comp_doc_id_idx) */ COUNT (COM_ID) FROM AUTOMATION2.PART_COMPONENT x ";
+			Sql = Sql + "where x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
+			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
+			Sql = Sql + ")";
 			query = session.createSQLQuery(Sql);
 			obj = query.uniqueResult();
 			if(obj != null)
@@ -691,10 +691,10 @@ public class DataDevQueryUtil
 				result.add(0);
 			}
 
-			Sql = " SELECT /*+ INDEX(x comp_SUPPLIER_PL_ID_idx) */ COUNT (COM_ID) FROM AUTOMATION";
-			Sql = Sql + "2.PART_COMPONENT x, TRACKING_PARAMETRIC z WHERE x.SUPPLIER_PL_ID IN (SELECT /*";
-			Sql = Sql + "+ INDEX(y PL_ID_IDX) */ ID FROM supplier_pl y WHERE y.PL_ID = " + plid + ") AND X.DONEFLAG = 1 AND X.DOCUME";
-			Sql = Sql + "NT_ID = Z.DOCUMENT_ID AND Z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + "";
+			Sql = " SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */ COUNT (COM_ID) FROM AUTOMATION2.PART_COMPONENT x ";
+			Sql = Sql + "where  X.DONEFLAG = 1 AND x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
+			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
+			Sql = Sql + ")";
 			query = session.createSQLQuery(Sql);
 			obj = query.uniqueResult();
 			if(obj != null)
