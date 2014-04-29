@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.swing.JOptionPane;
 
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
+
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.mapping.Document;
@@ -102,6 +104,7 @@ public class WorkingSheet
 	public List<String> statusValues = new ArrayList<String>();
 	public List<String> commentValues = new ArrayList<String>();
 	private List<String> allPlNames;
+	List<String> doneFets = new ArrayList<String>();
 
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
 	{
@@ -486,16 +489,14 @@ public class WorkingSheet
 	{
 		try
 		{
-			String pdfUrl = "";
-			String desc = "";
-			// if (trackingParametric != null) {
-			// pdfUrl = trackingParametric.getDocument().getPdf().getSeUrl();
-			// desc = trackingParametric.getDocument().getTitle();
-			// }
 			List<FeatureDTO> plfets = ParaQueryUtil.getPlFeautres(sheetpl, !isQA);
-
 			setMainHeaders(newPdf);
 			this.endParametricFT = HeaderList.size() + plfets.size();
+			int lastColNum = endParametricFT + 4;
+			String lastColumn = getColumnName(lastColNum);
+			String hdrUintRange = "A" + 1 + ":" + lastColumn + 2;
+			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
+			setRangProtected(xHdrUnitrange, 0xB0AEAE);
 			System.out.println("Pl Features:" + plfets.size());
 			for(FeatureDTO featureDTO : plfets)
 			{
@@ -515,28 +516,27 @@ public class WorkingSheet
 				// System.out.println(featureDTO.getFeatureName() + " AppValues size=" + appValues.size());
 				if(!isQA)
 					cell.SetApprovedValues(appValues, getCellRangByPosission(startCol, RowSelectedRange));
-				else
-					cell.SetApprovedValues(null, getCellRangByPosission(startCol, RowSelectedRange));
+				// else
+				// cell.SetApprovedValues(null, getCellRangByPosission(startCol, RowSelectedRange));
 
 				HeaderList.add(cell);
+
+				if(featureDTO.isDoneFlag())
+				{
+					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, 1);
+					setCellColore(doneCell, new Integer(0x23E282));
+					doneFets.add(featureDTO.getFeatureName());
+				}
 			}
 			Cell cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 			cell.setText("Description");
 			HeaderList.add(cell);
 			if(!isQA)
 				setValidationHeaders();
-			// setPdfAndTitle(pdfUrl, desc,2);
-			int lastColNum = HeaderList.size() + 4;
-			String lastColumn = getColumnName(lastColNum);
-			String hdrUintRange = "A" + 1 + ":" + lastColumn + 2;
-			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
-			// setRangColor(xHdrUnitrange, 0xB0AEAE);
-			setRangProtected(xHdrUnitrange, 0xB0AEAE);
-			// setExtractionData(trackingParametric, 2);
+
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
 		}
 
 	}
@@ -1481,104 +1481,6 @@ public class WorkingSheet
 		}catch(Exception e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	public ArrayList<ArrayList<String>> validatePartsOld()
-	{
-		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-		XCellRange xcellrange = null;
-		int lastColNum = HeaderList.size() + 4;
-		String lastColumn = getColumnName(lastColNum);
-		canSave = true;
-		try
-		{
-			int lastRow = 100000;
-			part: for(int i = 3; i < lastRow; i++)
-			{
-				String seletedRange = "A" + i + ":" + lastColumn + i;
-				xcellrange = sheet.getCellRangeByName(seletedRange);
-				System.out.println("Selected range " + seletedRange);
-
-				boolean appFlag = true;
-				XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
-				String pn = getCellText(pnCell).getString();
-				XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
-				String supplierName = getCellText(suppCell).getString();
-				XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
-				String family = getCellText(famCell).getString();
-				XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
-				String mask = getCellText(maskCell).getString();
-				XCell descCell = xcellrange.getCellByPosition(descriptionColumn, 0);
-				String desc = getCellText(descCell).getString();
-
-				System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
-
-				/***** validate that PN and supplier not found on component or LUT or acquisition ******/
-
-				if(pn.isEmpty())
-				{
-					return result;
-				}
-				boolean isRejectedPN = partvalidation.isRejectedPNAndSupplier(pn, supplierName);
-				if(isRejectedPN)
-				{
-					setCellColore(pnCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-
-				/****** validate that Family not null *****/
-				if(family.isEmpty())
-				{
-					partvalidation.setStatus("Empty Family");
-					setCellColore(famCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-				/**** validate that mask not null ***/
-				if(mask.isEmpty())
-				{
-					partvalidation.setStatus("Empty Mask");
-					setCellColore(maskCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-				/**
-				 * Description Validation
-				 */
-				if(desc == null || desc.isEmpty())
-				{
-					partvalidation.setStatus("Empty Description");
-					setCellColore(descCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-				else if(partvalidation.checkDescription(desc))
-				{
-					setCellColore(descCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-				/**** validate that Feature values are approved and Not Blank ***/
-				appFlag = isRowValuesApproved(xcellrange, lastColNum - 4);
-				if(!appFlag)
-				{
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-					continue part;
-				}
-				writeValidtionStatus(xcellrange, true);
-			}
-		}catch(Exception e)
-		{
 			e.printStackTrace();
 		}
 		return result;
@@ -3273,6 +3175,15 @@ public class WorkingSheet
 				missedFet = "Missed Feature";
 				setCellColore(cell, 0xD2254D);
 				appFlag = false;
+//				npiCellNo = HeaderList.size();
+				XCell npiFlagcell = xcellrange.getCellByPosition(npiCellNo, 0);
+				String npiFlag = getCellText(npiFlagcell).getString();
+				if(npiFlag.equalsIgnoreCase("Yes") && doneFets.indexOf(fetName) != -1)
+				{
+					missedFet = "Missed Done Flag Feature";
+					canSave = false;
+				}
+
 			}
 			else if(!celldata.equals(celldata.trim()))
 			{
