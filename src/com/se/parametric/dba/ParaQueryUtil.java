@@ -53,6 +53,7 @@ import org.hibernate.type.Type;
 import osheet.WorkingSheet;
 
 import com.se.automation.db.CloneUtil;
+import com.se.automation.db.ParametricQueryUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
@@ -147,7 +148,7 @@ public class ParaQueryUtil
 
 	public static void main(String[] args)
 	{
-		// Session session = SessionUtil.getSession();
+		 Session session = SessionUtil.getSession();
 		// try
 		// {
 		// ArrayList<String> fd = getFeedbackByPartAndSupp("DAMV-11C1S-N-A197", "ITT Corporation");
@@ -162,6 +163,8 @@ public class ParaQueryUtil
 		Pl pl;
 		try
 		{
+			List<String> plFeatures=ParametricQueryUtil.getDoneFlagfets(125l, session);
+			System.out.println(plFeatures.get(0));
 			String g = "N/A";
 			// getGeneric(g);
 			// checkUser("abeer","123456");
@@ -175,6 +178,8 @@ public class ParaQueryUtil
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			session.close();
 		}
 		// getSeparatedSections1(" to  | - to ");
 	}
@@ -4346,6 +4351,7 @@ public class ParaQueryUtil
 			criteria.addOrder(Order.asc("DevelopmentOrder"));
 
 			List<PlFeature> plfets = criteria.list();
+		List<String> doneFets=	ParametricQueryUtil.getDoneFlagfets(pl.getId(), session);
 			for(PlFeature plFeature : plfets)
 			{
 				FeatureDTO fetdto = new FeatureDTO();
@@ -4357,6 +4363,8 @@ public class ParaQueryUtil
 					String fetUint = plFeature.getUnit().getName();
 					fetdto.setUnit(fetUint);
 				}
+				if(doneFets.indexOf(fetName)!=-1)
+					fetdto.setDoneFlag(true);
 				if(getApproved)
 				{
 					// List<String> appValues=getGroupFullValueByFeatureNameandPlName(fetName,plName,session);
