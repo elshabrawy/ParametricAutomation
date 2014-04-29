@@ -7,6 +7,16 @@ public class FeatureDTO {
 	private String featurevalue="";
 	private List<String> featureapprovedvalue;
 	private String unit;
+	private boolean doneFlag;
+	
+	public boolean isDoneFlag()
+	{
+		return doneFlag;
+	}
+	public void setDoneFlag(boolean doneFlag)
+	{
+		this.doneFlag = doneFlag;
+	}
 	public String getFeatureName() {
 		return featureName;
 	}
