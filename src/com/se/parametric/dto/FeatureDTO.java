@@ -8,7 +8,25 @@ public class FeatureDTO {
 	private List<String> featureapprovedvalue;
 	private String unit;
 	private boolean doneFlag;
+	private boolean core;
+	private boolean code;
 	
+	public boolean isCore()
+	{
+		return core;
+	}
+	public void setCore(boolean core)
+	{
+		this.core = core;
+	}
+	public boolean isCode()
+	{
+		return code;
+	}
+	public void setCode(boolean code)
+	{
+		this.code = code;
+	}
 	public boolean isDoneFlag()
 	{
 		return doneFlag;
