@@ -58,6 +58,7 @@ import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
 import com.se.automation.db.client.mapping.ApprovedValueFeedback;
+import com.se.automation.db.client.mapping.CheckFeature;
 import com.se.automation.db.client.mapping.Condition;
 import com.se.automation.db.client.mapping.DevelopmentCommentValue;
 import com.se.automation.db.client.mapping.Document;
@@ -76,6 +77,7 @@ import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NoParametricDocuments;
 import com.se.automation.db.client.mapping.NonPdf;
+import com.se.automation.db.client.mapping.PLFeatureType;
 import com.se.automation.db.client.mapping.ParametricApprovedGroup;
 import com.se.automation.db.client.mapping.ParametricFeedbackCycle;
 import com.se.automation.db.client.mapping.ParametricReviewData;
@@ -148,7 +150,7 @@ public class ParaQueryUtil
 
 	public static void main(String[] args)
 	{
-		 Session session = SessionUtil.getSession();
+		Session session = SessionUtil.getSession();
 		// try
 		// {
 		// ArrayList<String> fd = getFeedbackByPartAndSupp("DAMV-11C1S-N-A197", "ITT Corporation");
@@ -163,7 +165,7 @@ public class ParaQueryUtil
 		Pl pl;
 		try
 		{
-			List<String> plFeatures=ParametricQueryUtil.getDoneFlagfets(125l, session);
+			List<String> plFeatures = ParametricQueryUtil.getDoneFlagfets(125l, session);
 			System.out.println(plFeatures.get(0));
 			String g = "N/A";
 			// getGeneric(g);
@@ -178,7 +180,8 @@ public class ParaQueryUtil
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		}finally
+		{
 			session.close();
 		}
 		// getSeparatedSections1(" to  | - to ");
@@ -2071,7 +2074,6 @@ public class ParaQueryUtil
 		List<PartComponent> list = query.list();
 		return list;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public static int getPartsCountByPkgMainDataColumn(long col, long groupId, Session session)
@@ -4351,19 +4353,30 @@ public class ParaQueryUtil
 			criteria.addOrder(Order.asc("DevelopmentOrder"));
 
 			List<PlFeature> plfets = criteria.list();
-		List<String> doneFets=	ParametricQueryUtil.getDoneFlagfets(pl.getId(), session);
+			List<String> doneFets = ParametricQueryUtil.getDoneFlagfets(pl.getId(), session);
+			PLFeatureType codetype = null;
+			Criteria cri = session.createCriteria(PLFeatureType.class);
+			cri.add(Restrictions.eq("name", "CODE"));
+			codetype = (PLFeatureType) cri.uniqueResult();
+			PLFeatureType coretype = null;
+			cri = session.createCriteria(PLFeatureType.class);
+			cri.add(Restrictions.eq("name", "CORE"));
+			coretype = (PLFeatureType) cri.uniqueResult();
 			for(PlFeature plFeature : plfets)
 			{
+
 				FeatureDTO fetdto = new FeatureDTO();
 				String fetName = plFeature.getFeature().getName();
 				System.out.println(fetName);
 				fetdto.setFeatureName(fetName);
+				fetdto.setCode(iscode(plFeature.getId(), codetype, session));
+				fetdto.setCore(iscore(plFeature.getId(), coretype, session));
 				if(plFeature.getUnit() != null)
 				{
 					String fetUint = plFeature.getUnit().getName();
 					fetdto.setUnit(fetUint);
 				}
-				if(doneFets.indexOf(fetName)!=-1)
+				if(doneFets.indexOf(fetName) != -1)
 					fetdto.setDoneFlag(true);
 				if(getApproved)
 				{
@@ -4382,6 +4395,32 @@ public class ParaQueryUtil
 		{
 			session.close();
 		}
+	}
+
+	private static boolean iscore(Long id, PLFeatureType type, Session session)
+	{
+		Criteria cri = session.createCriteria(CheckFeature.class);
+		cri.createAlias("plFeature", "fet");
+		cri.add(Restrictions.eq("fet.id", id));
+		cri.add(Restrictions.eq("checker", type));
+		//List<CheckFeature> chkfet =  cri.list();
+		if(cri.list().isEmpty())
+			return false;
+		else
+			return true;
+	}
+
+	private static boolean iscode(Long id, PLFeatureType type, Session session)
+	{
+		Criteria cri = session.createCriteria(CheckFeature.class);
+		cri.createAlias("plFeature", "fet");
+		cri.add(Restrictions.eq("fet.id", id));
+		cri.add(Restrictions.eq("checker", type));
+		//List<CheckFeature> chkfet =  cri.list();
+		if(cri.list().isEmpty())
+			return false;
+		else
+			return true;
 	}
 
 	public static ArrayList<DocumentInfoDTO> getDevelopmentPDF(long userId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate)
@@ -5798,7 +5837,7 @@ public class ParaQueryUtil
 				fetsMap.put("Pin Count", "");
 				fetsMap.put("Life Cycle", "");
 
-				query = session.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review," + " pl_feature_unit plFet, feature fet, PARAMETRIC_APPROVED_GROUP g where review.com_id=" + comId 
+				query = session.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review," + " pl_feature_unit plFet, feature fet, PARAMETRIC_APPROVED_GROUP g where review.com_id=" + comId
 						+ " and review.pl_feature_id=plfet.id and plfet.fet_id=fet.id and review.group_approved_value_id=g.id(+)");
 				List<Object[]> paramFets = query.list();
 				for(int j = 0; j < paramFets.size(); j++)
