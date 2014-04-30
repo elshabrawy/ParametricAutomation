@@ -1625,10 +1625,16 @@ public class DataDevQueryUtil
 						/** Mask */
 						if(NPIFlag)
 						{
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							
 							/** NPI Flag */
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
-							/** ALU */
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 						}
 						partData.add(data[12].toString());
 						/** pdf url */
@@ -1639,11 +1645,15 @@ public class DataDevQueryUtil
 						/** Mask */
 						if(NPIFlag)
 						{
-
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
 							/** NPI Flag */
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
-							/** ALU */
+							List<String> newsData = getNewsLink(data[12].toString());
+							/** NPI desc */
+							partData.add(newsData.get(1));
+							/** NPI date */
+							partData.add(newsData.get(2));
 						}
 						partData.add(data[12].toString());
 						/** pdf url */
