@@ -105,6 +105,8 @@ public class WorkingSheet
 	public List<String> commentValues = new ArrayList<String>();
 	private List<String> allPlNames;
 	List<String> doneFets = new ArrayList<String>();
+	List<String> coreFets = new ArrayList<String>();
+	List<String> codeFets = new ArrayList<String>();
 
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
 	{
@@ -498,6 +500,23 @@ public class WorkingSheet
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangProtected(xHdrUnitrange, 0xB0AEAE);
 			System.out.println("Pl Features:" + plfets.size());
+			
+			
+			XCell codeCell = xHdrUnitrange.getCellByPosition(0, StatrtRecord - 1);
+			setCellColore(codeCell, new Integer(0xffcb05));//yellow
+			Cell cellcode = getCellByPosission(0, StatrtRecord - 1);
+			cellcode.setText("Code Feature");
+			
+			XCell coreCell = xHdrUnitrange.getCellByPosition(1, StatrtRecord - 1);
+			setCellColore(coreCell, new Integer(0x990000));//red
+			Cell cellcore = getCellByPosission(1, StatrtRecord - 1);
+			cellcore.setText("Core Feature");
+			
+			XCell corecodeCell = xHdrUnitrange.getCellByPosition(2, StatrtRecord - 1);
+			setCellColore(corecodeCell, new Integer(0x0000ff));//blue
+			Cell cellcorecode = getCellByPosission(2, StatrtRecord - 1);
+			cellcorecode.setText("Core&Code");
+			
 			for(FeatureDTO featureDTO : plfets)
 			{
 				int startCol = HeaderList.size();
@@ -509,6 +528,25 @@ public class WorkingSheet
 					String uint = featureDTO.getUnit();
 					Cell cellunit = getCellByPosission(startCol, StatrtRecord - 1);
 					cellunit.setText(uint);
+				}
+				if(featureDTO.isCode())
+				{
+					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
+					setCellColore(doneCell, new Integer(0xffcb05));//yellow
+					codeFets.add(featureDTO.getFeatureName());
+				}
+				if(featureDTO.isCore())
+				{
+					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
+					setCellColore(doneCell, new Integer(0x990000));//red
+					coreFets.add(featureDTO.getFeatureName());
+				}
+				if(featureDTO.isCore()&&featureDTO.isCode())
+				{
+					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
+					setCellColore(doneCell, new Integer(0x0000ff));//blue
+					codeFets.add(featureDTO.getFeatureName());
+					coreFets.add(featureDTO.getFeatureName());
 				}
 
 				List<String> appValues = featureDTO.getFeatureapprovedvalue();
