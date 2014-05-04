@@ -4603,9 +4603,32 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status)
+	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status,Date startDate, Date endDate)
 	{
+		StringBuffer qury = new StringBuffer();
+		String Sql = "";
+		Sql = " SELECT GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
+		Sql = Sql + "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
+		Sql = Sql + " C.COM_ID, C.PART_NUMBER, GETSUPPLIERNAME (t.supplier_id) supName, GetTaskType";
+		Sql = Sql + "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
+		Sql = Sql + "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
+		Sql = Sql + "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
+		Sql = Sql + "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
+		Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID =  AND T.TRACK";
+		Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary + "')";
+		qury.append(Sql);
+		// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
+		// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12
 
+		if(startDate != null && endDate != null)
+		{
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+			String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+			qury.append(dateRangeCond);
+
+		}
+		System.out.println(qury.toString());
 		return null;
 	}
 }
