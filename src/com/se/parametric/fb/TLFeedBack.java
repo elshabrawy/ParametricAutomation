@@ -195,7 +195,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String documentStatus = StatusName.tlFeedback;
-				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId,issuer);
+				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId, issuer);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -423,37 +423,45 @@ public class TLFeedBack extends JPanel implements ActionListener
 				int engindex = sheetHeader.indexOf("Develop Eng.");
 				int FBStatusindex = sheetHeader.indexOf("FBStatus");
 				ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-				for(int j = 0; j < plData.size(); j++)
+				for(int j = plData.size() - 1; j > -1; j--)
 				{
-					ArrayList<String> sheetRecord = plData.get(j);
-					String partNumber = sheetRecord.get(15);
-					supplierName = sheetRecord.get(13);
+					try
+					{
+						ArrayList<String> sheetRecord = plData.get(j);
+						String partNumber = sheetRecord.get(15);
+						supplierName = sheetRecord.get(13);
 
-					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-					String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-					GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
-					ParaFeedbackAction action = null;
-					action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
-					if(action != null)
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+						ParaFeedbackAction action = null;
+						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+						if(action != null)
+						{
+							sheetRecord.set(Cactionindex, action.getCAction());
+							sheetRecord.set(Pactionindex, action.getPAction());
+							sheetRecord.set(RootcauseIndex, action.getRootCause());
+							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+						}
+						for(int l = 0; l < 8; l++)
+						{
+							sheetRecord.add("");
+						}
+						sheetRecord.set(FBStatusindex, feedCom.get(6));
+						sheetRecord.set(lstTLcommentIndex, lstTlComment);
+						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+						sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
+						sheetRecord.set(sentBYIndex, feedCom.get(1));
+						sheetRecord.set(wrongfetsindex, wrongfeatures);
+						sheetRecord.set(fbcommentindex, feedCom.get(0));
+						plData.set(j, sheetRecord);
+					}catch(Exception e)
 					{
-						sheetRecord.set(Cactionindex, action.getCAction());
-						sheetRecord.set(Pactionindex, action.getPAction());
-						sheetRecord.set(RootcauseIndex, action.getRootCause());
-						sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+						System.err.println(e.getMessage());
+						plData.remove(j);
+						continue;
 					}
-					for(int l = 0; l < 8; l++)
-					{
-						sheetRecord.add("");
-					}
-					sheetRecord.set(FBStatusindex, feedCom.get(6));
-					sheetRecord.set(lstTLcommentIndex, lstTlComment);
-					sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-					sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
-					sheetRecord.set(sentBYIndex, feedCom.get(1));
-					sheetRecord.set(wrongfetsindex, wrongfeatures);
-					sheetRecord.set(fbcommentindex, feedCom.get(0));
-					plData.set(j, sheetRecord);
 				}
 				ws.writeReviewData(plData, 2, 3);
 				k++;
@@ -525,38 +533,46 @@ public class TLFeedBack extends JPanel implements ActionListener
 					int FBStatusindex = sheetHeader.indexOf("FBStatus");
 					int engindex = sheetHeader.indexOf("Develop Eng.");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					for(int j = 0; j < plData.size(); j++)
+					for(int j = plData.size() - 1; j > -1; j--)
 					{
-						ArrayList<String> sheetRecord = plData.get(j);
-						String partNumber = sheetRecord.get(15);
-						supplierName = sheetRecord.get(13);
-
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
-
-						ParaFeedbackAction action = null;
-						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
-						if(action != null)
+						try
 						{
-							sheetRecord.set(Cactionindex, action.getCAction());
-							sheetRecord.set(Pactionindex, action.getPAction());
-							sheetRecord.set(RootcauseIndex, action.getRootCause());
-							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
-						}
-						for(int l = 0; l < 9; l++)
+							ArrayList<String> sheetRecord = plData.get(j);
+							String partNumber = sheetRecord.get(15);
+							supplierName = sheetRecord.get(13);
+
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+							String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+
+							ParaFeedbackAction action = null;
+							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+							if(action != null)
+							{
+								sheetRecord.set(Cactionindex, action.getCAction());
+								sheetRecord.set(Pactionindex, action.getPAction());
+								sheetRecord.set(RootcauseIndex, action.getRootCause());
+								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+							}
+							for(int l = 0; l < 9; l++)
+							{
+								sheetRecord.add("");
+							}
+							sheetRecord.set(FBStatusindex, feedCom.get(6));
+							sheetRecord.set(lstTLcommentIndex, lstTlComment);
+							sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
+							sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
+							sheetRecord.set(sentBYIndex, feedCom.get(1));
+							sheetRecord.set(wrongfetsindex, wrongfeatures);
+							sheetRecord.set(fbcommentindex, feedCom.get(0));
+							plData.set(j, sheetRecord);
+						}catch(Exception e)
 						{
-							sheetRecord.add("");
+							System.err.println(e.getMessage());
+							plData.remove(j);
+							continue;
 						}
-						sheetRecord.set(FBStatusindex, feedCom.get(6));
-						sheetRecord.set(lstTLcommentIndex, lstTlComment);
-						sheetRecord.set(issuerIndex, feedbackIssuer.getFullName());
-						sheetRecord.set(engindex, sheetRecord.get(sentBYIndex));
-						sheetRecord.set(sentBYIndex, feedCom.get(1));
-						sheetRecord.set(wrongfetsindex, wrongfeatures);
-						sheetRecord.set(fbcommentindex, feedCom.get(0));
-						plData.set(j, sheetRecord);
 					}
 					ws.writeReviewData(plData, 2, 4);
 					k++;

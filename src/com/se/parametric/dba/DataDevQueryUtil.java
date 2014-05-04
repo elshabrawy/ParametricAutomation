@@ -1625,7 +1625,7 @@ public class DataDevQueryUtil
 						/** Mask */
 						if(NPIFlag)
 						{
-							
+
 							/** NPI Flag */
 							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
 							/** NPI news */
@@ -3620,22 +3620,27 @@ public class DataDevQueryUtil
 			List<Object[]> list = query.list();
 
 			String comment = "";
-			Object[] objArr = list.get(0);
-			for(int i = 0; i < list.size(); i++)
+			if(!list.isEmpty())
 			{
-				comment += (list.get(i)[0] == null) ? "" : list.get(i)[0].toString();
-				if(i != list.size() - 1)
+				Object[] objArr = list.get(0);
+				for(int i = 0; i < list.size(); i++)
 				{
-					comment += "$";
+					comment += (list.get(i)[0] == null) ? "" : list.get(i)[0].toString();
+					if(i != list.size() - 1)
+					{
+						comment += "$";
+					}
 				}
+				feed.add(comment);
+				feed.add(objArr[1].toString());//
+				feed.add(objArr[2].toString());
+				feed.add(objArr[3].toString());
+				feed.add(objArr[4].toString());// feedback source
+				feed.add(objArr[5].toString());// feedback status add by Ahmed Makram
+				feed.add(objArr[6].toString()); // feedback action by mohamed gawad
 			}
-			feed.add(comment);
-			feed.add(objArr[1].toString());//
-			feed.add(objArr[2].toString());
-			feed.add(objArr[3].toString());
-			feed.add(objArr[4].toString());// feedback source
-			feed.add(objArr[5].toString());// feedback status add by Ahmed Makram
-			feed.add(objArr[6].toString()); // feedback action by mohamed gawad
+			else
+				feed = null;
 
 		}catch(Exception e)
 		{
@@ -4266,10 +4271,10 @@ public class DataDevQueryUtil
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype, chkac.NAME sta";
 			Sql = Sql + "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
 			Sql = Sql + "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
-			Sql = Sql + "s WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('QA C";
-			Sql = Sql + "hecking') AND tp.supplier_id = s.id AND u.id = tp.user_id AND st.id = tp.TRACK";
-			Sql = Sql + "ING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp.DOCUMEN";
-			Sql = Sql + "T_ID AND chkac.ID = chp.ACTION_ID AND tp.USER_ID =359 GROUP BY s.name, P.name,";
+			Sql = Sql + "s WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "')";
+			Sql = Sql + " AND tp.supplier_id = s.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID";
+			Sql = Sql + " AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp.DOCUMEN";
+			Sql = Sql + "T_ID AND chkac.ID = chp.ACTION_ID AND tp.USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name,";
 			Sql = Sql + " chks.NAME, chkac.NAME";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list2.size(); i++)
@@ -4603,19 +4608,11 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status,Date startDate, Date endDate)
+	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status, Date startDate, Date endDate)
 	{
 		StringBuffer qury = new StringBuffer();
 		String Sql = "";
-		Sql = " SELECT GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
-		Sql = Sql + "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
-		Sql = Sql + " C.COM_ID, C.PART_NUMBER, GETSUPPLIERNAME (t.supplier_id) supName, GetTaskType";
-		Sql = Sql + "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
-		Sql = Sql + "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
-		Sql = Sql + "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
-		Sql = Sql + "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
-		Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID =  AND T.TRACK";
-		Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary + "')";
+
 		qury.append(Sql);
 		// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
 		// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12

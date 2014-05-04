@@ -258,27 +258,35 @@ public class QAChecks extends JPanel implements ActionListener
 			int statusIndex = sheetHeader.indexOf("Status");
 			ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 
-			for(int j = 0; j < plData.size(); j++)
+			for(int j = plData.size() - 1; j > -1; j--)
 			{
-				ArrayList<String> sheetRecord = plData.get(j);
-				String partNumber = sheetRecord.get(partIndex);
-				supplierName = sheetRecord.get(supplierIndex);
-				String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
-				// String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
-				// sheetRecord.set(CommentIndex, comment);
-				String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
-				ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-				for(int l = 0; l < 8; l++)
+				try
 				{
-					sheetRecord.add("");
-				}
-				sheetRecord.set(sentBYIndex, feedCom.get(1));
-				sheetRecord.set(WrongFeatureIndex, wrongfeatures);
-				sheetRecord.set(oldflagindex, qaflag);
-				sheetRecord.set(tlCommentIndex, feedCom.get(0));
-				sheetRecord.set(tlstatusIndex, feedCom.get(6));
+					ArrayList<String> sheetRecord = plData.get(j);
+					String partNumber = sheetRecord.get(partIndex);
+					supplierName = sheetRecord.get(supplierIndex);
+					String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
+					// String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
+					// sheetRecord.set(CommentIndex, comment);
+					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
+					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+					for(int l = 0; l < 8; l++)
+					{
+						sheetRecord.add("");
+					}
+					sheetRecord.set(sentBYIndex, feedCom.get(1));
+					sheetRecord.set(WrongFeatureIndex, wrongfeatures);
+					sheetRecord.set(oldflagindex, qaflag);
+					sheetRecord.set(tlCommentIndex, feedCom.get(0));
+					sheetRecord.set(tlstatusIndex, feedCom.get(6));
 
-				plData.set(j, sheetRecord);
+					plData.set(j, sheetRecord);
+				}catch(Exception e)
+				{
+					System.err.println(e.getMessage());
+					plData.remove(j);
+					continue;
+				}
 			}
 			ws.writeReviewData(plData, 2, statusIndex + 1);
 			k++;
@@ -306,7 +314,7 @@ public class QAChecks extends JPanel implements ActionListener
 		}
 		// tabbedPane.setSelectedIndex(1);
 		sheetpanel.openOfficeDoc();
-		ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status,startDate,endDate);
+		ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status, startDate, endDate);
 
 	}
 
