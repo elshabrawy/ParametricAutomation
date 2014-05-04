@@ -37,6 +37,7 @@ import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
 import com.se.parametric.util.ValidatePart;
+import com.sun.jnlp.ApiDialog;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XPropertySetInfo;
 import com.sun.star.lang.IndexOutOfBoundsException;
@@ -103,6 +104,7 @@ public class WorkingSheet
 	SheetPanel sheetPanel;
 	public List<String> statusValues = new ArrayList<String>();
 	public List<String> commentValues = new ArrayList<String>();
+	public ArrayList<String> npivalues = new ArrayList<String>();
 	private List<String> allPlNames;
 	List<String> doneFets = new ArrayList<String>();
 	List<String> coreFets = new ArrayList<String>();
@@ -235,6 +237,8 @@ public class WorkingSheet
 				cell.SetApprovedValues(statusValues, sheet.getCellRangeByPosition(column - 1, i + start, column - 1, i + start));
 				if(!commentValues.isEmpty())
 					cell.SetApprovedValues(commentValues, sheet.getCellRangeByPosition(column, i + start, column, i + start));
+				// if(!npivalues.isEmpty())
+
 			}
 		}catch(Exception e)
 		{
@@ -456,6 +460,11 @@ public class WorkingSheet
 				npiCellNo = HeaderList.size();
 				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 				cell.setText("NPI");
+				// setvalues
+				npivalues = new ArrayList<>();
+				npivalues.add("Yes");
+				npivalues.add("No");
+				cell.SetApprovedValues(npivalues, sheet.getCellRangeByPosition(npiCellNo, StatrtRecord + 1, npiCellNo, StatrtRecord + 1));
 				HeaderList.add(cell);
 				newsCellNo = HeaderList.size();
 				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
@@ -500,23 +509,22 @@ public class WorkingSheet
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangProtected(xHdrUnitrange, 0xB0AEAE);
 			System.out.println("Pl Features:" + plfets.size());
-			
-			
+
 			XCell codeCell = xHdrUnitrange.getCellByPosition(0, StatrtRecord - 1);
-			setCellColore(codeCell, new Integer(0xffcb05));//yellow
+			setCellColore(codeCell, new Integer(0xffcb05));// yellow
 			Cell cellcode = getCellByPosission(0, StatrtRecord - 1);
 			cellcode.setText("Code Feature");
-			
+
 			XCell coreCell = xHdrUnitrange.getCellByPosition(1, StatrtRecord - 1);
-			setCellColore(coreCell, new Integer(0x990000));//red
+			setCellColore(coreCell, new Integer(0x990000));// red
 			Cell cellcore = getCellByPosission(1, StatrtRecord - 1);
 			cellcore.setText("Core Feature");
-			
+
 			XCell corecodeCell = xHdrUnitrange.getCellByPosition(2, StatrtRecord - 1);
-			setCellColore(corecodeCell, new Integer(0x0000ff));//blue
+			setCellColore(corecodeCell, new Integer(0x0000ff));// blue
 			Cell cellcorecode = getCellByPosission(2, StatrtRecord - 1);
 			cellcorecode.setText("Core&Code");
-			
+
 			for(FeatureDTO featureDTO : plfets)
 			{
 				int startCol = HeaderList.size();
@@ -532,19 +540,19 @@ public class WorkingSheet
 				if(featureDTO.isCode())
 				{
 					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
-					setCellColore(doneCell, new Integer(0xffcb05));//yellow
+					setCellColore(doneCell, new Integer(0xffcb05));// yellow
 					codeFets.add(featureDTO.getFeatureName());
 				}
 				if(featureDTO.isCore())
 				{
 					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
-					setCellColore(doneCell, new Integer(0x990000));//red
+					setCellColore(doneCell, new Integer(0x990000));// red
 					coreFets.add(featureDTO.getFeatureName());
 				}
-				if(featureDTO.isCore()&&featureDTO.isCode())
+				if(featureDTO.isCore() && featureDTO.isCode())
 				{
 					XCell doneCell = xHdrUnitrange.getCellByPosition(startCol, StatrtRecord - 1);
-					setCellColore(doneCell, new Integer(0x0000ff));//blue
+					setCellColore(doneCell, new Integer(0x0000ff));// blue
 					codeFets.add(featureDTO.getFeatureName());
 					coreFets.add(featureDTO.getFeatureName());
 				}
@@ -1530,17 +1538,33 @@ public class WorkingSheet
 		XCellRange xcellrange = null;
 		int lastColNum = HeaderList.size();
 		String lastColumn = getColumnName(lastColNum);
+		ArrayList<String> sheetHeader = getHeader();
+		int npiIndex = sheetHeader.indexOf("NPI");
+		boolean npihasvalue = false;
 		canSave = true;
 		try
 		{
-			int lastRow = 100000;
-			part: for(int i = 3; i < lastRow; i++)
+			int lastRow = getLastRow();
+			part: for(int i = 3; i < lastRow + 1; i++)
 			{
+
 				String seletedRange = "A" + i + ":" + lastColumn + i;
 				xcellrange = sheet.getCellRangeByName(seletedRange);
 				System.out.println("Selected range " + seletedRange);
 				String famCross = "", generic = "";
 
+				if(NPIFlag)
+				{
+					if(npiIndex > 0)
+					{
+						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+						String npi = getCellText(npiCell).getString();
+						if(!npi.isEmpty() && !npihasvalue)
+						{
+							npihasvalue = true;
+						}
+					}
+				}
 				boolean appFlag = true;
 				XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
 				String pn = getCellText(pnCell).getString();
@@ -1728,6 +1752,12 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, true);
 
 			}
+			if(!npihasvalue&&canSave)
+			{
+				partvalidation.setStatus("NPI Must has at least one value");
+				writeValidtionStatus(xcellrange, false);
+				canSave = false;
+			}
 			JOptionPane.showMessageDialog(null, "Validation Finished");
 		}catch(Exception e)
 		{
@@ -1742,6 +1772,24 @@ public class WorkingSheet
 		XCellRange xcellrange = null;
 		int lastColNum = HeaderList.size();
 		String lastColumn = getColumnName(lastColNum);
+		ArrayList<String> header = getHeader();
+		int partcell = header.indexOf("Part Number");
+		int statuscellidx = header.indexOf("Status");
+		int commentcellidx = header.indexOf("Comment");
+		int supcell = header.indexOf("Supplier Name");
+		int famcell = header.indexOf("Family");
+		int maskcell = header.indexOf("Mask");
+		int Taxonomyindex = header.indexOf("Taxonomy");
+		int fbtypeidx = header.indexOf("Feedback Type");
+		int Cactionindex = header.indexOf("C_Action");
+		int Pactionindex = header.indexOf("P_Action");
+		int RootcauseIndex = header.indexOf("RootCause");
+		int Actionduedateindex = header.indexOf("ActionDueDate");
+		int wrongfetsindex = header.indexOf("Wrong Features");
+		int genericCellNoindex = header.indexOf("Generic");
+		int famCrossCellNoindex = header.indexOf("Family Cross");
+		int npiIndex = header.indexOf("NPI");
+		boolean npihasvalue = false;
 		canSave = true;
 		try
 		{
@@ -1752,24 +1800,18 @@ public class WorkingSheet
 				xcellrange = sheet.getCellRangeByName(seletedRange);
 				System.out.println("Selected range " + seletedRange);
 				String famCross = "", generic = "";
-
-				ArrayList<String> header = getHeader();
-				int partcell = header.indexOf("Part Number");
-				int statuscellidx = header.indexOf("Status");
-				int commentcellidx = header.indexOf("Comment");
-				int supcell = header.indexOf("Supplier Name");
-				int famcell = header.indexOf("Family");
-				int maskcell = header.indexOf("Mask");
-				int Taxonomyindex = header.indexOf("Taxonomy");
-				int fbtypeidx = header.indexOf("Feedback Type");
-				int Cactionindex = header.indexOf("C_Action");
-				int Pactionindex = header.indexOf("P_Action");
-				int RootcauseIndex = header.indexOf("RootCause");
-				int Actionduedateindex = header.indexOf("ActionDueDate");
-				int wrongfetsindex = header.indexOf("Wrong Features");
-				int genericCellNoindex = header.indexOf("Generic");
-				int famCrossCellNoindex = header.indexOf("Family Cross");
-
+				if(NPIFlag)
+				{
+					if(npiIndex > 0)
+					{
+						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+						String npi = getCellText(npiCell).getString();
+						if(!npi.isEmpty() && !npihasvalue)
+						{
+							npihasvalue = true;
+						}
+					}
+				}
 				boolean appFlag = true;
 				XCell pnCell = xcellrange.getCellByPosition(partcell, 0);
 				String pn = getCellText(pnCell).getString();
@@ -2058,6 +2100,12 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, true);
 
 			}
+			if(!npihasvalue&&canSave)
+			{
+				partvalidation.setStatus("NPI Must has at least one value");
+				writeValidtionStatus(xcellrange, false);
+				canSave = false;
+			}
 			// JOptionPane.showMessageDialog(null, "Validation Finished");
 		}catch(Exception e)
 		{
@@ -2072,6 +2120,24 @@ public class WorkingSheet
 		XCellRange xcellrange = null;
 		int lastColNum = HeaderList.size();
 		String lastColumn = getColumnName(lastColNum);
+		ArrayList<String> header = getHeader();
+		int partcell = header.indexOf("Part Number");
+		int statuscellidx = header.indexOf("Status");
+		int commentcellidx = header.indexOf("Comment");
+		int supcell = header.indexOf("Supplier Name");
+		int famcell = header.indexOf("Family");
+		int maskcell = header.indexOf("Mask");
+		int Taxonomyindex = header.indexOf("Taxonomy");
+		int fbtypeidx = header.indexOf("Feedback Type");
+		int Cactionindex = header.indexOf("C_Action");
+		int Pactionindex = header.indexOf("P_Action");
+		int RootcauseIndex = header.indexOf("RootCause");
+		int Actionduedateindex = header.indexOf("ActionDueDate");
+		int wrongfetsindex = header.indexOf("Wrong Features");
+		int genericCellNoindex = header.indexOf("Generic");
+		int famCrossCellNoindex = header.indexOf("Family Cross");
+		int npiIndex = header.indexOf("NPI");
+		boolean npihasvalue = false;
 		canSave = true;
 		try
 		{
@@ -2083,23 +2149,18 @@ public class WorkingSheet
 				System.out.println("Selected range " + seletedRange);
 				String famCross = "", generic = "";
 
-				ArrayList<String> header = getHeader();
-				int partcell = header.indexOf("Part Number");
-				int statuscellidx = header.indexOf("Status");
-				int commentcellidx = header.indexOf("Comment");
-				int supcell = header.indexOf("Supplier Name");
-				int famcell = header.indexOf("Family");
-				int maskcell = header.indexOf("Mask");
-				int Taxonomyindex = header.indexOf("Taxonomy");
-				int fbtypeidx = header.indexOf("Feedback Type");
-				int Cactionindex = header.indexOf("C_Action");
-				int Pactionindex = header.indexOf("P_Action");
-				int RootcauseIndex = header.indexOf("RootCause");
-				int Actionduedateindex = header.indexOf("ActionDueDate");
-				int wrongfetsindex = header.indexOf("Wrong Features");
-				int genericCellNoindex = header.indexOf("Generic");
-				int famCrossCellNoindex = header.indexOf("Family Cross");
-
+				if(NPIFlag)
+				{
+					if(npiIndex > 0)
+					{
+						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+						String npi = getCellText(npiCell).getString();
+						if(!npi.isEmpty() && !npihasvalue)
+						{
+							npihasvalue = true;
+						}
+					}
+				}
 				boolean appFlag = true;
 				XCell pnCell = xcellrange.getCellByPosition(partcell, 0);
 				String pn = getCellText(pnCell).getString();
@@ -2346,6 +2407,12 @@ public class WorkingSheet
 
 				writeValidtionStatus(xcellrange, true);
 
+			}
+			if(!npihasvalue&&canSave)
+			{
+				partvalidation.setStatus("NPI Must has at least one value");
+				writeValidtionStatus(xcellrange, false);
+				canSave = false;
 			}
 			// JOptionPane.showMessageDialog(null, "Validation Finished");
 		}catch(Exception e)
@@ -3213,7 +3280,7 @@ public class WorkingSheet
 				missedFet = "Missed Feature";
 				setCellColore(cell, 0xD2254D);
 				appFlag = false;
-//				npiCellNo = HeaderList.size();
+				// npiCellNo = HeaderList.size();
 				XCell npiFlagcell = xcellrange.getCellByPosition(npiCellNo, 0);
 				String npiFlag = getCellText(npiFlagcell).getString();
 				if(npiFlag.equalsIgnoreCase("Yes") && doneFets.indexOf(fetName) != -1)
