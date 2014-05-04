@@ -306,7 +306,7 @@ public class QAChecks extends JPanel implements ActionListener
 		}
 		// tabbedPane.setSelectedIndex(1);
 		sheetpanel.openOfficeDoc();
-		ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status);
+		ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status,startDate,endDate);
 
 	}
 
