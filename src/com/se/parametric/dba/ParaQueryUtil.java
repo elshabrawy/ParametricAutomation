@@ -1,7 +1,5 @@
 package com.se.parametric.dba;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,45 +15,32 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import javassist.expr.NewArray;
-
-import javax.print.Doc;
 import javax.swing.JOptionPane;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.loader.custom.Return;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
-
-import osheet.WorkingSheet;
 
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.ParametricQueryUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
 import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.CheckFeature;
@@ -63,7 +48,6 @@ import com.se.automation.db.client.mapping.Condition;
 import com.se.automation.db.client.mapping.DevelopmentCommentValue;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.DocumentDownloadJob;
-import com.se.automation.db.client.mapping.DocumentFeedback;
 import com.se.automation.db.client.mapping.ExtractorPdfData;
 import com.se.automation.db.client.mapping.ExtractorValueMapping;
 import com.se.automation.db.client.mapping.Family;
@@ -71,8 +55,6 @@ import com.se.automation.db.client.mapping.FamilyCross;
 import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.GenericFamily;
 import com.se.automation.db.client.mapping.MapGeneric;
-import com.se.automation.db.client.mapping.MasterFamilyGeneric;
-import com.se.automation.db.client.mapping.MasterPartMask;
 import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NoParametricDocuments;
@@ -83,8 +65,6 @@ import com.se.automation.db.client.mapping.ParametricFeedbackCycle;
 import com.se.automation.db.client.mapping.ParametricReviewData;
 import com.se.automation.db.client.mapping.ParametricSeparationGroup;
 import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.PartMaskValue;
-import com.se.automation.db.client.mapping.PartMaskValueId;
 import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
 import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
@@ -133,17 +113,12 @@ import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.AppContext;
-import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.FeatureDTO;
 import com.se.parametric.dto.GrmUserDTO;
-import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.RelatedFeaturesDTO;
-import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.excel.ExcelHandler2003;
-import com.se.parametric.util.StatusName;
-import com.sun.star.lib.uno.environments.remote.remote_environment;
 
 public class ParaQueryUtil
 {
@@ -6454,6 +6429,32 @@ public class ParaQueryUtil
 			e.printStackTrace();
 		}
 		return users;
+	}
+
+	/**
+	 * 
+	 * @author Ahmed_Eldalatony
+	 */
+	public static Document getDocumentById(BigDecimal documentId, Session session)
+	{
+		Document doc = null;
+		try
+		{
+			Criteria crit = session.createCriteria(Document.class);
+			crit.add(Restrictions.eq("id", documentId));
+			doc = (Document) crit.uniqueResult();
+			return doc;
+
+		}catch(NullPointerException ex)
+		{
+			ex.printStackTrace();
+			return doc;
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return doc;
+
 	}
 
 }

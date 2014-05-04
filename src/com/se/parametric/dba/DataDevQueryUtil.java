@@ -29,6 +29,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.DocumentFeedback;
@@ -68,7 +69,6 @@ import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.SummaryDTO;
 import com.se.parametric.dto.TableInfoDTO;
-import com.se.parametric.util.StatusName;
 
 public class DataDevQueryUtil
 {

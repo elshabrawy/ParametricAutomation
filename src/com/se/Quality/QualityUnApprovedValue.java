@@ -22,6 +22,7 @@ import javax.swing.border.SoftBevelBorder;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -35,7 +36,6 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.util.ImagePanel;
-import com.se.parametric.util.StatusName;
 
 public class QualityUnApprovedValue extends JPanel implements ActionListener
 {

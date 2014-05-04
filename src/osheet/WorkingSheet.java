@@ -19,6 +19,7 @@ import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.PartComponent;
@@ -35,7 +36,6 @@ import com.se.parametric.dto.FeatureDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
-import com.se.parametric.util.StatusName;
 import com.se.parametric.util.ValidatePart;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XPropertySetInfo;

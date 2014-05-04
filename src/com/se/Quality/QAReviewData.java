@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,8 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
+
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Document;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
@@ -34,14 +38,13 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ImagePanel;
-import com.se.parametric.util.StatusName;
 
 public class QAReviewData extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
 	SheetPanel SummaryPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel, Summarytab,flowChart;
+	JPanel tabSheet, selectionPanel, Summarytab, flowChart;
 	JPanel devSheetButtonPanel, summaryButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
@@ -167,7 +170,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
 		tabbedPane.addTab("Development Flow", null, flowChart, null);
-		
+
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
@@ -599,5 +602,5 @@ public class QAReviewData extends JPanel implements ActionListener
 		alertsPanel2.updateFlags(flags);
 
 	}
-	
+
 }

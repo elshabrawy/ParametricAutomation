@@ -43,6 +43,7 @@ import com.se.automation.db.client.mapping.TblPdfCompare;
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.FeatureValuesDTO;
 import com.se.automation.db.client.dto.MainDataFeatureValuesDTO;
@@ -100,7 +101,6 @@ import com.se.automation.db.client.mapping.Value;
 import com.se.automation.db.client.mapping.ValueType;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmUser;
-import com.se.parametric.util.StatusName;
 import com.se.parametric.util.ValidatePart;
 
 public class ParametricDevServerUtil

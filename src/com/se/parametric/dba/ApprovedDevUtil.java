@@ -19,6 +19,7 @@ import org.hibernate.exception.ConstraintViolationException;
 
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
 import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.Condition;
@@ -51,7 +52,6 @@ import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.FeedBackData;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
-import com.se.parametric.util.StatusName;
 
 public class ApprovedDevUtil
 {

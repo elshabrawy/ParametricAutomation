@@ -21,6 +21,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.grm.client.mapping.GrmGroup;
@@ -36,7 +37,6 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
-import com.se.parametric.util.StatusName;
 
 public class TLFeedBack extends JPanel implements ActionListener
 {

@@ -6,37 +6,32 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
-import org.apache.avro.io.parsing.Symbol.Alternative;
 import org.hibernate.Session;
 import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Pl;
-import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.autoFill.AutoFill;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -50,7 +45,6 @@ import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
 import com.se.parametric.util.ImagePanel;
-import com.se.parametric.util.StatusName;
 import com.sun.star.ucb.Priority;
 import com.se.parametric.autoFill.AutoFill;
 
@@ -65,7 +59,7 @@ public class Developement extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel selectionPanel, tabSheet, separationTab, alerts,flowChart;
+	JPanel selectionPanel, tabSheet, separationTab, alerts, flowChart;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	// Update mainInfo = new Update();
 	JTabbedPane tabbedPane;
@@ -207,10 +201,10 @@ public class Developement extends JPanel implements ActionListener
 		separationTab.add(separationPanel);
 		separationTab.add(separationButtonsPanel);
 		separationTab.add(alertsPanel2);
-		
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, width, height - 100);
-		
+
 		add(tabbedPane);
 
 		// ArrayList<String> sheetButtonLabels = new ArrayList<String>();

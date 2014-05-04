@@ -26,6 +26,7 @@ import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
+import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.TrackingParametric;
@@ -41,7 +42,6 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
-import com.se.parametric.util.StatusName;
 import com.sun.star.ucb.Priority;
 
 public class Update extends JPanel implements ActionListener
