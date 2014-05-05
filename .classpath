@@ -8,7 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/AutomationDLGWTLib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GRM-DB"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jfx"/>
-	<classpathentry kind="lib" path="D:/TestSpace/parametric/JTattooDemo.jar"/>
-	<classpathentry kind="lib" path="D:/TestSpace/parametric/jcalendar-1.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/lib/jcalendar-1.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/lib/JTattooDemo.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
