@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -26,6 +27,7 @@ import osheet.WorkingSheet;
 
 import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Document;
+import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.grm.client.mapping.GrmGroup;
@@ -310,9 +312,10 @@ public class QAFeedBack extends JPanel implements ActionListener
 			// ws.setReviewHeader(Arrays.asList("Dev Comment", "QA Comment"));
 			if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, taskType, status, startDate, endDate, null))
 				ws.setNPIflag(true);
-			ws.setQAReviewHeader(Arrays.asList("Old Flag", "Status", "Wrong Feature", "Comment", "Issued By", "TL Status", "TLComment", "Validation Comment"), true);
+			ws.setQAReviewHeader(Arrays.asList("Old Flag", "Old Comment", "Status", "Wrong Feature", "Comment", "Root Cause", "Corrective Action", "Preventive Action", "Due date", "Issued By", "TL Status", "TLComment", "Validation Comment"), true);
 			ArrayList<String> sheetHeader = ws.getHeader();
 			int oldflagindex = sheetHeader.indexOf("Old Flag");
+			int oldcommindex = sheetHeader.indexOf("Old Comment");
 			int partIndex = sheetHeader.indexOf("Part Number");
 			int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 			int ComidIndex = sheetHeader.indexOf("Comid");
@@ -321,6 +324,10 @@ public class QAFeedBack extends JPanel implements ActionListener
 			int supplierIndex = sheetHeader.indexOf("Supplier Name");
 			int sentBYIndex = sheetHeader.indexOf("Issued By");
 			int statusIndex = sheetHeader.indexOf("Status");
+			int CAIndex = sheetHeader.indexOf("Corrective Action");
+			int PAIndex = sheetHeader.indexOf("Preventive Action");
+			int RCIndex = sheetHeader.indexOf("Root Cause");
+			int ADIndex = sheetHeader.indexOf("Due date");
 			ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 
 			for(int j = plData.size() - 1; j > -1; j--)
@@ -328,23 +335,34 @@ public class QAFeedBack extends JPanel implements ActionListener
 				try
 				{
 					ArrayList<String> sheetRecord = plData.get(j);
-					String partNumber = sheetRecord.get(partIndex);
-					supplierName = sheetRecord.get(supplierIndex);
-					String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
-					// String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
-					// sheetRecord.set(CommentIndex, comment);
-					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
-					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-					for(int l = 0; l < 8; l++)
+					for(int l = 0; l < 12; l++)
 					{
 						sheetRecord.add("");
 					}
+					String partNumber = sheetRecord.get(partIndex);
+					supplierName = sheetRecord.get(supplierIndex);
+					String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
+					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
+					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+					String lstqaComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+					ParaFeedbackAction action = null;
+					action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+					if(action != null)
+					{
+						sheetRecord.set(CAIndex, action.getCAction());
+						sheetRecord.set(PAIndex, action.getPAction());
+						sheetRecord.set(RCIndex, action.getRootCause());
+						Date date = action.getActionDueDate();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						sheetRecord.set(ADIndex, date == null ? "" : sdf.format(date).toString());
+						// sheetRecord.set(ADIndex, action.getActionDueDate().toString());
+					}
+					sheetRecord.set(oldcommindex, lstqaComment);
 					sheetRecord.set(sentBYIndex, feedCom.get(1));
 					sheetRecord.set(WrongFeatureIndex, wrongfeatures);
 					sheetRecord.set(oldflagindex, qaflag);
 					sheetRecord.set(tlCommentIndex, feedCom.get(0));
 					sheetRecord.set(tlstatusIndex, feedCom.get(6));
-
 					plData.set(j, sheetRecord);
 				}catch(Exception e)
 				{
@@ -353,7 +371,6 @@ public class QAFeedBack extends JPanel implements ActionListener
 					continue;
 				}
 			}
-
 			ws.writeReviewData(plData, 2, statusIndex + 1);
 			k++;
 		}
@@ -415,9 +432,10 @@ public class QAFeedBack extends JPanel implements ActionListener
 			wsMap.put(pl, ws);
 			if(docInfoDTO.getTaskType().contains("NPI"))
 				ws.setNPIflag(true);
-			ws.setQAReviewHeader(Arrays.asList("Old Flag", "Status", "Wrong Feature", "Comment", "Issued By", "TL Status", "TLComment", "Validation Comment"), true);
+			ws.setQAReviewHeader(Arrays.asList("Old Flag", "Old Comment", "Status", "Wrong Feature", "Comment", "Root Cause", "Corrective Action", "Preventive Action", "Due date", "Issued By", "TL Status", "TLComment", "Validation Comment"), true);
 			ArrayList<String> sheetHeader = ws.getHeader();
 			int oldflagindex = sheetHeader.indexOf("Old Flag");
+			int oldcommindex = sheetHeader.indexOf("Old Comment");
 			int partIndex = sheetHeader.indexOf("Part Number");
 			int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 			int ComidIndex = sheetHeader.indexOf("Comid");
@@ -426,6 +444,10 @@ public class QAFeedBack extends JPanel implements ActionListener
 			int supplierIndex = sheetHeader.indexOf("Supplier Name");
 			int sentBYIndex = sheetHeader.indexOf("Issued By");
 			int statusIndex = sheetHeader.indexOf("Status");
+			int CAIndex = sheetHeader.indexOf("Corrective Action");
+			int PAIndex = sheetHeader.indexOf("Preventive Action");
+			int RCIndex = sheetHeader.indexOf("Root Cause");
+			int ADIndex = sheetHeader.indexOf("Due date");
 			ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 
 			for(int j = plData.size() - 1; j > -1; j--)
@@ -433,17 +455,29 @@ public class QAFeedBack extends JPanel implements ActionListener
 				try
 				{
 					ArrayList<String> sheetRecord = plData.get(j);
-					String partNumber = sheetRecord.get(partIndex);
-					supplierName = sheetRecord.get(supplierIndex);
-					String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
-					// String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
-					// sheetRecord.set(CommentIndex, comment);
-					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
-					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-					for(int l = 0; l < 8; l++)
+					for(int l = 0; l < 12; l++)
 					{
 						sheetRecord.add("");
 					}
+					String partNumber = sheetRecord.get(partIndex);
+					supplierName = sheetRecord.get(supplierIndex);
+					String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
+					String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
+					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
+					String lstqaComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
+					ParaFeedbackAction action = null;
+					action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+					if(action != null)
+					{
+						sheetRecord.set(CAIndex, action.getCAction());
+						sheetRecord.set(PAIndex, action.getPAction());
+						sheetRecord.set(RCIndex, action.getRootCause());
+						Date date = action.getActionDueDate();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						sheetRecord.set(ADIndex, date == null ? "" : sdf.format(date).toString());
+						// sheetRecord.set(ADIndex, action.getActionDueDate().toString());
+					}
+					sheetRecord.set(oldcommindex, lstqaComment);
 					sheetRecord.set(sentBYIndex, feedCom.get(1));
 					sheetRecord.set(WrongFeatureIndex, wrongfeatures);
 					sheetRecord.set(oldflagindex, qaflag);
