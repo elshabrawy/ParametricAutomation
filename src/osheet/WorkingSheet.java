@@ -21,9 +21,11 @@ import org.hibernate.exception.ConstraintViolationException;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.ComponentDTO;
+import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Pl;
+import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TrackingParametric;
@@ -944,32 +946,6 @@ public class WorkingSheet
 			statusValues.add("R");
 			statusValues.add("W");
 			statusValues.add("Fast");
-			// A/S/R/W/F
-			// setMainHeaders();
-			// System.out.println("Pl Features:" + plfets.size());
-			//
-			// for (FeatureDTO featureDTO : plfets) {
-			// int currentCol = HeaderList.size();
-			// cell = getCellByPosission(currentCol, StatrtRecord);
-			// cell.setText(featureDTO.getFeatureName());
-			// if (featureDTO.getUnit() != null) {
-			// String uint = featureDTO.getUnit();
-			// Cell cellunit = getCellByPosission(currentCol, StatrtRecord - 1);
-			// cellunit.setText(uint);
-			// }
-			// List<String> appValues = featureDTO.getFeatureapprovedvalue();
-			// ApprovedFeatuer.put(featureDTO.getFeatureName(), appValues);
-			// System.out.println(featureDTO.getFeatureName() + " AppValues size=" + appValues.size());
-			// cell.SetApprovedValues(appValues, sheet.getCellRangeByPosition(currentCol,));
-			// HeaderList.add(cell);
-			// // currentCol++;
-			// }
-			// setValidationHeaders();
-			// int lastColNum = HeaderList.size() + 4;
-			// String lastColumn = getColumnName(lastColNum);
-			// String hdrUintRange = "A" + 1 + ":" + lastColumn + 2;
-			// xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
-			// setRangColor(xHdrUnitrange, 0xB0AEAE);
 
 		}catch(Exception ex)
 		{
@@ -1752,7 +1728,7 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, true);
 
 			}
-			if(!npihasvalue&&canSave)
+			if(NPIFlag && !npihasvalue && canSave)
 			{
 				partvalidation.setStatus("NPI Must has at least one value");
 				writeValidtionStatus(xcellrange, false);
@@ -1920,16 +1896,16 @@ public class WorkingSheet
 						canSave = false;
 						continue part;
 					}
-					if(status.equals("Approved Eng.") && !fbtype.equals("Internal"))
-					{
-						// JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
-						partvalidation.setStatus("You Can set Approved Eng. on Internal Feedback only");
-						setCellColore(statusCell, 0xD2254D);
-						setCellColore(fbtypeCell, 0xD2254D);
-						writeValidtionStatus(xcellrange, false);
-						canSave = false;
-						continue part;
-					}
+					// if(status.equals("Approved Eng.") && !fbtype.equals("Internal"))
+					// {
+					// // JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
+					// partvalidation.setStatus("You Can set Approved Eng. on Internal Feedback only");
+					// setCellColore(statusCell, 0xD2254D);
+					// setCellColore(fbtypeCell, 0xD2254D);
+					// writeValidtionStatus(xcellrange, false);
+					// canSave = false;
+					// continue part;
+					// }
 
 					if(status.equals("Updated") && fbtype.equals("QA"))
 					{
@@ -2100,7 +2076,7 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, true);
 
 			}
-			if(!npihasvalue&&canSave)
+			if(NPIFlag && !npihasvalue && canSave)
 			{
 				partvalidation.setStatus("NPI Must has at least one value");
 				writeValidtionStatus(xcellrange, false);
@@ -2408,7 +2384,7 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, true);
 
 			}
-			if(!npihasvalue&&canSave)
+			if(NPIFlag && !npihasvalue && canSave)
 			{
 				partvalidation.setStatus("NPI Must has at least one value");
 				writeValidtionStatus(xcellrange, false);
@@ -2647,6 +2623,9 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
+				DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.cmTransfere, QAName); // // Eng
+				DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
+				// DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
 
 				if(summarydata)
 				{
@@ -3259,6 +3238,83 @@ public class WorkingSheet
 		{
 			e.printStackTrace();
 		}
+
+	}
+
+	public void saveQAChecksAction(String checker,String engname)
+	{
+		if(canSave)
+		{
+			try
+			{
+
+				ArrayList<String> sheetHeader = getHeader();
+				
+				int statusIndex = sheetHeader.indexOf("Status");
+				int RightValueIndex = sheetHeader.indexOf("RightValue");
+				int FamilyIndex = sheetHeader.indexOf("Family");
+				int maskcell = sheetHeader.indexOf("Mask");
+				int PLcell = sheetHeader.indexOf("ProductLine");
+				int Titleidx = sheetHeader.indexOf("DatasheetTitle");
+				int pdfidx = sheetHeader.indexOf("Datasheet");
+				int supcell = sheetHeader.indexOf("Vendor");
+				int partcell = sheetHeader.indexOf("Part");
+				int Flagcell = sheetHeader.indexOf("Flag");
+				int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
+				int FeatureNameindex = sheetHeader.indexOf("FeatureName");
+				int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
+				
+				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
+				
+				for(int i = 0; i < fileData.size(); i++)
+				{
+					QAChecksDTO qachk = new QAChecksDTO();
+					ArrayList<String> partData = fileData.get(i);
+					String status = partData.get(statusIndex);
+					String RightValue = partData.get(RightValueIndex);
+					String Family = partData.get(FamilyIndex);
+					String Mask = partData.get(maskcell);
+					String ProductLine = partData.get(PLcell);
+					String DatasheetTitle = partData.get(Titleidx);
+					String Datasheet = partData.get(pdfidx);
+					String Vendor = partData.get(supcell);
+					String Part = partData.get(partcell);
+					String Flag = partData.get(Flagcell);
+					String NanAlphaPart = partData.get(NanAlphaPartindex);
+					String FeatureName = partData.get(FeatureNameindex);
+					String FeatureValue = partData.get(FeatureValueindex);
+					qachk.setNanAlphaPart(NanAlphaPart);
+					PartComponent part = getComponentBycomid(, session);
+					qachk.setPart(part);
+					qachk.setVendor(part.getSupplierId());
+					qachk.setDatasheet(part.getDocument());
+					qachk.setDatasheetTitle(DatasheetTitle);
+					qachk.setMask(part.getMasterPartMask());
+					qachk.setFamily(part.getFamily());
+					Pl pl = ParaQueryUtil.getPlByPlName(session,ProductLine);
+					qachk.setProductLine(pl);
+					if(checker.equals(StatusName.Mask_Multi_Data) || checker.equals(StatusName.Root_Part_Checker))
+					{
+//						PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+						qachk.setFeatureName(FeatureName);
+						qachk.setFeatureValue(FeatureValue);
+					}
+					if(!status.equals("Exception")&&RightValue.isEmpty())
+					{
+						JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
+					}
+					DataDevQueryUtil.updateqacheckspart(qachk);
+				}
+					
+				JOptionPane.showMessageDialog(null, "Saving Data Finished");
+			}catch(Exception e)
+			{
+				JOptionPane.showMessageDialog(null, "Can't Save Data");
+				e.printStackTrace();
+			}
+		}
+		else
+			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 
 	}
 
@@ -4289,121 +4345,96 @@ public class WorkingSheet
 		}
 	}
 
-	// public void saveQAFeedBackAction(String QAName)
-	// {
-	//
-	// try
-	// {
-	// Set<String> rejectedPdfs = new HashSet<String>();
-	// Set<String> acceptedPdfs = new HashSet<String>();
-	// List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
-	// ArrayList<String> sheetHeader = getHeader();
-	// // List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
-	// ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-	// String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
-	// for(int i = 0; i < fileData.size(); i++)
-	// {
-	// PartInfoDTO partInfo = new PartInfoDTO();
-	// ArrayList<String> partData = fileData.get(i);
-	// String status = partData.get(2);
-	// String comment = partData.get(3);
-	// String vendorName = partData.get(5);
-	// String plName = partData.get(0);
-	// String engName = partData.get(1);
-	// pn = partData.get(PartCell);
-	// pdfUrl = partData.get(pdfCellNo);
-	// family = partData.get(familyCell);
-	// mask = partData.get(maskCellNo);
-	// desc = partData.get(descriptionColumn);
-	// if(plType.equals("Semiconductor"))
-	// {
-	// famCross = partData.get(famCrossCellNo);
-	// generic = partData.get(genericCellNo);
-	// }
-	// if(NPIFlag)
-	// NPIPart = partData.get(npiCellNo);
-	// if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
-	// {
-	// partInfo.setFeedbackType("LUT");
-	// }
-	// else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
-	// {
-	// partInfo.setFeedbackType("Acquisition");
-	// }
-	//
-	// partInfo.setPN(pn);
-	// partInfo.setSupplierName(vendorName);
-	// partInfo.setStatus(status);
-	// partInfo.setComment(comment);
-	// partInfo.setIssuedBy(QAName);
-	// partInfo.setIssuedTo(engName);
-	// partInfo.setPlName(selectedPL);
-	// partInfo.setNPIFlag(NPIPart);
-	// partInfo.setDescription(desc);
-	// partInfo.setPdfUrl(pdfUrl);
-	// partInfo.setFamily(family);
-	// partInfo.setFamilycross(famCross);
-	// partInfo.setMask(mask);
-	// partInfo.setGeneric(generic);
-	//
-	// if("Rejected".equals(status))
-	// {
-	// if("".equals(comment))
-	// {
-	// System.out.println("Comment shouldn't be null");
-	// JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
-	// return;
-	// }
-	// else
-	// {
-	// feedbackParts.add(partInfo);
-	// if(acceptedPdfs.contains(pdfUrl))
-	// {
-	// acceptedPdfs.remove(pdfUrl);
-	// }
-	// rejectedPdfs.add(pdfUrl);
-	// }
-	//
-	// }
-	// else if("Approved".equals(status))
-	// {
-	// if(!rejectedPdfs.contains(pdfUrl))
-	// {
-	// acceptedPdfs.add(pdfUrl);
-	// }
-	//
-	// }
-	// // else if("Updated".equals(status))
-	// // {
-	// // // // List<String> fetVals = row.subList(10, 54);
-	// // // List<String> fetVals = partData.subList(startParametricFT, endParametricFT);
-	// // // Map<String, String> fetsMap = new HashMap<String, String>();
-	// // // for (int j = 0; j < fetNames.size(); j++) {
-	// // // String fetName = fetNames.get(j);
-	// // // String fetVal = fetVals.get(j);
-	// // // fetsMap.put(fetName, fetVal);
-	// // // }
-	// // // partInfo.setFetValues(fetsMap);
-	// // partInfo.setFetValues(readRowValues(partData));
-	// // ParaQueryUtil.updateParamtric(partInfo);
-	// // // ParaQueryUtil.updateParametricReviewData(fetNames, fetVals, partInfo);
-	// // if(!rejectedPdfs.contains(pdfUrl))
-	// // {
-	// // acceptedPdfs.add(pdfUrl);
-	// // }
-	// // }
-	//
-	// // ParaQueryUtil.updateDocStatus( teamLeaderName, row);
-	// }
-	// DataDevQueryUtil.saveQAPartsFeedback(feedbackParts, "Wrong Data", "Rejected","QA");
-	// DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, "Waitting CM Transfere");
-	// JOptionPane.showMessageDialog(null, "Saving Data Finished");
-	// }catch(Exception e)
-	// {
-	// JOptionPane.showMessageDialog(null, "Can't Save Data");
-	// e.printStackTrace();
-	// }
-	//
-	// }
+	public void setqaChecksheader(String checkerType)
+	{
+		try
+		{
+
+			HeaderList = new ArrayList<Cell>();
+
+			Cell cell = getCellByPosission(0, 0);
+			cell.setText("NanAlphaPart");
+			HeaderList.add(cell);
+			cell = getCellByPosission(1, 0);
+			cell.setText("Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(2, 0);
+			cell.setText("Part");
+			HeaderList.add(cell);
+			cell = getCellByPosission(3, 0);
+			cell.setText("Vendor");
+			HeaderList.add(cell);
+			cell = getCellByPosission(4, 0);
+			cell.setText("Datasheet");
+			HeaderList.add(cell);
+			cell = getCellByPosission(5, 0);
+			cell.setText("DatasheetTitle");
+			HeaderList.add(cell);
+			cell = getCellByPosission(6, 0);
+			cell.setText("ProductLine");
+			HeaderList.add(cell);
+			cell = getCellByPosission(7, 0);
+			cell.setText("Mask");
+			HeaderList.add(cell);
+			cell = getCellByPosission(8, 0);
+			cell.setText("Family");
+			HeaderList.add(cell);
+			cell = getCellByPosission(9, 0);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(10, 0);
+			cell.setText("RightValue");
+			HeaderList.add(cell);
+
+			if(checkerType.equals(StatusName.NonAlpha_Multi_Supplier))
+			{
+				statusValues.add("Exception");
+				statusValues.add("Wrong Taxonomy");
+				statusValues.add("Wrong Part");
+
+			}
+			else if(checkerType.equals(StatusName.Mask_Multi_Supplier))
+			{
+				statusValues.add("Exception");
+				statusValues.add("Wrong Taxonomy");
+				statusValues.add("Wrong Part");
+				statusValues.add("Update Mask");
+			}
+			else if(checkerType.equals(StatusName.Family_Multi_Supplier))
+			{
+				statusValues.add("Exception");
+				statusValues.add("Wrong Taxonomy");
+				statusValues.add("Wrong Part");
+				statusValues.add("Update Family");
+			}
+			else if(checkerType.equals(StatusName.Mask_Multi_Data))
+			{
+				cell = getCellByPosission(11, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(12, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+
+				statusValues.add("Exception");
+				statusValues.add("Wrong Part");
+				statusValues.add("Update Parametric Data");
+				statusValues.add("Update Mask");
+			}
+			else if(checkerType.equals(StatusName.Root_Part_Checker))
+			{
+				statusValues.add("Exception");
+				statusValues.add("Wrong Part");
+				statusValues.add("Update Parametric Data");
+				statusValues.add("Update Family");
+			}
+
+		}catch(Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 }
