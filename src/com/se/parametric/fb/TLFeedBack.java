@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -553,7 +554,10 @@ public class TLFeedBack extends JPanel implements ActionListener
 								sheetRecord.set(Cactionindex, action.getCAction());
 								sheetRecord.set(Pactionindex, action.getPAction());
 								sheetRecord.set(RootcauseIndex, action.getRootCause());
-								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+								Date date = action.getActionDueDate();
+								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+								sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
+//								sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
 							}
 							for(int l = 0; l < 9; l++)
 							{
