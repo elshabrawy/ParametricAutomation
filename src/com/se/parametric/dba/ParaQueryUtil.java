@@ -1175,6 +1175,23 @@ public class ParaQueryUtil
 		}
 		return null;
 	}
+	
+	public static PlFeature getPlFeatureid(long featureid, Pl plName, Session session)
+	{
+		try
+		{
+			Criteria crit = session.createCriteria(PlFeature.class);
+			crit.add(Restrictions.eq("id", featureid));
+			crit.add(Restrictions.eq("pl", plName));
+			// crit.add(Restrictions.eq("feature.name", plFeatureName));
+			final PlFeature plFeature = (PlFeature) crit.uniqueResult();
+			return plFeature;
+		}catch(HibernateException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public static PkgFeature getPkgFeatureByExactName(String featureName, long pkgType, Session session)
 	{
