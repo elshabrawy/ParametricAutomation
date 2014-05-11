@@ -26,6 +26,9 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
+import sun.plugin2.message.GetAppletMessage;
+
+import com.se.Quality.QAChecks;
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
@@ -56,7 +59,11 @@ import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
+import com.se.automation.db.client.mapping.QaCheckMultiData;
+import com.se.automation.db.client.mapping.QaCheckMultiTax;
 import com.se.automation.db.client.mapping.QaCheckParts;
+import com.se.automation.db.client.mapping.QaChecksActions;
+import com.se.automation.db.client.mapping.QaChecksStatus;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TblNpiParts;
@@ -4646,7 +4653,7 @@ public class DataDevQueryUtil
 		{
 
 			StringBuffer qury = new StringBuffer();
-			if(checkerType.equals(StatusName.NonAlpha_Multi_Supplier) || checkerType.equals(StatusName.Mask_Multi_Supplier) || checkerType.equals(StatusName.Family_Multi_Supplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				String Sql = "";
 				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
@@ -4661,7 +4668,7 @@ public class DataDevQueryUtil
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
-			else if(checkerType.equals(StatusName.Mask_Multi_Data) || checkerType.equals(StatusName.Root_Part_Checker))
+			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
 				String Sql = "";
 				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
@@ -4703,11 +4710,11 @@ public class DataDevQueryUtil
 				qury.append(suppliercri);
 
 			}
-			if(checkerType.equals(StatusName.NonAlpha_Multi_Supplier) || checkerType.equals(StatusName.Mask_Multi_Supplier) || checkerType.equals(StatusName.Family_Multi_Supplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART");
 			}
-			else if(checkerType.equals(StatusName.Mask_Multi_Data) || checkerType.equals(StatusName.Root_Part_Checker))
+			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
 				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART,chktax.PL_FET_ID,chktax.FET_VAL");
 			}
@@ -4728,7 +4735,7 @@ public class DataDevQueryUtil
 				qachecks.setFamily(part.getFamily());
 				Pl pl = ParaQueryUtil.getPlByPlName(session, result.get(i)[4] == null ? "" : result.get(i)[4].toString());
 				qachecks.setProductLine(pl);
-				if(checkerType.equals(StatusName.Mask_Multi_Data) || checkerType.equals(StatusName.Root_Part_Checker))
+				if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 				{
 					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
 					qachecks.setFeatureName(fet.getFeature().getName());
@@ -4756,7 +4763,7 @@ public class DataDevQueryUtil
 			Criteria cri = session.createCriteria(QaCheckParts.class);
 			cri.add(Restrictions.eq("partComponent", part));
 			cri.createAlias("action", "action");
-			cri.add(Restrictions.or(Restrictions.eq("action.name", "Open"), Restrictions.eq("action.name", "In_Progress")));
+			cri.add(Restrictions.or(Restrictions.eq("action.name", StatusName.Open), Restrictions.eq("action.name", StatusName.inprogress)));
 			List chkpart = null;
 			chkpart = cri.list();
 			if(!chkpart.isEmpty())
@@ -4771,13 +4778,207 @@ public class DataDevQueryUtil
 
 	}
 
-	public static void updateqacheckspart(QAChecksDTO qachk)
+	public static void updateqacheckspart(QAChecksDTO qachk, String checker)
 	{
 		Session session = null;
-
 		session = SessionUtil.getSession();
-		Criteria cri = session.createCriteria(QaCheckParts.class);
-		cri.add(Restrictions.eq("partComponent", qachk.getPart()));
-		
+		Criteria cri = null;
+		QaCheckMultiData qaCheckMultiData = null;
+		QaCheckMultiTax qaCheckMultiTax = null;
+		QaChecksStatus staus = null;
+		QaChecksActions action = null;
+		String partaction = "";
+		if(qachk.getStatus().equals(StatusName.WrongPart) || qachk.getStatus().equals(StatusName.WrongTax))
+		{
+			if(qachk.getFlag().equals("InputPart"))
+			{
+				partaction = StatusName.WaittingReplication;
+			}
+			else
+			{
+				// perform the action
+				doqachksaction(qachk, session);
+				partaction = StatusName.Done;
+			}
+		}
+		else if(qachk.getStatus().equals(StatusName.UpdateFamily) || qachk.getStatus().equals(StatusName.UpdateMask))
+		{
+			if(qachk.getFlag().equals("InputPart"))
+			{
+				// perform the action
+				doqachksaction(qachk, session);
+				partaction = StatusName.Done;
+			}
+			else
+			{
+				// perform the action
+				doqachksaction(qachk, session);
+				partaction = StatusName.WaittingQAEngine;
+			}
+		}
+		else if(qachk.getStatus().equals(StatusName.Exception))
+		{
+			partaction = StatusName.WaittingException;
+		}
+		else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
+		{
+			// perform the action
+			doqachksaction(qachk, session);
+			partaction = StatusName.Done;
+		}
+		cri = session.createCriteria(QaChecksStatus.class);
+		cri.add(Restrictions.eq("name", qachk.getStatus()));
+		staus = (QaChecksStatus) cri.uniqueResult();
+
+		cri = session.createCriteria(QaChecksActions.class);
+		cri.add(Restrictions.eq("name", partaction));
+		action = (QaChecksActions) cri.uniqueResult();
+
+		if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+		{
+			cri = session.createCriteria(QaCheckMultiData.class);
+			cri.add(Restrictions.eq("partComponent", qachk.getPart()));
+			cri.createAlias("action", "action");
+			cri.add(Restrictions.eq("action.name", StatusName.Open));
+			qaCheckMultiData = (QaCheckMultiData) cri.uniqueResult();
+			qaCheckMultiData.setQaChecksStatus(staus);
+			qaCheckMultiData.setQaChecksActions(action);
+			qaCheckMultiData.setCorrectVal(qachk.getNewValue());
+			session.saveOrUpdate(qaCheckMultiData);
+		}
+		else
+		{
+			cri = session.createCriteria(QaCheckMultiTax.class);
+			cri.add(Restrictions.eq("partComponent", qachk.getPart()));
+			cri.createAlias("action", "action");
+			cri.add(Restrictions.eq("action.name", StatusName.Open));
+			qaCheckMultiTax = (QaCheckMultiTax) cri.uniqueResult();
+			qaCheckMultiTax.setQaChecksStatus(staus);
+			qaCheckMultiTax.setQaChecksActions(action);
+			qaCheckMultiTax.setCorrectValue(qachk.getNewValue());
+			session.saveOrUpdate(qaCheckMultiTax);
+		}
+
+	}
+
+	private static void doqachksaction(QAChecksDTO qachk, Session session)
+	{
+		try
+		{
+
+			if(qachk.getStatus().equals(StatusName.WrongPart))
+			{
+				Criteria cri = null;
+				// delete part from component
+				session.delete(qachk.getPart());
+				cri = session.createCriteria(ParametricReviewData.class);
+				cri.add(Restrictions.eq("component", qachk.getPart()));
+				List<ParametricReviewData> review = cri.list();
+				// delete rows from parametricReviewData
+				for(ParametricReviewData para : review)
+				{
+					session.delete(para);
+				}
+				session.beginTransaction().commit();
+				cri = session.createCriteria(ParametricReviewData.class);
+				cri.createAlias("trackingParametric", "trackingParametric");
+				cri.add(Restrictions.eq("trackingParametric.document", qachk.getDatasheet()));
+				List<ParametricReviewData> review2 = cri.list();
+				if(review2.isEmpty())
+				{
+					// reassgin the trackingparametric to development
+					cri = session.createCriteria(TrackingParametric.class);
+					cri.add(Restrictions.eq("document", qachk.getDatasheet()));
+					TrackingParametric track = (TrackingParametric) cri.uniqueResult();
+					TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, StatusName.assigned);
+					track.setTrackingTaskStatus(trackingTaskStatus);
+				}
+			}
+			else if(qachk.getStatus().equals(StatusName.WrongTax))
+			{
+				Criteria cri = session.createCriteria(PartComponent.class);
+				cri.add(Restrictions.eq("document", qachk.getDatasheet()));
+				List<PartComponent> parts = cri.list();
+				// delete parts from component
+				for(PartComponent part : parts)
+				{
+					session.delete(part);
+				}
+				cri = session.createCriteria(ParametricReviewData.class);
+				cri.add(Restrictions.eq("component", qachk.getPart()));
+				List<ParametricReviewData> review = cri.list();
+				// delete rows from parametricReviewData
+				for(ParametricReviewData para : review)
+				{
+					session.delete(para);
+				}
+
+				String feedbackStatus = sendFeedbackToSourcingTeam(qachk.getEngname(), qachk.getDatasheet().getPdf().getSeUrl(), qachk.getProductLine().getName(), "Wrong tax", null, qachk.getNewValue());
+				System.out.println(feedbackStatus);
+
+			}
+			else if(qachk.getStatus().equals(StatusName.UpdateFamily))
+			{
+				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
+				{
+					Family family = ParaQueryUtil.getFamilyByExactName(qachk.getNewValue(), session);
+					// if family not found insert new family record
+					if(family == null)
+					{
+						family = insertFamily(qachk.getNewValue(), session);
+					}
+					qachk.getPart().setFamily(family);
+					session.saveOrUpdate(qachk.getPart());
+				}
+
+			}
+			else if(qachk.getStatus().equals(StatusName.UpdateMask))
+			{
+				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
+				{
+					MasterPartMask mask = getMask(qachk.getNewValue());
+					if(mask == null)
+					{
+						mask = insertMask(qachk.getNewValue(), session);
+					}
+					qachk.getPart().setMasterPartMask(mask);
+					session.saveOrUpdate(qachk.getPart());
+				}
+			}
+			else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
+			{
+				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
+				{
+					
+					PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
+					List<String> appValues = ParaQueryUtil.getGroupFullValueByPlFeature(plFeature, session);
+					if(appValues.contains(qachk.getNewValue()))
+					{
+						ParametricApprovedGroup groupexist = ParaQueryUtil.getParametricApprovedGroup(qachk.getFeatureValue(), plFeature, session);
+						ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(qachk.getNewValue(), plFeature, session);
+						Criteria cri = session.createCriteria(ParametricReviewData.class);
+						cri.add(Restrictions.eq("component", qachk.getPart()));
+						cri.add(Restrictions.eq("plFeature", qachk.getPart()));
+						ParametricReviewData review = (ParametricReviewData) cri.uniqueResult();
+						review.setGroupApprovedValueId(groupexist.getId());
+						review.setStoreDate(new Date());
+						session.saveOrUpdate(review);
+
+					}
+					else
+					{
+						ArrayList<String> values = new ArrayList<>();
+						values.add(qachk.getFeatureName());
+						values.add(qachk.getNewValue());
+						QAChecks.seperationvalues.add(values);
+					}
+
+				}
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 }

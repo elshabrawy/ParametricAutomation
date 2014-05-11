@@ -1175,7 +1175,7 @@ public class ParaQueryUtil
 		}
 		return null;
 	}
-	
+
 	public static PlFeature getPlFeatureid(long featureid, Pl plName, Session session)
 	{
 		try
@@ -3008,16 +3008,17 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getGroupFullValueByFeatureNameandPlName(String featureName, String plName, Session session)
+	public static List<String> getapprovedFullValueByFeatureNameandPlName(String featureName, String plName, Session session)
 	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
+		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
 		//
 		plFeatureCrit.createCriteria("feature").add(Restrictions.eq("name", featureName));
 		//
 		plFeatureCrit.createCriteria("pl").add(Restrictions.eq("name", plName));
 		crit.setProjection(Projections.distinct(Projections.property("groupFullValue")));
-		crit.add(Restrictions.ne("isApproved", 2L));
+		crit.createCriteria("status").add(Restrictions.ne("id", 2L));
+		crit.addOrder(Order.asc("groupFullValue"));
 		List<String> fullValueList = crit.list();
 		return fullValueList;
 	}
@@ -4395,7 +4396,7 @@ public class ParaQueryUtil
 		cri.createAlias("plFeature", "fet");
 		cri.add(Restrictions.eq("fet.id", id));
 		cri.add(Restrictions.eq("checker", type));
-		//List<CheckFeature> chkfet =  cri.list();
+		// List<CheckFeature> chkfet = cri.list();
 		if(cri.list().isEmpty())
 			return false;
 		else
@@ -4408,7 +4409,7 @@ public class ParaQueryUtil
 		cri.createAlias("plFeature", "fet");
 		cri.add(Restrictions.eq("fet.id", id));
 		cri.add(Restrictions.eq("checker", type));
-		//List<CheckFeature> chkfet =  cri.list();
+		// List<CheckFeature> chkfet = cri.list();
 		if(cri.list().isEmpty())
 			return false;
 		else
