@@ -55,8 +55,8 @@ public class QAChecks extends JPanel implements ActionListener
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
-//	JButton save;
-//	JButton Validate;
+	// JButton save;
+	// JButton Validate;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
 	Long[] users = null;
@@ -68,6 +68,8 @@ public class QAChecks extends JPanel implements ActionListener
 	GrmUserDTO userDTO;
 	static AlertsPanel alertsPanel, alertsPanel1;
 	String checker;
+	String filterstatus;
+	public static ArrayList<ArrayList<String>> seperationvalues = new ArrayList<>();
 
 	public QAChecks(GrmUserDTO userDTO)
 	{
@@ -159,12 +161,17 @@ public class QAChecks extends JPanel implements ActionListener
 		else if(event.getActionCommand().equals("Save"))
 		{
 			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+			if(!filterstatus.equals(StatusName.Open))
+			{
+				JOptionPane.showMessageDialog(null, "You can save Open checks only");
+				return;
+			}
 			wsMap.keySet();
 			for(String wsName : wsMap.keySet())
 			{
 				if(wsName == "QAChecks")
 				{
-					 wsMap.get(wsName).saveQAChecksAction(checker,engName);
+					wsMap.get(wsName).saveQAChecksAction(checker, engName);
 				}
 			}
 		}
@@ -173,19 +180,18 @@ public class QAChecks extends JPanel implements ActionListener
 
 		}
 
-	
-//		else if(event.getSource() == Validate)
-//		{
-//			System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
-//			wsMap.keySet();
-//			for(String wsName : wsMap.keySet())
-//			{
-//				if(wsName != "LoadAllData" && wsName != "Separation")
-//				{
-//					// wsMap.get(wsName).validateQAReview();
-//				}
-//			}
-//		}
+		// else if(event.getSource() == Validate)
+		// {
+		// System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
+		// wsMap.keySet();
+		// for(String wsName : wsMap.keySet())
+		// {
+		// if(wsName != "LoadAllData" && wsName != "Separation")
+		// {
+		// // wsMap.get(wsName).validateQAReview();
+		// }
+		// }
+		// }
 
 		thread.stop();
 		loading.frame.dispose();
@@ -213,6 +219,7 @@ public class QAChecks extends JPanel implements ActionListener
 				return;
 			}
 			checker = checkerType;
+			filterstatus = status;
 			tabbedPane.setSelectedIndex(0);
 			sheetpanel.openOfficeDoc();
 			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status, startDate, endDate, userDTO.getId(), session);
