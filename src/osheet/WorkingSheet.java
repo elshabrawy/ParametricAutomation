@@ -3241,42 +3241,52 @@ public class WorkingSheet
 
 	}
 
-	public void saveQAChecksAction(String checker,String engname)
+	public void saveQAChecksAction(String checker, String engname)
 	{
+		Session session = null;
 		if(canSave)
 		{
 			try
 			{
-
+				session = SessionUtil.getSession();
 				ArrayList<String> sheetHeader = getHeader();
-				
 				int statusIndex = sheetHeader.indexOf("Status");
 				int RightValueIndex = sheetHeader.indexOf("RightValue");
-				int FamilyIndex = sheetHeader.indexOf("Family");
-				int maskcell = sheetHeader.indexOf("Mask");
+				// int FamilyIndex = sheetHeader.indexOf("Family");
+				// int maskcell = sheetHeader.indexOf("Mask");
 				int PLcell = sheetHeader.indexOf("ProductLine");
 				int Titleidx = sheetHeader.indexOf("DatasheetTitle");
-				int pdfidx = sheetHeader.indexOf("Datasheet");
+				// int pdfidx = sheetHeader.indexOf("Datasheet");
 				int supcell = sheetHeader.indexOf("Vendor");
 				int partcell = sheetHeader.indexOf("Part");
 				int Flagcell = sheetHeader.indexOf("Flag");
 				int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
 				int FeatureNameindex = sheetHeader.indexOf("FeatureName");
 				int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
-				
+
 				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-				
+
 				for(int i = 0; i < fileData.size(); i++)
 				{
 					QAChecksDTO qachk = new QAChecksDTO();
 					ArrayList<String> partData = fileData.get(i);
 					String status = partData.get(statusIndex);
 					String RightValue = partData.get(RightValueIndex);
-					String Family = partData.get(FamilyIndex);
-					String Mask = partData.get(maskcell);
+					if(!status.equals("Exception") && RightValue.isEmpty())
+					{
+						JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
+						return;
+					}
+					if(status.equals(StatusName.UpdateMask)&&!(qachk.getPart().getPartNumber().length()==qachk.getNewValue().length()))
+					{
+						JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
+						return;
+					}
+					// String Family = partData.get(FamilyIndex);
+					// String Mask = partData.get(maskcell);
 					String ProductLine = partData.get(PLcell);
 					String DatasheetTitle = partData.get(Titleidx);
-					String Datasheet = partData.get(pdfidx);
+					// String Datasheet = partData.get(pdfidx);
 					String Vendor = partData.get(supcell);
 					String Part = partData.get(partcell);
 					String Flag = partData.get(Flagcell);
@@ -3284,33 +3294,36 @@ public class WorkingSheet
 					String FeatureName = partData.get(FeatureNameindex);
 					String FeatureValue = partData.get(FeatureValueindex);
 					qachk.setNanAlphaPart(NanAlphaPart);
-					PartComponent part = getComponentBycomid(, session);
+					PartComponent part = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(Part, Vendor);
 					qachk.setPart(part);
+					qachk.setFlag(Flag);
 					qachk.setVendor(part.getSupplierId());
 					qachk.setDatasheet(part.getDocument());
 					qachk.setDatasheetTitle(DatasheetTitle);
 					qachk.setMask(part.getMasterPartMask());
 					qachk.setFamily(part.getFamily());
-					Pl pl = ParaQueryUtil.getPlByPlName(session,ProductLine);
+					qachk.setNewValue(RightValue);
+					Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
 					qachk.setProductLine(pl);
-					if(checker.equals(StatusName.Mask_Multi_Data) || checker.equals(StatusName.Root_Part_Checker))
+					qachk.setEngname(engname);
+					if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 					{
-//						PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
 						qachk.setFeatureName(FeatureName);
 						qachk.setFeatureValue(FeatureValue);
 					}
-					if(!status.equals("Exception")&&RightValue.isEmpty())
-					{
-						JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
-					}
-					DataDevQueryUtil.updateqacheckspart(qachk);
+
+					DataDevQueryUtil.updateqacheckspart(qachk, checker);
 				}
-					
+
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
 				JOptionPane.showMessageDialog(null, "Can't Save Data");
 				e.printStackTrace();
+			}finally
+			{
+				session.close();
+
 			}
 		}
 		else
@@ -4386,28 +4399,28 @@ public class WorkingSheet
 			cell.setText("RightValue");
 			HeaderList.add(cell);
 
-			if(checkerType.equals(StatusName.NonAlpha_Multi_Supplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier))
 			{
-				statusValues.add("Exception");
-				statusValues.add("Wrong Taxonomy");
-				statusValues.add("Wrong Part");
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongTax);
+				statusValues.add(StatusName.WrongPart);
 
 			}
-			else if(checkerType.equals(StatusName.Mask_Multi_Supplier))
+			else if(checkerType.equals(StatusName.MaskMultiSupplier))
 			{
-				statusValues.add("Exception");
-				statusValues.add("Wrong Taxonomy");
-				statusValues.add("Wrong Part");
-				statusValues.add("Update Mask");
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongTax);
+				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.UpdateMask);
 			}
-			else if(checkerType.equals(StatusName.Family_Multi_Supplier))
+			else if(checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
-				statusValues.add("Exception");
-				statusValues.add("Wrong Taxonomy");
-				statusValues.add("Wrong Part");
-				statusValues.add("Update Family");
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongTax);
+				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.UpdateFamily);
 			}
-			else if(checkerType.equals(StatusName.Mask_Multi_Data))
+			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
 				cell = getCellByPosission(11, 0);
 				cell.setText("FeatureName");
@@ -4416,17 +4429,17 @@ public class WorkingSheet
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 
-				statusValues.add("Exception");
-				statusValues.add("Wrong Part");
-				statusValues.add("Update Parametric Data");
-				statusValues.add("Update Mask");
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.UpdateParametricData);
+				statusValues.add(StatusName.UpdateMask);
 			}
-			else if(checkerType.equals(StatusName.Root_Part_Checker))
+			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
-				statusValues.add("Exception");
-				statusValues.add("Wrong Part");
-				statusValues.add("Update Parametric Data");
-				statusValues.add("Update Family");
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.UpdateParametricData);
+				statusValues.add(StatusName.UpdateFamily);
 			}
 
 		}catch(Exception e)
