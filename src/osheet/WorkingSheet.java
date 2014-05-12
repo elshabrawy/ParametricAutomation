@@ -3263,9 +3263,7 @@ public class WorkingSheet
 				int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
 				int FeatureNameindex = sheetHeader.indexOf("FeatureName");
 				int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
-
 				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-
 				for(int i = 0; i < fileData.size(); i++)
 				{
 					QAChecksDTO qachk = new QAChecksDTO();
@@ -3277,7 +3275,7 @@ public class WorkingSheet
 						JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
 						return;
 					}
-					if(status.equals(StatusName.UpdateMask)&&!(qachk.getPart().getPartNumber().length()==qachk.getNewValue().length()))
+					if(status.equals(StatusName.UpdateMask) && !(qachk.getPart().getPartNumber().length() == qachk.getNewValue().length()))
 					{
 						JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 						return;
@@ -3306,13 +3304,13 @@ public class WorkingSheet
 					Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
 					qachk.setProductLine(pl);
 					qachk.setEngname(engname);
+					qachk.setChecker(checker);
 					if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 					{
 						qachk.setFeatureName(FeatureName);
 						qachk.setFeatureValue(FeatureValue);
 					}
-
-					DataDevQueryUtil.updateqacheckspart(qachk, checker);
+					DataDevQueryUtil.updateqacheckspart(qachk);
 				}
 
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
