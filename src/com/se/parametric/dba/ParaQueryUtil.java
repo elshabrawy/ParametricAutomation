@@ -3008,7 +3008,7 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getapprovedFullValueByFeatureNameandPlName(String featureName, String plName, Session session)
+	public static List<String> getGroupFullValueByFeatureNameandPlName(String featureName, String plName, Session session)
 	{
 		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
