@@ -235,7 +235,7 @@ public class QAChecks extends JPanel implements ActionListener
 			for(int i = 0; i < reviewData.size(); i++)
 			{
 				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(), session);
-				String flag = "Affected PN";
+				String flag = "AffectedPart";
 				if(exist)
 				{
 					flag = "InputPart";
