@@ -1,39 +1,26 @@
 package com.se.Quality;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.QAChecksDTO;
-import com.se.automation.db.client.mapping.Document;
-import com.se.automation.db.client.mapping.QaCheckParts;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -43,7 +30,6 @@ import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
-import com.se.parametric.dto.TableInfoDTO;
 
 public class QAChecks extends JPanel implements ActionListener
 {
@@ -59,6 +45,7 @@ public class QAChecks extends JPanel implements ActionListener
 	// JButton Validate;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
+	ButtonsPanel separationbuttonsPanel;
 	Long[] users = null;
 	WorkingSheet ws = null;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
@@ -109,15 +96,29 @@ public class QAChecks extends JPanel implements ActionListener
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, width, height - 100);
 		tabSheet = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
-		devSheetButtonPanel.setLayout(null);
+		separationPanel = new SheetPanel();
+		separationPanel.setBounds(0, 0, width - 120, height - 125);
+		ArrayList<String> sepbuttonLabels = new ArrayList<String>();
+		sepbuttonLabels.add("Validate");
+		sepbuttonLabels.add("Save");
+		separationbuttonsPanel = new ButtonsPanel(sepbuttonLabels);
+		JButton sepbuttons[] = separationbuttonsPanel.getButtons();
+		for(int i = 0; i < buttons.length; i++)
+		{
+			sepbuttons[i].addActionListener(this);
+		}
+		separationbuttonsPanel.setBounds(width - 120, 0, 110, height / 3);
+
+		// devSheetButtonPanel = new JPanel();
+		// devSheetButtonPanel.setBackground(new Color(211, 211, 211));
+		// devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		// devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
+		// devSheetButtonPanel.setLayout(null);
 		tabSheet.setLayout(null);
 
 		// tabSheet.add(sheetpanel);
-		tabSheet.add(devSheetButtonPanel);
+		tabSheet.add(separationPanel);
+		tabSheet.add(separationbuttonsPanel);
 		tabSheet.add(alertsPanel1);
 
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
@@ -177,21 +178,43 @@ public class QAChecks extends JPanel implements ActionListener
 		}
 		else if(event.getActionCommand().equals("Seperation"))
 		{
+			ArrayList<String> row = null;
+			input = new ArrayList<ArrayList<String>>();
+			tabbedPane.setSelectedIndex(2);
+			row = new ArrayList<String>();
+			row.add("PL_Name");// 0
+			row.add("Part");// 1
+			row.add("Datasheet");// 2
+			row.add("Feature Name");// 3
+			row.add("Feature Value");// 4
+			row.add("Feature Unit");// 5
+			row.add("Sign");// 6
+			row.add("Value");// 7
+			row.add("Type");// 8
+			row.add("Condition");// 9
+			row.add("Multiplier");// 10
+			row.add("Unit");// 11
+			row.add("Validation result");// 12
 
+			if(wsMap.get("Separation") != null)
+			{
+				wsMap.remove("Separation");
+			}
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					System.out.println("Sheet Name:" + wsName);
+					input = wsMap.get(wsName).getUnApprovedValues(input);
+				}
+			}
+			separationPanel.openOfficeDoc();
+			ws = new WorkingSheet(separationPanel, "Separation");
+			separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			ws.setSeparationHeader(row);
+			ws.writeSheetData(input, 1);
+			wsMap.put("Separation", ws);
 		}
-
-		// else if(event.getSource() == Validate)
-		// {
-		// System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
-		// wsMap.keySet();
-		// for(String wsName : wsMap.keySet())
-		// {
-		// if(wsName != "LoadAllData" && wsName != "Separation")
-		// {
-		// // wsMap.get(wsName).validateQAReview();
-		// }
-		// }
-		// }
 
 		thread.stop();
 		loading.frame.dispose();
