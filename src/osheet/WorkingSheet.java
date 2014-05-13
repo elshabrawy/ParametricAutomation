@@ -3293,6 +3293,9 @@ public class WorkingSheet
 			try
 			{
 				session = SessionUtil.getSession();
+				ArrayList<QAChecksDTO> inputparts = new ArrayList<>();
+				ArrayList<QAChecksDTO> affectedparts = new ArrayList<>();
+				ArrayList<QAChecksDTO> allparts = new ArrayList<>();
 				ArrayList<String> sheetHeader = getHeader();
 				int statusIndex = sheetHeader.indexOf("Status");
 				int RightValueIndex = sheetHeader.indexOf("RightValue");
@@ -3354,9 +3357,19 @@ public class WorkingSheet
 						qachk.setFeatureName(FeatureName);
 						qachk.setFeatureValue(FeatureValue);
 					}
-					DataDevQueryUtil.updateqacheckspart(qachk);
+					if(Flag.equals("InputPart"))
+					{
+						inputparts.add(qachk);
+					}
+					else
+					{
+						affectedparts.add(qachk);
+					}
+					allparts.add(qachk);
 				}
-
+				DataDevQueryUtil.updateqacheckspart(inputparts);
+				DataDevQueryUtil.updateqacheckspart(affectedparts);
+				DataDevQueryUtil.updateParamtricstatus(allparts);
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
