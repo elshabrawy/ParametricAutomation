@@ -29,7 +29,6 @@ import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TrackingParametric;
-import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
@@ -39,7 +38,6 @@ import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
 import com.se.parametric.util.ValidatePart;
-import com.sun.jnlp.ApiDialog;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XPropertySetInfo;
 import com.sun.star.lang.IndexOutOfBoundsException;
@@ -3241,6 +3239,52 @@ public class WorkingSheet
 
 	}
 
+
+	private void setExtractionData(TrackingParametric trac, int pdfRow)
+	{
+
+		try
+		{
+			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(trac.getDocument().getPdf(), trac.getSupplier(), trac.getPl());
+			Set<String> parts = partsData.keySet();
+			for(String part : parts)
+			{
+				getCellByPosission(0, pdfRow).setText(part);
+				;
+				List<String> fetsVal = partsData.get(part);
+
+				int idx = -1;
+				for(String fet : fetsVal)
+				{
+					String[] fetVal = fet.split("\\$");
+					for(int j = startParametricFT; j < HeaderList.size() - valHeaderSize; j++)
+					{
+						XCell fetCell = xHdrUnitrange.getCellByPosition(j, 1);
+						String fetName = getCellText(fetCell).getString();
+						if(fetName.equals(fetVal[0]))
+						{
+							idx = j;
+							break;
+						}
+					}
+					// int idx = HeaderList.indexOf(fetVal[0]);
+					System.out.println(fetVal[0] + " Cell position :" + idx + " ," + pdfRow);
+					if(idx != -1)
+					{
+						Cell cell = getCellByPosission(idx, pdfRow);
+						cell.setText(fetVal[1]);
+					}
+
+				}
+				pdfRow++;
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
 	public void saveQAChecksAction(String checker, String engname)
 	{
 		Session session = null;
@@ -3422,52 +3466,6 @@ public class WorkingSheet
 		partvalidation.setStatus(validationMessage);
 		return haveSpaces;
 	}
-
-	private void setExtractionData(TrackingParametric trac, int pdfRow)
-	{
-
-		try
-		{
-			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(trac.getDocument().getPdf(), trac.getSupplier(), trac.getPl());
-			Set<String> parts = partsData.keySet();
-			for(String part : parts)
-			{
-				getCellByPosission(0, pdfRow).setText(part);
-				;
-				List<String> fetsVal = partsData.get(part);
-
-				int idx = -1;
-				for(String fet : fetsVal)
-				{
-					String[] fetVal = fet.split("\\$");
-					for(int j = startParametricFT; j < HeaderList.size() - valHeaderSize; j++)
-					{
-						XCell fetCell = xHdrUnitrange.getCellByPosition(j, 1);
-						String fetName = getCellText(fetCell).getString();
-						if(fetName.equals(fetVal[0]))
-						{
-							idx = j;
-							break;
-						}
-					}
-					// int idx = HeaderList.indexOf(fetVal[0]);
-					System.out.println(fetVal[0] + " Cell position :" + idx + " ," + pdfRow);
-					if(idx != -1)
-					{
-						Cell cell = getCellByPosission(idx, pdfRow);
-						cell.setText(fetVal[1]);
-					}
-
-				}
-				pdfRow++;
-			}
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-
-	}
-
 	public void setExtractionData1(String pdf, String supplierName, String plName, int pdfRow)
 	{
 
