@@ -25,9 +25,6 @@ import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
-
-import sun.plugin2.message.GetAppletMessage;
-
 import com.se.Quality.QAChecks;
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
