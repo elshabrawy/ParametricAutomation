@@ -3369,7 +3369,7 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.updateqacheckspart(inputparts);
 				DataDevQueryUtil.updateqacheckspart(affectedparts);
-				DataDevQueryUtil.updateParamtricstatus(allparts);
+				DataDevQueryUtil.updateqapartsstatus(allparts);
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
