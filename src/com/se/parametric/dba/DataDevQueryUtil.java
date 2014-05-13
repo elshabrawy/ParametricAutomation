@@ -4881,18 +4881,20 @@ public class DataDevQueryUtil
 			if(qachk.getStatus().equals(StatusName.WrongPart))
 			{
 				Criteria cri = null;
+				// get QA Check Action
 				cri = session.createCriteria(QaChecksActions.class);
 				cri.add(Restrictions.eq("name", StatusName.closed));
 				QaChecksActions action = (QaChecksActions) cri.uniqueResult();
 
+				// delete rows from parametricReviewData
 				cri = session.createCriteria(ParametricReviewData.class);
 				cri.add(Restrictions.eq("component", qachk.getPart()));
 				List<ParametricReviewData> review = cri.list();
-				// delete rows from parametricReviewData
 				for(ParametricReviewData para : review)
 				{
 					session.delete(para);
 				}
+
 				// set Other qachecks to closed
 				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 				{
@@ -4931,6 +4933,7 @@ public class DataDevQueryUtil
 						session.saveOrUpdate(qadata);
 					}
 				}
+				// check if there is parts in that Document
 				cri = session.createCriteria(ParametricReviewData.class);
 				cri.createAlias("trackingParametric", "trackingParametric");
 				cri.add(Restrictions.eq("trackingParametric.document", qachk.getDatasheet()));
@@ -4944,29 +4947,42 @@ public class DataDevQueryUtil
 					TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, StatusName.assigned);
 					track.setTrackingTaskStatus(trackingTaskStatus);
 				}
+
 				// delete part from component
 				session.delete(qachk.getPart());
 			}
 			else if(qachk.getStatus().equals(StatusName.WrongTax))
 			{
-				Criteria cri = session.createCriteria(PartComponent.class);
+				// get supplierpl
+				Criteria cri = session.createCriteria(SupplierPl.class);
+				cri.add(Restrictions.eq("pl", qachk.getProductLine()));
+				cri.add(Restrictions.eq("supplier", qachk.getVendor()));
+				SupplierPl supplierpl = (SupplierPl) cri.uniqueResult();
+
+				// get parts for document_pl
+				cri = session.createCriteria(PartComponent.class);
 				cri.add(Restrictions.eq("document", qachk.getDatasheet()));
+				cri.add(Restrictions.eq("supplierPl", supplierpl));
 				List<PartComponent> parts = cri.list();
 
+				// get QACheckAction
 				cri = session.createCriteria(QaChecksActions.class);
 				cri.add(Restrictions.eq("name", StatusName.closed));
 				QaChecksActions action = (QaChecksActions) cri.uniqueResult();
 
+				// delete rows from parametricReviewData
 				cri = session.createCriteria(ParametricReviewData.class);
 				cri.add(Restrictions.eq("component", qachk.getPart()));
 				List<ParametricReviewData> review = cri.list();
-				// delete rows from parametricReviewData
 				for(ParametricReviewData para : review)
 				{
 					session.delete(para);
 				}
+
+				// send feedBack to sourcing team
 				String feedbackStatus = sendFeedbackToSourcingTeam(qachk.getEngname(), qachk.getDatasheet().getPdf().getSeUrl(), qachk.getProductLine().getName(), "Wrong tax", null, qachk.getNewValue());
 				System.out.println(feedbackStatus);
+
 				// set Other qachecks to closed
 				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 				{
@@ -5001,6 +5017,7 @@ public class DataDevQueryUtil
 						session.saveOrUpdate(qadata);
 					}
 				}
+
 				// delete parts from component
 				for(PartComponent part : parts)
 				{
@@ -5038,17 +5055,20 @@ public class DataDevQueryUtil
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
+					// get PlFeature byFeatureName
 					PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
+					// get Approved Values
 					List<String> appValues = ParaQueryUtil.getGroupFullValueByPlFeature(plFeature, session);
+					// Save New Value if it is approved
 					if(appValues.contains(qachk.getNewValue()))
 					{
 						ParametricApprovedGroup groupexist = ParaQueryUtil.getParametricApprovedGroup(qachk.getFeatureValue(), plFeature, session);
 						ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(qachk.getNewValue(), plFeature, session);
 						Criteria cri = session.createCriteria(ParametricReviewData.class);
 						cri.add(Restrictions.eq("component", qachk.getPart()));
-						cri.add(Restrictions.eq("plFeature", qachk.getPart()));
+						cri.add(Restrictions.eq("plFeature", plFeature));
 						ParametricReviewData review = (ParametricReviewData) cri.uniqueResult();
-						review.setGroupApprovedValueId(groupexist.getId());
+						review.setGroupApprovedValueId(group.getId());
 						review.setStoreDate(new Date());
 						session.saveOrUpdate(review);
 					}
@@ -5068,47 +5088,66 @@ public class DataDevQueryUtil
 
 	}
 
-	public static void updateParamtricstatus(ArrayList<QAChecksDTO> allparts)
+	public static void updateqapartsstatus(ArrayList<QAChecksDTO> allparts)
 	{
 		Session session = null;
 		try
 		{
 			session = SessionUtil.getSession();
-			ArrayList<Document> pdfs = new ArrayList<>();
+			// ArrayList<Document> pdfs = new ArrayList<>();
 			List<QaCheckParts> qaparts = new ArrayList<>();
 			ArrayList<PartComponent> parts = new ArrayList<>();
 			for(QAChecksDTO qachk : allparts)
 			{
-				if(!pdfs.isEmpty() && !pdfs.contains(qachk.getDatasheet()))
-					pdfs.add(qachk.getDatasheet());
-
+				// if(!pdfs.isEmpty() && !pdfs.contains(qachk.getDatasheet()))
+				// pdfs.add(qachk.getDatasheet());
 				parts.add(qachk.getPart());
-
 			}
-			Criteria cri = session.createCriteria(QaCheckParts.class);
+			// get QACheck Action and Tracking status
+			Criteria cri = session.createCriteria(QaChecksActions.class);
+			cri.add(Restrictions.eq("name", StatusName.Done));
+			QaChecksActions action = (QaChecksActions) cri.uniqueResult();
+			cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", StatusName.tlReview));
+			TrackingTaskStatus status = (TrackingTaskStatus) cri.uniqueResult();
+
+			// get QACheckParts
+			cri = session.createCriteria(QaCheckParts.class);
 			cri.add(Restrictions.in("partComponent", parts));
 			cri.createAlias("qaChecksActions", "action");
 			cri.add(Restrictions.eq("action.name", StatusName.Open));
 			qaparts = cri.list();
 
+			// Update QACheck Parts set Acton = done if all Rows done
 			for(QaCheckParts qachkpart : qaparts)
 			{
+				boolean done = true;
 				if(qachkpart.getPreQaCheckers().getName().equals(StatusName.MaskMultiData) || qachkpart.getPreQaCheckers().getName().equals(StatusName.RootPartChecker))
 				{
-					 cri = session.createCriteria(QaCheckMultiData.class);
-					 cri.add(Restrictions.eq("qaCheckParts",qachkpart));
-					 List<QaCheckMultiData> multidata = cri.list();
-					 for(QaCheckMultiData qadata:multidata)
-					 {
-						 if(qadata.getQaChecksActions().getName().equals(StatusName.qachecking))
-						 {
-							 
-						 }
-					 }
+					cri = session.createCriteria(QaCheckMultiData.class);
+					cri.add(Restrictions.eq("qaCheckParts", qachkpart));
+					List<QaCheckMultiData> multidata = cri.list();
+					for(QaCheckMultiData qadata : multidata)
+					{
+						if(!qadata.getQaChecksActions().getName().equals(StatusName.Done))
+						{
+							done = false;
+						}
+					}
+					if(done)
+					{
+						qachkpart.setAction(action);
+						session.saveOrUpdate(qachkpart);
+						cri = session.createCriteria(TrackingParametric.class);
+						cri.add(Restrictions.eq("document", qachkpart.getDocument()));
+						TrackingParametric track = (TrackingParametric) cri.uniqueResult();
+						track.setTrackingTaskStatus(status);
+						session.saveOrUpdate(track);
+					}
 				}
 				else
 				{
-					 cri = session.createCriteria(QaCheckMultiTax.class);
+					cri = session.createCriteria(QaCheckMultiTax.class);
 				}
 
 			}
