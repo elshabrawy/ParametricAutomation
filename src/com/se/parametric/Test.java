@@ -30,10 +30,10 @@ public class Test {
 		doc.setDevUserName("hatem");
 		doc.setPdfUrl("pdf1");
 		doc.setStatus("Done");
-		doc.setSupplierName("Kemit");
+		doc.setSupplierName("ahmed");
 		docs.add(doc);
 		doc = new TableInfoDTO();
-		doc.setDevUserName("ahmed");
+		doc.setDevUserName("kimat");
 		doc.setPdfUrl("pdf2");
 		doc.setStatus("inprogress");
 		doc.setSupplierName("samtec");
