@@ -33,7 +33,7 @@ public class Test {
 		doc.setSupplierName("ahmed");
 		docs.add(doc);
 		doc = new TableInfoDTO();
-		doc.setDevUserName("ahmed");
+		doc.setDevUserName("kimat");
 		doc.setPdfUrl("pdf2");
 		doc.setStatus("inprogress");
 		doc.setSupplierName("samtec");
