@@ -82,7 +82,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
 		// filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10),false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add(" validate ");
@@ -260,11 +260,11 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 			{
 				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
 				validated = true;
-				Session session = SessionUtil.getSession();
+				// Session session = SessionUtil.getSession();
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					List<String> result = ApprovedDevUtil.validateSeparation(row);
 					row.set(25, result.get(0));
 					validationResult.add(row);
 					if(result.get(0) != "" && result.get(1).equals("false"))
@@ -273,7 +273,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 					}
 				}
 				ws.writeSheetData(validationResult, 1);
-				session.close();
+				// session.close();
 				JOptionPane.showMessageDialog(null, " Validation Done");
 			}
 		}

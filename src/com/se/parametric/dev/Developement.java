@@ -598,11 +598,11 @@ public class Developement extends JPanel implements ActionListener
 			{
 				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
 				validated = true;
-				Session session = SessionUtil.getSession();
+				// Session session = SessionUtil.getSession();
 				for(int i = 0; i < separationValues.size(); i++)
 				{
 					row = separationValues.get(i);
-					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					List<String> result = ApprovedDevUtil.validateSeparation(row);
 					row.set(12, result.get(0));
 					validationResult.add(row);
 					if(result.get(0) != "" && result.get(1).equals("false"))
@@ -611,7 +611,7 @@ public class Developement extends JPanel implements ActionListener
 					}
 				}
 				ws.writeSheetData(validationResult, 1);
-				session.close();
+				// session.close();
 				JOptionPane.showMessageDialog(null, " Validation Done");
 			}
 		}

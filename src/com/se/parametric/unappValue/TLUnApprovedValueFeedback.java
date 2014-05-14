@@ -254,11 +254,11 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 			{
 				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
 				validated = true;
-				Session session = SessionUtil.getSession();
+				// Session session = SessionUtil.getSession();
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
-					List<String> result = ApprovedDevUtil.validateSeparation(row, session);
+					List<String> result = ApprovedDevUtil.validateSeparation(row);
 					row.set(25, result.get(0));
 					validationResult.add(row);
 					if(result.get(0) != "" && result.get(1).equals("false"))
@@ -267,7 +267,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 					}
 				}
 				ws.writeSheetData(validationResult, 1);
-				session.close();
+				// session.close();
 				JOptionPane.showMessageDialog(null, " Validation Done");
 			}
 		}

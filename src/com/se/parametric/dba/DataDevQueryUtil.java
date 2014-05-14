@@ -5075,6 +5075,9 @@ public class DataDevQueryUtil
 					else
 					{
 						ArrayList<String> values = new ArrayList<>();
+						values.add(qachk.getProductLine().getName());
+						values.add(qachk.getPart().getPartNumber());
+						values.add(qachk.getDatasheet().getPdf().getSeUrl());
 						values.add(qachk.getFeatureName());
 						values.add(qachk.getNewValue());
 						QAChecks.seperationvalues.add(values);

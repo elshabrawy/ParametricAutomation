@@ -7,15 +7,16 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 import org.hibernate.Session;
+
+import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 import com.se.automation.db.SessionUtil;
@@ -27,8 +28,10 @@ import com.se.parametric.Loading;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
 public class QAChecks extends JPanel implements ActionListener
@@ -57,6 +60,7 @@ public class QAChecks extends JPanel implements ActionListener
 	String checker;
 	String filterstatus;
 	public static ArrayList<ArrayList<String>> seperationvalues = new ArrayList<>();
+	boolean validated;
 
 	public QAChecks(GrmUserDTO userDTO)
 	{
@@ -99,8 +103,8 @@ public class QAChecks extends JPanel implements ActionListener
 		separationPanel = new SheetPanel();
 		separationPanel.setBounds(0, 0, width - 120, height - 125);
 		ArrayList<String> sepbuttonLabels = new ArrayList<String>();
-		sepbuttonLabels.add("Validate");
-		sepbuttonLabels.add("Save");
+		sepbuttonLabels.add(" validate ");
+		sepbuttonLabels.add(" save ");
 		separationbuttonsPanel = new ButtonsPanel(sepbuttonLabels);
 		JButton sepbuttons[] = separationbuttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -136,7 +140,7 @@ public class QAChecks extends JPanel implements ActionListener
 		Loading loading = new Loading();
 		Thread thread = new Thread(loading);
 		thread.start();
-
+		ArrayList<String> row = null;
 		/**
 		 * Show pdfs Action
 		 * **/
@@ -178,7 +182,7 @@ public class QAChecks extends JPanel implements ActionListener
 		}
 		else if(event.getActionCommand().equals("Seperation"))
 		{
-			ArrayList<String> row = null;
+
 			input = new ArrayList<ArrayList<String>>();
 			tabbedPane.setSelectedIndex(2);
 			row = new ArrayList<String>();
@@ -205,7 +209,7 @@ public class QAChecks extends JPanel implements ActionListener
 				if(wsName != "LoadAllData" && wsName != "Separation")
 				{
 					System.out.println("Sheet Name:" + wsName);
-					input = wsMap.get(wsName).getUnApprovedValues(input);
+					input = separationValues;
 				}
 			}
 			separationPanel.openOfficeDoc();
@@ -214,6 +218,63 @@ public class QAChecks extends JPanel implements ActionListener
 			ws.setSeparationHeader(row);
 			ws.writeSheetData(input, 1);
 			wsMap.put("Separation", ws);
+		}
+		else if(event.getActionCommand().equals(" validate "))
+		{
+			validated = ws.validateSeparation();
+			JOptionPane.showMessageDialog(null, " Validation Done");
+
+		}
+		else if(event.getActionCommand().equals(" save "))
+		{
+			tabbedPane.setSelectedIndex(2);
+			separationValues = wsMap.get("Separation").readSpreadsheet(1);
+			if(separationValues.isEmpty())
+			{
+				tabbedPane.setSelectedIndex(1);
+				JOptionPane.showMessageDialog(null, "All Values are Approved");
+			}
+			else
+			{
+				if(!validated)
+				{
+					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+					thread.stop();
+					loading.frame.dispose();
+					return;
+				}
+
+				for(int i = 0; i < separationValues.size(); i++)
+				{
+					row = separationValues.get(i);
+
+					String plName = row.get(0);
+					String featureName = row.get(3);
+					String featureFullValue = row.get(4);
+
+					try
+					{
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+					}catch(ArrayIndexOutOfBoundsException ex)
+					{
+						try
+						{
+							Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+							cell.setText(ex.getMessage());
+						}catch(Exception e)
+						{
+							e.printStackTrace();
+						}
+						ex.printStackTrace();
+					}catch(Exception ex)
+					{
+						ex.printStackTrace();
+					}
+				}
+				JOptionPane.showMessageDialog(null, "Approved Saving Done");
+			}
 		}
 
 		thread.stop();

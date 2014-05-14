@@ -3239,7 +3239,6 @@ public class WorkingSheet
 
 	}
 
-
 	private void setExtractionData(TrackingParametric trac, int pdfRow)
 	{
 
@@ -3479,6 +3478,7 @@ public class WorkingSheet
 		partvalidation.setStatus(validationMessage);
 		return haveSpaces;
 	}
+
 	public void setExtractionData1(String pdf, String supplierName, String plName, int pdfRow)
 	{
 
@@ -4459,4 +4459,38 @@ public class WorkingSheet
 
 	}
 
+	public boolean validateSeparation()
+	{
+		try
+		{
+			ArrayList<String> row;
+			XCellRange xcellrange = null;
+			int lastColNum = HeaderList.size();
+			String lastColumn = getColumnName(lastColNum);
+			ArrayList<String> sheetHeader = getHeader();
+			int validationresultidx = sheetHeader.indexOf("Validation result");
+			ArrayList<ArrayList<String>> fileData = readSpreadsheet(1);
+			for(int i = 0; i < fileData.size(); i++)
+			{
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				System.out.println("Selected range " + seletedRange);
+				row = fileData.get(i);
+				List<String> result = ApprovedDevUtil.validateSeparation(row);
+				if(result.get(0) != "" && result.get(1).equals("false"))
+				{
+					canSave = false;
+				}
+				getCellText(xcellrange.getCellByPosition(validationresultidx, 0)).setString(result.get(0));
+				setRangColor(xcellrange, 0x088A0D);
+			}
+
+		}catch(IndexOutOfBoundsException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return canSave;
+		// writeSheetData(validationResult, 1);
+	}
 }
