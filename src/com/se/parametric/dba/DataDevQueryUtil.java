@@ -613,7 +613,7 @@ public class DataDevQueryUtil
 					docInfo.setPLFeatures(fets);
 				}
 				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
-				docInfo.setPlType(Pltype.getName());
+				docInfo.setPlType(Pltype == null ? "" : Pltype.getName());
 				Date date = obj.getFinishedDate();
 				if(inputType.equals("assigned"))
 				{

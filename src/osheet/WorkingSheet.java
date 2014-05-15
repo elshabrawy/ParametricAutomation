@@ -1599,43 +1599,43 @@ public class WorkingSheet
 					}
 					else if(status.equals("Approved"))// TL Must Write Comment If Approve QA or ENG when issue external
 					{
-						String issueSouce = ParaQueryUtil.getLastIssueSource(pn, supplierName);
-						if(issueSouce != null)
-						{
-							if(issueSouce.equals("QA"))
-							{
-								if(comment.equals(""))
-								{
-									partvalidation.setStatus("Wrong Comment");
-									setCellColore(commentCell, 0xD2254D);
-									writeValidtionStatus(xcellrange, false);
-									canSave = false;
-									continue part;
-								}
-							}
-							else
-							{
-								if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
-								{
-									partvalidation.setStatus("Wrong Comment");
-									setCellColore(commentCell, 0xD2254D);
-									writeValidtionStatus(xcellrange, false);
-									canSave = false;
-									continue part;
-								}
-							}
-						}
-						else
-						{
-							if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
-							{
-								partvalidation.setStatus("Wrong Comment");
-								setCellColore(commentCell, 0xD2254D);
-								writeValidtionStatus(xcellrange, false);
-								canSave = false;
-								continue part;
-							}
-						}
+						// String issueSouce = ParaQueryUtil.getLastIssueSource(pn, supplierName);
+						// if(issueSouce != null)
+						// {
+						// if(issueSouce.equals("QA"))
+						// {
+						// if(comment.equals(""))
+						// {
+						// partvalidation.setStatus("Wrong Comment");
+						// setCellColore(commentCell, 0xD2254D);
+						// writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						// continue part;
+						// }
+						// }
+						// else
+						// {
+						// if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
+						// {
+						// partvalidation.setStatus("Wrong Comment");
+						// setCellColore(commentCell, 0xD2254D);
+						// writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						// continue part;
+						// }
+						// }
+						// }
+						// else
+						// {
+						// if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
+						// {
+						// partvalidation.setStatus("Wrong Comment");
+						// setCellColore(commentCell, 0xD2254D);
+						// writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						// continue part;
+						// }
+						// }
 					}
 
 				}
@@ -1732,7 +1732,7 @@ public class WorkingSheet
 				writeValidtionStatus(xcellrange, false);
 				canSave = false;
 			}
-			JOptionPane.showMessageDialog(null, "Validation Finished");
+			// JOptionPane.showMessageDialog(null, "Validation Finished");
 		}catch(Exception e)
 		{
 			e.printStackTrace();

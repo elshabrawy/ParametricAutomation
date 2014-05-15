@@ -4579,13 +4579,15 @@ public class ParaQueryUtil
 	public static Pl getPLType(Pl pl)
 	{
 		Pl plType = null;
+		SerPl serPl = null;
 		Session session = SessionUtil.getSession();
 		try
 		{
 			Criteria criteria = session.createCriteria(SerPl.class);
 			criteria.add(Restrictions.eq("pl", pl));
 			ArrayList<SerPl> serPls = (ArrayList<SerPl>) criteria.list();
-			SerPl serPl = serPls.get(0);
+			if(!serPls.isEmpty())
+				serPl = serPls.get(0);
 			if(serPl != null)
 			{
 				plType = serPl.getPlType();
