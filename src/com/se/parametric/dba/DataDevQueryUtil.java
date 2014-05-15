@@ -600,6 +600,10 @@ public class DataDevQueryUtil
 					docInfo.setPLParts(noparts.get(1));
 					docInfo.setPDFDoneParts(noparts.get(2));
 					docInfo.setPLDoneParts(noparts.get(3));
+					if(obj.getTrackingTaskType().getName().contains("NPI"))
+						docInfo.setTaskparts(noparts.get(4));
+					else
+						docInfo.setTaskparts(noparts.get(0) - noparts.get(4));
 
 					int fets = 0;
 					try
@@ -710,7 +714,16 @@ public class DataDevQueryUtil
 			{
 				result.add(0);
 			}
-
+			query = session.createSQLQuery("SELECT  /*+ INDEX(x COM_DOC_IDX) */  COUNT(n.COM_ID) FROM AUTOMATION2.PART_COMPONENT x,TBL_NPI_PARTS n WHERE x.COM_ID = n.COM_ID and x.DOCUMENT_ID =" + docid + "");
+			obj = query.uniqueResult();
+			if(obj != null)
+			{
+				result.add(Integer.parseInt(obj.toString()));
+			}
+			else
+			{
+				result.add(0);
+			}
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();

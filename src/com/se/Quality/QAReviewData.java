@@ -80,7 +80,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		// Development Method QA tools checks Task Type DevUserName Date
 
 		selectionPanel = new JPanel();
-		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
+		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
 		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name", "PDF Status" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
