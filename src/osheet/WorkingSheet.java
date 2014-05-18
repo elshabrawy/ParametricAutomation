@@ -3287,101 +3287,106 @@ public class WorkingSheet
 	public void saveQAChecksAction(String checker, String engname)
 	{
 		Session session = null;
-		if(canSave)
-		{
-			try
-			{
-				session = SessionUtil.getSession();
-				ArrayList<QAChecksDTO> inputparts = new ArrayList<>();
-				ArrayList<QAChecksDTO> affectedparts = new ArrayList<>();
-				ArrayList<QAChecksDTO> allparts = new ArrayList<>();
-				ArrayList<String> sheetHeader = getHeader();
-				int statusIndex = sheetHeader.indexOf("Status");
-				int RightValueIndex = sheetHeader.indexOf("RightValue");
-				// int FamilyIndex = sheetHeader.indexOf("Family");
-				// int maskcell = sheetHeader.indexOf("Mask");
-				int PLcell = sheetHeader.indexOf("ProductLine");
-				int Titleidx = sheetHeader.indexOf("DatasheetTitle");
-				// int pdfidx = sheetHeader.indexOf("Datasheet");
-				int supcell = sheetHeader.indexOf("Vendor");
-				int partcell = sheetHeader.indexOf("Part");
-				int Flagcell = sheetHeader.indexOf("Flag");
-				int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
-				int FeatureNameindex = sheetHeader.indexOf("FeatureName");
-				int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
-				ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
-				for(int i = 0; i < fileData.size(); i++)
-				{
-					QAChecksDTO qachk = new QAChecksDTO();
-					ArrayList<String> partData = fileData.get(i);
-					String status = partData.get(statusIndex);
-					String RightValue = partData.get(RightValueIndex);
-					if(!status.equals("Exception") && RightValue.isEmpty())
-					{
-						JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
-						return;
-					}
-					if(status.equals(StatusName.UpdateMask) && !(qachk.getPart().getPartNumber().length() == qachk.getNewValue().length()))
-					{
-						JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
-						return;
-					}
-					// String Family = partData.get(FamilyIndex);
-					// String Mask = partData.get(maskcell);
-					String ProductLine = partData.get(PLcell);
-					String DatasheetTitle = partData.get(Titleidx);
-					// String Datasheet = partData.get(pdfidx);
-					String Vendor = partData.get(supcell);
-					String Part = partData.get(partcell);
-					String Flag = partData.get(Flagcell);
-					String NanAlphaPart = partData.get(NanAlphaPartindex);
-					String FeatureName = partData.get(FeatureNameindex);
-					String FeatureValue = partData.get(FeatureValueindex);
-					qachk.setNanAlphaPart(NanAlphaPart);
-					PartComponent part = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(Part, Vendor);
-					qachk.setPart(part);
-					qachk.setFlag(Flag);
-					qachk.setVendor(part.getSupplierId());
-					qachk.setDatasheet(part.getDocument());
-					qachk.setDatasheetTitle(DatasheetTitle);
-					qachk.setMask(part.getMasterPartMask());
-					qachk.setFamily(part.getFamily());
-					qachk.setNewValue(RightValue);
-					Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
-					qachk.setProductLine(pl);
-					qachk.setEngname(engname);
-					qachk.setChecker(checker);
-					if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
-					{
-						qachk.setFeatureName(FeatureName);
-						qachk.setFeatureValue(FeatureValue);
-					}
-					if(Flag.equals("InputPart"))
-					{
-						inputparts.add(qachk);
-					}
-					else
-					{
-						affectedparts.add(qachk);
-					}
-					allparts.add(qachk);
-				}
-				DataDevQueryUtil.updateqacheckspart(inputparts);
-				DataDevQueryUtil.updateqacheckspart(affectedparts);
-				DataDevQueryUtil.updateqapartsstatus(allparts);
-				JOptionPane.showMessageDialog(null, "Saving Data Finished");
-			}catch(Exception e)
-			{
-				JOptionPane.showMessageDialog(null, "Can't Save Data");
-				e.printStackTrace();
-			}finally
-			{
-				session.close();
 
+		try
+		{
+			session = SessionUtil.getSession();
+			ArrayList<QAChecksDTO> inputparts = new ArrayList<>();
+			ArrayList<QAChecksDTO> affectedparts = new ArrayList<>();
+			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
+			ArrayList<String> sheetHeader = getHeader();
+
+			int ComidIndex = sheetHeader.indexOf("Comid");
+			int statusIndex = sheetHeader.indexOf("Status");
+			int RightValueIndex = sheetHeader.indexOf("RightValue");
+			// int FamilyIndex = sheetHeader.indexOf("Family");
+			// int maskcell = sheetHeader.indexOf("Mask");
+			int PLcell = sheetHeader.indexOf("ProductLine");
+			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
+			// int pdfidx = sheetHeader.indexOf("Datasheet");
+			int supcell = sheetHeader.indexOf("Vendor");
+			int partcell = sheetHeader.indexOf("Part");
+			int Flagcell = sheetHeader.indexOf("Flag");
+			int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
+			int FeatureNameindex = sheetHeader.indexOf("FeatureName");
+			int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
+			String FeatureName = "";
+			String FeatureValue = "";
+			ArrayList<ArrayList<String>> fileData = readSpreadsheet(1);
+			for(int i = 0; i < fileData.size(); i++)
+			{
+				QAChecksDTO qachk = new QAChecksDTO();
+				ArrayList<String> partData = fileData.get(i);
+				String status = partData.get(statusIndex);
+				String RightValue = partData.get(RightValueIndex);
+				if(!status.equals("Exception") && RightValue.isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
+					return;
+				}
+				if(status.equals(StatusName.UpdateMask) && !(qachk.getPart().getPartNumber().length() == qachk.getNewValue().length()))
+				{
+					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
+					return;
+				}
+				// String Family = partData.get(FamilyIndex);
+				long Comid = Long.valueOf(partData.get(ComidIndex));
+
+				String ProductLine = partData.get(PLcell);
+				String DatasheetTitle = partData.get(Titleidx);
+				// String Datasheet = partData.get(pdfidx);
+				String Vendor = partData.get(supcell);
+				String Part = partData.get(partcell);
+				String Flag = partData.get(Flagcell);
+				String NanAlphaPart = partData.get(NanAlphaPartindex);
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				{
+					FeatureName = partData.get(FeatureNameindex);
+					FeatureValue = partData.get(FeatureValueindex);
+				}
+				qachk.setNanAlphaPart(NanAlphaPart);
+				PartComponent part = DataDevQueryUtil.getComponentBycomid(Comid);
+				qachk.setPart(part);
+				qachk.setFlag(Flag);
+				qachk.setVendor(part.getSupplierId());
+				qachk.setDatasheet(part.getDocument());
+				qachk.setDatasheetTitle(DatasheetTitle);
+				qachk.setMask(part.getMasterPartMask());
+				qachk.setFamily(part.getFamily());
+				qachk.setNewValue(RightValue);
+				Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
+				qachk.setProductLine(pl);
+				qachk.setEngname(engname);
+				qachk.setChecker(checker);
+				qachk.setStatus(status);
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				{
+					qachk.setFeatureName(FeatureName);
+					qachk.setFeatureValue(FeatureValue);
+				}
+				if(Flag.equals("InputPart"))
+				{
+					inputparts.add(qachk);
+				}
+				else
+				{
+					affectedparts.add(qachk);
+				}
+				allparts.add(qachk);
 			}
+			DataDevQueryUtil.updateqacheckspart(inputparts);
+			DataDevQueryUtil.updateqacheckspart(affectedparts);
+			DataDevQueryUtil.updateqapartsstatus(allparts);
+			JOptionPane.showMessageDialog(null, "Saving Data Finished");
+		}catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "Can't Save Data");
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+
 		}
-		else
-			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 
 	}
 
@@ -4375,36 +4380,39 @@ public class WorkingSheet
 			HeaderList = new ArrayList<Cell>();
 
 			Cell cell = getCellByPosission(0, 0);
-			cell.setText("NanAlphaPart");
+			cell.setText("Comid");
 			HeaderList.add(cell);
 			cell = getCellByPosission(1, 0);
-			cell.setText("Flag");
+			cell.setText("NanAlphaPart");
 			HeaderList.add(cell);
 			cell = getCellByPosission(2, 0);
-			cell.setText("Part");
+			cell.setText("Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(3, 0);
-			cell.setText("Vendor");
+			cell.setText("Part");
 			HeaderList.add(cell);
 			cell = getCellByPosission(4, 0);
-			cell.setText("Datasheet");
+			cell.setText("Vendor");
 			HeaderList.add(cell);
 			cell = getCellByPosission(5, 0);
-			cell.setText("DatasheetTitle");
+			cell.setText("Datasheet");
 			HeaderList.add(cell);
 			cell = getCellByPosission(6, 0);
-			cell.setText("ProductLine");
+			cell.setText("DatasheetTitle");
 			HeaderList.add(cell);
 			cell = getCellByPosission(7, 0);
-			cell.setText("Mask");
+			cell.setText("ProductLine");
 			HeaderList.add(cell);
 			cell = getCellByPosission(8, 0);
-			cell.setText("Family");
+			cell.setText("Mask");
 			HeaderList.add(cell);
 			cell = getCellByPosission(9, 0);
-			cell.setText("Status");
+			cell.setText("Family");
 			HeaderList.add(cell);
 			cell = getCellByPosission(10, 0);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(11, 0);
 			cell.setText("RightValue");
 			HeaderList.add(cell);
 

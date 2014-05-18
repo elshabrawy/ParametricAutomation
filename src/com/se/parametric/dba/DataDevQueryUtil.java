@@ -4856,7 +4856,7 @@ public class DataDevQueryUtil
 			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
-				cri.add(Restrictions.eq("partComponent", qachk.getPart()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiData = cri.list();
@@ -4867,11 +4867,15 @@ public class DataDevQueryUtil
 					qaCheckMultiData.get(0).setCorrectVal(qachk.getNewValue());
 					session.saveOrUpdate(qaCheckMultiData.get(0));
 				}
+				else
+				{
+					System.err.println("------- No QA Checks to save action------");
+				}
 			}
 			else
 			{
 				cri = session.createCriteria(QaCheckMultiTax.class);
-				cri.add(Restrictions.eq("partComponent", qachk.getPart()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiTax = cri.list();
@@ -4881,6 +4885,10 @@ public class DataDevQueryUtil
 					qaCheckMultiTax.get(0).setQaChecksActions(action);
 					qaCheckMultiTax.get(0).setCorrectValue(qachk.getNewValue());
 					session.saveOrUpdate(qaCheckMultiTax.get(0));
+				}
+				else
+				{
+					System.err.println("------- No QA Checks to save action------");
 				}
 			}
 		}
@@ -4922,9 +4930,10 @@ public class DataDevQueryUtil
 					List<QaCheckMultiData> list = cri.list();
 					for(QaCheckMultiData qadata : list)
 					{
-						qadata.setQaChecksActions(action);
-						session.saveOrUpdate(qadata);
+						// qadata.setQaChecksActions(action);
+						session.delete(qadata);
 					}
+					session.delete(qapart);
 				}
 				else
 				{
@@ -4942,9 +4951,10 @@ public class DataDevQueryUtil
 					List<QaCheckMultiTax> list = cri.list();
 					for(QaCheckMultiTax qadata : list)
 					{
-						qadata.setQaChecksActions(action);
-						session.saveOrUpdate(qadata);
+						// qadata.setQaChecksActions(action);
+						session.delete(qadata);
 					}
+					session.delete(qapart);
 				}
 				// check if there is parts in that Document
 				cri = session.createCriteria(ParametricReviewData.class);
@@ -5010,8 +5020,8 @@ public class DataDevQueryUtil
 					List<QaCheckMultiData> list = cri.list();
 					for(QaCheckMultiData qadata : list)
 					{
-						qadata.setQaChecksActions(action);
-						session.saveOrUpdate(qadata);
+						// qadata.setQaChecksActions(action);
+						session.delete(qadata);
 					}
 				}
 				else
@@ -5026,8 +5036,8 @@ public class DataDevQueryUtil
 					List<QaCheckMultiTax> list = cri.list();
 					for(QaCheckMultiTax qadata : list)
 					{
-						qadata.setQaChecksActions(action);
-						session.saveOrUpdate(qadata);
+						// qadata.setQaChecksActions(action);
+						session.delete(qadata);
 					}
 				}
 
