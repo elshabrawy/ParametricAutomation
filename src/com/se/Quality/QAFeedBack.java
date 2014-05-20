@@ -78,7 +78,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		// String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Status", "DevUserName", "Date" };
-		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
+		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "PL Type" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));

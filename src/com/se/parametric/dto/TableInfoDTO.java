@@ -36,10 +36,21 @@ public class TableInfoDTO implements Comparable<TableInfoDTO>
 	private int PLDoneParts;
 	private int PLFeatures;
 	private String PlType;
+	private int Taskparts;
 
 	public String getPlType()
 	{
 		return PlType;
+	}
+
+	public int getTaskparts()
+	{
+		return Taskparts;
+	}
+
+	public void setTaskparts(int taskparts)
+	{
+		Taskparts = taskparts;
 	}
 
 	public void setPlType(String plType)

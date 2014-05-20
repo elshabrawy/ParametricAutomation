@@ -387,6 +387,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					wsMap.get(wsName).validateParts(true);
 				}
 			}
+			JOptionPane.showMessageDialog(null, "Validation Finished");
 
 		}
 		/**

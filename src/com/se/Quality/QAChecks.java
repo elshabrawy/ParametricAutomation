@@ -169,6 +169,8 @@ public class QAChecks extends JPanel implements ActionListener
 			if(!filterstatus.equals(StatusName.Open))
 			{
 				JOptionPane.showMessageDialog(null, "You can save Open checks only");
+				thread.stop();
+				loading.frame.dispose();
 				return;
 			}
 			wsMap.keySet();
@@ -302,6 +304,11 @@ public class QAChecks extends JPanel implements ActionListener
 				JOptionPane.showMessageDialog(null, "You must select checker type");
 				return;
 			}
+			if(status.equals("All"))
+			{
+				JOptionPane.showMessageDialog(null, "You must select Status");
+				return;
+			}
 			checker = checkerType;
 			filterstatus = status;
 			tabbedPane.setSelectedIndex(0);
@@ -325,6 +332,7 @@ public class QAChecks extends JPanel implements ActionListener
 					flag = "InputPart";
 				}
 				ArrayList<String> row = new ArrayList<>();
+				row.add(reviewData.get(i).getPart().getComId().toString());
 				row.add(reviewData.get(i).getNanAlphaPart());
 				row.add(flag);
 				row.add(reviewData.get(i).getPart().getPartNumber());

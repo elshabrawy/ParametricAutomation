@@ -455,8 +455,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 					WorkingSheet ws = wsMap.get(wsName);
 					ws.validateEngFBParts(true);
 				}
-
 			}
+			JOptionPane.showMessageDialog(null, "Validation Finished");
 		}
 
 		/**
