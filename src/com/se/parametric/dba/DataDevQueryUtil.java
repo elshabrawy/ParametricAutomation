@@ -4914,6 +4914,7 @@ public class DataDevQueryUtil
 				for(ParametricReviewData para : review)
 				{
 					session.delete(para);
+					System.err.println("-----reviewdata deleted : " + para.getId() + "------");
 				}
 
 				// set Other qachecks to closed
@@ -4932,8 +4933,10 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
+						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId() + "------");
 					}
 					session.delete(qapart);
+					System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
 				}
 				else
 				{
@@ -4953,8 +4956,10 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
+						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId() + "------");
 					}
 					session.delete(qapart);
+					System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
 				}
 				// check if there is parts in that Document
 				cri = session.createCriteria(ParametricReviewData.class);
@@ -4973,6 +4978,7 @@ public class DataDevQueryUtil
 
 				// delete part from component
 				session.delete(qachk.getPart());
+				System.err.println("-----PartComponent deleted : " + qachk.getPart().getPartNumber() + "------");
 			}
 			else if(qachk.getStatus().equals(StatusName.WrongTax))
 			{
@@ -5000,6 +5006,7 @@ public class DataDevQueryUtil
 				for(ParametricReviewData para : review)
 				{
 					session.delete(para);
+					System.err.println("-----ParametricReviewData deleted : " + para.getId() + "------");
 				}
 
 				// send feedBack to sourcing team
@@ -5022,6 +5029,12 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
+						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId() + "------");
+					}
+					for(QaCheckParts qapart : qaparts)
+					{
+						session.delete(qapart);
+						System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
 					}
 				}
 				else
@@ -5038,13 +5051,19 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
+						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId() + "------");
+					}
+					for(QaCheckParts qapart : qaparts)
+					{
+						session.delete(qapart);
+						System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
 					}
 				}
-
 				// delete parts from component
 				for(PartComponent part : parts)
 				{
 					session.delete(part);
+					System.err.println("-----PartComponent deleted : " + part.getPartNumber() + "------");
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateFamily))
@@ -5059,6 +5078,7 @@ public class DataDevQueryUtil
 					}
 					qachk.getPart().setFamily(family);
 					session.saveOrUpdate(qachk.getPart());
+					System.err.println("-----family updated to: " + family.getName() + "------");
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateMask))
@@ -5072,6 +5092,7 @@ public class DataDevQueryUtil
 					}
 					qachk.getPart().setMasterPartMask(mask);
 					session.saveOrUpdate(qachk.getPart());
+					System.err.println("-----mask updated to: " + mask.getMstrPart() + "------");
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
@@ -5094,6 +5115,7 @@ public class DataDevQueryUtil
 						review.setGroupApprovedValueId(group.getId());
 						review.setStoreDate(new Date());
 						session.saveOrUpdate(review);
+						System.err.println("-----fetvalue updated to: " + group.getGroupFullValue() + "------");
 					}
 					else
 					{
