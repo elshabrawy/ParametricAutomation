@@ -148,7 +148,7 @@ public class ParametricDevServerUtil
 	{
 		// save partsParametric object
 		PkgMainData pkgMainData = new PkgMainData();
-//		pkgMainData.setComponent(component);
+		// pkgMainData.setComponent(component);
 		pkgMainData.setId(getPkgMainDataIdByComponent(component));
 		pkgMainData.setPkgJedec(pkgJedec);
 		pkgMainData.setCol40(processingDate);
@@ -274,7 +274,7 @@ public class ParametricDevServerUtil
 		// save partsParametric object
 		PartsParametric partsParametric = new PartsParametric();
 		partsParametric.setId(QueryUtil.getRandomID());
-//		partsParametric.setComponent(component);
+		// partsParametric.setComponent(component);
 		Set<Long> groups = featureGroupMap.keySet();
 		for(Long groupId : groups)
 		{
@@ -414,7 +414,6 @@ public class ParametricDevServerUtil
 		return isApproved;
 	}
 
-	
 	public static void changeParametricTaskStatus(Document document, String status, TrackingFeedback trackingFeedback) throws Exception
 	{
 		final Session session = SessionUtil.getSession();
@@ -547,7 +546,6 @@ public class ParametricDevServerUtil
 		return null;
 	}
 
-
 	public static List<String> getApprovedFeatureValues(PlFeature feature)
 	{
 		final Session session = SessionUtil.getSession();
@@ -631,8 +629,8 @@ public class ParametricDevServerUtil
 	{
 		final Session session = SessionUtil.getSession();
 		List<Pdf> list = ParaQueryUtil.getPdfsForParametricDev(plName, supplierName, downloadJob, lastCheckDate, downloadDate, /*
-																																		 * dueDate,
-																																		 */
+																																 * dueDate,
+																																 */
 				pdfType, seUrl, forRevision, session);
 		list = CloneUtil.cloneObjectList(list, new ArrayList<String>());
 		SessionUtil.closeSession(session);
@@ -1112,7 +1110,7 @@ public class ParametricDevServerUtil
 		}
 
 	}
-	
+
 	private static TrackingFast saveFastPart(Document document, Session session, String partInfo) throws Throwable
 	{
 		String[] partInfoArr = partInfo.split(",");
@@ -1156,8 +1154,6 @@ public class ParametricDevServerUtil
 			return false;
 		return true;
 	}
-
-
 
 	private static void checkIfTwoDatasheetFromTheSameSupplier(Document fromDocument, Document toDocument) throws Exception
 	{
@@ -1304,11 +1300,11 @@ public class ParametricDevServerUtil
 
 			List<TrackingParametricDocApprovaleDTO> listtraTrackingParametricApprovalValuesDto = new ArrayList<TrackingParametricDocApprovaleDTO>();
 			List<TrackingParamDocApprov> listtrTrackingParamDocApprovs = ParaQueryUtil.getTrackingParamDocApprovList(session, supplierName, seUrl, approvalStatus, featureName, fullValue, taxonomy, storeDate,/*
-																																																						 * from
-																																																						 * ,
-																																																						 * to
-																																																						 * ,
-																																																						 */userId);
+																																																				 * from
+																																																				 * ,
+																																																				 * to
+																																																				 * ,
+																																																				 */userId);
 			int count = 0;
 
 			for(TrackingParamDocApprov trackingParamDocApprov : listtrTrackingParamDocApprovs)
@@ -1376,8 +1372,6 @@ public class ParametricDevServerUtil
 
 	}
 
-
-
 	@SuppressWarnings("unchecked")
 	public static List<PartComponent> getPartsByPkgApprovedParametricValue(PkgApprovedValue val, int from, int max) throws Exception
 	{
@@ -1403,7 +1397,7 @@ public class ParametricDevServerUtil
 		return partsList;
 	}
 
-	public static Exception getCatchException( Exception e) throws Exception
+	public static Exception getCatchException(Exception e) throws Exception
 	{
 		e.printStackTrace();
 		String mes = "";
@@ -1666,22 +1660,20 @@ public class ParametricDevServerUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-//			System.out.println(getDocumentBySeUrl("http://download.siliconexpert.com/pdfs/2010/5/18/3/57/37/730/max_/manual/max6650-max6651.pdf").getId());
-//			List list0 = getTrackingFeedbackForTL("", "", "", "", "", "", null, "", 32l);
-//			System.out.println(list0.size());
+			// System.out.println(getDocumentBySeUrl("http://download.siliconexpert.com/pdfs/2010/5/18/3/57/37/730/max_/manual/max6650-max6651.pdf").getId());
+			// List list0 = getTrackingFeedbackForTL("", "", "", "", "", "", null, "", 32l);
+			// System.out.println(list0.size());
 			MapGeneric generic = null;
-			 String genName=ParaQueryUtil.getNonAlphaPart("004 G75gf").trim();
-			 Query q = session.createQuery("select o from MapGeneric o "
-		                + " where CM.NONALPHANUM (o.generic)=:man");
-		        q.setParameter("man", genName);
-		        
-		        generic = (MapGeneric) q.uniqueResult();
-//		        System.out.println("Gen id="+generic.getId());
-		        
-		        String nonalpha="ab___c__D_f";
-		        nonalpha= nonalpha.replaceAll("_", "%").replaceAll(
-						"(%){2,}", "%") ;
-		        System.out.println(nonalpha);
+			String genName = ParaQueryUtil.getNonAlphaPart("004 G75gf").trim();
+			Query q = session.createQuery("select o from MapGeneric o " + " where CM.NONALPHANUM (o.generic)=:man");
+			q.setParameter("man", genName);
+
+			generic = (MapGeneric) q.uniqueResult();
+			// System.out.println("Gen id="+generic.getId());
+
+			String nonalpha = "ab___c__D_f";
+			nonalpha = nonalpha.replaceAll("_", "%").replaceAll("(%){2,}", "%");
+			System.out.println(nonalpha);
 			// List<ComponentDTO> ComponentDTO =
 			// getPartsParametricValuesGroupByComId(126L, 1125L, 25);
 			// for(ComponentDTO componentDTO2 : ComponentDTO)
@@ -1869,7 +1861,7 @@ public class ParametricDevServerUtil
 			if(!isFound)
 			{
 				mainDataFeatureValuesDTO = new MainDataFeatureValuesDTO();
-//				mainDataFeatureValuesDTO.setComponent(component);
+				// mainDataFeatureValuesDTO.setComponent(component);
 				mainDataFeatureValuesDTO.setFeatureValuesDTOs(new ArrayList<FeatureValuesDTO>());
 
 				mainDataFeatureValuesDTOList.add(mainDataFeatureValuesDTO);
@@ -3062,7 +3054,6 @@ public class ParametricDevServerUtil
 	// }
 	// }
 
-
 	public static void closeTrackingFeedback(TrackingFeedback trackingFeedback) throws Exception
 	{
 		Session session = SessionUtil.getSession();
@@ -3082,7 +3073,7 @@ public class ParametricDevServerUtil
 		}
 
 	}
-	
+
 	public static void saveDataSheetAlert(List<TrackingDatasheetAlert> trackingDatasheetAlertslist) throws Exception
 	{
 		Session session = SessionUtil.getSession();
@@ -3572,8 +3563,6 @@ public class ParametricDevServerUtil
 
 	}
 
-	
-
 	private static List<List<String>> readExcelFileOfForDistributionByPartNumberAndVendorAndExport(InputStream inputStream)
 	{
 		List<List<String>> excelDataList = new ArrayList<List<String>>();
@@ -3828,8 +3817,8 @@ public class ParametricDevServerUtil
 
 			}
 			else
-				ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), trackingParamDocApprovList
-						.get(0).getTrackingTaskStatus(), trackingParamDocApprovList.get(0).getTrackingTaskQaStatus(), session);
+				ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), trackingParamDocApprovList.get(0)
+						.getTrackingTaskStatus(), trackingParamDocApprovList.get(0).getTrackingTaskQaStatus(), session);
 
 			return;
 		}
@@ -3838,7 +3827,6 @@ public class ParametricDevServerUtil
 
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	private static boolean checkIfDocumentHasParts(Document formDocument, Session session)
 	{

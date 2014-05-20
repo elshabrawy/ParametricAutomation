@@ -28,69 +28,70 @@ public class ImagePanel extends JPanel
 	private Image img;
 	ImageObserver imageObserver;
 
-//	public ImagePanel(String img)
-//	{
-//		this(new ImageIcon(img).getImage());
-//	}
-//
-//	public ImagePanel(Image img)
-//	{
-//		this.img = img;
-//		// Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-//		// setPreferredSize(size);
-//		// setMinimumSize(size);
-//		// setMaximumSize(size);
-//		// setSize(size);
-//		setLayout(new BorderLayout());
-//	}
+	// public ImagePanel(String img)
+	// {
+	// this(new ImageIcon(img).getImage());
+	// }
+	//
+	// public ImagePanel(Image img)
+	// {
+	// this.img = img;
+	// // Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
+	// // setPreferredSize(size);
+	// // setMinimumSize(size);
+	// // setMaximumSize(size);
+	// // setSize(size);
+	// setLayout(new BorderLayout());
+	// }
 
-//	public ImagePanel(String imagePath)
-//	{
-//		 setSize(1000, 1000);
-//		 setVisible(true);
-//		 BorderLayout one = new BorderLayout();
-//		setLayout(one);
-//		JLabel pic = new JLabel();
-//		ImageIcon icon = new ImageIcon(imagePath);
-//		pic.setIcon(icon);
-//		pic.setHorizontalAlignment(JLabel.CENTER);
-//		JScrollPane sp = new JScrollPane();
-//		img = icon.getImage();
-//		imageObserver = icon.getImageObserver();
-//		pic.setBounds(0, 0, getWidth(), img.getHeight(imageObserver));
-////		pic.setLayout(null);
-//		// sp.add(pic);
-//		add(pic);
-//		// repaint();
-//		// revalidate();
-//
-//	}
+	// public ImagePanel(String imagePath)
+	// {
+	// setSize(1000, 1000);
+	// setVisible(true);
+	// BorderLayout one = new BorderLayout();
+	// setLayout(one);
+	// JLabel pic = new JLabel();
+	// ImageIcon icon = new ImageIcon(imagePath);
+	// pic.setIcon(icon);
+	// pic.setHorizontalAlignment(JLabel.CENTER);
+	// JScrollPane sp = new JScrollPane();
+	// img = icon.getImage();
+	// imageObserver = icon.getImageObserver();
+	// pic.setBounds(0, 0, getWidth(), img.getHeight(imageObserver));
+	// // pic.setLayout(null);
+	// // sp.add(pic);
+	// add(pic);
+	// // repaint();
+	// // revalidate();
+	//
+	// }
 
 	public ImagePanel(String imagePath)
 	{
-		BufferedImage image=null;
-	              
-	         try
-			{
-				image = ImageIO.read(new File(imagePath));
-			}catch(java.io.IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        JLabel b=new JLabel(new ImageIcon(image));
-//	        JPanel p=new JPanel();
-	       setLayout( new BorderLayout() );
-	        JScrollPane sp=new JScrollPane();
-	        sp.setAutoscrolls(true);
-	        sp.getViewport().add(b);
-	       add(sp, BorderLayout.CENTER);
+		BufferedImage image = null;
+
+		try
+		{
+			image = ImageIO.read(new File(imagePath));
+		}catch(java.io.IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JLabel b = new JLabel(new ImageIcon(image));
+		// JPanel p=new JPanel();
+		setLayout(new BorderLayout());
+		JScrollPane sp = new JScrollPane();
+		sp.setAutoscrolls(true);
+		sp.getViewport().add(b);
+		add(sp, BorderLayout.CENTER);
 	}
-//	public void paintComponent(Graphics g)
-//	{
-//		g.drawImage(img, 0, 0, imageObserver);
-//
-//	}
+
+	// public void paintComponent(Graphics g)
+	// {
+	// g.drawImage(img, 0, 0, imageObserver);
+	//
+	// }
 
 	public static void main(String[] args)
 	{

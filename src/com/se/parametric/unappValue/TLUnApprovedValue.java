@@ -249,7 +249,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 			{
 				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
 				validated = true;
-//				Session session = SessionUtil.getSession();
+				// Session session = SessionUtil.getSession();
 				for(int i = 0; i < wsheet.size(); i++)
 				{
 					row = wsheet.get(i);
@@ -262,7 +262,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					}
 				}
 				ws.writeSheetData(validationResult, 1);
-//				session.close();
+				// session.close();
 				JOptionPane.showMessageDialog(null, " Validation Done");
 			}
 		}

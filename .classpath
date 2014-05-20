@@ -4,11 +4,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AutomationDLGWTLib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GRM-DB"/>
-	<classpathentry kind="lib" path="D:/Mohamed_gawad/Javalib/JTattooDemo.jar"/>
-	<classpathentry kind="lib" path="D:/Mohamed_gawad/Javalib/jcalendar-1.3.2.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Hibernate4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Excel2010"/>
+	<classpathentry kind="lib" path="D:/Resources/APIs/JTattooDemo.jar"/>
+	<classpathentry kind="lib" path="D:/Resources/APIs/jcalendar-1.3.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Hibernate 4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/office2010"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/openOffice"/>
-	<classpathentry kind="lib" path="D:/Mohamed_gawad/Javalib/ojdbc14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

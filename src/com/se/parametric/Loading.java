@@ -11,8 +11,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-public class Loading implements Runnable {
-	public Loading() {
+public class Loading implements Runnable
+{
+	public Loading()
+	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.width = screenSize.width;
 		this.height = screenSize.height;
@@ -26,7 +28,8 @@ public class Loading implements Runnable {
 	int percent = 0;
 	public JFrame frame;
 
-	public void run() {
+	public void run()
+	{
 		frame = new JFrame();
 		frame.setContentPane(panel);
 		frame.setTitle("Progress Bar Example");
@@ -36,19 +39,23 @@ public class Loading implements Runnable {
 		frame.setVisible(true);
 	}
 
-	public void updateBar(int newValue) {
+	public void updateBar(int newValue)
+	{
 		pbar.setValue(newValue);
 	}
 
-	class ImagePanel extends JPanel {
+	class ImagePanel extends JPanel
+	{
 
 		private Image img;
 
-		public ImagePanel(String img) {
+		public ImagePanel(String img)
+		{
 			this(new ImageIcon(img).getImage());
 		}
 
-		public ImagePanel(Image img) {
+		public ImagePanel(Image img)
+		{
 			this.img = img;
 			Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
 			setPreferredSize(size);
@@ -58,7 +65,8 @@ public class Loading implements Runnable {
 			setLayout(null);
 		}
 
-		public void paintComponent(Graphics g) {
+		public void paintComponent(Graphics g)
+		{
 			g.drawImage(img, 0, 0, null);
 			repaint();
 		}

@@ -43,7 +43,8 @@ import com.se.parametric.dto.GrmUserDTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Font;
 
-public class PdfLinks extends JPanel implements ActionListener {
+public class PdfLinks extends JPanel implements ActionListener
+{
 	TableColumn urlColumn;
 	public JTable table;
 	JLabel label;
@@ -87,15 +88,18 @@ public class PdfLinks extends JPanel implements ActionListener {
 	Date endDate = null;
 	private String PLName;
 
-	public String getPLName() {
+	public String getPLName()
+	{
 		return PLName;
 	}
 
-	public void setPLName(String pLName) {
+	public void setPLName(String pLName)
+	{
 		PLName = pLName;
 	}
 
-	public PdfLinks(GrmUserDTO userDTO, ArrayList<ArrayList<String>> list) {
+	public PdfLinks(GrmUserDTO userDTO, ArrayList<ArrayList<String>> list)
+	{
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		this.list = list;
@@ -103,9 +107,12 @@ public class PdfLinks extends JPanel implements ActionListener {
 		this.setSize(width, height - 100);
 		comboBoxItems = new JComboBox[4];
 		paggingLabel = new JLabel("");
-		if (list.size() % 20 == 0) {
+		if(list.size() % 20 == 0)
+		{
 			this.setPageNumber(list.size() / 20);
-		} else {
+		}
+		else
+		{
 			this.setPageNumber((list.size() / 20) + 1);
 		}
 		System.out.println("number of page " + this.getPageNumber());
@@ -113,9 +120,11 @@ public class PdfLinks extends JPanel implements ActionListener {
 		this.setCurrentPage(1);
 		paggingLabel.setText("1");
 		ArrayList<Object[]> result = getDistinct(list);
-		if (!list.isEmpty()) {
+		if(!list.isEmpty())
+		{
 			select = new String[list.get(0).size()];
-			for (int i = 0; i < list.get(0).size(); i++) {
+			for(int i = 0; i < list.get(0).size(); i++)
+			{
 				select[i] = "All";
 			}
 		}
@@ -204,41 +213,52 @@ public class PdfLinks extends JPanel implements ActionListener {
 		filterPanel.add(lblExtracted);
 		pdfLink = new JTextField();
 		table.setRowSelectionAllowed(true);
-//		table.setColumnSelectionAllowed(true);
-//		urlColumn.setCellEditor(new DefaultCellEditor(pdfLink));
+		// table.setColumnSelectionAllowed(true);
+		// urlColumn.setCellEditor(new DefaultCellEditor(pdfLink));
 		table.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mousePressed(MouseEvent arg0) {
+			public void mousePressed(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
+			public void mouseExited(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
+			public void mouseEntered(MouseEvent arg0)
+			{
 			}
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseClicked(MouseEvent arg0)
+			{
 				String data = table.getValueAt(table.getSelectedRow(), 0).toString();
 				Pattern pattern = Pattern.compile("<html><a href=\"(.*?)\">.*?</a>");
 				Matcher matcher = pattern.matcher(data);
 				System.out.println("Editing column is " + table.getSelectedColumn());
 				String url = null;
-				while (matcher.find()) {
+				while(matcher.find())
+				{
 					url = matcher.group(1);
 				}
-				if (table.getSelectedColumn() == 0) {
-					if (Desktop.isDesktopSupported()) {
-						try {
+				if(table.getSelectedColumn() == 0)
+				{
+					if(Desktop.isDesktopSupported())
+					{
+						try
+						{
 							Desktop.getDesktop().browse(new URI(url));
-						} catch (IOException ex) { /* TODO: error handling */
-						} catch (URISyntaxException e1) {
+						}catch(IOException ex)
+						{ /* TODO: error handling */
+						}catch(URISyntaxException e1)
+						{
 							e1.printStackTrace();
 						}
 					}
@@ -249,23 +269,26 @@ public class PdfLinks extends JPanel implements ActionListener {
 		doFilterBtn = new JButton("Show PDFs");
 		doFilterBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
 		doFilterBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0)
+			{
 				Loading loading = new Loading();
 				Thread thread = new Thread(loading);
 				thread.start();
 				filteredData = new ArrayList<DocumentInfoDTO>();
-				if (jDateChooser1.isEnabled()) {
+				if(jDateChooser1.isEnabled())
+				{
 					startDate = jDateChooser1.getDate();
 					endDate = jDateChooser2.getDate();
-				} else {
+				}
+				else
+				{
 					startDate = null;
 					endDate = null;
 				}
-				filteredData = ParaQueryUtil.getDevelopmentPDF(PdfLinks.this.userID, comboBoxItems[0].getSelectedItem().toString(),
-						comboBoxItems[1].getSelectedItem().toString(), comboBoxItems[2].getSelectedItem().toString(), comboBoxItems[3]
-								.getSelectedItem().toString(), startDate, endDate);
-//				jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-//				jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+				filteredData = ParaQueryUtil.getDevelopmentPDF(PdfLinks.this.userID, comboBoxItems[0].getSelectedItem().toString(), comboBoxItems[1].getSelectedItem().toString(), comboBoxItems[2].getSelectedItem().toString(), comboBoxItems[3]
+						.getSelectedItem().toString(), startDate, endDate);
+				// jDateChooser1.setDate(new Date(System.currentTimeMillis()));
+				// jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				setTableData(0, filteredData);
 				thread.stop();
 				loading.frame.dispose();
@@ -316,34 +339,43 @@ public class PdfLinks extends JPanel implements ActionListener {
 		paggingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		paggingLabel.setBounds(1061, 11, 26, 23);
 		PaggingPanel.add(paggingLabel);
-		for (int i = 0; i < 4; i++) {
+		for(int i = 0; i < 4; i++)
+		{
 			comboBoxItems[i].addActionListener(this);
-		}		
+		}
 		first.addActionListener(this);
 		next.addActionListener(this);
 		previous.addActionListener(this);
 		last.addActionListener(this);
 	}
 
-	public ArrayList<DocumentInfoDTO> getRows(int page) {
+	public ArrayList<DocumentInfoDTO> getRows(int page)
+	{
 		ArrayList<DocumentInfoDTO> result = new ArrayList<DocumentInfoDTO>();
 		int count = 20;
-		if (filteredData.size() < (page * 20)) {
+		if(filteredData.size() < (page * 20))
+		{
 			count = filteredData.size() - ((page - 1) * 20);
 		}
-		for (int i = (page - 1) * 20; i < (((page - 1) * 20) + count); i++) {
+		for(int i = (page - 1) * 20; i < (((page - 1) * 20) + count); i++)
+		{
 			result.add(filteredData.get(i));
 		}
 		return result;
 
 	}
 
-	public void setTableData(int x, ArrayList<DocumentInfoDTO> result) {
+	public void setTableData(int x, ArrayList<DocumentInfoDTO> result)
+	{
 
-		if (x == 0) {
-			if (result.size() % 20 == 0) {
+		if(x == 0)
+		{
+			if(result.size() % 20 == 0)
+			{
 				this.setPageNumber(result.size() / 20);
-			} else {
+			}
+			else
+			{
 				this.setPageNumber((result.size() / 20) + 1);
 			}
 			this.setRecordNumber(result.size());
@@ -352,21 +384,24 @@ public class PdfLinks extends JPanel implements ActionListener {
 			previous.setEnabled(false);
 		}
 		System.out.println("page number is " + this.getPageNumber());
-		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 6; j++) {
+		for(int i = 0; i < 20; i++)
+		{
+			for(int j = 0; j < 6; j++)
+			{
 				table.setValueAt(null, i, j);
 			}
 		}
 		int count = 20;
-		if (result.size() < 20) {
+		if(result.size() < 20)
+		{
 			count = result.size();
 		}
 		System.out.println("size is " + count);
-		for (int i = 0; i < count; i++) {
+		for(int i = 0; i < count; i++)
+		{
 			System.out.println("pdf is " + result.get(i).getPdf().getSeUrl());
 			System.out.println(" and pl is " + result.get(i).getSupplierPl().getPl().getName());
-			table.setValueAt("<html><a href=\"" + result.get(i).getPdf().getSeUrl() + "\">" + result.get(i).getPdf().getSeUrl() + "</a>",
-					i, 0);
+			table.setValueAt("<html><a href=\"" + result.get(i).getPdf().getSeUrl() + "\">" + result.get(i).getPdf().getSeUrl() + "</a>", i, 0);
 			table.setValueAt(result.get(i).getSupplierPl().getPl().getName(), i, 1);
 			table.setValueAt(result.get(i).getSupplierPl().getSupplier().getName(), i, 2);
 			table.setValueAt(result.get(i).getTaskType(), i, 3);
@@ -375,7 +410,8 @@ public class PdfLinks extends JPanel implements ActionListener {
 		}
 	}
 
-	public ArrayList<Object[]> getDistinct(ArrayList<ArrayList<String>> list) {
+	public ArrayList<Object[]> getDistinct(ArrayList<ArrayList<String>> list)
+	{
 		ArrayList<Object[]> result = new ArrayList<Object[]>();
 		LinkedHashSet pls = new LinkedHashSet();
 		pls.add("All");
@@ -386,7 +422,8 @@ public class PdfLinks extends JPanel implements ActionListener {
 		LinkedHashSet extracted = new LinkedHashSet();
 		extracted.add("All");
 
-		for (int i = 0; i < list.size(); i++) {
+		for(int i = 0; i < list.size(); i++)
+		{
 			pls.add(list.get(i).get(0));
 			suppliers.add(list.get(i).get(1));
 			status.add(list.get(i).get(2));
@@ -399,31 +436,41 @@ public class PdfLinks extends JPanel implements ActionListener {
 		return result;
 	}
 
-	public ArrayList<ArrayList<String>> getFilteredData(ArrayList<ArrayList<String>> list) {
+	public ArrayList<ArrayList<String>> getFilteredData(ArrayList<ArrayList<String>> list)
+	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		String plName = comboBoxItems[0].getSelectedItem().toString();
 		String supplier = comboBoxItems[1].getSelectedItem().toString();
 		String status = comboBoxItems[2].getSelectedItem().toString();
 		String extracted = comboBoxItems[3].getSelectedItem().toString();
 
-		for (int i = 0; i < list.size(); i++) {
-			if (!plName.equals("All")) {
-				if (!list.get(i).get(0).equals(plName)) {
+		for(int i = 0; i < list.size(); i++)
+		{
+			if(!plName.equals("All"))
+			{
+				if(!list.get(i).get(0).equals(plName))
+				{
 					continue;
 				}
 			}
-			if (!supplier.equals("All")) {
-				if (!list.get(i).get(1).equals(supplier)) {
+			if(!supplier.equals("All"))
+			{
+				if(!list.get(i).get(1).equals(supplier))
+				{
 					continue;
 				}
 			}
-			if (!status.equals("All")) {
-				if (!list.get(i).get(2).equals(status)) {
+			if(!status.equals("All"))
+			{
+				if(!list.get(i).get(2).equals(status))
+				{
 					continue;
 				}
 			}
-			if (!extracted.equals("All")) {
-				if (!list.get(i).get(3).equals(extracted)) {
+			if(!extracted.equals("All"))
+			{
+				if(!list.get(i).get(3).equals(extracted))
+				{
 					continue;
 				}
 			}
@@ -433,45 +480,58 @@ public class PdfLinks extends JPanel implements ActionListener {
 		return result;
 	}
 
-	public int getCurrentPage() {
+	public int getCurrentPage()
+	{
 		return currentPage;
 	}
 
-	public void setCurrentPage(int currentPage) {
+	public void setCurrentPage(int currentPage)
+	{
 		this.currentPage = currentPage;
 	}
 
-	public int getPageNumber() {
+	public int getPageNumber()
+	{
 		return pageNumber;
 	}
 
-	public void setPageNumber(int pageNumber) {
+	public void setPageNumber(int pageNumber)
+	{
 		this.pageNumber = pageNumber;
 	}
 
-	public int getRecordNumber() {
+	public int getRecordNumber()
+	{
 		return recordNumber;
 	}
 
-	public void setRecordNumber(int recordNumber) {
+	public void setRecordNumber(int recordNumber)
+	{
 		this.recordNumber = recordNumber;
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(ActionEvent event)
+	{
 
 		Object obj = event.getSource();
 
-		if (obj instanceof JCheckBox) {
+		if(obj instanceof JCheckBox)
+		{
 			JCheckBox check = (JCheckBox) obj;
-			if (check.isSelected()) {
+			if(check.isSelected())
+			{
 				jDateChooser1.setEnabled(true);
 				jDateChooser2.setEnabled(true);
-			} else {
+			}
+			else
+			{
 				jDateChooser1.setEnabled(false);
 				jDateChooser2.setEnabled(false);
 			}
-		} else if (obj instanceof JComboBox) {
+		}
+		else if(obj instanceof JComboBox)
+		{
 			JComboBox co = (JComboBox) obj;
 			ArrayList<Object[]> result = getDistinct(getFilteredData(list));
 			System.out.println("  " + comboBoxItems.length + " and " + result.get(0).length);
@@ -480,35 +540,42 @@ public class PdfLinks extends JPanel implements ActionListener {
 			String status = comboBoxItems[2].getSelectedItem().toString();
 			String count = comboBoxItems[3].getSelectedItem().toString();
 			String initial[] = new String[4];
-			for (int j = 0; j < comboBoxItems.length; j++) {
+			for(int j = 0; j < comboBoxItems.length; j++)
+			{
 				initial[j] = comboBoxItems[j].getSelectedItem().toString();
 				comboBoxItems[j].removeActionListener(this);
 				comboBoxItems[j].removeAllItems();
 			}
 
-			for (int j = 0; j < comboBoxItems.length; j++) {
+			for(int j = 0; j < comboBoxItems.length; j++)
+			{
 
-				for (int k = 0; k < result.get(j).length; k++) {
+				for(int k = 0; k < result.get(j).length; k++)
+				{
 					comboBoxItems[j].addItem(result.get(j)[k]);
 					System.out.println("" + j);
 				}
 				comboBoxItems[j].setSelectedItem(initial[j]);
 				comboBoxItems[j].addActionListener(this);
 			}
-		} else if (obj instanceof JButton) {
-			if (obj == first) {
+		}
+		else if(obj instanceof JButton)
+		{
+			if(obj == first)
+			{
 				paggingLabel.setText("1");
 				int count = 20;
-				if (filteredData.size() < 20) {
+				if(filteredData.size() < 20)
+				{
 					count = filteredData.size();
 				}
 				System.out.println("size is " + count);
-				for (int i = 0; i < count; i++) {
+				for(int i = 0; i < count; i++)
+				{
 					System.out.println("pdf is " + filteredData.get(i).getPdf().getSeUrl());
 					System.out.println(" and pl is " + filteredData.get(i).getSupplierPl().getPl().getName());
 					System.out.println(" and the supplieer is " + filteredData.get(i).getSupplierPl().getSupplier().getName());
-					table.setValueAt("<html><a href=\"" + filteredData.get(i).getPdf().getSeUrl() + "\">"
-							+ filteredData.get(i).getPdf().getSeUrl() + "</a>", i, 0);
+					table.setValueAt("<html><a href=\"" + filteredData.get(i).getPdf().getSeUrl() + "\">" + filteredData.get(i).getPdf().getSeUrl() + "</a>", i, 0);
 					table.setValueAt(filteredData.get(i).getSupplierPl().getPl().getName(), i, 1);
 					table.setValueAt(filteredData.get(i).getSupplierPl().getSupplier().getName(), i, 2);
 					table.setValueAt(filteredData.get(i).getTaskType(), i, 3);
@@ -519,7 +586,9 @@ public class PdfLinks extends JPanel implements ActionListener {
 				first.setEnabled(false);
 				next.setEnabled(true);
 				last.setEnabled(true);
-			} else if (obj == next) {
+			}
+			else if(obj == next)
+			{
 				previous.setEnabled(true);
 				first.setEnabled(true);
 				int current = PdfLinks.this.getCurrentPage();
@@ -528,22 +597,28 @@ public class PdfLinks extends JPanel implements ActionListener {
 				paggingLabel.setText("" + (current + 1));
 				setTableData(1, getRows(PdfLinks.this.getCurrentPage()));
 				System.out.println("current is " + PdfLinks.this.getCurrentPage() + " and pageNumber is " + PdfLinks.this.getPageNumber());
-				if (PdfLinks.this.getCurrentPage() == PdfLinks.this.getPageNumber()) {
+				if(PdfLinks.this.getCurrentPage() == PdfLinks.this.getPageNumber())
+				{
 					next.setEnabled(false);
 					last.setEnabled(false);
 				}
-			} else if (obj == previous) {
+			}
+			else if(obj == previous)
+			{
 				next.setEnabled(true);
 				last.setEnabled(true);
 
 				PdfLinks.this.setCurrentPage(PdfLinks.this.getCurrentPage() - 1);
 				paggingLabel.setText("" + PdfLinks.this.getCurrentPage());
 				setTableData(1, getRows(PdfLinks.this.getCurrentPage()));
-				if (PdfLinks.this.getCurrentPage() == 1) {
+				if(PdfLinks.this.getCurrentPage() == 1)
+				{
 					previous.setEnabled(false);
 					first.setEnabled(false);
 				}
-			} else if (obj == last) {
+			}
+			else if(obj == last)
+			{
 				PdfLinks.this.setCurrentPage(PdfLinks.this.getPageNumber());
 				paggingLabel.setText("" + PdfLinks.this.getPageNumber());
 				setTableData(1, getRows(PdfLinks.this.getPageNumber()));
@@ -554,5 +629,5 @@ public class PdfLinks extends JPanel implements ActionListener {
 			}
 
 		}
-	}	
+	}
 }
