@@ -3458,7 +3458,6 @@ public class WorkingSheet
 				allparts.add(qachk);
 			}
 			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
-			// DataDevQueryUtil.updateqapartsstatus(allparts);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
