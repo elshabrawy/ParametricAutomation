@@ -5521,9 +5521,9 @@ public class DataDevQueryUtil
 				{
 					// initiate FB
 					qachk.setStatus(StatusName.fbClosed);
-					//addtoexception(qachk, session);
+					// addtoexception(qachk, session);
 					saveexceptionfeedback(qachk, session);
-					partaction = StatusName.Done;
+					partaction = StatusName.Open;
 				}
 				else if(qachk.getStatus().equals(StatusName.reject))
 				{
