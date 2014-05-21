@@ -3390,7 +3390,7 @@ public class WorkingSheet
 
 	}
 
-	public void saveQAexceptionAction(String checker, String engname)
+	public void saveQAexceptionAction(String checker, String engname, String screen)
 	{
 		Session session = null;
 
@@ -3399,7 +3399,7 @@ public class WorkingSheet
 			session = SessionUtil.getSession();
 			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
 			ArrayList<String> sheetHeader = getHeader();
-
+//			int fbcommentIndex = sheetHeader.indexOf("FBComment");
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
 			int commentIndex = sheetHeader.indexOf("Comment");
@@ -3428,6 +3428,7 @@ public class WorkingSheet
 				String DatasheetTitle = partData.get(Titleidx);
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
+//				String fbcomment = partData.get(fbcommentIndex);
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 				{
 					FeatureName = partData.get(FeatureNameindex);
@@ -3436,7 +3437,6 @@ public class WorkingSheet
 				qachk.setNanAlphaPart(NanAlphaPart);
 				PartComponent part = DataDevQueryUtil.getComponentBycomid(Comid);
 				qachk.setPart(part);
-				qachk.setFlag(Flag);
 				qachk.setVendor(part.getSupplierId());
 				qachk.setDatasheet(part.getDocument());
 				qachk.setDatasheetTitle(DatasheetTitle);
@@ -3448,6 +3448,7 @@ public class WorkingSheet
 				qachk.setEngname(engname);
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
+				qachk.setFlag(Flag);
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 				{
 					qachk.setFeatureName(FeatureName);
@@ -3456,7 +3457,7 @@ public class WorkingSheet
 
 				allparts.add(qachk);
 			}
-			DataDevQueryUtil.updateqaexceptionspart(allparts);
+			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
 			// DataDevQueryUtil.updateqapartsstatus(allparts);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
@@ -4599,18 +4600,22 @@ public class WorkingSheet
 			cell.setText("Comment");
 			HeaderList.add(cell);
 
-			statusValues.add(StatusName.approved);
-			statusValues.add(StatusName.reject);
+			cell = getCellByPosission(12, 0);
+			cell.setText("FBComment");
+			HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				cell = getCellByPosission(12, 0);
+				cell = getCellByPosission(13, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(13, 0);
+				cell = getCellByPosission(14, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 			}
+
+			statusValues.add(StatusName.approved);
+			statusValues.add(StatusName.reject);
 
 		}catch(Exception e)
 		{

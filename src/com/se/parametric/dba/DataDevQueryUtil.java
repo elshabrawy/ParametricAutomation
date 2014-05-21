@@ -4285,13 +4285,25 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<Object[]> getQAexceptionFilterData(GrmUserDTO grmUser)
+	public static ArrayList<Object[]> getQAexceptionFilterData(GrmUserDTO grmUser, String screen)
 	{
 		Long UserID = grmUser.getId();
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<String> row = null;
 		ArrayList<Object[]> list2 = null;
 		ArrayList<Object[]> list = null;
+		String column = "";
+		String status = "";
+		if(screen.equals("Qa"))
+		{
+			column = "QA_USER_ID";
+			status = StatusName.WaittingException;
+		}
+		else
+		{
+			column = "USER_ID";
+			status = StatusName.RejectException;
+		}
 		Session session = SessionUtil.getSession();
 		try
 		{
@@ -4304,8 +4316,8 @@ public class DataDevQueryUtil
 			Sql = Sql + "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
 			Sql = Sql + "Id('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id = ";
 			Sql = Sql + "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
-			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + StatusName.WaittingException + "'";
-			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp.QA_USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + status + "'";
+			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp." + column + " =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
 
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			// for(int i = 0; i < list2.size(); i++)
@@ -4325,8 +4337,65 @@ public class DataDevQueryUtil
 			Sql = Sql + "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
 			Sql = Sql + "usId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id ";
 			Sql = Sql + "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
-			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + StatusName.WaittingException + "'";
-			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp.QA_USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + status + "'";
+			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp." + column + " =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql + "";
+			list = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
+			for(int i = 0; i < list.size(); i++)
+			{
+				Object[] data = list.get(i);
+				list2.add(data);
+			}
+		}finally
+		{
+			session.close();
+		}
+		return list2;
+
+	}
+
+	public static ArrayList<Object[]> getexceptionFBFilterData(GrmUserDTO grmUser)
+	{
+		Long UserID = grmUser.getId();
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		ArrayList<String> row = null;
+		ArrayList<Object[]> list2 = null;
+		ArrayList<Object[]> list = null;
+		Session session = SessionUtil.getSession();
+		try
+		{
+
+			String Sql = "";
+
+			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
+			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
+			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_T";
+			Sql = Sql + "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
+			Sql = Sql + "Id('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id = ";
+			Sql = Sql + "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
+			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + StatusName.RejectException + "'";
+			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+
+			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
+			// for(int i = 0; i < list2.size(); i++)
+			// {
+			// Object[] data = list2.get(i);
+			// row = new ArrayList<String>();
+			// for(int j = 0; j < 4; j++)
+			// {
+			// row.add((data[j] == null) ? "" : data[j].toString());
+			// }
+			//
+			// result.add(row);
+			// }
+			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
+			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
+			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_D";
+			Sql = Sql + "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
+			Sql = Sql + "usId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id ";
+			Sql = Sql + "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
+			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + StatusName.RejectException + "'";
+			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
 			Sql = Sql + "";
 			list = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list.size(); i++)
@@ -4708,13 +4777,24 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<QAChecksDTO> getQAexceptionData(String plName, String supplierName, String checkerType, Date startDate, Date endDate, long userid, Session session)
+	public static ArrayList<QAChecksDTO> getQAexceptionData(String plName, String supplierName, String checkerType, Date startDate, Date endDate, long userid, String screen, Session session)
 	{
 		ArrayList<QAChecksDTO> data = null;
 
 		try
 		{
-
+			String column = "";
+			String status = "";
+			if(screen.equals("Qa"))
+			{
+				column = "QA_USER_ID";
+				status = StatusName.WaittingException;
+			}
+			else
+			{
+				column = "USER_ID";
+				status = StatusName.RejectException;
+			}
 			StringBuffer qury = new StringBuffer();
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
@@ -4726,8 +4806,8 @@ public class DataDevQueryUtil
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp.QA_USER_ID =" + userid + "";
-				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + StatusName.WaittingException + "'";
+				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
@@ -4741,8 +4821,8 @@ public class DataDevQueryUtil
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp.QA_USER_ID =" + userid + "";
-				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + StatusName.WaittingException + "'";
+				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
@@ -4798,6 +4878,7 @@ public class DataDevQueryUtil
 					qachecks.setFeatureName(fet.getFeature().getName());
 					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
 				}
+				qachecks.setChecker(checkerType);
 				data.add(qachecks);
 			}
 
@@ -5390,31 +5471,66 @@ public class DataDevQueryUtil
 			}
 		}catch(Exception e)
 		{
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
-	public static void updateqaexceptionspart(ArrayList<QAChecksDTO> qachks)
+	public static void updateqaexceptionspart(ArrayList<QAChecksDTO> qachks, String screen)
 	{
 		Session session = null;
 		session = SessionUtil.getSession();
 		Criteria cri = null;
+		String currentstatus = "";
+		if(screen.equals("Qa"))
+		{
+			currentstatus = StatusName.WaittingException;
+		}
+		else
+		{
+			currentstatus = StatusName.RejectException;
+		}
 		for(QAChecksDTO qachk : qachks)
 		{
 			List<QaCheckMultiData> qaCheckMultiData = null;
 			List<QaCheckMultiTax> qaCheckMultiTax = null;
 			QaChecksActions action = null;
 			String partaction = "";
-			if(qachk.getStatus().equals(StatusName.approved))
+			boolean fbpart = checkpartifexistinFB(qachk, session);
+			if(screen.equals("Qa"))
 			{
-				addtoexception(qachk, session);
-				partaction = StatusName.Done;
+				if(qachk.getStatus().equals(StatusName.approved))
+				{
+					if(fbpart)
+					{
+						qachk.setStatus(StatusName.fbClosed);
+						saveexceptionfeedback(qachk, session);
+					}
+					addtoexception(qachk, session);
+					partaction = StatusName.Done;
+				}
+				else if(qachk.getStatus().equals(StatusName.reject))
+				{
+					// initiate FB
+					saveexceptionfeedback(qachk, session);
+					partaction = StatusName.RejectException;
+				}
 			}
-			else if(qachk.getStatus().equals(StatusName.reject))
+			else
 			{
-				// initiate FB
-				saveexceptionfeedback(qachk, session);
-				partaction = StatusName.RejectException;
+				if(qachk.getStatus().equals(StatusName.approved))
+				{
+					// initiate FB
+					qachk.setStatus(StatusName.fbClosed);
+					addtoexception(qachk, session);
+					saveexceptionfeedback(qachk, session);
+					partaction = StatusName.Done;
+				}
+				else if(qachk.getStatus().equals(StatusName.reject))
+				{
+					// initiate FB
+					saveexceptionfeedback(qachk, session);
+					partaction = StatusName.WaittingException;
+				}
 			}
 
 			cri = session.createCriteria(QaChecksActions.class);
@@ -5426,7 +5542,7 @@ public class DataDevQueryUtil
 				cri = session.createCriteria(QaCheckMultiData.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
 				cri.createAlias("qaChecksActions", "action");
-				cri.add(Restrictions.eq("action.name", StatusName.WaittingException));
+				cri.add(Restrictions.eq("action.name", currentstatus));
 				qaCheckMultiData = cri.list();
 				if(!qaCheckMultiData.isEmpty())
 				{
@@ -5443,7 +5559,7 @@ public class DataDevQueryUtil
 				cri = session.createCriteria(QaCheckMultiTax.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
 				cri.createAlias("qaChecksActions", "action");
-				cri.add(Restrictions.eq("action.name", StatusName.WaittingException));
+				cri.add(Restrictions.eq("action.name", currentstatus));
 				qaCheckMultiTax = cri.list();
 				if(!qaCheckMultiTax.isEmpty())
 				{
@@ -5456,6 +5572,21 @@ public class DataDevQueryUtil
 				}
 			}
 		}
+	}
+
+	private static boolean checkpartifexistinFB(QAChecksDTO qachk, Session session)
+	{
+		GrmUser issuedByUser = ParaQueryUtil.getGRMUserByName(qachk.getEngname());
+		Criteria fbcriteria = session.createCriteria(ParametricFeedbackCycle.class);
+		fbcriteria.add(Restrictions.eq("fbItemValue", qachk.getPart().getPartNumber()));
+		fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
+		fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
+		ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria.uniqueResult();
+
+		if(parametricFeedbackCycle == null)
+			return false;
+		else
+			return true;
 	}
 
 	private static void addtoexception(QAChecksDTO qachk, Session session)
@@ -5471,7 +5602,6 @@ public class DataDevQueryUtil
 			qaexception.setFamily(qachk.getFamily());
 			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 			{
-
 				qaexception.setFetValue(qachk.getFeatureValue() == null ? "" : qachk.getFeatureValue());
 				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
 				qaexception.setPlFetId(plFeature.getId());
@@ -5523,7 +5653,7 @@ public class DataDevQueryUtil
 			}
 
 			String fbStatus = StatusName.inprogress;
-			String FBAction = StatusName.reject;
+			String FBAction = qachk.getStatus();
 			System.out.println(FBAction);
 			long fbRecieved = 0l;
 			if(FBAction.equals(StatusName.fbClosed))
@@ -5532,6 +5662,10 @@ public class DataDevQueryUtil
 				fbStatus = StatusName.closed;
 				FBAction = StatusName.accept;
 			}
+			// if(FBAction.equals(StatusName.approved))
+			// {
+			// FBAction = StatusName.accept;
+			// }
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
 			System.out.println(FBAction);
 			criteria.add(Restrictions.eq("feedbackStatus", FBAction));
@@ -5558,6 +5692,7 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(parametricFeedbackCycle);
 				FBObj = parametricFeedbackCycle.getParametricFeedback();
 				FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+				issedto = parametricFeedbackCycle.getIssuedBy();
 			}
 			else if(parametricFeedbackCycle == null)
 			{

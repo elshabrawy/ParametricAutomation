@@ -63,7 +63,7 @@ public class QAException extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAexceptionFilterData(userDTO);
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 
@@ -127,7 +127,7 @@ public class QAException extends JPanel implements ActionListener
 		else if(event.getSource() == filterPanel.refreshButton)
 		{
 
-			filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO);
+			filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
 			filterPanel.refreshFilters();
 
 		}
@@ -140,7 +140,7 @@ public class QAException extends JPanel implements ActionListener
 			{
 				if(wsName == "QAChecks")
 				{
-					wsMap.get(wsName).saveQAexceptionAction(checker, engName);
+					wsMap.get(wsName).saveQAexceptionAction(checker, engName, "Qa");
 				}
 			}
 		}
@@ -173,7 +173,7 @@ public class QAException extends JPanel implements ActionListener
 			checker = checkerType;
 			tabbedPane.setSelectedIndex(0);
 			sheetpanel.openOfficeDoc();
-			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAexceptionData(plName, supplierName, checkerType, startDate, endDate, userDTO.getId(), session);
+			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAexceptionData(plName, supplierName, checkerType, startDate, endDate, userDTO.getId(), "Qa", session);
 			wsMap.clear();
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
 			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
@@ -204,10 +204,13 @@ public class QAException extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
 				row.add("");
 				row.add("");
-				row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
-				row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+				row.add(DataDevQueryUtil.getFeedbackCommentByComId(reviewData.get(i).getPart().getComId()));
+				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
+				{
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+				}
 				data.add(row);
-
 			}
 			ws.writeReviewData(data, 1, statusindx + 1);
 		}catch(Exception e)
