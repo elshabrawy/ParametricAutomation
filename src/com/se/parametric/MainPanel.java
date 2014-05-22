@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import com.se.Quality.QAException;
 import com.se.Quality.QAFeedBack;
 import com.se.Quality.QAReviewData;
 import com.se.Quality.QualityUnApprovedValue;
@@ -15,6 +16,7 @@ import com.se.parametric.dev.Developement;
 import com.se.parametric.dev.Update;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.fb.EngFeedBack;
+import com.se.parametric.fb.ExceptionFB;
 import com.se.parametric.fb.TLFeedBack;
 import com.se.parametric.review.TLReviewData;
 import com.se.parametric.unappValue.EngUnApprovedValueFeedback;
@@ -36,6 +38,8 @@ public class MainPanel extends JPanel
 	QAFeedBack qaFeedBack;
 	QualityUnApprovedValue qUnApproved;
 	GrmUserDTO userDTO;
+	QAException qaexception;
+	ExceptionFB exceptionfb;
 
 	public MainPanel(GrmUserDTO userDTO, int width, int height)
 	{
@@ -69,11 +73,13 @@ public class MainPanel extends JPanel
 			engfeedBack = new EngFeedBack(userDTO);
 			engunApprovedPanel = new EngUnApprovedValueFeedback(userDTO);
 			developement = new Developement(userDTO);
+			exceptionfb = new ExceptionFB(userDTO);
 			Update update = new Update(userDTO);
 			ComponentExporterPanel exportPanel = new ComponentExporterPanel(userDTO);
 			tabbedPane.addTab("Developement", null, developement, null);
 			tabbedPane.addTab("NPI Update", null, update, null);
 			tabbedPane.addTab("EngFeedback", null, engfeedBack, null);
+			tabbedPane.addTab("ExceptionFeedback", null, exceptionfb, null);
 			tabbedPane.addTab("EngUnApproved", null, engunApprovedPanel, null);
 			tabbedPane.addTab("Export", null, exportPanel, null);
 
@@ -87,11 +93,12 @@ public class MainPanel extends JPanel
 			qaReviewData = new QAReviewData(userDTO);
 			qaFeedBack = new QAFeedBack(userDTO);
 			qUnApproved = new QualityUnApprovedValue(userDTO);
+			qaexception = new QAException(userDTO);
 
 			tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
 			tabbedPane.addTab("Quality Feedback", null, qaFeedBack, null);
 			tabbedPane.addTab("Quality UnApproved", null, qUnApproved, null);
-
+			tabbedPane.addTab("Quality Exception", null, qaexception, null);
 		}
 
 	}
@@ -117,6 +124,8 @@ public class MainPanel extends JPanel
 			engunApprovedPanel.updateFlags(flags);
 		if(developement != null)
 			developement.updateFlags(flags);
+		if(exceptionfb != null)
+			exceptionfb.updateFlags(flags);
 		// QA Screens
 		if(qaReviewData != null)
 			qaReviewData.updateFlags(flags);
@@ -124,6 +133,8 @@ public class MainPanel extends JPanel
 			qaFeedBack.updateFlags(flags);
 		if(qUnApproved != null)
 			qUnApproved.updateFlags(flags);
+		if(qaexception != null)
+			qaexception.updateFlags(flags);
 
 	}
 

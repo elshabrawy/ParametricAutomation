@@ -2408,6 +2408,107 @@ public class WorkingSheet
 		{
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
 			List<String> pdfSet = new ArrayList<String>();
+			XCellRange xcellrange = null;
+			int lastColNum = HeaderList.size();
+			String lastColumn = getColumnName(lastColNum);
+			ArrayList<String> sheetHeader = getHeader();
+			int npiIndex = sheetHeader.indexOf("NPI");
+			boolean npihasvalue = false;
+			int lastRow = getLastRow();
+			for(int i = 3; i < lastRow + 1; i++)
+			{
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				String famCross = "", generic = "";
+				XCell genCell = null;
+				XCell famCrossCell = null;
+				if(NPIFlag)
+				{
+					if(npiIndex > 0)
+					{
+						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+						String npi = getCellText(npiCell).getString();
+						if(!npi.isEmpty() && !npihasvalue)
+						{
+							npihasvalue = true;
+						}
+					}
+				}
+
+				XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
+				String pn = getCellText(pnCell).getString();
+				XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
+				String supplierName = getCellText(suppCell).getString();
+				XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
+				String family = getCellText(famCell).getString();
+				XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
+				String mask = getCellText(maskCell).getString();
+				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+
+				if(plType.equals("Semiconductor"))
+				{
+					genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+					famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+					generic = getCellText(genCell).getString();
+					famCross = getCellText(famCrossCell).getString();
+				}
+				if(pn.isEmpty())
+				{
+					partvalidation.setStatus("Empty Part");
+					setCellColore(pnCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				if(family.isEmpty())
+				{
+					partvalidation.setStatus("Empty Family");
+					setCellColore(famCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				/**** validate that mask not null ***/
+				if(mask.isEmpty())
+				{
+					partvalidation.setStatus("Empty Mask)");
+					setCellColore(maskCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				else if(mask.length() != pn.length())
+				{
+					partvalidation.setStatus("Wrong Mask Length");
+					setCellColore(maskCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				/**
+				 * validate that generic and family Cross not null
+				 */
+				if(plType.equals("Semiconductor"))
+				{
+
+					if(generic.isEmpty() || famCross.isEmpty())
+					{
+						partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+						setCellColore(genCell, 0xD2254D);
+						setCellColore(famCrossCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+					}
+				}
+			}
+			if(NPIFlag && !npihasvalue && canSave)
+			{
+				partvalidation.setStatus("NPI Must has at least one value");
+				writeValidtionStatus(xcellrange, false);
+				canSave = false;
+			}
+			if(!canSave)
+			{
+				System.out.println("Can Save: " + canSave);
+				JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+				return;
+			}
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
@@ -3399,7 +3500,7 @@ public class WorkingSheet
 			session = SessionUtil.getSession();
 			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
 			ArrayList<String> sheetHeader = getHeader();
-//			int fbcommentIndex = sheetHeader.indexOf("FBComment");
+			// int fbcommentIndex = sheetHeader.indexOf("FBComment");
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
 			int commentIndex = sheetHeader.indexOf("Comment");
@@ -3428,7 +3529,7 @@ public class WorkingSheet
 				String DatasheetTitle = partData.get(Titleidx);
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
-//				String fbcomment = partData.get(fbcommentIndex);
+				// String fbcomment = partData.get(fbcommentIndex);
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 				{
 					FeatureName = partData.get(FeatureNameindex);

@@ -4989,6 +4989,7 @@ public class DataDevQueryUtil
 					qachecks.setFeatureName(fet.getFeature().getName());
 					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
 				}
+				qachecks.setChecker(checkerType);
 				data.add(qachecks);
 			}
 
