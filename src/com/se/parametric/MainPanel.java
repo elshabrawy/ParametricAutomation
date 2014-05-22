@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import com.se.Quality.QAChecks;
 import com.se.Quality.QAException;
 import com.se.Quality.QAFeedBack;
 import com.se.Quality.QAReviewData;
@@ -40,6 +41,7 @@ public class MainPanel extends JPanel
 	GrmUserDTO userDTO;
 	QAException qaexception;
 	ExceptionFB exceptionfb;
+	QAChecks qachecks;
 
 	public MainPanel(GrmUserDTO userDTO, int width, int height)
 	{
@@ -74,11 +76,13 @@ public class MainPanel extends JPanel
 			engunApprovedPanel = new EngUnApprovedValueFeedback(userDTO);
 			developement = new Developement(userDTO);
 			exceptionfb = new ExceptionFB(userDTO);
+			qachecks = new QAChecks(userDTO);
 			Update update = new Update(userDTO);
 			ComponentExporterPanel exportPanel = new ComponentExporterPanel(userDTO);
 			tabbedPane.addTab("Developement", null, developement, null);
 			tabbedPane.addTab("NPI Update", null, update, null);
 			tabbedPane.addTab("EngFeedback", null, engfeedBack, null);
+			tabbedPane.addTab("QA Checks", null, qachecks, null);
 			tabbedPane.addTab("ExceptionFeedback", null, exceptionfb, null);
 			tabbedPane.addTab("EngUnApproved", null, engunApprovedPanel, null);
 			tabbedPane.addTab("Export", null, exportPanel, null);
@@ -124,6 +128,8 @@ public class MainPanel extends JPanel
 			engunApprovedPanel.updateFlags(flags);
 		if(developement != null)
 			developement.updateFlags(flags);
+		if(qachecks != null)
+			qachecks.updateFlags(flags);
 		if(exceptionfb != null)
 			exceptionfb.updateFlags(flags);
 		// QA Screens

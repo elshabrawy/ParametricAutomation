@@ -3400,11 +3400,8 @@ public class WorkingSheet
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
 			int RightValueIndex = sheetHeader.indexOf("RightValue");
-			// int FamilyIndex = sheetHeader.indexOf("Family");
-			// int maskcell = sheetHeader.indexOf("Mask");
 			int PLcell = sheetHeader.indexOf("ProductLine");
 			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
-			// int pdfidx = sheetHeader.indexOf("Datasheet");
 			int supcell = sheetHeader.indexOf("Vendor");
 			int partcell = sheetHeader.indexOf("Part");
 			int Flagcell = sheetHeader.indexOf("Flag");
@@ -3430,12 +3427,9 @@ public class WorkingSheet
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
-				// String Family = partData.get(FamilyIndex);
 				long Comid = Long.valueOf(partData.get(ComidIndex));
-
 				String ProductLine = partData.get(PLcell);
 				String DatasheetTitle = partData.get(Titleidx);
-				// String Datasheet = partData.get(pdfidx);
 				String Vendor = partData.get(supcell);
 				String Part = partData.get(partcell);
 				String Flag = partData.get(Flagcell);
