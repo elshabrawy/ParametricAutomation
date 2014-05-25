@@ -37,21 +37,16 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
-public class QAChecks extends JPanel implements ActionListener
+public class QAException extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
-	SheetPanel separationPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel;
+	JPanel selectionPanel;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
-	// JButton save;
-	// JButton Validate;
 	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel;
-	ButtonsPanel separationbuttonsPanel;
 	Long[] users = null;
 	WorkingSheet ws = null;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
@@ -61,11 +56,9 @@ public class QAChecks extends JPanel implements ActionListener
 	GrmUserDTO userDTO;
 	static AlertsPanel alertsPanel, alertsPanel1;
 	String checker;
-	String filterstatus;
-	public static ArrayList<ArrayList<String>> seperationvalues = new ArrayList<>();
 	boolean validated;
 
-	public QAChecks(GrmUserDTO userDTO)
+	public QAException(GrmUserDTO userDTO)
 	{
 		setLayout(null);
 		this.userDTO = userDTO;
@@ -73,16 +66,16 @@ public class QAChecks extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAchecksFilterData(userDTO);
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 
-		String[] filterLabels = { "PL Name", "Supplier", "Checker Type", "Status" };
+		String[] filterLabels = { "PL Name", "Supplier", "Checker Type" };
 		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
-		buttonLabels.add("Seperation");
+		// buttonLabels.add("Seperation");
 		buttonsPanel = new ButtonsPanel(buttonLabels);
 		JButton buttons[] = buttonsPanel.getButtons();
 		for(int i = 0; i < buttons.length; i++)
@@ -102,34 +95,9 @@ public class QAChecks extends JPanel implements ActionListener
 		selectionPanel.add(sheetpanel);
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, width, height - 100);
-		tabSheet = new JPanel();
-		separationPanel = new SheetPanel();
-		separationPanel.setBounds(0, 0, width - 120, height - 125);
-		ArrayList<String> sepbuttonLabels = new ArrayList<String>();
-		sepbuttonLabels.add(" validate ");
-		sepbuttonLabels.add(" save ");
-		separationbuttonsPanel = new ButtonsPanel(sepbuttonLabels);
-		JButton sepbuttons[] = separationbuttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			sepbuttons[i].addActionListener(this);
-		}
-		separationbuttonsPanel.setBounds(width - 120, 0, 110, height / 3);
-
-		// devSheetButtonPanel = new JPanel();
-		// devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		// devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
-		// devSheetButtonPanel.setLayout(null);
-		tabSheet.setLayout(null);
-
-		// tabSheet.add(sheetpanel);
-		tabSheet.add(separationPanel);
-		tabSheet.add(separationbuttonsPanel);
-		tabSheet.add(alertsPanel1);
 
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		tabbedPane.addTab("Seperation", null, tabSheet, null);
+		// tabbedPane.addTab("Seperation", null, tabSheet, null);
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
@@ -162,123 +130,21 @@ public class QAChecks extends JPanel implements ActionListener
 		else if(event.getSource() == filterPanel.refreshButton)
 		{
 
-			filterPanel.filterList = DataDevQueryUtil.getQAchecksFilterData(userDTO);
+			filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
 			filterPanel.refreshFilters();
 
 		}
 		else if(event.getActionCommand().equals("Save"))
 		{
 			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			if(!filterstatus.equals(StatusName.Open))
-			{
-				JOptionPane.showMessageDialog(null, "You can save Open checks only");
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
+
 			wsMap.keySet();
 			for(String wsName : wsMap.keySet())
 			{
 				if(wsName == "QAChecks")
 				{
-					wsMap.get(wsName).saveQAChecksAction(checker, engName);
+					wsMap.get(wsName).saveQAexceptionAction(checker, engName, "Qa");
 				}
-			}
-		}
-		else if(event.getActionCommand().equals("Seperation"))
-		{
-
-			input = new ArrayList<ArrayList<String>>();
-			tabbedPane.setSelectedIndex(2);
-			row = new ArrayList<String>();
-			row.add("PL_Name");// 0
-			row.add("Part");// 1
-			row.add("Datasheet");// 2
-			row.add("Feature Name");// 3
-			row.add("Feature Value");// 4
-			row.add("Feature Unit");// 5
-			row.add("Sign");// 6
-			row.add("Value");// 7
-			row.add("Type");// 8
-			row.add("Condition");// 9
-			row.add("Multiplier");// 10
-			row.add("Unit");// 11
-			row.add("Validation result");// 12
-
-			if(wsMap.get("Separation") != null)
-			{
-				wsMap.remove("Separation");
-			}
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					System.out.println("Sheet Name:" + wsName);
-					input = separationValues;
-				}
-			}
-			separationPanel.openOfficeDoc();
-			ws = new WorkingSheet(separationPanel, "Separation");
-			separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			ws.setSeparationHeader(row);
-			ws.writeSheetData(input, 1);
-			wsMap.put("Separation", ws);
-		}
-		else if(event.getActionCommand().equals(" validate "))
-		{
-			validated = ws.validateSeparation();
-			JOptionPane.showMessageDialog(null, " Validation Done");
-
-		}
-		else if(event.getActionCommand().equals(" save "))
-		{
-			tabbedPane.setSelectedIndex(2);
-			separationValues = wsMap.get("Separation").readSpreadsheet(1);
-			if(separationValues.isEmpty())
-			{
-				tabbedPane.setSelectedIndex(1);
-				JOptionPane.showMessageDialog(null, "All Values are Approved");
-			}
-			else
-			{
-				if(!validated)
-				{
-					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-					thread.stop();
-					loading.frame.dispose();
-					return;
-				}
-
-				for(int i = 0; i < separationValues.size(); i++)
-				{
-					row = separationValues.get(i);
-
-					String plName = row.get(0);
-					String featureName = row.get(3);
-					String featureFullValue = row.get(4);
-
-					try
-					{
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
-
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-					}catch(ArrayIndexOutOfBoundsException ex)
-					{
-						try
-						{
-							Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-							cell.setText(ex.getMessage());
-						}catch(Exception e)
-						{
-							e.printStackTrace();
-						}
-						ex.printStackTrace();
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
-					}
-				}
-				JOptionPane.showMessageDialog(null, "Approved Saving Done");
 			}
 		}
 
@@ -301,27 +167,21 @@ public class QAChecks extends JPanel implements ActionListener
 			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 			String checkerType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-			String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+			// String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			if(checkerType.equals("All"))
 			{
 				JOptionPane.showMessageDialog(null, "You must select checker type");
 				return;
 			}
-			if(status.equals("All"))
-			{
-				JOptionPane.showMessageDialog(null, "You must select Status");
-				return;
-			}
 			checker = checkerType;
-			filterstatus = status;
 			tabbedPane.setSelectedIndex(0);
 			sheetpanel.openOfficeDoc();
-			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status, startDate, endDate, userDTO.getId(), session);
+			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAexceptionData(plName, supplierName, checkerType, startDate, endDate, userDTO.getId(), "Qa", session);
 			wsMap.clear();
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
 			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 			wsMap.put("QAChecks", ws);
-			ws.setqaChecksheader(checkerType);
+			ws.setqaexceptionheader(checkerType);
 			ArrayList<String> sheetHeader = ws.getHeader();
 			int statusindx = sheetHeader.indexOf("Status");
 			// int flag = sheetHeader.indexOf("Flag");
@@ -347,13 +207,13 @@ public class QAChecks extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
 				row.add("");
 				row.add("");
+				row.add(DataDevQueryUtil.getFeedbackCommentByComId(reviewData.get(i).getPart().getComId()));
 				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
 				{
 					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
 					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
 				}
 				data.add(row);
-
 			}
 			ws.writeReviewData(data, 1, statusindx + 1);
 		}catch(Exception e)
@@ -372,23 +232,23 @@ public class QAChecks extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		frame.setSize(width, height);
-		frame.setTitle("QA Checks");
+		frame.setTitle("QA Checks Exception");
 		GrmUserDTO uDTO = new GrmUserDTO();
 		// uDTO.setId(47);
 		// uDTO.setFullName("mohamad mostafa");
 		// uDTO.setId(32);
 		// uDTO.setFullName("Hatem Hussien");
-		// uDTO.setId(359);
-		// uDTO.setFullName("Mohamed Hussien");
-		uDTO.setId(125);
-		uDTO.setFullName("ahmed_khairy");
+		uDTO.setId(80);
+		uDTO.setFullName("mahmoud_hamdy");
+		// uDTO.setId(121);
+		// uDTO.setFullName("Ahmad_rahim");
 		GrmRole role = new GrmRole();
 		role.setId(3l);
 		GrmGroup group = new GrmGroup();
-		group.setId(1l);
+		group.setId(23l);
 		uDTO.setGrmRole(role);
 		uDTO.setGrmGroup(group);
-		QAChecks devPanel = new QAChecks(uDTO);
+		QAException devPanel = new QAException(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
 		while(true)

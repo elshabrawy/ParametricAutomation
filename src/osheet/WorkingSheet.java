@@ -19,7 +19,6 @@ import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
@@ -29,6 +28,7 @@ import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TrackingParametric;
+import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
@@ -2408,6 +2408,107 @@ public class WorkingSheet
 		{
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
 			List<String> pdfSet = new ArrayList<String>();
+			XCellRange xcellrange = null;
+			int lastColNum = HeaderList.size();
+			String lastColumn = getColumnName(lastColNum);
+			ArrayList<String> sheetHeader = getHeader();
+			int npiIndex = sheetHeader.indexOf("NPI");
+			boolean npihasvalue = false;
+			int lastRow = getLastRow();
+			for(int i = 3; i < lastRow + 1; i++)
+			{
+				String seletedRange = "A" + i + ":" + lastColumn + i;
+				xcellrange = sheet.getCellRangeByName(seletedRange);
+				String famCross = "", generic = "";
+				XCell genCell = null;
+				XCell famCrossCell = null;
+				if(NPIFlag)
+				{
+					if(npiIndex > 0)
+					{
+						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+						String npi = getCellText(npiCell).getString();
+						if(!npi.isEmpty() && !npihasvalue)
+						{
+							npihasvalue = true;
+						}
+					}
+				}
+
+				XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
+				String pn = getCellText(pnCell).getString();
+				XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
+				String supplierName = getCellText(suppCell).getString();
+				XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
+				String family = getCellText(famCell).getString();
+				XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
+				String mask = getCellText(maskCell).getString();
+				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+
+				if(plType.equals("Semiconductor"))
+				{
+					genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+					famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+					generic = getCellText(genCell).getString();
+					famCross = getCellText(famCrossCell).getString();
+				}
+				if(pn.isEmpty())
+				{
+					partvalidation.setStatus("Empty Part");
+					setCellColore(pnCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				if(family.isEmpty())
+				{
+					partvalidation.setStatus("Empty Family");
+					setCellColore(famCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				/**** validate that mask not null ***/
+				if(mask.isEmpty())
+				{
+					partvalidation.setStatus("Empty Mask)");
+					setCellColore(maskCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				else if(mask.length() != pn.length())
+				{
+					partvalidation.setStatus("Wrong Mask Length");
+					setCellColore(maskCell, 0xD2254D);
+					writeValidtionStatus(xcellrange, false);
+					canSave = false;
+				}
+				/**
+				 * validate that generic and family Cross not null
+				 */
+				if(plType.equals("Semiconductor"))
+				{
+
+					if(generic.isEmpty() || famCross.isEmpty())
+					{
+						partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+						setCellColore(genCell, 0xD2254D);
+						setCellColore(famCrossCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+					}
+				}
+			}
+			if(NPIFlag && !npihasvalue && canSave)
+			{
+				partvalidation.setStatus("NPI Must has at least one value");
+				writeValidtionStatus(xcellrange, false);
+				canSave = false;
+			}
+			if(!canSave)
+			{
+				System.out.println("Can Save: " + canSave);
+				JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+				return;
+			}
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
@@ -3299,11 +3400,8 @@ public class WorkingSheet
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
 			int RightValueIndex = sheetHeader.indexOf("RightValue");
-			// int FamilyIndex = sheetHeader.indexOf("Family");
-			// int maskcell = sheetHeader.indexOf("Mask");
 			int PLcell = sheetHeader.indexOf("ProductLine");
 			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
-			// int pdfidx = sheetHeader.indexOf("Datasheet");
 			int supcell = sheetHeader.indexOf("Vendor");
 			int partcell = sheetHeader.indexOf("Part");
 			int Flagcell = sheetHeader.indexOf("Flag");
@@ -3329,12 +3427,9 @@ public class WorkingSheet
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
-				// String Family = partData.get(FamilyIndex);
 				long Comid = Long.valueOf(partData.get(ComidIndex));
-
 				String ProductLine = partData.get(PLcell);
 				String DatasheetTitle = partData.get(Titleidx);
-				// String Datasheet = partData.get(pdfidx);
 				String Vendor = partData.get(supcell);
 				String Part = partData.get(partcell);
 				String Flag = partData.get(Flagcell);
@@ -3377,6 +3472,87 @@ public class WorkingSheet
 			DataDevQueryUtil.updateqacheckspart(inputparts);
 			DataDevQueryUtil.updateqacheckspart(affectedparts);
 			DataDevQueryUtil.updateqapartsstatus(allparts);
+			JOptionPane.showMessageDialog(null, "Saving Data Finished");
+		}catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "Can't Save Data");
+			e.printStackTrace();
+		}finally
+		{
+			session.close();
+
+		}
+
+	}
+
+	public void saveQAexceptionAction(String checker, String engname, String screen)
+	{
+		Session session = null;
+
+		try
+		{
+			session = SessionUtil.getSession();
+			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
+			ArrayList<String> sheetHeader = getHeader();
+			// int fbcommentIndex = sheetHeader.indexOf("FBComment");
+			int ComidIndex = sheetHeader.indexOf("Comid");
+			int statusIndex = sheetHeader.indexOf("Status");
+			int commentIndex = sheetHeader.indexOf("Comment");
+			int PLcell = sheetHeader.indexOf("ProductLine");
+			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
+			int Flagcell = sheetHeader.indexOf("Flag");
+			int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
+			int FeatureNameindex = sheetHeader.indexOf("FeatureName");
+			int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
+			String FeatureName = "";
+			String FeatureValue = "";
+			ArrayList<ArrayList<String>> fileData = readSpreadsheet(1);
+			for(int i = 0; i < fileData.size(); i++)
+			{
+				QAChecksDTO qachk = new QAChecksDTO();
+				ArrayList<String> partData = fileData.get(i);
+				String status = partData.get(statusIndex);
+				String Comment = partData.get(commentIndex);
+				if(status.equals(StatusName.reject) && Comment.isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "You Must Enter Comment if Rejected");
+					return;
+				}
+				long Comid = Long.valueOf(partData.get(ComidIndex));
+				String ProductLine = partData.get(PLcell);
+				String DatasheetTitle = partData.get(Titleidx);
+				String Flag = partData.get(Flagcell);
+				String NanAlphaPart = partData.get(NanAlphaPartindex);
+				// String fbcomment = partData.get(fbcommentIndex);
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				{
+					FeatureName = partData.get(FeatureNameindex);
+					FeatureValue = partData.get(FeatureValueindex);
+				}
+				qachk.setNanAlphaPart(NanAlphaPart);
+				PartComponent part = DataDevQueryUtil.getComponentBycomid(Comid);
+				qachk.setPart(part);
+				qachk.setVendor(part.getSupplierId());
+				qachk.setDatasheet(part.getDocument());
+				qachk.setDatasheetTitle(DatasheetTitle);
+				qachk.setMask(part.getMasterPartMask());
+				qachk.setFamily(part.getFamily());
+				qachk.setNewValue(Comment);
+				Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
+				qachk.setProductLine(pl);
+				qachk.setEngname(engname);
+				qachk.setChecker(checker);
+				qachk.setStatus(status);
+				qachk.setFlag(Flag);
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				{
+					qachk.setFeatureName(FeatureName);
+					qachk.setFeatureValue(FeatureValue);
+				}
+
+				allparts.add(qachk);
+			}
+			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -4439,10 +4615,10 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
-				cell = getCellByPosission(11, 0);
+				cell = getCellByPosission(12, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(12, 0);
+				cell = getCellByPosission(13, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 
@@ -4453,11 +4629,87 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
+				cell = getCellByPosission(12, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(13, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateParametricData);
 				statusValues.add(StatusName.UpdateFamily);
 			}
+
+		}catch(Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void setqaexceptionheader(String checkerType)
+	{
+		try
+		{
+
+			HeaderList = new ArrayList<Cell>();
+
+			Cell cell = getCellByPosission(0, 0);
+			cell.setText("Comid");
+			HeaderList.add(cell);
+			cell = getCellByPosission(1, 0);
+			cell.setText("NanAlphaPart");
+			HeaderList.add(cell);
+			cell = getCellByPosission(2, 0);
+			cell.setText("Flag");
+			HeaderList.add(cell);
+			cell = getCellByPosission(3, 0);
+			cell.setText("Part");
+			HeaderList.add(cell);
+			cell = getCellByPosission(4, 0);
+			cell.setText("Vendor");
+			HeaderList.add(cell);
+			cell = getCellByPosission(5, 0);
+			cell.setText("Datasheet");
+			HeaderList.add(cell);
+			cell = getCellByPosission(6, 0);
+			cell.setText("DatasheetTitle");
+			HeaderList.add(cell);
+			cell = getCellByPosission(7, 0);
+			cell.setText("ProductLine");
+			HeaderList.add(cell);
+			cell = getCellByPosission(8, 0);
+			cell.setText("Mask");
+			HeaderList.add(cell);
+			cell = getCellByPosission(9, 0);
+			cell.setText("Family");
+			HeaderList.add(cell);
+			cell = getCellByPosission(10, 0);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(11, 0);
+			cell.setText("Comment");
+			HeaderList.add(cell);
+
+			cell = getCellByPosission(12, 0);
+			cell.setText("FBComment");
+			HeaderList.add(cell);
+
+			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			{
+				cell = getCellByPosission(13, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(14, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+			}
+
+			statusValues.add(StatusName.approved);
+			statusValues.add(StatusName.reject);
 
 		}catch(Exception e)
 		{

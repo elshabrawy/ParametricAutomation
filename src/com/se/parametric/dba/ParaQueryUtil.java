@@ -37,10 +37,8 @@ import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
 
 import com.se.automation.db.CloneUtil;
-import com.se.automation.db.ParametricQueryUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
 import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.CheckFeature;
@@ -109,6 +107,8 @@ import com.se.automation.db.client.mapping.TrackingTransferStatus;
 import com.se.automation.db.client.mapping.Unit;
 import com.se.automation.db.client.mapping.Value;
 import com.se.automation.db.client.mapping.ValueType;
+import com.se.automation.db.parametric.ParametricQueryUtil;
+import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
@@ -6459,7 +6459,7 @@ public class ParaQueryUtil
 	 * 
 	 * @author Ahmed_Eldalatony
 	 */
-	public static Document getDocumentById(BigDecimal documentId, Session session)
+	public static Document getDocumentById(Long documentId, Session session)
 	{
 		Document doc = null;
 		try

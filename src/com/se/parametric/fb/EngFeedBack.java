@@ -21,11 +21,13 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-import com.se.automation.db.StatusName;
+
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.ParaFeedbackAction;
+import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
