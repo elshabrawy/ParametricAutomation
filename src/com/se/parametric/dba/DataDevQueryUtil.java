@@ -164,13 +164,13 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("name", StatusName.qaReview));
 			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
 
-			String Sql = " SELECT DISTINCT p.name pl,AUTOMATION2.Get_PL_Type(P.ID ), s.name supplier, tt";
+			String Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
 			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary + "' FROM Tracking_Parametric tp, pl p, supplier";
 			Sql = Sql + " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
 			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AN";
 			Sql = Sql + "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
 			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL";
-			Sql = Sql + "_NAME, st.NAME, AUTOMATION2.Get_PL_Type(P.ID )";
+			Sql = Sql + "_NAME, st.NAME, Get_PL_Type(P.ID )";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 		}finally
 		{
@@ -576,7 +576,7 @@ public class DataDevQueryUtil
 			String sql = "";
 			if(pltype != null && !pltype.equals("All"))
 			{
-				sql = " AUTOMATION2.Get_PL_Type(this_.PL_ID)='" + pltype + "'";
+				sql = " Get_PL_Type(this_.PL_ID)='" + pltype + "'";
 				criteria.add(Restrictions.sqlRestriction(sql));
 			}
 			List list = criteria.list();
@@ -655,7 +655,7 @@ public class DataDevQueryUtil
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", status));
 			trackingTaskstatus = (TrackingTaskStatus) cri.uniqueResult();
-			SQLQuery query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  AUTOMATION2.PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + "");
+			SQLQuery query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + "");
 			Object obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -677,7 +677,7 @@ public class DataDevQueryUtil
 				users += ")";
 			}
 			String Sql = "";
-			Sql = " SELECT /*+ INDEX(x comp_doc_id_idx) */ COUNT (COM_ID) FROM AUTOMATION2.PART_COMPONENT x ";
+			Sql = " SELECT /*+ INDEX(x comp_doc_id_idx) */ COUNT (COM_ID) FROM PART_COMPONENT x ";
 			Sql = Sql + "where x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
 			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
 			Sql = Sql + ")";

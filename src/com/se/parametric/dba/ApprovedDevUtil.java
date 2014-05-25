@@ -2765,7 +2765,7 @@ public class ApprovedDevUtil
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		List<Object[]> list = session
 				.createSQLQuery(
-						"SELECT   AUTOMATION2.GETPDFURLBYDOC (x.DOCUMENT_ID),y.FB_ITEM_VALUE,AUTOMATION2.GETUSERNAME (x.FB_INITIATOR),AUTOMATION2.getissueTo (y.PARA_FEEDBACK_ID), AUTOMATION2.getissueType (x.ISSUE_TYPE) issueType, AUTOMATION2.getfeedbackTypt (x.FEEDBACK_TYPE) fedtype, y.FB_COMMENT, AUTOMATION2.getfeedbackstatus (x.FEEDBACK_STATUS) statusType, MAX (x.STORE_DATE), AUTOMATION2.getfeedbackAction (y.ACTION_ID) action FROM PARAMETRIC_FEEDBACK x, PARAMETRIC_FEEDBACK_CYCLE y WHERE   x.id = Y.PARA_FEEDBACK_ID AND x.DOCUMENT_ID = automation2.GET_DOCUMENT_ID_by_url('"
+						"SELECT   GETPDFURLBYDOC (x.DOCUMENT_ID),y.FB_ITEM_VALUE,GETUSERNAME (x.FB_INITIATOR),getissueTo (y.PARA_FEEDBACK_ID), getissueType (x.ISSUE_TYPE) issueType, getfeedbackTypt (x.FEEDBACK_TYPE) fedtype, y.FB_COMMENT, getfeedbackstatus (x.FEEDBACK_STATUS) statusType, MAX (x.STORE_DATE), getfeedbackAction (y.ACTION_ID) action FROM PARAMETRIC_FEEDBACK x, PARAMETRIC_FEEDBACK_CYCLE y WHERE   x.id = Y.PARA_FEEDBACK_ID AND x.DOCUMENT_ID = GET_DOCUMENT_ID_by_url('"
 								+ url + "') GROUP BY   x.DOCUMENT_ID,x.FB_INITIATOR,y.PARA_FEEDBACK_ID,x.ISSUE_TYPE,x.FEEDBACK_STATUS,x.FEEDBACK_TYPE,y.FB_ITEM_VALUE, y.FB_COMMENT, y.ACTION_ID").list();
 		Object[] row = null;
 		ArrayList<String> rowData = null;
