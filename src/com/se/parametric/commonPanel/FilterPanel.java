@@ -22,11 +22,11 @@ import javax.swing.border.LineBorder;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import com.se.automation.db.ParametricQueryUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 //import com.se.automation.db.client.mapping.CheckFeature;
 import com.se.automation.db.client.mapping.PlFeature;
+import com.se.automation.db.parametric.ParametricQueryUtil;
 import com.se.parametric.Loading;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
@@ -47,20 +47,24 @@ public class FilterPanel extends JPanel implements ActionListener
 	public JButton refreshButton = new JButton("Refresh Filter");
 	public JButton addsummary = new JButton("Add to Summary");
 	public ArrayList<Object[]> filterList;
-	//JLabel counts = new JLabel();
 
-	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height,boolean isQA)
+	// JLabel counts = new JLabel();
+
+	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height, boolean isQA)
 	{
-		for(int i=0;i<list.size();i++){
-			for(int j=0;j<list.get(i).length;j++){
-				if(list.get(i)[j].toString().equals("NPI Transferred")||list.get(i)[j].toString().equals("NPI Update")){
-					list.get(i)[j]="NPI";
+		for(int i = 0; i < list.size(); i++)
+		{
+			for(int j = 0; j < list.get(i).length; j++)
+			{
+				if(list.get(i)[j].toString().equals("NPI Transferred") || list.get(i)[j].toString().equals("NPI Update"))
+				{
+					list.get(i)[j] = "NPI";
 				}
 			}
 		}
 		this.filterList = list;
 		this.setLayout(null);
-//		counts.setText("count is " + list.size());
+		// counts.setText("count is " + list.size());
 		ArrayList<Object[]> result;
 		if(list.isEmpty())
 		{
@@ -154,8 +158,8 @@ public class FilterPanel extends JPanel implements ActionListener
 			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
 			comboPanel.add(addsummary);
 		}
-		//counts.setBounds(width - 100, height - 100, 100, 30);
-	//	comboPanel.add(counts);
+		// counts.setBounds(width - 100, height - 100, 100, 30);
+		// comboPanel.add(counts);
 		this.add(comboPanel);
 	}
 
@@ -275,7 +279,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		else if(obj instanceof JComboBox)
 		{
 			ArrayList<Object[]> result = getDistinct(getFilteredData(filterList));
-			//counts.setText("count is " + result.size());
+			// counts.setText("count is " + result.size());
 			String initial[] = new String[comboBoxItems.length];
 			for(int j = 0; j < comboBoxItems.length; j++)
 			{
@@ -297,11 +301,12 @@ public class FilterPanel extends JPanel implements ActionListener
 		}
 	}
 
-//	public static void main(String args[])
-//	{
-//		Session session=SessionUtil.getSession();
-//		CheckFeature ch=new CheckFeature(0l, (PlFeature) session.createCriteria(PlFeature.class).add(Restrictions.eq("id", 15665l)).uniqueResult(), 10l);
-//		session.save(ch);
-//		session.close();
-//	}
+	// public static void main(String args[])
+	// {
+	// Session session=SessionUtil.getSession();
+	// CheckFeature ch=new CheckFeature(0l, (PlFeature) session.createCriteria(PlFeature.class).add(Restrictions.eq("id", 15665l)).uniqueResult(),
+	// 10l);
+	// session.save(ch);
+	// session.close();
+	// }
 }
