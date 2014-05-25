@@ -2586,7 +2586,7 @@ public class WorkingSheet
 						save = DataDevQueryUtil.saveParamtric(partInfo);
 					}catch(ConstraintViolationException e)
 					{
-						if(e.getMessage().contains("unique constraint (AUTOMATION2.PART_COMP_PART_SUPP_PL_UQ)"))
+						if(e.getMessage().contains("unique constraint (PART_COMP_PART_SUPP_PL_UQ)"))
 							continue;
 					}
 

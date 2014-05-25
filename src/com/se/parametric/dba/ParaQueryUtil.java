@@ -1746,7 +1746,7 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select AUTOMATION2.GET_DOCID_BY_PDFURL('" + seUrl + "') from dual");
+			SQLQuery query = session.createSQLQuery("select GET_DOCID_BY_PDFURL('" + seUrl + "') from dual");
 			long docId = ((BigDecimal) query.uniqueResult()).longValue();
 			Criteria crit = session.createCriteria(Document.class);
 			crit.add(Restrictions.eq("id", docId));
@@ -3724,8 +3724,8 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery(" SELECT comp.COM_ID, AUTOMATION2.GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), AUTOMATION2.GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
-					+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=AUTOMATION2.GETSUPPLIERID (:suppName)");
+			SQLQuery query = session.createSQLQuery(" SELECT comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
+					+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=GETSUPPLIERID (:suppName)");
 
 			query.setParameter("nanpartnum", NANINPUTPART.trim());
 			query.setParameter("suppName", supplierName);
@@ -5817,7 +5817,7 @@ public class ParaQueryUtil
 			{
 				Map<String, Object> fetsMap = new HashMap<String, Object>();
 				long comId = comIds.get(i).longValue();
-				query = session.createSQLQuery("select c.part_number, AUTOMATION2.GET_PDF_SEURL(AUTOMATION2.GET_PDFIDBYDOCID(c.document_id)), "
+				query = session.createSQLQuery("select c.part_number, GET_PDF_SEURL(GET_PDFIDBYDOCID(c.document_id)), "
 						+ " f.name family_name, c.description, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PART_NUMBER) MASK, s.name vendor_name, S.CODE, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross "
 						+ " from part_component c, family f, supplier_pl spl, supplier s where c.com_id=" + comId + " and c.family_id=f.id(+) and c.supplier_pl_id=spl.id and spl.supplier_id=s.id");
 
@@ -5863,8 +5863,8 @@ public class ParaQueryUtil
 
 			xlsHandler.writeExcelFile(headerList.toArray(new String[headerList.size()]), components, fileName);
 			exportNPIParts(plName, userDto, startDate, endDate);
-			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=AUTOMATION2.GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId()
-					+ " and tracking_task_status_id=AUTOMATION2.GETTASKSTATUSID('" + StatusName.qaReview + "') and pl_id=AUTOMATION2.GETPLID('" + plName + "')");
+			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId()
+					+ " and tracking_task_status_id=GETTASKSTATUSID('" + StatusName.qaReview + "') and pl_id=GETPLID('" + plName + "')");
 			// Transaction tx = session.beginTransaction();
 			int x = query.executeUpdate();
 			// tx.commit();
@@ -5890,8 +5890,8 @@ public class ParaQueryUtil
 		{
 			session = SessionUtil.getSession();
 			Pl pl = getPlByPlName(session, plName);
-			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, AUTOMATION2.GETSUPPLIERBYDOC(c.document_id) sup_name, "
-					+ " AUTOMATION2.GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id="
+			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, GETSUPPLIERBYDOC(c.document_id) sup_name, "
+					+ " GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id="
 					+ userDto.getId() + " and tracking_task_status_id=34 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{

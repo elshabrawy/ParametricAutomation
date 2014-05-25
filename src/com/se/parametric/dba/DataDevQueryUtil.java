@@ -692,7 +692,7 @@ public class DataDevQueryUtil
 				result.add(0);
 			}
 
-			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  AUTOMATION2.PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + " and DONEFLAG = 1");
+			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + " and DONEFLAG = 1");
 			obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -703,7 +703,7 @@ public class DataDevQueryUtil
 				result.add(0);
 			}
 
-			Sql = " SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */ COUNT (COM_ID) FROM AUTOMATION2.PART_COMPONENT x ";
+			Sql = " SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */ COUNT (COM_ID) FROM PART_COMPONENT x ";
 			Sql = Sql + "where  X.DONEFLAG = 1 AND x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
 			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
 			Sql = Sql + ")";
@@ -717,7 +717,7 @@ public class DataDevQueryUtil
 			{
 				result.add(0);
 			}
-			query = session.createSQLQuery("SELECT  /*+ INDEX(x COM_DOC_IDX) */  COUNT(n.COM_ID) FROM AUTOMATION2.PART_COMPONENT x,TBL_NPI_PARTS n WHERE x.COM_ID = n.COM_ID and x.DOCUMENT_ID =" + docid + "");
+			query = session.createSQLQuery("SELECT  /*+ INDEX(x COM_DOC_IDX) */  COUNT(n.COM_ID) FROM PART_COMPONENT x,TBL_NPI_PARTS n WHERE x.COM_ID = n.COM_ID and x.DOCUMENT_ID =" + docid + "");
 			obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -1765,7 +1765,7 @@ public class DataDevQueryUtil
 			}
 			if(Pltype != null && !Pltype.equals("All"))
 			{
-				qury.append("  AND AUTOMATION2.Get_PL_Type(T.PL_ID)='" + Pltype + "'");
+				qury.append("  AND Get_PL_Type(T.PL_ID)='" + Pltype + "'");
 			}
 			if(!vendorName.equals("All") && vendorName != null)
 			{
@@ -3627,14 +3627,14 @@ public class DataDevQueryUtil
 			// SQLQuery query = session.createSQLQuery("select fb_comment,u.full_name,U.GROUP_ID,pf.com_id,PF.FLOW_SOURCE,s.name status_name " +
 			// "from parts_feedback pf,part_component c,grm.grm_user u, tracking_task_status s "
 			// + "where c.com_id=PF.COM_ID  " + "and pf.issued_by_id=u.id " + "and pf.REVIEW_STATUS_ID=s.id " + "and pf.feedback_recieved=0 " +
-			// "and C.PART_NUMBER='" + partNumber + "' and C.SUPPLIER_ID=AUTOMATION2.GETSUPPLIERID('" + supName
+			// "and C.PART_NUMBER='" + partNumber + "' and C.SUPPLIER_ID=GETSUPPLIERID('" + supName
 			// + "')");
 			String sql = "";
 			sql = " SELECT FB_COMMENT, u.full_name, U.GROUP_ID, FB.ITEM_ID, FB.FEEDBACK_TYPE , s.";
 			sql = sql + "name status_name,fbs.FEEDBACK_STATUS FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
 			sql = sql + "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s,PARA_FEEDBACK_STATUS fbs";
 			sql = sql + " WHERE c.com_id = FB.ITEM_ID AND FBC.ISSUED_BY = u.id AND FBC.FEEDBACK_RECIEVE";
-			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber + "' AND C.SUPPLIER_ID = AUTOMATION2.GETSUPPLIERID";
+			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber + "' AND C.SUPPLIER_ID = GETSUPPLIERID";
 			sql = sql + " ('" + supName + "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_STATUS_ID = S.ID ";
 			sql = sql + "AND T.DOCUMENT_ID = FB.DOCUMENT_ID and fbs.ID = FBc.FEEDBACK_ACTION";
 			SQLQuery query = session.createSQLQuery(sql);
@@ -4261,7 +4261,7 @@ public class DataDevQueryUtil
 		try
 		{
 
-			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,AUTOMATION2.Get_PL_Type(P.ID ) "
+			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,Get_PL_Type(P.ID ) "
 					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  " + " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
 					+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qaFeedback + "')  " + "         AND tp.supplier_id = s.id  " + "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     "
 					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
