@@ -26,10 +26,10 @@ import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
-import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.TrackingParametric;
+import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.Loading;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;

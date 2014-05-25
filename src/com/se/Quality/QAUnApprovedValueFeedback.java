@@ -21,7 +21,7 @@ import javax.swing.border.SoftBevelBorder;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
-import com.se.automation.db.StatusName;
+import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
@@ -80,7 +80,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110, (((height - 100) * 7) / 10) - 30);
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10),false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
 		// ArrayList<String> buttonLabels = new ArrayList<String>();
 		// buttonLabels.add("Save");
@@ -167,30 +167,30 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 
 			// sheetPanel.add(arg0)
 			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			row.add("PL Name");//0
-			row.add("Part Name");//1
-			row.add("Pdf Url");//2
-			row.add("Feature Name");//3
-			row.add("Feature Value");//4
-			row.add("Feature Unit");//5
-			row.add("Sign");//6
-			row.add("Value");//7
-			row.add("Type");//8
-			row.add("Condition");//9
-			row.add("Multiplier");//10
-			row.add("Unit");//11
-			row.add("QA Status");//12
-			row.add("QA Comment");//13
-			row.add("c_Action");//14
-			row.add("P_Action");//15
-			row.add("ROOT_CAUSE");//16
-			row.add("ACTION_DUE_DATE");//17
+			row.add("PL Name");// 0
+			row.add("Part Name");// 1
+			row.add("Pdf Url");// 2
+			row.add("Feature Name");// 3
+			row.add("Feature Value");// 4
+			row.add("Feature Unit");// 5
+			row.add("Sign");// 6
+			row.add("Value");// 7
+			row.add("Type");// 8
+			row.add("Condition");// 9
+			row.add("Multiplier");// 10
+			row.add("Unit");// 11
+			row.add("QA Status");// 12
+			row.add("QA Comment");// 13
+			row.add("c_Action");// 14
+			row.add("P_Action");// 15
+			row.add("ROOT_CAUSE");// 16
+			row.add("ACTION_DUE_DATE");// 17
 			row.add("Issue Type");// 18
-			row.add("FeedBack Type");//19
-			row.add("Para Status");//20
-			row.add("Para Comment");//21
-			row.add("Old QA Status");//22
-			row.add("Old QA Comment");//23
+			row.add("FeedBack Type");// 19
+			row.add("Para Status");// 20
+			row.add("Para Comment");// 21
+			row.add("Old QA Status");// 22
+			row.add("Old QA Comment");// 23
 
 			wsMap.put("Unapproved Values", ws);
 			wsMap.get("Unapproved Values");

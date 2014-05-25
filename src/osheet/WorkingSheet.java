@@ -19,7 +19,6 @@ import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.StatusName;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
@@ -29,6 +28,7 @@ import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TrackingParametric;
+import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;

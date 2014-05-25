@@ -19,7 +19,6 @@ import org.hibernate.exception.ConstraintViolationException;
 
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.StatusName;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
 import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.Condition;
@@ -47,6 +46,7 @@ import com.se.automation.db.client.mapping.TrackingTaskStatus;
 import com.se.automation.db.client.mapping.Unit;
 import com.se.automation.db.client.mapping.Value;
 import com.se.automation.db.client.mapping.ValueType;
+import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.FeedBackData;
