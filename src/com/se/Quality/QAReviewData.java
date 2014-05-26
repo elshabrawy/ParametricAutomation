@@ -289,7 +289,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					WorkingSheet ws = wsMap.get(wsName);
 					ws.saveQASummary(QAName);
-					JOptionPane.showMessageDialog(null, "Saving Done");
+					
 				}
 			}
 		}

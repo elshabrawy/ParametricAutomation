@@ -2827,6 +2827,7 @@ public class WorkingSheet
 				JOptionPane.showMessageDialog(null, "Can't Save Data");
 				e.printStackTrace();
 			}
+			JOptionPane.showMessageDialog(null, "Saving Done");
 		}
 		else
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
@@ -4407,6 +4408,9 @@ public class WorkingSheet
 		int WrongFeatureIndex = sheetHeader.indexOf("Wrong Feature");
 		int ValidationCommentIndex = sheetHeader.indexOf("Validation Comment");
 		int plIndex = sheetHeader.indexOf("Taxonomy");
+		int doneflagIndex = sheetHeader.indexOf("Done Flag");
+		int taskTypeIndex = sheetHeader.indexOf("Task Type");
+
 		canSave = true;
 		int lastRow = getLastRow();
 		for(int i = 3; i < lastRow + 1; i++)
@@ -4426,6 +4430,10 @@ public class WorkingSheet
 				String wrongfeatures = getCellText(wrongfetCell).getString();
 				PlCell = xcellrange.getCellByPosition(plIndex, 0);
 				String Plname = getCellText(PlCell).getString();
+				XCell doneflagCell = xcellrange.getCellByPosition(doneflagIndex, 0);
+				String doneflag = getCellText(doneflagCell).getString();
+				XCell taskTypeCell = xcellrange.getCellByPosition(taskTypeIndex, 0);
+				String taskType = getCellText(taskTypeCell).getString();
 				setCellColore(wrongfetCell, 0xFFFFFF);
 				setCellColore(commentCell, 0xFFFFFF);
 
@@ -4505,6 +4513,13 @@ public class WorkingSheet
 						// break;
 					}
 				}
+				if((status.equals("A") || status.equals("S")) && doneflag.equals("No"))
+				{
+					error += "can't save Status (A,S) on Parts notDone flag |";
+					// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Wrong Comment");
+					setCellColore(commentCell, 0xD2254D);
+					canSave = false;
+				}
 				if(!canSave)
 				{
 					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
@@ -4531,6 +4546,7 @@ public class WorkingSheet
 		int sampleflagIndex = sheetHeader.indexOf("Sample QA Flag");
 		int finalflagIndex = sheetHeader.indexOf("Final QA Flag");
 		int ValidationCommentIndex = sheetHeader.indexOf("Validation Comment");
+		int doneflagIndex = sheetHeader.indexOf("Done Flag");
 
 		canSave = true;
 		int lastRow = getLastRow();
@@ -4545,6 +4561,8 @@ public class WorkingSheet
 				String sampleflag = getCellText(sampleflagCell).getString();
 				XCell finalflagCell = xcellrange.getCellByPosition(finalflagIndex, 0);
 				String finalflag = getCellText(finalflagCell).getString();
+				XCell doneflagCell = xcellrange.getCellByPosition(doneflagIndex, 0);
+				String donelflag = getCellText(doneflagCell).getString();
 				setCellColore(sampleflagCell, 0xFFFFFF);
 				setCellColore(finalflagCell, 0xFFFFFF);
 				if((finalflag.equals("R") || finalflag.equals("W")) || (!finalflag.isEmpty() && !finalflag.equals("A") && !finalflag.equals("S") && !finalflag.equals("Fast")))
@@ -4553,12 +4571,14 @@ public class WorkingSheet
 					setCellColore(finalflagCell, 0xD2254D);
 					canSave = false;
 				}
+
 				if(finalflag.trim().equals("") && sampleflag.trim().equals(""))
 				{
 					error += "No flag of this part |";
 					setCellColore(finalflagCell, 0xD2254D);
 					canSave = false;
 				}
+
 				if(!canSave)
 				{
 					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
