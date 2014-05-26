@@ -6459,7 +6459,7 @@ public class ParaQueryUtil
 	 * 
 	 * @author Ahmed_Eldalatony
 	 */
-	public static Document getDocumentById(BigDecimal documentId, Session session)
+	public static Document getDocumentById(Long documentId, Session session)
 	{
 		Document doc = null;
 		try
