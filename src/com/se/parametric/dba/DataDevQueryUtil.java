@@ -4962,11 +4962,11 @@ public class DataDevQueryUtil
 			}
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER");
+				qury.append(" GROUP BY chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER");
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL");
+				qury.append(" GROUP BY chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL");
 			}
 			System.out.println(qury.toString());
 			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
@@ -4983,8 +4983,8 @@ public class DataDevQueryUtil
 				qachecks.setDatasheetTitle(part.getDocument().getTitle());
 				qachecks.setMask(part.getMasterPartMask());
 				qachecks.setFamily(part.getFamily());
-				Pl pl = ParaQueryUtil.getPlByPlName(session, result.get(i)[4] == null ? "" : result.get(i)[4].toString());
-				qachecks.setProductLine(pl);
+				Pl pl = part.getSupplierPl().getPl();
+				qachecks.setProductLine(part.getSupplierPl().getPl());
 				if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 				{
 					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);

@@ -20,8 +20,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
-import RelatedFeatureEngine.RelatedFeature;
-
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
@@ -115,7 +113,7 @@ public class WorkingSheet
 	List<String> doneFets = new ArrayList<String>();
 	List<String> coreFets = new ArrayList<String>();
 	List<String> codeFets = new ArrayList<String>();
-	//RelatedFeature relatedfeature ;
+	// RelatedFeature relatedfeature ;
 	public ArrayList<ArrayList<String>> relatedFeature = new ArrayList<ArrayList<String>>();
 
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
@@ -1746,7 +1744,8 @@ public class WorkingSheet
 						// canSave = false;
 						continue part;
 					}
-					String relatedresult = RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
+					String relatedresult = "";
+					// RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
 					if(!relatedresult.isEmpty())
 					{
 						partvalidation.setStatus(relatedresult);
@@ -3438,6 +3437,7 @@ public class WorkingSheet
 			int partcell = sheetHeader.indexOf("Part");
 			int Flagcell = sheetHeader.indexOf("Flag");
 			int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
+			// int Partindex = sheetHeader.indexOf("Part");
 			int FeatureNameindex = sheetHeader.indexOf("FeatureName");
 			int FeatureValueindex = sheetHeader.indexOf("FeatureValue");
 			String FeatureName = "";
@@ -3449,12 +3449,14 @@ public class WorkingSheet
 				ArrayList<String> partData = fileData.get(i);
 				String status = partData.get(statusIndex);
 				String RightValue = partData.get(RightValueIndex);
+				String Vendor = partData.get(supcell);
+				String Part = partData.get(partcell);
 				if(!status.equals("Exception") && RightValue.isEmpty())
 				{
 					JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
 					return;
 				}
-				if(status.equals(StatusName.UpdateMask) && !(qachk.getPart().getPartNumber().length() == qachk.getNewValue().length()))
+				if(status.equals(StatusName.UpdateMask) && !(Part.length() == RightValue.length()))
 				{
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
@@ -3462,8 +3464,7 @@ public class WorkingSheet
 				long Comid = Long.valueOf(partData.get(ComidIndex));
 				String ProductLine = partData.get(PLcell);
 				String DatasheetTitle = partData.get(Titleidx);
-				String Vendor = partData.get(supcell);
-				String Part = partData.get(partcell);
+
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
@@ -4812,5 +4813,4 @@ public class WorkingSheet
 		// writeSheetData(validationResult, 1);
 	}
 
-	
 }
