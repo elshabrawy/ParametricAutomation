@@ -9,5 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/office2010"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OOffice"/>
 	<classpathentry kind="lib" path="D:/lib/JTattooDemo.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ParametricEngines"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

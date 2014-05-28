@@ -556,7 +556,7 @@ public class DataDevQueryUtil
 				List taskType = null;
 				if(type.equals("NPI"))
 				{
-					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"), Restrictions.eq("name", "NPI Transferred"), Restrictions.eq("name", "NPI Update")));
+					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"), Restrictions.eq("name", "NPI Transferred")));
 				}
 				else
 				{
@@ -596,6 +596,7 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
+				
 				if(inputType.equals("QAReview"))
 				{
 					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
@@ -4800,14 +4801,14 @@ public class DataDevQueryUtil
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				String Sql = "";
-				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
+				Sql = " SELECT CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
 				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name FROM Tracking_Parametric tp, pl p, T";
 				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
 				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4815,14 +4816,14 @@ public class DataDevQueryUtil
 			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
 				String Sql = "";
-				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
+				Sql = " SELECT CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
 				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL FROM Tracking_Parametric tp, pl p, T";
 				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
 				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4905,14 +4906,14 @@ public class DataDevQueryUtil
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				String Sql = "";
-				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
+				Sql = " SELECT CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
 				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name FROM Tracking_Parametric tp, pl p, T";
 				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
 				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' ";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4920,14 +4921,14 @@ public class DataDevQueryUtil
 			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
 				String Sql = "";
-				Sql = " SELECT CM.NONALPHANUM(chktax.CONFLICTED_PART) nunalpha , com.COM_ID comid, tp";
+				Sql = " SELECT CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
 				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL FROM Tracking_Parametric tp, pl p, T";
 				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
 				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
 				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
 				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
 				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.PART_NUMBER = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' ";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4961,11 +4962,11 @@ public class DataDevQueryUtil
 			}
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART");
+				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER");
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART,chktax.PL_FET_ID,chktax.FET_VAL");
+				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL");
 			}
 			System.out.println(qury.toString());
 			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
@@ -5096,7 +5097,7 @@ public class DataDevQueryUtil
 			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
-				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiData = cri.list();
@@ -5115,7 +5116,7 @@ public class DataDevQueryUtil
 			else
 			{
 				cri = session.createCriteria(QaCheckMultiTax.class);
-				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiTax = cri.list();
@@ -5161,7 +5162,7 @@ public class DataDevQueryUtil
 				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 				{
 					cri = session.createCriteria(QaCheckMultiData.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					cri.createAlias("qaChecksActions", "action");
 					cri.add(Restrictions.eq("action.name", StatusName.Open));
 					QaCheckMultiData multidata = (QaCheckMultiData) cri.uniqueResult();
@@ -5181,10 +5182,10 @@ public class DataDevQueryUtil
 				else
 				{
 					cri = session.createCriteria(QaCheckMultiTax.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					cri.add(Restrictions.eq("qaChecksActions.name", StatusName.Open));
 					cri = session.createCriteria(QaCheckMultiTax.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					cri.createAlias("qaChecksActions", "action");
 					cri.add(Restrictions.eq("action.name", StatusName.Open));
 					QaCheckMultiTax multitax = (QaCheckMultiTax) cri.uniqueResult();
@@ -5542,7 +5543,7 @@ public class DataDevQueryUtil
 			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
-				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", currentstatus));
 				qaCheckMultiData = cri.list();
@@ -5559,7 +5560,7 @@ public class DataDevQueryUtil
 			else
 			{
 				cri = session.createCriteria(QaCheckMultiTax.class);
-				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getPartNumber()));
+				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", currentstatus));
 				qaCheckMultiTax = cri.list();

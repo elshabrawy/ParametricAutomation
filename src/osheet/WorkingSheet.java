@@ -20,6 +20,8 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
+import RelatedFeatureEngine.RelatedFeature;
+
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
@@ -113,7 +115,7 @@ public class WorkingSheet
 	List<String> doneFets = new ArrayList<String>();
 	List<String> coreFets = new ArrayList<String>();
 	List<String> codeFets = new ArrayList<String>();
-
+	//RelatedFeature relatedfeature ;
 	public ArrayList<ArrayList<String>> relatedFeature = new ArrayList<ArrayList<String>>();
 
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
@@ -1651,6 +1653,14 @@ public class WorkingSheet
 						// }
 						// }
 					}
+					else if(status.equals(""))// TL Must Write Comment If Approve QA or ENG when issue external
+					{
+						partvalidation.setStatus("Empty Status");
+						setCellColore(statusCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+						continue part;
+					}
 
 				}
 				if(!update || (update && status.equals("Updated")))
@@ -1736,7 +1746,7 @@ public class WorkingSheet
 						// canSave = false;
 						continue part;
 					}
-					String relatedresult = getConflictRelatedFeature(pl, relatedFeature);
+					String relatedresult = RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
 					if(!relatedresult.isEmpty())
 					{
 						partvalidation.setStatus(relatedresult);
@@ -4436,6 +4446,7 @@ public class WorkingSheet
 				String taskType = getCellText(taskTypeCell).getString();
 				setCellColore(wrongfetCell, 0xFFFFFF);
 				setCellColore(commentCell, 0xFFFFFF);
+				setCellColore(statusCell, 0xFFFFFF);
 
 				if(status.equals("R"))
 				{
@@ -4517,7 +4528,7 @@ public class WorkingSheet
 				{
 					error += "can't save Status (A,S) on Parts notDone flag |";
 					// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Wrong Comment");
-					setCellColore(commentCell, 0xD2254D);
+					setCellColore(statusCell, 0xD2254D);
 					canSave = false;
 				}
 				if(!canSave)
@@ -4801,123 +4812,5 @@ public class WorkingSheet
 		// writeSheetData(validationResult, 1);
 	}
 
-	public static String getConflictRelatedFeature(Pl pl, ArrayList<ArrayList<String>> features)
-	{
-		String result = "";
-		Criteria criteria = null;
-		Session automationSession = SessionUtil.getSession();
-		try
-		{
-			criteria = automationSession.createCriteria(TblRules.class);
-			criteria.add(Restrictions.eq("pl", pl));
-			List<TblRules> rules = criteria.list();
-			// Feature out = null;
-			// Feature in = null;
-			for(int i = 0; i < features.size(); i++)
-			{
-
-				boolean flag1 = false;
-				boolean flag2 = false;
-				for(int j = 0; j < rules.size(); j++)
-				{
-
-					TblRules rule = rules.get(j);
-					String outputOperator = rules.get(j).getOutFetOperator();
-					if(!outputOperator.equals("E"))
-					{
-						String outputFeature = rules.get(j).getOutFeature().getName();
-						String inputFeature = rules.get(j).getInFeature().getName();
-
-						String inputOperator = rules.get(j).getInFetOperator();
-						String outputValue = rules.get(j).getOutFetValue();
-						String inputValue = rules.get(j).getInFetValue();
-
-						if(features.get(i).get(0).equals(rules.get(j).getOutFeature().getName()))
-						{
-							if((features.get(i).get(1).equals(rules.get(j).getOutFetValue()) && rules.get(j).getOutFetOperator().equals("="))
-									|| (!features.get(i).get(1).equals(rules.get(j).getOutFetValue()) && rules.get(j).getOutFetOperator().equals("<>")))
-							{
-								flag1 = true;
-							}
-						}
-						if((features.get(i).get(1).equals(rules.get(j).getInFetValue()) && rules.get(j).getInFetOperator().equals("=")) || (!features.get(i).get(1).equals(rules.get(j).getInFetValue()) && rules.get(j).getInFetOperator().equals("<>")))
-						{
-							flag2 = true;
-						}
-						if(flag1 && flag2)
-						{
-							result += "|if" + outputFeature + outputOperator + outputValue + " must not " + inputFeature + inputOperator + inputValue;
-							System.out.println("error");
-						}
-					}
-					else
-					{
-
-					}
-				}
-			}
-			// for(int k = 0; k < rules.size(); k++)
-			// {
-			// TblRules rule = rules.get(k);
-			// Feature outFet = rule.getOutFeature();
-			// Feature inFet = rule.getInFeature();
-			// String outFetOperator = rule.getOutFetOperator();
-			// String inputValue = rule.getInFetValue();
-			// String outputValue = rule.getOutFetValue();
-			// String sql = "";
-			// if(!outFetOperator.equals("E"))
-			// {
-			//
-			// String inFetOperator = rule.getInFetOperator();
-			// // comIds = automationSession.createSQLQuery(
-			// // "select distinct com_id from Parametric_Review_Data where TRACKING_PARAMETRIC_ID="
-			// // + row.getId()).list();
-			// // for(int com = 0; com < comIds.size(); com++)
-			// // {
-			// // comId = (BigDecimal) comIds.get(com);
-			// sql =
-			// "select FULL_VALUE from approved_parametric_values where id in (select APPROVED_VALUE_SEPARATION_ID from parametric_separation_group where APPROVED_VALUE_GROUP_ID in(select group_approved_value_id from Parametric_Review_Data where TRACKING_PARAMETRIC_ID=18271082625152 and PL_FEATURE_ID  = (select id from PL_FEATURE_UNIT where fet_id="
-			// + outFet.getId() + " and pl_id=" + pl.getId() + ")))";
-			// out = automationSession.createSQLQuery(sql).list();
-			// sql =
-			// "select FULL_VALUE from approved_parametric_values where id in (select APPROVED_VALUE_SEPARATION_ID from parametric_separation_group where APPROVED_VALUE_GROUP_ID in(select group_approved_value_id from Parametric_Review_Data where TRACKING_PARAMETRIC_ID=18271082625152 and PL_FEATURE_ID  = (select id from PL_FEATURE_UNIT where fet_id="
-			// + inFet.getId() + " and pl_id=" + pl.getId() + ")))";
-			// in = automationSession.createSQLQuery(sql).list();
-			// for(int j = 0; j < out.size(); j++)
-			// {
-			// String outValue = out.get(j).toString();
-			// if((outValue.equals(outputValue) && outFetOperator.equals("=") && outFet.getName())
-			// || (!outValue.equals(outputValue) && outFetOperator.equals("<>")))
-			// {
-			// flag1 = true;
-			// }
-			// for(int l = 0; l < in.size(); l++)
-			// {
-			// String inValue = in.get(l).toString();
-			// if((inValue.equals(inputValue) && inFetOperator.equals("="))
-			// || (!inValue.equals(inputValue) && inFetOperator.equals("<>")))
-			// {
-			// flag1 = true;
-			// }
-			// if(flag1 && flag2)
-			// {
-			// System.out.println("error part");
-			// }
-			// }
-			// }
-			//
-			// // }
-			// }
-			// else
-			// {
-			// System.out.println("Equation");
-			// }
-			// }
-		}catch(Exception e)
-		{
-
-		}
-		return result.replaceFirst("|", "");
-	}
-
+	
 }
