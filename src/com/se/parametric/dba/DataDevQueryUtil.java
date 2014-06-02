@@ -4851,11 +4851,11 @@ public class DataDevQueryUtil
 			}
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART");
+				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER");
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART,chktax.PL_FET_ID,chktax.FET_VAL");
+				qury.append(" GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL");
 			}
 			System.out.println(qury.toString());
 			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
