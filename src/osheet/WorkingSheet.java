@@ -4583,6 +4583,15 @@ public class WorkingSheet
 					setCellColore(finalflagCell, 0xD2254D);
 					canSave = false;
 				}
+				else
+				{
+					if((finalflag.equals("A") || finalflag.equals("S"))&&donelflag.equals("No"))
+					{
+						error += "Finalflag Can't be (A,S) with NotDone Parts |";
+						setCellColore(finalflagCell, 0xD2254D);
+						canSave = false;
+					}
+				}
 
 				if(finalflag.trim().equals("") && sampleflag.trim().equals(""))
 				{

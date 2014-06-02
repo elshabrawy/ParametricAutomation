@@ -5402,12 +5402,14 @@ public class DataDevQueryUtil
 			cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", StatusName.tlReview));
 			TrackingTaskStatus status = (TrackingTaskStatus) cri.uniqueResult();
+			cri = session.createCriteria(QaChecksActions.class);
+			cri.add(Restrictions.eq("name", StatusName.Open));
+			QaChecksActions openaction = (QaChecksActions) cri.uniqueResult();
 
 			// get QACheckParts
 			cri = session.createCriteria(QaCheckParts.class);
 			cri.add(Restrictions.in("partComponent", parts));
-			cri.createAlias("qaChecksActions", "action");
-			cri.add(Restrictions.eq("action.name", StatusName.Open));
+			cri.add(Restrictions.eq("action", openaction));
 			qaparts = cri.list();
 
 			// Update QACheck Parts set Acton = done if all Rows done
