@@ -596,7 +596,7 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
-				
+
 				if(inputType.equals("QAReview"))
 				{
 					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
@@ -4631,6 +4631,8 @@ public class DataDevQueryUtil
 				summary.add(comment);// QAcomment_16
 				summary.add(data[11] == null ? "" : data[11].toString());// DONEFLAG_17
 				summary.add(data[12] == null ? "" : data[12].toString());// EXTRACTIONFLAG_18
+				String keyword = getConfidentialStatus(data[0] == null ? "" : data[0].toString(), data[3] == null ? "" : data[3].toString());
+				summary.add(keyword == null ? "" : keyword);// ConfidentialStatus_19
 				allsummary.add(summary);
 			}
 
@@ -4639,6 +4641,29 @@ public class DataDevQueryUtil
 			e.printStackTrace();
 		}
 		return allsummary;
+	}
+
+	private static String getConfidentialStatus(String pdfurl, String plname)
+	{
+		Session session = null;
+		String result = "";
+		try
+		{
+			session = SessionUtil.getSession();
+			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, ' ') ConfidentialStatus from TRACKING_PARAMETRIC t"
+					+ " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl + "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
+			SQLQuery sql = session.createSQLQuery(sqlstatment);
+			result = (String) sql.uniqueResult();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}finally
+		{
+			session.close();
+		}
+		return result;
+
 	}
 
 	public static String getfbcommentbycomidanduser(Long itemid, long userid)
@@ -4872,7 +4897,7 @@ public class DataDevQueryUtil
 				qachecks.setDatasheetTitle(part.getDocument().getTitle());
 				qachecks.setMask(part.getMasterPartMask());
 				qachecks.setFamily(part.getFamily());
-				Pl pl = ParaQueryUtil.getPlByPlName(session, result.get(i)[4] == null ? "" : result.get(i)[4].toString());
+				Pl pl = part.getSupplierPl().getPl();
 				qachecks.setProductLine(pl);
 				if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 				{

@@ -343,13 +343,13 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		ArrayList<String> sheetHeader = ws.getHeader();
 		int statusIndex = sheetHeader.indexOf("Final QA Flag");
-		for(int i = 0; i < data.size(); i++)
-		{
-			ArrayList<String> datarow = data.get(i);
-			datarow.add("");
-			String keyword = "";
-			datarow.set(datarow.size() - 1, "");
-		}
+//		for(int i = 0; i < data.size(); i++)
+//		{
+//			ArrayList<String> datarow = data.get(i);
+//			datarow.add("");
+//			String keyword = "";
+//			datarow.set(datarow.size() - 1, "");
+//		}
 		ws.writeReviewData(data, 2, statusIndex + 1);
 
 	}
