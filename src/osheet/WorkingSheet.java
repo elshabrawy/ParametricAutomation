@@ -3428,6 +3428,7 @@ public class WorkingSheet
 			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
 			ArrayList<String> sheetHeader = getHeader();
 
+			int CheckpartidIndex = sheetHeader.indexOf("CheckPartID");
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
 			int RightValueIndex = sheetHeader.indexOf("RightValue");
@@ -3451,6 +3452,7 @@ public class WorkingSheet
 				String RightValue = partData.get(RightValueIndex);
 				String Vendor = partData.get(supcell);
 				String Part = partData.get(partcell);
+				String checkpartid = partData.get(CheckpartidIndex);
 				if(!status.equals("Exception") && RightValue.isEmpty())
 				{
 					JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
@@ -3487,6 +3489,7 @@ public class WorkingSheet
 				qachk.setEngname(engname);
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
+				qachk.setCheckpartid(Long.valueOf(checkpartid));
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 				{
 					qachk.setFeatureName(FeatureName);
@@ -4585,7 +4588,7 @@ public class WorkingSheet
 				}
 				else
 				{
-					if((finalflag.equals("A") || finalflag.equals("S"))&&donelflag.equals("No"))
+					if((finalflag.equals("A") || finalflag.equals("S")) && donelflag.equals("No"))
 					{
 						error += "Finalflag Can't be (A,S) with NotDone Parts |";
 						setCellColore(finalflagCell, 0xD2254D);
@@ -4624,39 +4627,42 @@ public class WorkingSheet
 			HeaderList = new ArrayList<Cell>();
 
 			Cell cell = getCellByPosission(0, 0);
-			cell.setText("Comid");
+			cell.setText("CheckPartID");
 			HeaderList.add(cell);
 			cell = getCellByPosission(1, 0);
-			cell.setText("NanAlphaPart");
+			cell.setText("Comid");
 			HeaderList.add(cell);
 			cell = getCellByPosission(2, 0);
-			cell.setText("Flag");
+			cell.setText("NanAlphaPart");
 			HeaderList.add(cell);
 			cell = getCellByPosission(3, 0);
-			cell.setText("Part");
+			cell.setText("Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(4, 0);
-			cell.setText("Vendor");
+			cell.setText("Part");
 			HeaderList.add(cell);
 			cell = getCellByPosission(5, 0);
-			cell.setText("Datasheet");
+			cell.setText("Vendor");
 			HeaderList.add(cell);
 			cell = getCellByPosission(6, 0);
-			cell.setText("DatasheetTitle");
+			cell.setText("Datasheet");
 			HeaderList.add(cell);
 			cell = getCellByPosission(7, 0);
-			cell.setText("ProductLine");
+			cell.setText("DatasheetTitle");
 			HeaderList.add(cell);
 			cell = getCellByPosission(8, 0);
-			cell.setText("Mask");
+			cell.setText("ProductLine");
 			HeaderList.add(cell);
 			cell = getCellByPosission(9, 0);
-			cell.setText("Family");
+			cell.setText("Mask");
 			HeaderList.add(cell);
 			cell = getCellByPosission(10, 0);
-			cell.setText("Status");
+			cell.setText("Family");
 			HeaderList.add(cell);
 			cell = getCellByPosission(11, 0);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(12, 0);
 			cell.setText("RightValue");
 			HeaderList.add(cell);
 
@@ -4683,10 +4689,10 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
-				cell = getCellByPosission(12, 0);
+				cell = getCellByPosission(13, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(13, 0);
+				cell = getCellByPosission(14, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 
@@ -4697,10 +4703,10 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
-				cell = getCellByPosission(12, 0);
+				cell = getCellByPosission(13, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(13, 0);
+				cell = getCellByPosission(14, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 
@@ -4726,52 +4732,55 @@ public class WorkingSheet
 			HeaderList = new ArrayList<Cell>();
 
 			Cell cell = getCellByPosission(0, 0);
-			cell.setText("Comid");
+			cell.setText("CheckPartID");
 			HeaderList.add(cell);
 			cell = getCellByPosission(1, 0);
-			cell.setText("NanAlphaPart");
+			cell.setText("Comid");
 			HeaderList.add(cell);
 			cell = getCellByPosission(2, 0);
-			cell.setText("Flag");
+			cell.setText("NanAlphaPart");
 			HeaderList.add(cell);
 			cell = getCellByPosission(3, 0);
-			cell.setText("Part");
+			cell.setText("Flag");
 			HeaderList.add(cell);
 			cell = getCellByPosission(4, 0);
-			cell.setText("Vendor");
+			cell.setText("Part");
 			HeaderList.add(cell);
 			cell = getCellByPosission(5, 0);
-			cell.setText("Datasheet");
+			cell.setText("Vendor");
 			HeaderList.add(cell);
 			cell = getCellByPosission(6, 0);
-			cell.setText("DatasheetTitle");
+			cell.setText("Datasheet");
 			HeaderList.add(cell);
 			cell = getCellByPosission(7, 0);
-			cell.setText("ProductLine");
+			cell.setText("DatasheetTitle");
 			HeaderList.add(cell);
 			cell = getCellByPosission(8, 0);
-			cell.setText("Mask");
+			cell.setText("ProductLine");
 			HeaderList.add(cell);
 			cell = getCellByPosission(9, 0);
-			cell.setText("Family");
+			cell.setText("Mask");
 			HeaderList.add(cell);
 			cell = getCellByPosission(10, 0);
-			cell.setText("Status");
+			cell.setText("Family");
 			HeaderList.add(cell);
 			cell = getCellByPosission(11, 0);
+			cell.setText("Status");
+			HeaderList.add(cell);
+			cell = getCellByPosission(12, 0);
 			cell.setText("Comment");
 			HeaderList.add(cell);
 
-			cell = getCellByPosission(12, 0);
+			cell = getCellByPosission(13, 0);
 			cell.setText("FBComment");
 			HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				cell = getCellByPosission(13, 0);
+				cell = getCellByPosission(14, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(14, 0);
+				cell = getCellByPosission(15, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 			}

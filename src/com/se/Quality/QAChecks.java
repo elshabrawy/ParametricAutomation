@@ -328,13 +328,14 @@ public class QAChecks extends JPanel implements ActionListener
 			ArrayList<ArrayList<String>> data = new ArrayList<>();
 			for(int i = 0; i < reviewData.size(); i++)
 			{
-				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(), session);
+				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(), reviewData.get(i).getCheckpartid(), session);
 				String flag = "AffectedPart";
 				if(exist)
 				{
 					flag = "InputPart";
 				}
 				ArrayList<String> row = new ArrayList<>();
+				row.add(reviewData.get(i).getCheckpartid().toString());
 				row.add(reviewData.get(i).getPart().getComId().toString());
 				row.add(reviewData.get(i).getNanAlphaPart());
 				row.add(flag);
@@ -378,8 +379,8 @@ public class QAChecks extends JPanel implements ActionListener
 		// uDTO.setFullName("mohamad mostafa");
 		// uDTO.setId(32);
 		// uDTO.setFullName("Hatem Hussien");
-//		 uDTO.setId(376);
-//		 uDTO.setFullName("Mohamed Hussien");
+		// uDTO.setId(376);
+		// uDTO.setFullName("Mohamed Hussien");
 		uDTO.setId(125);
 		uDTO.setFullName("ahmed_khairy");
 		GrmRole role = new GrmRole();
