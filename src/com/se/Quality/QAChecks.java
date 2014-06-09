@@ -334,6 +334,7 @@ public class QAChecks extends JPanel implements ActionListener
 				{
 					flag = "InputPart";
 				}
+				System.out.println("no>>"+i);
 				ArrayList<String> row = new ArrayList<>();
 				row.add(reviewData.get(i).getCheckpartid().toString());
 				row.add(reviewData.get(i).getPart().getComId().toString());
@@ -381,8 +382,8 @@ public class QAChecks extends JPanel implements ActionListener
 		// uDTO.setFullName("Hatem Hussien");
 		// uDTO.setId(376);
 		// uDTO.setFullName("Mohamed Hussien");
-		uDTO.setId(125);
-		uDTO.setFullName("ahmed_khairy");
+		uDTO.setId(383);
+		uDTO.setFullName("mahmoud_reda");
 		GrmRole role = new GrmRole();
 		role.setId(3l);
 		GrmGroup group = new GrmGroup();

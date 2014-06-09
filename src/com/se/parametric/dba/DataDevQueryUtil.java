@@ -5504,6 +5504,7 @@ public class DataDevQueryUtil
 						if(!qadata.getQaChecksActions().getName().equals(StatusName.Done))
 						{
 							done = false;
+							break;
 						}
 					}
 					if(done)

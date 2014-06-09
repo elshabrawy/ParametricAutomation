@@ -37,6 +37,7 @@ import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+import com.se.parametric.dev.RelatedFeature;
 import com.se.parametric.dto.FeatureDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -1611,46 +1612,7 @@ public class WorkingSheet
 						canSave = false;
 						continue part;
 					}
-					else if(status.equals("Approved"))// TL Must Write Comment If Approve QA or ENG when issue external
-					{
-						// String issueSouce = ParaQueryUtil.getLastIssueSource(pn, supplierName);
-						// if(issueSouce != null)
-						// {
-						// if(issueSouce.equals("QA"))
-						// {
-						// if(comment.equals(""))
-						// {
-						// partvalidation.setStatus("Wrong Comment");
-						// setCellColore(commentCell, 0xD2254D);
-						// writeValidtionStatus(xcellrange, false);
-						// canSave = false;
-						// continue part;
-						// }
-						// }
-						// else
-						// {
-						// if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
-						// {
-						// partvalidation.setStatus("Wrong Comment");
-						// setCellColore(commentCell, 0xD2254D);
-						// writeValidtionStatus(xcellrange, false);
-						// canSave = false;
-						// continue part;
-						// }
-						// }
-						// }
-						// else
-						// {
-						// if(!comment.equals(""))// else sure reciver is ENg to approve it must be empty
-						// {
-						// partvalidation.setStatus("Wrong Comment");
-						// setCellColore(commentCell, 0xD2254D);
-						// writeValidtionStatus(xcellrange, false);
-						// canSave = false;
-						// continue part;
-						// }
-						// }
-					}
+
 					else if(status.equals(""))// TL Must Write Comment If Approve QA or ENG when issue external
 					{
 						partvalidation.setStatus("Empty Status");
@@ -1742,10 +1704,10 @@ public class WorkingSheet
 					{
 						writeValidtionStatus(xcellrange, false);
 						// canSave = false;
-						continue part;
+						// continue part;
 					}
 					String relatedresult = "";
-					// RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
+					relatedresult = RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
 					if(!relatedresult.isEmpty())
 					{
 						partvalidation.setStatus(relatedresult);
