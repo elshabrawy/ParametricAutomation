@@ -5139,6 +5139,8 @@ public class DataDevQueryUtil
 				cri.createAlias("plFeature", "plFeature");
 				PlFeature plfet = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
 				cri.add(Restrictions.eq("plFeature", plfet));
+				cri.createAlias("qaChecksActions", "action");
+				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiData = cri.list();
 				if(!qaCheckMultiData.isEmpty())
 				{
@@ -5158,6 +5160,8 @@ public class DataDevQueryUtil
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaCheckParts", "qaCheckParts");
 				cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+				cri.createAlias("qaChecksActions", "action");
+				cri.add(Restrictions.eq("action.name", StatusName.Open));
 				qaCheckMultiTax = cri.list();
 				if(!qaCheckMultiTax.isEmpty())
 				{
@@ -5367,6 +5371,39 @@ public class DataDevQueryUtil
 					qachk.getPart().setFamily(family);
 					session.saveOrUpdate(qachk.getPart());
 					System.err.println("-----family updated to: " + family.getName() + "------");
+					// get QA Check Action
+					Criteria cri = session.createCriteria(QaChecksActions.class);
+					cri.add(Restrictions.eq("name", StatusName.closed));
+					QaChecksActions action = (QaChecksActions) cri.uniqueResult();
+
+					// set Other qachecks to closed
+					if(qachk.getChecker().equals(StatusName.RootPartChecker))
+					{
+						cri = session.createCriteria(QaCheckMultiData.class);
+						cri.createAlias("qaCheckParts", "qaCheckParts");
+						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						List<QaCheckMultiData> list = cri.list();
+						for(QaCheckMultiData qadata : list)
+						{
+							qadata.setQaChecksActions(action);
+							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
+						}
+					}
+					else if(qachk.getChecker().equals(StatusName.FamilyMultiSupplier))
+
+					{
+						cri = session.createCriteria(QaCheckMultiTax.class);
+						cri.createAlias("qaCheckParts", "qaCheckParts");
+						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						List<QaCheckMultiTax> list = cri.list();
+						for(QaCheckMultiTax qadata : list)
+						{
+							qadata.setQaChecksActions(action);
+							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId() + "------");
+						}
+					}
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateMask))
@@ -5381,6 +5418,40 @@ public class DataDevQueryUtil
 					qachk.getPart().setMasterPartMask(mask);
 					session.saveOrUpdate(qachk.getPart());
 					System.err.println("-----mask updated to: " + mask.getMstrPart() + "------");
+
+					// get QA Check Action
+					Criteria cri = session.createCriteria(QaChecksActions.class);
+					cri.add(Restrictions.eq("name", StatusName.closed));
+					QaChecksActions action = (QaChecksActions) cri.uniqueResult();
+
+					// set Other qachecks to closed
+					if(qachk.getChecker().equals(StatusName.MaskMultiData))
+					{
+						cri = session.createCriteria(QaCheckMultiData.class);
+						cri.createAlias("qaCheckParts", "qaCheckParts");
+						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						List<QaCheckMultiData> list = cri.list();
+						for(QaCheckMultiData qadata : list)
+						{
+							qadata.setQaChecksActions(action);
+							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
+						}
+					}
+					else if(qachk.getChecker().equals(StatusName.MaskMultiSupplier))
+
+					{
+						cri = session.createCriteria(QaCheckMultiTax.class);
+						cri.createAlias("qaCheckParts", "qaCheckParts");
+						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						List<QaCheckMultiTax> list = cri.list();
+						for(QaCheckMultiTax qadata : list)
+						{
+							qadata.setQaChecksActions(action);
+							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId() + "------");
+						}
+					}
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
