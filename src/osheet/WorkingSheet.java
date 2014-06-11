@@ -28,16 +28,17 @@ import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
+import com.se.automation.db.client.mapping.QaCheckParts;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TblRules;
 import com.se.automation.db.client.mapping.TrackingParametric;
+import com.se.automation.db.parametric.RelatedFeature;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dev.RelatedFeature;
 import com.se.parametric.dto.FeatureDTO;
 import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -3497,6 +3498,7 @@ public class WorkingSheet
 			int statusIndex = sheetHeader.indexOf("Status");
 			int commentIndex = sheetHeader.indexOf("Comment");
 			int PLcell = sheetHeader.indexOf("ProductLine");
+			int chkpartidx = sheetHeader.indexOf("CheckPartID");
 			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
 			int Flagcell = sheetHeader.indexOf("Flag");
 			int NanAlphaPartindex = sheetHeader.indexOf("NanAlphaPart");
@@ -3521,6 +3523,7 @@ public class WorkingSheet
 				String DatasheetTitle = partData.get(Titleidx);
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
+				String chkpart = partData.get(chkpartidx);
 				// String fbcomment = partData.get(fbcommentIndex);
 				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
 				{
@@ -3531,12 +3534,15 @@ public class WorkingSheet
 				PartComponent part = DataDevQueryUtil.getComponentBycomid(Comid);
 				qachk.setPart(part);
 				qachk.setVendor(part.getSupplierId());
+				qachk.setCheckpartid(Long.valueOf(chkpart));
+				System.err.println(part.getDocument().getId());
 				qachk.setDatasheet(part.getDocument());
 				qachk.setDatasheetTitle(DatasheetTitle);
 				qachk.setMask(part.getMasterPartMask());
 				qachk.setFamily(part.getFamily());
 				qachk.setNewValue(Comment);
 				Pl pl = ParaQueryUtil.getPlByPlName(session, ProductLine);
+				System.err.println(pl.getId());
 				qachk.setProductLine(pl);
 				qachk.setEngname(engname);
 				qachk.setChecker(checker);

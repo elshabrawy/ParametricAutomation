@@ -3895,7 +3895,9 @@ public class DataDevQueryUtil
 
 		try
 		{
-			session = SessionUtil.getSession();
+			// session = SessionUtil.getSession();
+			System.err.println(document.getId());
+			System.err.println(pl.getId());
 			Criteria crit = session.createCriteria(TrackingParametric.class);
 			crit.add(Restrictions.eq("document", document));
 			crit.add(Restrictions.eq("pl", pl));
@@ -5755,9 +5757,8 @@ public class DataDevQueryUtil
 			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 			ParaFeedbackAction feedbackAction = null;
 			TrackingFeedbackType trackingFeedbackType = null;
-			TrackingParametric track = getTrackingParametricByDocumentAndPl(qachk.getDatasheet(), qachk.getProductLine(), session);
-			// String partNum = qachk.getPart().getPartNumber();
-			// String vendorName = qachk.getVendor().getName();
+			QaCheckParts qacheckPart = ParaQueryUtil.getqacheckdocbychkpartid(qachk.getCheckpartid(), session);
+			TrackingParametric track = getTrackingParametricByDocumentAndPl(qacheckPart.getDocument(), qacheckPart.getPartComponent().getSupplierPl().getPl(), session);
 			String comment = qachk.getNewValue();
 			String issuedByName = qachk.getEngname();
 

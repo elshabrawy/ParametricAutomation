@@ -74,6 +74,7 @@ import com.se.automation.db.client.mapping.PkgMainData;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.PlFetConverter;
+import com.se.automation.db.client.mapping.QaCheckParts;
 import com.se.automation.db.client.mapping.QaCheckRelatedFunctions;
 import com.se.automation.db.client.mapping.QaChecksInDependentFeature;
 import com.se.automation.db.client.mapping.QaChecksValidatetype;
@@ -5863,8 +5864,8 @@ public class ParaQueryUtil
 
 			xlsHandler.writeExcelFile(headerList.toArray(new String[headerList.size()]), components, fileName);
 			exportNPIParts(plName, userDto, startDate, endDate);
-			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId()
-					+ " and tracking_task_status_id=GETTASKSTATUSID('" + StatusName.qaReview + "') and pl_id=GETPLID('" + plName + "')");
+			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId() + " and tracking_task_status_id=GETTASKSTATUSID('"
+					+ StatusName.qaReview + "') and pl_id=GETPLID('" + plName + "')");
 			// Transaction tx = session.beginTransaction();
 			int x = query.executeUpdate();
 			// tx.commit();
@@ -5891,8 +5892,8 @@ public class ParaQueryUtil
 			session = SessionUtil.getSession();
 			Pl pl = getPlByPlName(session, plName);
 			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, GETSUPPLIERBYDOC(c.document_id) sup_name, "
-					+ " GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id="
-					+ userDto.getId() + " and tracking_task_status_id=34 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
+					+ " GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id=" + userDto.getId()
+					+ " and tracking_task_status_id=34 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy HH:mm:ss");
@@ -6479,6 +6480,23 @@ public class ParaQueryUtil
 		}
 		return doc;
 
+	}
+
+	public static QaCheckParts getqacheckdocbychkpartid(Long chkpart, Session session)
+	{
+		QaCheckParts qacheckParts = null;
+		try
+		{
+			// session = SessionUtil.getSession();
+			Criteria cri = session.createCriteria(QaCheckParts.class);
+			cri.add(Restrictions.eq("id", chkpart));
+			QaCheckParts part = (QaCheckParts) cri.uniqueResult();
+			qacheckParts = part;
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return qacheckParts;
 	}
 
 }

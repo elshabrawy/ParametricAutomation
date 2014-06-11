@@ -252,19 +252,19 @@ public class QAException extends JPanel implements ActionListener
 		QAException devPanel = new QAException(uDTO);
 		frame.getContentPane().add(devPanel);
 		frame.show();
-		while(true)
-		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
-			// devPanel.updateFlags(flags);
-
-			try
-			{
-				Thread.sleep(5000);
-			}catch(InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		// while(true)
+		// {
+		// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
+		// // devPanel.updateFlags(flags);
+		//
+		// try
+		// {
+		// Thread.sleep(5000);
+		// }catch(InterruptedException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 	public void updateFlags(ArrayList<String> flags)
