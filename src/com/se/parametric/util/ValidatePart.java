@@ -231,6 +231,21 @@ public class ValidatePart extends ValidationsCommentsStatus
 				Comment = "Contains Character Â¿";
 				return dissension = true;
 			}
+			else if(inputPart.contains("*"))
+			{
+				Comment = "Contains Character * ";
+				return dissension = true;
+			}
+			else if(inputPart.contains(":"))
+			{
+				Comment = "Contains Character : ";
+				return dissension = true;
+			}
+			else if(inputPart.contains("!"))
+			{
+				Comment = "Contains Character ! ";
+				return dissension = true;
+			}
 			else
 			{
 				return dissension;
