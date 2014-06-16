@@ -4857,7 +4857,7 @@ public class ParaQueryUtil
 		{
 			grmSession = com.se.grm.db.SessionUtil.getSession();
 			Criteria grmUserCriteria = grmSession.createCriteria(GrmUser.class);
-			grmUserCriteria.add(Restrictions.eq("fullName", userName));
+			grmUserCriteria.add(Restrictions.or(Restrictions.eq("fullName", userName),Restrictions.like("email", userName+"%")));
 			user = (GrmUser) grmUserCriteria.uniqueResult();
 		}catch(Exception ex)
 		{

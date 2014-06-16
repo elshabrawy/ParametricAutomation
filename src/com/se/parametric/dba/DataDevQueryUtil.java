@@ -5710,9 +5710,9 @@ public class DataDevQueryUtil
 		fbcriteria.add(Restrictions.eq("fbItemValue", qachk.getPart().getPartNumber()));
 		fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 		fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
-		ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria.uniqueResult();
+		List<ParametricFeedbackCycle> parametricFeedbackCycle = fbcriteria.list();
 
-		if(parametricFeedbackCycle == null)
+		if(parametricFeedbackCycle.isEmpty())
 			return false;
 		else
 			return true;
