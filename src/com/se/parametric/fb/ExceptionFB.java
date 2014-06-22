@@ -181,9 +181,9 @@ public class ExceptionFB extends JPanel implements ActionListener
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
 			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 			wsMap.put("QAChecks", ws);
-			ws.setqaexceptionheader(checkerType);
+			ws.setqaexceptionheader(checkerType,"DD");
 			ArrayList<String> sheetHeader = ws.getHeader();
-			int statusindx = sheetHeader.indexOf("Status");
+			int statusindx = sheetHeader.indexOf("DDStatus");
 			// int flag = sheetHeader.indexOf("Flag");
 			ArrayList<ArrayList<String>> data = new ArrayList<>();
 			for(int i = 0; i < reviewData.size(); i++)

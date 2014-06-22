@@ -4692,7 +4692,7 @@ public class WorkingSheet
 
 	}
 
-	public void setqaexceptionheader(String checkerType)
+	public void setqaexceptionheader(String checkerType, String team)
 	{
 		try
 		{
@@ -4733,14 +4733,17 @@ public class WorkingSheet
 			cell.setText("Family");
 			HeaderList.add(cell);
 			cell = getCellByPosission(11, 0);
-			cell.setText("Status");
+			cell.setText(team + "Status");
 			HeaderList.add(cell);
 			cell = getCellByPosission(12, 0);
-			cell.setText("Comment");
+			cell.setText(team + "Comment");
 			HeaderList.add(cell);
 
 			cell = getCellByPosission(13, 0);
-			cell.setText("FBComment");
+			if(team == "QA")
+				cell.setText("DDComment");
+			else
+				cell.setText("QAComment");
 			HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
