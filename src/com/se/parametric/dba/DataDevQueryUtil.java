@@ -5610,7 +5610,7 @@ public class DataDevQueryUtil
 		session = SessionUtil.getSession();
 		Criteria cri = null;
 		String currentstatus = "";
-		if(screen.equals("Qa"))
+		if(screen.equals("QA"))
 		{
 			currentstatus = StatusName.WaittingException;
 		}
@@ -5625,7 +5625,7 @@ public class DataDevQueryUtil
 			QaChecksActions action = null;
 			String partaction = "";
 			boolean fbpart = checkpartifexistinFB(qachk, session);
-			if(screen.equals("Qa"))
+			if(screen.equals("QA"))
 			{
 				if(qachk.getStatus().equals(StatusName.approved))
 				{

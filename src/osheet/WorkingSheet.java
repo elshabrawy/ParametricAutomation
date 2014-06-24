@@ -3495,8 +3495,8 @@ public class WorkingSheet
 			ArrayList<String> sheetHeader = getHeader();
 			// int fbcommentIndex = sheetHeader.indexOf("FBComment");
 			int ComidIndex = sheetHeader.indexOf("Comid");
-			int statusIndex = sheetHeader.indexOf("Status");
-			int commentIndex = sheetHeader.indexOf("Comment");
+			int statusIndex = sheetHeader.indexOf(screen+"Status");
+			int commentIndex = sheetHeader.indexOf(screen+"Comment");
 			int PLcell = sheetHeader.indexOf("ProductLine");
 			int chkpartidx = sheetHeader.indexOf("CheckPartID");
 			int Titleidx = sheetHeader.indexOf("DatasheetTitle");

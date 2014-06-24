@@ -143,7 +143,7 @@ public class QAException extends JPanel implements ActionListener
 			{
 				if(wsName == "QAChecks")
 				{
-					wsMap.get(wsName).saveQAexceptionAction(checker, engName, "Qa");
+					wsMap.get(wsName).saveQAexceptionAction(checker, engName, "QA");
 				}
 			}
 		}
