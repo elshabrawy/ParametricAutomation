@@ -337,7 +337,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								oldValReq.setFbStatus(StatusName.fbClosed);
 								oldValReq.setGruopSatus(oldValReq.getComment());
-								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.approved);
+								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.cmTransfere);
 								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 							}
 

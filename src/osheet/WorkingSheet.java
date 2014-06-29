@@ -1699,14 +1699,6 @@ public class WorkingSheet
 					// continue part;
 					// }
 
-					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
-
-					if(!appFlag)
-					{
-						writeValidtionStatus(xcellrange, false);
-						// canSave = false;
-						// continue part;
-					}
 					String relatedresult = "";
 					relatedresult = RelatedFeature.getConflictRelatedFeature(pl, relatedFeature);
 					if(!relatedresult.isEmpty())
@@ -1718,6 +1710,15 @@ public class WorkingSheet
 					}
 				}
 				writeValidtionStatus(xcellrange, true);
+
+				appFlag = isRowValuesApproved(xcellrange, endParametricFT);
+
+				if(!appFlag)
+				{
+					writeValidtionStatus(xcellrange, false);
+					// canSave = false;
+					// continue part;
+				}
 			}
 			if(NPIFlag && !npihasvalue && canSave)
 			{
@@ -3495,8 +3496,8 @@ public class WorkingSheet
 			ArrayList<String> sheetHeader = getHeader();
 			// int fbcommentIndex = sheetHeader.indexOf("FBComment");
 			int ComidIndex = sheetHeader.indexOf("Comid");
-			int statusIndex = sheetHeader.indexOf(screen+"Status");
-			int commentIndex = sheetHeader.indexOf(screen+"Comment");
+			int statusIndex = sheetHeader.indexOf(screen + "Status");
+			int commentIndex = sheetHeader.indexOf(screen + "Comment");
 			int PLcell = sheetHeader.indexOf("ProductLine");
 			int chkpartidx = sheetHeader.indexOf("CheckPartID");
 			int Titleidx = sheetHeader.indexOf("DatasheetTitle");
@@ -4745,13 +4746,19 @@ public class WorkingSheet
 			else
 				cell.setText("QAComment");
 			HeaderList.add(cell);
+			cell = getCellByPosission(14, 0);
+			if(team == "QA")
+				cell.setText("LastQAComment");
+			else
+				cell.setText("LastDDComment");
+			HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
 			{
-				cell = getCellByPosission(14, 0);
+				cell = getCellByPosission(15, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(15, 0);
+				cell = getCellByPosission(16, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
 			}
