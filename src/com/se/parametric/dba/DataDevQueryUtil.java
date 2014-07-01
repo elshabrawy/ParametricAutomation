@@ -2453,6 +2453,7 @@ public class DataDevQueryUtil
 			// component.setDescription(decsriptionStr);
 			// }
 
+			com.setAutoFlag(1L);
 			session.saveOrUpdate(com);
 			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
 			{
@@ -3914,6 +3915,7 @@ public class DataDevQueryUtil
 		Family family = new Family();
 		family.setId(QueryUtil.getRandomID());
 		family.setName(familyStr);
+		family.setAutoFlag(1L);
 		session.save(family);
 		session.beginTransaction().commit();
 		return family;
@@ -3935,6 +3937,7 @@ public class DataDevQueryUtil
 		// generic.setId(QueryUtil.getRandomID());
 		generic.setGeneric(genericStr);
 		generic.setStoreDate(new Date());
+		generic.setAutoFlag(1L);
 		session.saveOrUpdate(generic);
 		session.beginTransaction().commit();
 		return generic;
@@ -3946,6 +3949,7 @@ public class DataDevQueryUtil
 		// familyCross.setId(QueryUtil.getRandomID());
 		familyCross.setFamily(familyStr);
 		familyCross.setStoreDate(new Date());
+		familyCross.setAutoFlag(1L);
 		session.saveOrUpdate(familyCross);
 		session.beginTransaction().commit();
 		return familyCross;
@@ -3967,6 +3971,7 @@ public class DataDevQueryUtil
 		npiPart.setOfflinedocid(com.getDocument());
 		npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
 		npiPart.setInsertionDate(new Date());
+		npiPart.setAutoFlag(1L);
 		session.saveOrUpdate(npiPart);
 		session.beginTransaction().commit();
 		return npiPart;
@@ -3984,14 +3989,17 @@ public class DataDevQueryUtil
 
 		mask.setMstrPart(maskMaster);
 		mask.setStoreDate(new Date());
+		mask.setAutoFlag(1L);
 		session.saveOrUpdate(mask);
 		// session.beginTransaction().commit();
 		PartMaskValueId mskValId = new PartMaskValueId();
 		mskValId.setMaskId(mask.getId());
 		mskValId.setMaskPn(maskStr);
+		
 		PartMaskValue maskval = new PartMaskValue();
 		maskval.setId(mskValId);
 		maskval.setMasterPartMask(mask);
+		maskval.setAutoFlag(1L);
 		session.saveOrUpdate(maskval);
 		return mask;
 	}
