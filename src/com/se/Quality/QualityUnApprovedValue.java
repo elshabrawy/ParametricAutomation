@@ -260,7 +260,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							oldValReq.setIssueType(newValReq.get(12));
 							if(newValReq.get(12).equals("Approved"))
 							{
-								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.cmTransfere);
+								ApprovedDevUtil.setValueApproved(result.get(i), StatusName.WaittingParametricInsertion);
 							}
 
 							// else if(newValReq.get(12).equals("Wrong Value"))
