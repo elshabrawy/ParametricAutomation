@@ -349,7 +349,7 @@ public class QAChecks extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
 				row.add("");
 				row.add("");
-				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
+				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker)|| reviewData.get(i).getChecker().equals(StatusName.generic_part))
 				{
 					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
 					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());

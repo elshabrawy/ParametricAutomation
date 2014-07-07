@@ -4684,6 +4684,20 @@ public class WorkingSheet
 				statusValues.add(StatusName.UpdateParametricData);
 				statusValues.add(StatusName.UpdateFamily);
 			}
+			else if(checkerType.equals(StatusName.generic_part))
+			{
+				cell = getCellByPosission(14, 0);
+				cell.setText("Generic");
+				HeaderList.add(cell);
+				cell = getCellByPosission(15, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(16, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+
+				
+			}
 
 		}catch(Exception e)
 		{
