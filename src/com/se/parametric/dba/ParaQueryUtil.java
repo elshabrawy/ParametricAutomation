@@ -5752,7 +5752,7 @@ public class ParaQueryUtil
 			// SQLQuery query = session.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where FINISHED_DATE BETWEEN TO_DATE('" +
 			// start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY') and user_id=" + userId
 			// + " and TRACKING_TASK_STATUS_ID=3");
-			SQLQuery query = session.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where user_id=" + userId + " and TRACKING_TASK_STATUS_ID=3" + dateCond);
+			SQLQuery query = session.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where user_id=" + userId + " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('" + StatusName.cmTransfere+ "')" + dateCond);
 			plNames = query.list();
 		}catch(Exception e)
 		{
@@ -5804,7 +5804,7 @@ public class ParaQueryUtil
 				headerList.add(fet.getFeatureName());
 			}
 			List<Map<String, Object>> components = new ArrayList<Map<String, Object>>();
-			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and TRACKING_TASK_STATUS_ID=34 and pl_id=" + pl.getId()
+			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('" + StatusName.cmTransfere+ "') and pl_id=" + pl.getId()
 					+ ") and supplier_pl_id in ( select id from supplier_pl where pl_id=" + pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
@@ -5865,7 +5865,7 @@ public class ParaQueryUtil
 			xlsHandler.writeExcelFile(headerList.toArray(new String[headerList.size()]), components, fileName);
 			exportNPIParts(plName, userDto, startDate, endDate);
 			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId() + " and tracking_task_status_id=GETTASKSTATUSID('"
-					+ StatusName.qaReview + "') and pl_id=GETPLID('" + plName + "')");
+					+ StatusName.cmTransfere + "') and pl_id=GETPLID('" + plName + "')");
 			// Transaction tx = session.beginTransaction();
 			int x = query.executeUpdate();
 			// tx.commit();
