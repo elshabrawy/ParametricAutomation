@@ -643,6 +643,194 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
+	public static ArrayList<TableInfoDTO> getReviewPDFupdate(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
+			String pltype)
+	{
+		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
+		if(startDate != null)
+		{
+			startDate.setHours(0);
+			startDate.setMinutes(0);
+			startDate.setSeconds(0);
+		}
+		if(endDate != null)
+		{
+			endDate.setHours(0);
+			endDate.setMinutes(0);
+			endDate.setSeconds(0);
+			endDate.setDate(endDate.getDate() + 1);
+		}
+		Session session = SessionUtil.getSession();
+
+		try
+		{
+			Criteria criteria = session.createCriteria(TrackingParametric.class);
+
+			if(!status.equals("All"))
+			{
+				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
+				statusCriteria.add(Restrictions.eq("name", status));
+				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
+				criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
+			}
+
+			if(!(usersId.length == 0) && usersId[0] != 0 && usersId != null)
+			{
+				criteria.add(Restrictions.in("parametricUserId", usersId));
+			}
+
+			// System.out.println(criteria.list().size());
+			if(startDate != null && endDate != null)
+			{
+				if(inputType.equals("assigned"))
+				{
+					criteria.add(Restrictions.ge("assignedDate", startDate));
+					criteria.add(Restrictions.lt("assignedDate", endDate));
+				}
+				else if(inputType.equals("finished"))
+				{
+					criteria.add(Restrictions.ge("finishedDate", startDate));
+					criteria.add(Restrictions.lt("finishedDate", endDate));
+				}
+				else if(inputType.equals("QAReview"))
+				{
+					criteria.add(Restrictions.ge("qaReviewDate", startDate));
+					criteria.add(Restrictions.lt("qaReviewDate", endDate));
+				}
+
+			}
+			if(extracted != null && !extracted.equals("All"))
+			{
+				System.out.println(extracted);
+				if(extracted.equals("Not Extracted"))
+				{
+					Disjunction or = Restrictions.disjunction();
+					or.add(Restrictions.eq("extractionStatus", 0l));
+					or.add(Restrictions.isNull("extractionStatus"));
+					criteria.add(or);
+				}
+				else
+				{
+					criteria.add(Restrictions.eq("extractionStatus", 1l));
+				}
+			}
+			if(plName != null && !plName.equals("All"))
+			{
+				Criteria plCriteria = session.createCriteria(Pl.class);
+				plCriteria.add(Restrictions.eq("name", plName));
+				Pl pl = (Pl) plCriteria.uniqueResult();
+				criteria.add(Restrictions.eq("pl", pl));
+			}
+			// System.out.println(criteria.list().size());
+
+			if(priority != null && !priority.equals("All"))
+			{
+				criteria.add(Restrictions.eq("prioriy", Long.parseLong(priority)));
+			}
+			// System.out.println(criteria.list().size());
+
+			if(vendorName != null && !vendorName.equals("All"))
+			{
+				Criteria vendorCriteria = session.createCriteria(Supplier.class);
+				vendorCriteria.add(Restrictions.eq("name", vendorName));
+				Supplier supplier = (Supplier) vendorCriteria.uniqueResult();
+				criteria.add(Restrictions.eq("supplier", supplier));
+			}
+			// System.out.println(criteria.list().size());
+
+			if(type != null && !type.equals("All"))
+			{
+				Criteria typeCriteria = session.createCriteria(TrackingTaskType.class);
+				List taskType = null;
+				if(type.equals("NPI"))
+				{
+					typeCriteria.add(Restrictions.eq("name", "NPI Update"));
+				}
+				else
+				{
+					typeCriteria.add(Restrictions.eq("name", type));
+				}
+				taskType = typeCriteria.list();
+				criteria.add(Restrictions.in("trackingTaskType", taskType));
+			}
+			// System.out.println(criteria.list().size());
+
+			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
+			{
+				List<Document> docs = getFeedbackDocs(feedbackTypeStr);
+				if(!docs.isEmpty())
+					criteria.add(Restrictions.in("document", docs));
+			}
+			String sql = "";
+			if(pltype != null && !pltype.equals("All"))
+			{
+				sql = " Get_PL_Type(this_.PL_ID)='" + pltype + "'";
+				criteria.add(Restrictions.sqlRestriction(sql));
+			}
+			List list = criteria.list();
+			for(int i = 0; i < list.size(); i++)
+			{
+				TrackingParametric obj = (TrackingParametric) list.get(i);
+				TableInfoDTO docInfo = new TableInfoDTO();
+				int infectedParts = getInfectedPartsByDoc(obj.getDocument().getId());
+				int infectedTaxonomies = getInfectedTaxonomiesByDoc(obj.getDocument().getId());
+				docInfo.setPdfUrl(obj.getDocument().getPdf().getSeUrl());
+				docInfo.setPlName(obj.getPl().getName());
+				docInfo.setSupplierName(obj.getSupplier().getName());
+				docInfo.setStatus(obj.getTrackingTaskStatus().getName());
+				docInfo.setTaskType(obj.getTrackingTaskType().getName());
+				docInfo.setInfectedParts(infectedParts);
+				docInfo.setInfectedTaxonomies(infectedTaxonomies);
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
+				docInfo.setPriority("" + obj.getPrioriy());
+
+				if(inputType.equals("QAReview"))
+				{
+					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
+					docInfo.setPDFParts(noparts.get(0));
+					docInfo.setPLParts(noparts.get(1));
+					docInfo.setPDFDoneParts(noparts.get(2));
+					docInfo.setPLDoneParts(noparts.get(3));
+					if(obj.getTrackingTaskType().getName().contains("NPI"))
+						docInfo.setTaskparts(noparts.get(4));
+					else
+						docInfo.setTaskparts(noparts.get(0) - noparts.get(4));
+
+					int fets = 0;
+					try
+					{
+						fets = ParaQueryUtil.getPlFeautrecount(obj.getPl().getName());
+					}catch(Exception e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					docInfo.setPLFeatures(fets);
+				}
+				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
+				docInfo.setPlType(Pltype == null ? "" : Pltype.getName());
+				Date date = obj.getFinishedDate();
+				if(inputType.equals("assigned"))
+				{
+					date = obj.getAssignedDate();
+				}
+				if(date != null)
+				{
+					docInfo.setDate(date.toString().split(" ")[0]);
+				}
+
+				tableData.add(docInfo);
+			}
+			Collections.sort(tableData);
+
+		}finally
+		{
+			session.close();
+		}
+		return tableData;
+	}
+
 	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid, Long[] usersId, String status)
 	{
 		Session session = null;
@@ -3996,7 +4184,7 @@ public class DataDevQueryUtil
 		PartMaskValueId mskValId = new PartMaskValueId();
 		mskValId.setMaskId(mask.getId());
 		mskValId.setMaskPn(maskStr);
-		
+
 		PartMaskValue maskval = new PartMaskValue();
 		maskval.setId(mskValId);
 		maskval.setMasterPartMask(mask);
@@ -5052,9 +5240,10 @@ public class DataDevQueryUtil
 					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
 					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result.get(i)[7].toString()));
 				}
-				if(checkerType.equals(StatusName.generic_part))
+				else if(checkerType.equals(StatusName.generic_part))
 				{
 					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+					qachecks.setGeneric(result.get(i)[8] == null ? "" : result.get(i)[8].toString());
 					qachecks.setFeatureName(fet.getFeature().getName());
 					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
 					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result.get(i)[7].toString()));
@@ -5127,7 +5316,7 @@ public class DataDevQueryUtil
 					partaction = StatusName.Done;
 				}
 			}
-			else if(qachk.getStatus().equals(StatusName.UpdateFamily) || qachk.getStatus().equals(StatusName.UpdateMask))
+			else if(qachk.getStatus().equals(StatusName.UpdateFamily) || qachk.getStatus().equals(StatusName.UpdateMask)|| qachk.getStatus().equals(StatusName.UpdateGeneric))
 			{
 				if(qachk.getFlag().equals("AffectedPart"))
 				{
@@ -5167,7 +5356,7 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("name", partaction));
 			action = (QaChecksActions) cri.uniqueResult();
 
-			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
+			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
@@ -5239,7 +5428,7 @@ public class DataDevQueryUtil
 				}
 
 				// set Other qachecks to closed
-				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
+				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)||qachk.getChecker().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckMultiData.class);
 					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
@@ -5339,7 +5528,7 @@ public class DataDevQueryUtil
 				System.out.println(feedbackStatus);
 
 				// set Other qachecks to closed
-				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
+				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckParts.class);
 					cri.add(Restrictions.in("partComponent", parts));
@@ -5491,6 +5680,37 @@ public class DataDevQueryUtil
 					}
 				}
 			}
+			else if(qachk.getStatus().equals(StatusName.UpdateGeneric))
+			{
+				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
+				{
+					MapGeneric generic = ParaQueryUtil.getGeneric(qachk.getNewValue());
+					if(generic == null)
+					{
+						generic = insertGeneric(qachk.getNewValue(), session);
+					}
+					qachk.getPart().setMapGeneric(generic);
+					session.saveOrUpdate(qachk.getPart());
+					System.err.println("-----generic updated to: " + generic.getGeneric() + "------");
+
+					// get QA Check Action
+					Criteria cri = session.createCriteria(QaChecksActions.class);
+					cri.add(Restrictions.eq("name", StatusName.closed));
+					QaChecksActions action = (QaChecksActions) cri.uniqueResult();
+
+					// set Other qachecks to closed
+						cri = session.createCriteria(QaCheckMultiData.class);
+						cri.createAlias("qaCheckParts", "qaCheckParts");
+						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						List<QaCheckMultiData> list = cri.list();
+						for(QaCheckMultiData qadata : list)
+						{
+							qadata.setQaChecksActions(action);
+							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
+						}
+				}
+			}
 			else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
@@ -5573,7 +5793,7 @@ public class DataDevQueryUtil
 			for(QaCheckParts qachkpart : qaparts)
 			{
 				boolean done = true;
-				if(qachkpart.getPreQaCheckers().getName().equals(StatusName.MaskMultiData) || qachkpart.getPreQaCheckers().getName().equals(StatusName.RootPartChecker))
+				if(qachkpart.getPreQaCheckers().getName().equals(StatusName.MaskMultiData) || qachkpart.getPreQaCheckers().getName().equals(StatusName.RootPartChecker) || qachkpart.getPreQaCheckers().getName().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckMultiData.class);
 					cri.add(Restrictions.eq("qaCheckParts", qachkpart));
@@ -5701,7 +5921,7 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("name", partaction));
 			action = (QaChecksActions) cri.uniqueResult();
 
-			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
+			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));

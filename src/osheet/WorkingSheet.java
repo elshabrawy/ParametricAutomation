@@ -3433,7 +3433,7 @@ public class WorkingSheet
 
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker)||checker.equals(StatusName.generic_part))
 				{
 					FeatureName = partData.get(FeatureNameindex);
 					FeatureValue = partData.get(FeatureValueindex);
@@ -3454,7 +3454,7 @@ public class WorkingSheet
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
 				qachk.setCheckpartid(Long.valueOf(checkpartid));
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker)||checker.equals(StatusName.generic_part))
 				{
 					qachk.setFeatureName(FeatureName);
 					qachk.setFeatureValue(FeatureValue);
@@ -4628,22 +4628,27 @@ public class WorkingSheet
 			cell = getCellByPosission(10, 0);
 			cell.setText("Family");
 			HeaderList.add(cell);
-			cell = getCellByPosission(11, 0);
-			cell.setText("Status");
-			HeaderList.add(cell);
-			cell = getCellByPosission(12, 0);
-			cell.setText("RightValue");
-			HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.NonAlphaMultiSupplier))
 			{
+				cell = getCellByPosission(11, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(12, 0);
+				cell.setText("RightValue");
+				HeaderList.add(cell);
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
-
 			}
 			else if(checkerType.equals(StatusName.MaskMultiSupplier))
 			{
+				cell = getCellByPosission(11, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(12, 0);
+				cell.setText("RightValue");
+				HeaderList.add(cell);
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
@@ -4651,6 +4656,12 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
+				cell = getCellByPosission(11, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(12, 0);
+				cell.setText("RightValue");
+				HeaderList.add(cell);
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
@@ -4658,12 +4669,20 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
-				cell = getCellByPosission(13, 0);
+				
+				cell = getCellByPosission(11, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(14, 0);
+				cell = getCellByPosission(12, 0);
 				cell.setText("FeatureValue");
 				HeaderList.add(cell);
+				cell = getCellByPosission(13, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(14, 0);
+				cell.setText("RightValue");
+				HeaderList.add(cell);
+				
 
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongPart);
@@ -4672,11 +4691,18 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
-				cell = getCellByPosission(13, 0);
+				
+				cell = getCellByPosission(11, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(14, 0);
+				cell = getCellByPosission(12, 0);
 				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+				cell = getCellByPosission(13, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(14, 0);
+				cell.setText("RightValue");
 				HeaderList.add(cell);
 
 				statusValues.add(StatusName.Exception);
@@ -4686,17 +4712,26 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.generic_part))
 			{
-				cell = getCellByPosission(14, 0);
+				cell = getCellByPosission(11, 0);
 				cell.setText("Generic");
 				HeaderList.add(cell);
-				cell = getCellByPosission(15, 0);
+				cell = getCellByPosission(12, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
-				cell = getCellByPosission(16, 0);
-				cell.setText("FeatureValue");
+				cell = getCellByPosission(13, 0);
 				HeaderList.add(cell);
-
+				cell.setText("FeatureValue");
+				cell = getCellByPosission(14, 0);
+				cell.setText("Status");
+				HeaderList.add(cell);
+				cell = getCellByPosission(15, 0);
+				cell.setText("RightValue");
+				HeaderList.add(cell);
 				
+				statusValues.add(StatusName.Exception);
+				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.UpdateParametricData);
+				statusValues.add(StatusName.UpdateGeneric);
 			}
 
 		}catch(Exception e)

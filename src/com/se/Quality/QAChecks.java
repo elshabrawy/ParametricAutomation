@@ -347,13 +347,19 @@ public class QAChecks extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getProductLine() == null ? "" : reviewData.get(i).getProductLine().getName());
 				row.add(reviewData.get(i).getMask() == null ? "" : reviewData.get(i).getMask().getMstrPart());
 				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
-				row.add("");
-				row.add("");
-				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker)|| reviewData.get(i).getChecker().equals(StatusName.generic_part))
+				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
 				{
 					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
 					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
 				}
+				else if(reviewData.get(i).getChecker().equals(StatusName.generic_part))
+				{
+					row.add(reviewData.get(i).getGeneric() == null ? "" : reviewData.get(i).getGeneric());
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+				}
+				row.add("");
+				row.add("");
 				data.add(row);
 
 			}
