@@ -163,7 +163,7 @@ public class LoginForm extends JFrame
 		titleLab.setBounds(10, 11, 345, 34);
 		panel.add(titleLab);
 		
-		JLabel lblver = new JLabel("Ver 1.0 : 16-7-2014 2:00PM ");
+		JLabel lblver = new JLabel("Ver 1.0 : 16-7-2014 ");
 		lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		lblver.setForeground(new Color(160, 82, 45));
 		lblver.setBounds(220, 170, 150, 60);
