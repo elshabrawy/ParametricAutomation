@@ -2829,7 +2829,9 @@ public class DataDevQueryUtil
 				// // if document has opened feedbacks
 				// don't transfere to QA Team
 				GrmUser issuedByUser = null;
+				if(!user.equals("")){
 				issuedByUser = ParaQueryUtil.getGRMUserByName(user);
+				}
 				if(hasIssues(document.getId(), issuedByUser == null ? 0l : issuedByUser.getId()))
 				{
 					System.err.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^ Document : " + document.getId() + " Has opened feedbacks^^^^^^^^^^^^^^^^^^");
