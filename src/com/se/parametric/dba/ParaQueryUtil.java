@@ -65,7 +65,6 @@ import com.se.automation.db.client.mapping.ParametricSeparationGroup;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
-import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.PkgApprovedValue;
 import com.se.automation.db.client.mapping.PkgFeature;
@@ -328,75 +327,6 @@ public class ParaQueryUtil
 		}
 		return result;
 
-	}
-
-	public static ArrayList<Object[]> getTLUnapprovedData(Long[] ids, Date startDate, Date endDate)
-	{
-
-		Session session = SessionUtil.getSession();
-		// Session grmSession = com.se.grm.db.SessionUtil.getSession();
-		Criteria criteria;
-		ArrayList<Object[]> result = new ArrayList<Object[]>();
-		try
-		{
-
-			criteria = session.createCriteria(PartsParametricValuesGroup.class, "group");
-			criteria.add(Restrictions.in("paraUserId", ids));
-			criteria.createAlias("taskStatus", "taskStatus");
-			criteria.add(Restrictions.in("taskStatus.name", new String[] { StatusName.tlReview, StatusName.qaReview }));
-			if(startDate != null && endDate != null)
-			{
-				criteria.add(Expression.between("storeDate", startDate, endDate));
-			}
-			List list = criteria.list();
-			GrmUserDTO eng = null;
-			Object[] row = null;
-			PartsParametricValuesGroup partsParametricValuesGroup = null;
-			for(int i = 0; i < list.size(); i++)
-			{
-				partsParametricValuesGroup = (PartsParametricValuesGroup) list.get(i);
-				row = new Object[5];
-				// eng = getUserByUserId(partsParametricValuesGroup.getParaUserId(), grmSession);
-				eng = getGRMUser(partsParametricValuesGroup.getParaUserId());
-				row[0] = eng.getFullName();
-				row[1] = partsParametricValuesGroup.getPlFeature().getPl().getName();
-				if(partsParametricValuesGroup.getDocument() != null)
-				{
-					Set set = partsParametricValuesGroup.getDocument().getTrackingParametrics();
-					if(set.size() == 0)
-					{
-						row[2] = "All";
-						row[4] = "All";
-					}
-					else
-					{
-						Iterator it = set.iterator();
-						TrackingParametric tp = (TrackingParametric) it.next();
-						row[2] = tp.getSupplier().getName();
-						row[4] = tp.getTrackingTaskType().getName();
-					}
-
-				}
-				else
-				{
-					row[2] = "All";
-					row[4] = "All";
-				}
-				row[3] = partsParametricValuesGroup.getTaskStatus().getName();
-
-				result.add(row);
-
-			}
-
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}finally
-		{
-
-			session.close();
-		}
-		return result;
 	}
 
 	public static List<String> getUnit()
@@ -795,20 +725,6 @@ public class ParaQueryUtil
 		return c.getTime();
 	}
 
-	@SuppressWarnings("unchecked")
-	public static List<ApprovedParametricValue> getApprovedParametricValuesId(long groupid, Session session) throws Exception
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("groupId", groupid));
-		crit.setProjection(Projections.property("approvedParametricValue"));
-		List<ApprovedParametricValue> ApprovedParametricValues = crit.list();
-
-		return ApprovedParametricValues;
-	}
-
-	/*
-	 * salah
-	 */
 
 	@SuppressWarnings("unchecked")
 	public static List<String> getFullValuesByApprovedParametricValueId(long ApprovedParametricValues, Session session)
@@ -922,16 +838,7 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static PartsParametricValuesGroup getGroupByAprrovedValue(ApprovedParametricValue approvedVal, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("approvedParametricValue", approvedVal));
-		//
-		List<PartsParametricValuesGroup> list = crit.list();
-		if(list.size() > 0)
-			return list.get(0);
-		return null;
-	}
+	
 
 	public static void updateTrackingApprovalStatus(Session session, TrackingParamDocApprov trackingParametricDocVal) throws Exception
 	{
@@ -1023,17 +930,7 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int getGroupCountByGroupId(long groupId, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("groupId", groupId));
-		crit.setProjection(Projections.count("id"));
-		//
-		List<Integer> list = crit.list();
-		if(list == null)
-			return 0;
-		return list.get(0);
-	}
+	
 
 	public static Family getFamilyByExactName(String name, Session session)
 	{
@@ -3050,41 +2947,7 @@ public class ParaQueryUtil
 		return parametricApprovedGroup;
 	}
 
-	public static List<PartsParametricValuesGroup> getAppGroupListByFullValAndFetNameAndPlNameOLD(String featureName, String plName, String groupFullValue, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		Criteria plFeatureCrit = crit.createCriteria("plFeature");
-		//
-		plFeatureCrit.createCriteria("feature").add(Restrictions.eq("name", featureName));
-		//
-		plFeatureCrit.createCriteria("pl").add(Restrictions.eq("name", plName));
-		crit.add(Restrictions.eq("groupFullValue", groupFullValue));
-		// crit.setProjection(Projections.distinct(Projections.property("groupFullValue")));
-		List<PartsParametricValuesGroup> partsParametricValuesGroup = crit.list();
-		return partsParametricValuesGroup;
-	}
-
-	public static PartsParametricValuesGroup getApprovedFeatureValues(String value, String plFeatureName, String plName, Session session)
-	{
-
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("groupFullValue", value));
-		Criteria plFeatureCrit = crit.createCriteria("plFeature");
-		//
-		Criteria featureCrit = plFeatureCrit.createCriteria("feature");
-		featureCrit.add(Restrictions.eq("name", plFeatureName));
-		//
-		Criteria plCrit = plFeatureCrit.createCriteria("pl");
-		plCrit.add(Restrictions.eq("name", plName));
-		//
-		List list = crit.list();
-		PartsParametricValuesGroup approvedValue = null;
-		if(list.size() > 0)
-			approvedValue = (PartsParametricValuesGroup) list.get(0);
-		return approvedValue;
-
-	}
-
+	
 	public static void insertNewTrackingPkgApprovedValue(PkgApprovedValue pkgApprovedVal, Session session)
 	{
 		TrackingPkgApprovVal trackingPkgApprovVal = new TrackingPkgApprovVal();
@@ -3265,19 +3128,7 @@ public class ParaQueryUtil
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public static PartsParametricValuesGroup getpartParametricValueGroup(Long grbid, PlFeature plFeature,
-	/* String groupFullValue, */Session session)
-	{
-		final Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-
-		crit.add(Restrictions.eq("plFeature", plFeature));
-		crit.add(Restrictions.eq("groupId", grbid));
-
-		List<PartsParametricValuesGroup> partsParametricValuesGroup = crit.list();
-		return partsParametricValuesGroup.get(0);
-
-	}
+	
 
 	public static PartComponent getComponentByPartAndSupplierAndDocument(String partNumber, long documentId, Session session)
 	{
@@ -3352,17 +3203,7 @@ public class ParaQueryUtil
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static String getGroupFullValueByGroupId(Long approvedGroupId, Session session)
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("groupId", approvedGroupId));
-		List<PartsParametricValuesGroup> groupFullValuelist = crit.list();
-		if(groupFullValuelist.size() > 0)
-			return groupFullValuelist.get(0).getGroupFullValue();
-		return "";
-
-	}
+	
 
 	public static TrackingParamDocApprov getTrackingParamDocApprov(Long groupId, Document document, Session session) throws Exception
 	{
@@ -3383,28 +3224,9 @@ public class ParaQueryUtil
 
 	}
 
-	public static void updateGroupStatus(TrackingParamDocApprov trackingParametricDocVal, Long approveStatus, Session session) throws Exception
-	{
-		List<PartsParametricValuesGroup> partsParametricValuesGroupList = getPartsParametricValuesGroup(trackingParametricDocVal.getApprovedGroupId(), session);
-		if(partsParametricValuesGroupList.size() == 0)
-			throw new Exception(" Approved value not found ");
-		for(PartsParametricValuesGroup partsParametricValuesGroup : partsParametricValuesGroupList)
-		{
-			partsParametricValuesGroup.setIsApproved(approveStatus);
-			session.saveOrUpdate(partsParametricValuesGroup);
-		}
+	
 
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<PartsParametricValuesGroup> getPartsParametricValuesGroup(Long groupId, Session session) throws Exception
-	{
-		Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-		crit.add(Restrictions.eq("groupId", groupId));
-		List<PartsParametricValuesGroup> partsParametricValuesGroupList = crit.list();
-		return partsParametricValuesGroupList;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static List<PartComponent> getComponentListByPLS(List<String> plList, Session session)
 	{
@@ -4150,21 +3972,7 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static List<ApprovedParametricValue> getApprovedParametricValues(Long groupId, Session session)
-	{
-		try
-		{
-			Criteria criteria = session.createCriteria(PartsParametricValuesGroup.class);
-			criteria.add(Restrictions.eq("groupId", groupId));
-			criteria.addOrder(Order.asc("approvedValueOrder"));
-			criteria.setProjection(Projections.property("approvedParametricValue"));
-			return criteria.list();
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-			return null;
-		}
-	}
+	
 
 	public static void updateTrackingParamDocApprov(Long clientGroupId, ApprovedParametricValue approvedParametricValue, Long trackingParamDocApprovId, String groupFullValue, String trackingStatus, String ddComment, Session session) throws Exception
 	{
@@ -4737,26 +4545,7 @@ public class ParaQueryUtil
 		return user;
 	}
 
-	public static List<String> getGroupFullValueByFeatureNameAndPl(String featureName, String plName)
-	{
-		Session session = SessionUtil.getSession();
-		List<String> fullValueList = new ArrayList<String>();
-		try
-		{
-			Criteria crit = session.createCriteria(PartsParametricValuesGroup.class);
-			Criteria plFeatureCrit = crit.createCriteria("plFeature");
-			plFeatureCrit.createCriteria("feature").add(Restrictions.eq("name", featureName));
-			plFeatureCrit.createCriteria("pl").add(Restrictions.eq("name", plName));
-			crit.setProjection(Projections.distinct(Projections.property("groupFullValue")));
-			crit.add(Restrictions.ne("isApproved", 2L));
-			fullValueList = crit.list();
-		}finally
-		{
-			session.close();
-		}
-
-		return fullValueList;
-	}
+	
 
 	public static boolean getDialogMessage(String message, String title)
 	{
@@ -4772,35 +4561,7 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static String getFetValue(long groupId)
-	{
-		String value = "";
-		Session session = null;
-		try
-		{
-			session = SessionUtil.getSession();
-			Criteria partsParamValGroupCriteria = session.createCriteria(PartsParametricValuesGroup.class);
-			partsParamValGroupCriteria.add(Restrictions.eq("groupId", groupId));
-			partsParamValGroupCriteria.add(Restrictions.ne("isApproved", 2L));
-			PartsParametricValuesGroup obj = (PartsParametricValuesGroup) partsParamValGroupCriteria.uniqueResult();
-			if(obj != null)
-			{
-				value += obj.getGroupFullValue();
-			}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}finally
-		{
-			if((session != null) && (session.isOpen()))
-			{
-				session.close();
-			}
-		}
-
-		return value;
-	}
-
+	
 	public static String getEngName(Document document, Pl pl)
 	{
 		String engName = "";
@@ -4921,324 +4682,7 @@ public class ParaQueryUtil
 	// }
 	// }
 	// }
-	public static ArrayList<UnApprovedDTO> getTLUnapprovedData(Date startDate, Date endDate, Long[] ids, String engName, String plName, String supplierName, String status, String type)
-	{
-		ArrayList<UnApprovedDTO> result = new ArrayList<UnApprovedDTO>();
-		Session session = SessionUtil.getSession();
-		List rdList = null;
-		List<Object> list = null;
-		List groups = null;
-		ParametricReviewData rd = null;
-		UnApprovedDTO unApprovedDTO = null;
-		PartsParametricValuesGroup group = null;
-
-		try
-		{
-			Criteria criteria = session.createCriteria(PartsParametricValuesGroup.class, "group");
-			if(!(engName.equals("")) && !engName.equals("All"))
-			{
-				Session session2 = com.se.grm.db.SessionUtil.getSession();
-				Criteria crit = session2.createCriteria(GrmUser.class);
-				crit.add(Restrictions.eq("fullName", engName));
-				GrmUser user = (GrmUser) crit.uniqueResult();
-				criteria.add(Restrictions.eq("paraUserId", user.getId()));
-			}
-			else
-			{
-				criteria.add(Restrictions.in("paraUserId", ids));
-			}
-			if(startDate != null && endDate != null)
-			{
-				criteria.add(Expression.between("storeDate", startDate, endDate));
-			}
-			if(status != null & !status.equals("All"))
-			{
-				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.eq("name", status));
-				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-				criteria.add(Restrictions.eq("taskStatus", statusObj));
-			}
-			else if(status.equals("All"))
-			{
-				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.eq("name", StatusName.tlReview));
-				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-				criteria.add(Restrictions.eq("taskStatus", statusObj));
-			}
-
-			if(type != null && !type.equals("All"))
-			{
-				Criteria typeCriteria = session.createCriteria(TrackingTaskType.class);
-				List taskType = null;
-				if(type.equals("NPI"))
-				{
-					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"), Restrictions.eq("name", "NPI Transferred"), Restrictions.eq("name", "NPI Update")));
-				}
-				else
-				{
-					typeCriteria.add(Restrictions.eq("name", type));
-				}
-				taskType = typeCriteria.list();
-				criteria.add(Restrictions.in("trackingTaskType", taskType));
-			}
-			if(plName != null && !plName.equals("All"))
-			{
-				criteria.createAlias("group.plFeature.pl", "pl");
-				criteria.add(Restrictions.eq("pl.name", plName));
-			}
-
-			if(supplierName != null && !supplierName.equals("All"))
-			{
-				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
-				trackingcriteria.createAlias("track.supplier", "supplier");
-				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
-				// ///////////////////////////////////////////////////////////////////////////////////////
-				// ////May cause an issue if distinct docs for this supplier in tracking parametric exceeds 1000
-				trackingcriteria.setProjection(Projections.distinct(Projections.property("document")));
-				// List<Document> documentList = trackingcriteria.list();
-				Set set = new HashSet(trackingcriteria.list());
-				criteria.add(Restrictions.in("document", set));
-			}
-			criteria.addOrder(Order.asc("plFeature"));
-			criteria.addOrder(Order.desc("groupFullValue"));
-			criteria.addOrder(Order.asc("approvedValueOrder"));
-			groups = criteria.list();
-			ArrayList<ArrayList<PartsParametricValuesGroup>> re = new ArrayList<ArrayList<PartsParametricValuesGroup>>();
-			ArrayList<PartsParametricValuesGroup> row = null;
-			int count = 0;
-			group = (PartsParametricValuesGroup) groups.get(0);
-			String fullValue = group.getGroupFullValue();
-			PlFeature plFet = group.getPlFeature();
-			row = new ArrayList<PartsParametricValuesGroup>();
-			while(count < groups.size())
-			{
-				group = ((PartsParametricValuesGroup) groups.get(count));
-				if(group.getGroupFullValue().equals(fullValue) && group.getPlFeature() == plFet)
-				{
-					row.add(group);
-					count++;
-				}
-				else
-				{
-					re.add(row);
-					row = new ArrayList<PartsParametricValuesGroup>();
-					fullValue = group.getGroupFullValue();
-					plFet = group.getPlFeature();
-				}
-			}
-			re.add(row);
-			System.out.println("size is " + re.size());
-			ArrayList<PartsParametricValuesGroup> values = null;
-			for(int i = 0; i < re.size(); i++)
-			{
-				values = re.get(i);
-				unApprovedDTO = new UnApprovedDTO();
-				PartsParametricValuesGroup groupRecord = null;
-				ApprovedParametricValue approvedValue = null;
-				String fetValue = "";
-				String signValue = "";
-				String multiplierValue = "";
-				String typeValue = "";
-				String conditionValue = "";
-				String unitValue = "";
-				String pattern = "";
-				groupRecord = values.get(0);
-				approvedValue = groupRecord.getApprovedParametricValue();
-				// fetValue = approvedValue.getFromValue().getValue();
-				// if (approvedValue.getToValue() != null) {
-				// fetValue += " to " + approvedValue.getToValue().getValue();
-				// }
-
-				// pattern = (approvedValue.getPattern() == null) ? "" : approvedValue.getPattern();
-				// String patterns[] = pattern.split(" ");
-				for(int j = 0; j < values.size(); j++)
-				{
-					// if (j > 0 && j <= (patterns.length)) {
-					// fetValue += patterns[j - 1];
-					// signValue += patterns[j - 1];
-					// multiplierValue += patterns[j - 1];
-					// typeValue += patterns[j - 1];
-					// conditionValue += patterns[j - 1];
-					// unitValue += patterns[j - 1];
-					// }
-
-					groupRecord = values.get(j);
-					approvedValue = groupRecord.getApprovedParametricValue();
-					fetValue += approvedValue.getFromValue().getValue();
-					signValue += (groupRecord.getApprovedParametricValue().getFromSign() == null) ? "" : groupRecord.getApprovedParametricValue().getFromSign().getName();
-					typeValue += (groupRecord.getApprovedParametricValue().getFromValueType() == null) ? "" : groupRecord.getApprovedParametricValue().getFromValueType().getName();
-					conditionValue += (groupRecord.getApprovedParametricValue().getFromCondition() == null) ? "" : groupRecord.getApprovedParametricValue().getFromCondition().getName();
-
-					if(approvedValue.getFromMultiplierUnit() != null)
-					{
-						multiplierValue += (groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getMultiplier() == null) ? "" : groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getMultiplier().getName();
-						unitValue += (groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getUnit() == null) ? "" : groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getUnit().getName();
-					}
-					// if (approvedValue.getToValue() != null) {
-					// fetValue += " to " + approvedValue.getToValue().getValue();
-					// }
-					// if (approvedValue.getToSign() != null) {
-					// signValue += " to " + approvedValue.getToSign().getName();
-					// }
-					// if (approvedValue.getToMultiplierUnit() != null) {
-					// if (approvedValue.getToMultiplierUnit().getMultiplier() != null) {
-					// multiplierValue += " to " + approvedValue.getToMultiplierUnit().getMultiplier().getName();
-					// }
-					// if (approvedValue.getToMultiplierUnit().getUnit() != null) {
-					// unitValue += " to " + approvedValue.getToMultiplierUnit().getUnit().getName();
-					// }
-					// }
-					// if (approvedValue.getToValueType() != null) {
-					// typeValue += " to " + approvedValue.getToValueType().getName();
-					// }
-					// if (approvedValue.getToCondition() != null) {
-					// conditionValue += " to " + approvedValue.getToCondition().getName();
-					// }
-
-					if(approvedValue.getToValue() != null)
-					{
-
-						fetValue += " to " + approvedValue.getToValue().getValue();
-						if(approvedValue.getFromSign() != null)
-						{
-							String s = approvedValue.getFromSign().getName();
-							if(!s.equals(" to "))
-								signValue += (approvedValue.getToSign() == null) ? " to " : " to " + approvedValue.getToSign().getName();
-						}
-						if(approvedValue.getFromValueType() != null)
-							typeValue += (approvedValue.getToValueType() == null) ? " to " : " to " + approvedValue.getToValueType().getName();
-						if(approvedValue.getFromCondition() != null)
-							conditionValue += (approvedValue.getToCondition() == null) ? " to " : " to " + approvedValue.getToCondition().getName();
-						if(approvedValue.getToMultiplierUnit() != null)
-						{
-							if(approvedValue.getFromMultiplierUnit().getMultiplier() != null)
-								multiplierValue += (approvedValue.getToMultiplierUnit().getMultiplier() == null) ? " to " : " to " + approvedValue.getToMultiplierUnit().getMultiplier().getName();
-							if(approvedValue.getFromMultiplierUnit().getUnit() != null)
-								unitValue += (approvedValue.getToMultiplierUnit().getUnit() == null) ? " to " : " to " + approvedValue.getToMultiplierUnit().getUnit().getName();
-						}
-					}
-
-					pattern = (groupRecord.getPattern() == null) ? "" : groupRecord.getPattern();
-					String patterns[] = pattern.split("\\$");
-					if(patterns.length == 6)
-					{
-						fetValue += (patterns[0].contains(" to ")) ? " to " : patterns[0].trim();
-						signValue += (patterns[1].contains(" to ")) ? " to " : patterns[1].trim();
-						conditionValue += (patterns[2].contains(" to ")) ? " to " : patterns[2].trim();
-						typeValue += (patterns[3].contains(" to ")) ? " to " : patterns[3].trim();
-						multiplierValue += (patterns[4].contains(" to ")) ? " to " : patterns[4].trim();
-						unitValue += (patterns[5].contains(" to ")) ? " to " : patterns[5].trim();
-					}
-
-				}
-				rdList = getParametricReviewData(groupRecord.getGroupId(), session);
-				if(!rdList.isEmpty())
-				{
-					rd = (ParametricReviewData) rdList.get(0);
-					unApprovedDTO.setPartNumber(rd.getComponent().getPartNumber());
-					unApprovedDTO.setPdfUrl(rd.getComponent().getDocument().getPdf().getSeUrl());
-				}
-				else
-				{
-					unApprovedDTO.setPartNumber("");
-					unApprovedDTO.setPdfUrl("");
-				}
-				String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? "" : groupRecord.getPlFeature().getUnit().getName();
-				unApprovedDTO.setFeatureUnit(featureUnit);
-				String pl = (groupRecord.getPlFeature().getPl().getName() == null) ? "" : groupRecord.getPlFeature().getPl().getName();
-				unApprovedDTO.setPlName(pl);
-				String featureValue = (groupRecord.getGroupFullValue() == null) ? "" : groupRecord.getGroupFullValue();
-				unApprovedDTO.setFeatureValue(featureValue);
-				String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? "" : groupRecord.getPlFeature().getFeature().getName();
-				unApprovedDTO.setFeatureName(featureName);
-				String fromSign = (groupRecord.getApprovedParametricValue().getFromSign() == null) ? "" : groupRecord.getApprovedParametricValue().getFromSign().getName();
-
-				if(!fetValue.replace("[|/!]", "").trim().equals(""))
-				{
-					unApprovedDTO.setValue(fetValue);
-				}
-				else
-				{
-					unApprovedDTO.setValue("");
-				}
-				if(!signValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setSign(signValue);
-				}
-				else
-				{
-					unApprovedDTO.setSign("");
-				}
-				if(!multiplierValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setMultiplier(multiplierValue);
-				}
-				else
-				{
-					unApprovedDTO.setMultiplier("");
-				}
-				if(!typeValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setType(typeValue);
-				}
-				else
-				{
-					unApprovedDTO.setType("");
-				}
-				if(!conditionValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setCondition(conditionValue);
-				}
-				else
-				{
-					unApprovedDTO.setCondition("");
-				}
-				if(!unitValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setUnit(unitValue);
-				}
-				else
-				{
-					unApprovedDTO.setUnit("");
-				}
-				// String value = (obj.getApprovedParametricValue().getFromValue() == null) ? "" : obj.getApprovedParametricValue()
-				// .getFromValue().getValue();
-				// unApprovedDTO.setValue(value);
-				// String type = (obj.getApprovedParametricValue().getFromValueType() == null) ? "" : obj.getApprovedParametricValue()
-				// .getFromValueType().getName();
-				// unApprovedDTO.setType(type);
-				// String condition = (obj.getApprovedParametricValue().getFromCondition() == null) ? "" : obj.getApprovedParametricValue()
-				// .getFromCondition().getName();
-				// unApprovedDTO.setCondition(condition);
-				// String multiplier = "";
-				// try {
-				// multiplier = (obj.getApprovedParametricValue().getFromMultiplierUnit().getMultiplier() == null) ? "" : obj
-				// .getApprovedParametricValue().getFromMultiplierUnit().getMultiplier().getName();
-				// } catch (Exception e) {
-				//
-				// }
-				// unApprovedDTO.setMultiplier(multiplier);
-				// String unit = "";
-				// try {
-				// unit = (obj.getApprovedParametricValue().getFromMultiplierUnit().getUnit() == null) ? "" : obj
-				// .getApprovedParametricValue().getFromMultiplierUnit().getUnit().getName();
-				// } catch (Exception e) {
-				// }
-				// unApprovedDTO.setUnit(unit);
-				unApprovedDTO.setUserId(groupRecord.getParaUserId());
-				result.add(unApprovedDTO);
-
-			}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}finally
-		{
-			session.close();
-		}
-		return result;
-	}
-
+	
 	public static List<String> getPlFeautreNames(String Plname) throws Exception
 	{
 		Session session = SessionUtil.getSession();
@@ -5339,251 +4783,7 @@ public class ParaQueryUtil
 		return valueObj;
 	}
 
-	public static ArrayList<UnApprovedDTO> getEngUnapproved(GrmUserDTO userDTO, Date startDate, Date endDate, String plName, String supplierName, String taskType)
-	{
-		ArrayList<UnApprovedDTO> result = new ArrayList<UnApprovedDTO>();
-		Session session = SessionUtil.getSession();
-		List rdList = null;
-		List<Object> list = null;
-		List groups = null;
-		ParametricReviewData rd = null;
-		UnApprovedDTO unApprovedDTO = null;
-		PartsParametricValuesGroup group = null;
-		Criteria plCriteria = null;
-		Criteria feedBackCrit = null;
-		List approvedValueFeedbacks = null;
-		List<Object> groupIds = new ArrayList<Object>();
-		ApprovedValueFeedback approvedValueFeedback = null;
-		try
-		{
-			// feedBack = session.createCriteria(ApprovedValueFeedback.class);
-			// feedBack.add(Restrictions.eq("issuedToId", userDTO.getId()));
-			// feedBack.add(Restrictions.eq("feedbackRecieved", 0l));
-			// approvedValueFeedbacks = feedBack.list();
-			// for (int i = 0; i < approvedValueFeedbacks.size(); i++) {
-			// approvedValueFeedback = (ApprovedValueFeedback) approvedValueFeedbacks.get(i);
-			// System.out.println(approvedValueFeedback.getGroupID());
-			// groupIds.add(approvedValueFeedback.getGroupID());
-			// }
-			Criteria criteria = session.createCriteria(PartsParametricValuesGroup.class, "group");
-			criteria.add(Restrictions.eq("paraUserId", userDTO.getId()));
-			// criteria.add(Restrictions.in("groupId", groupIds));
-			criteria.createAlias("taskStatus", "status");
-			criteria.add(Restrictions.eq("status.name", StatusName.engFeedback));
-
-			if(startDate != null && endDate != null)
-			{
-				criteria.add(Expression.between("storeDate", startDate, endDate));
-			}
-			// if (taskType != null & !taskType.equals("All")) {
-			// Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-			// statusCriteria.add(Restrictions.eq("name", taskType));
-			// TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-			// criteria.add(Restrictions.eq("taskStatus", statusObj));
-			// }
-			if(plName != null && !plName.equals("All"))
-			{
-				criteria.createAlias("group.plFeature.pl", "pl");
-				criteria.add(Restrictions.eq("pl.name", plName));
-			}
-			if(!supplierName.equals("All") && supplierName != null)
-			{
-				Criteria trackingcriteria = session.createCriteria(TrackingParametric.class, "track");
-				trackingcriteria.createAlias("track.supplier", "supplier");
-				trackingcriteria.add(Restrictions.eq("supplier.name", supplierName));
-				trackingcriteria.setProjection(Projections.distinct(Projections.property("document")));
-				// List<Document> documentList = trackingcriteria.list();
-				Set set = new HashSet(trackingcriteria.list());
-				criteria.add(Restrictions.in("document", set));
-			}
-			criteria.addOrder(Order.desc("groupFullValue"));
-			criteria.addOrder(Order.asc("approvedValueOrder"));
-			groups = criteria.list();
-			ArrayList<ArrayList<PartsParametricValuesGroup>> re = new ArrayList<ArrayList<PartsParametricValuesGroup>>();
-			ArrayList<PartsParametricValuesGroup> row = null;
-			int count = 0;
-			group = (PartsParametricValuesGroup) groups.get(0);
-			String fullValue = group.getGroupFullValue();
-			row = new ArrayList<PartsParametricValuesGroup>();
-			while(count < groups.size())
-			{
-				if(((PartsParametricValuesGroup) groups.get(count)).getGroupFullValue().equals(fullValue))
-				{
-					row.add(((PartsParametricValuesGroup) groups.get(count)));
-					count++;
-				}
-				else
-				{
-					re.add(row);
-					row = new ArrayList<PartsParametricValuesGroup>();
-					fullValue = ((PartsParametricValuesGroup) groups.get(count)).getGroupFullValue();
-				}
-			}
-			re.add(row);
-			System.out.println("size is " + re.size());
-			ArrayList<PartsParametricValuesGroup> values = null;
-			for(int i = 0; i < re.size(); i++)
-			{
-				values = re.get(i);
-				unApprovedDTO = new UnApprovedDTO();
-				PartsParametricValuesGroup groupRecord = null;
-				ApprovedParametricValue approvedValue = null;
-				String fetValue = "";
-				String signValue = "";
-				String multiplierValue = "";
-				String typeValue = "";
-				String conditionValue = "";
-				String unitValue = "";
-				String pattern = "";
-				groupRecord = values.get(0);
-				approvedValue = groupRecord.getApprovedParametricValue();
-				feedBackCrit = session.createCriteria(ApprovedValueFeedback.class);
-				feedBackCrit.add(Restrictions.eq("issuedToId", userDTO.getId()));
-				feedBackCrit.add(Restrictions.eq("feedbackRecieved", 0l));
-				feedBackCrit.add(Restrictions.eq("groupID", groupRecord.getGroupId()));
-				ApprovedValueFeedback appFeedback = (ApprovedValueFeedback) feedBackCrit.uniqueResult();
-
-				unApprovedDTO.setComment((appFeedback == null) ? "" : appFeedback.getFbComment());
-				unApprovedDTO.setFbStatus((appFeedback == null) ? "" : appFeedback.getTrackingTaskStatus().getName());
-				if(taskType != null & !taskType.equals("All"))
-				{
-					if(!unApprovedDTO.getFbStatus().equals(taskType))
-						continue;
-				}
-				// unApprovedDTO.setComment(approvedValueFeedback.getFbComment());
-				// unApprovedDTO.setStatus("Wrong Separation");
-
-				for(int j = 0; j < values.size(); j++)
-				{
-					groupRecord = values.get(j);
-					approvedValue = groupRecord.getApprovedParametricValue();
-					fetValue += approvedValue.getFromValue().getValue();
-					signValue += (groupRecord.getApprovedParametricValue().getFromSign() == null) ? "" : groupRecord.getApprovedParametricValue().getFromSign().getName();
-					typeValue += (groupRecord.getApprovedParametricValue().getFromValueType() == null) ? "" : groupRecord.getApprovedParametricValue().getFromValueType().getName();
-					conditionValue += (groupRecord.getApprovedParametricValue().getFromCondition() == null) ? "" : groupRecord.getApprovedParametricValue().getFromCondition().getName();
-
-					if(approvedValue.getFromMultiplierUnit() != null)
-					{
-						multiplierValue += (groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getMultiplier() == null) ? "" : groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getMultiplier().getName();
-						unitValue += (groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getUnit() == null) ? "" : groupRecord.getApprovedParametricValue().getFromMultiplierUnit().getUnit().getName();
-					}
-
-					if(approvedValue.getToValue() != null)
-					{
-
-						fetValue += " to " + approvedValue.getToValue().getValue();
-						if(approvedValue.getFromSign() != null)
-							signValue += (approvedValue.getToSign() == null) ? " to " : " to " + approvedValue.getToSign().getName();
-						if(approvedValue.getFromValueType() != null)
-							typeValue += (approvedValue.getToValueType() == null) ? " to " : " to " + approvedValue.getToValueType().getName();
-						if(approvedValue.getFromCondition() != null)
-							conditionValue += (approvedValue.getToCondition() == null) ? " to " : " to " + approvedValue.getToCondition().getName();
-						if(approvedValue.getToMultiplierUnit() != null)
-						{
-							if(approvedValue.getFromMultiplierUnit().getMultiplier() != null)
-								multiplierValue += (approvedValue.getToMultiplierUnit().getMultiplier() == null) ? " to " : " to " + approvedValue.getToMultiplierUnit().getMultiplier().getName();
-							if(approvedValue.getFromMultiplierUnit().getUnit() != null)
-								unitValue += (approvedValue.getToMultiplierUnit().getUnit() == null) ? " to " : " to " + approvedValue.getToMultiplierUnit().getUnit().getName();
-						}
-					}
-
-					pattern = (groupRecord.getPattern() == null) ? "" : groupRecord.getPattern();
-					String patterns[] = pattern.split("\\$");
-					if(patterns.length == 6)
-					{
-						fetValue += patterns[0].trim();
-						signValue += patterns[1].trim();
-						conditionValue += patterns[2].trim();
-						typeValue += patterns[3].trim();
-						multiplierValue += patterns[4].trim();
-						unitValue += patterns[5].trim();
-					}
-
-				}
-				rdList = getParametricReviewData(groupRecord.getGroupId(), session);
-				if(!rdList.isEmpty())
-				{
-					rd = (ParametricReviewData) rdList.get(0);
-					unApprovedDTO.setPartNumber(rd.getComponent().getPartNumber());
-					unApprovedDTO.setPdfUrl(rd.getComponent().getDocument().getPdf().getSeUrl());
-				}
-				else
-				{
-					unApprovedDTO.setPartNumber("");
-					unApprovedDTO.setPdfUrl("");
-				}
-				String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? "" : groupRecord.getPlFeature().getUnit().getName();
-				unApprovedDTO.setFeatureUnit(featureUnit);
-				String pl = (groupRecord.getPlFeature().getPl().getName() == null) ? "" : groupRecord.getPlFeature().getPl().getName();
-				unApprovedDTO.setPlName(pl);
-				String featureValue = (groupRecord.getGroupFullValue() == null) ? "" : groupRecord.getGroupFullValue();
-				unApprovedDTO.setFeatureValue(featureValue);
-				String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? "" : groupRecord.getPlFeature().getFeature().getName();
-				unApprovedDTO.setFeatureName(featureName);
-				String fromSign = (groupRecord.getApprovedParametricValue().getFromSign() == null) ? "" : groupRecord.getApprovedParametricValue().getFromSign().getName();
-
-				if(!fetValue.replace("[|/!]", "").trim().equals(""))
-				{
-					unApprovedDTO.setValue(fetValue);
-				}
-				else
-				{
-					unApprovedDTO.setValue("");
-				}
-				if(!signValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setSign(signValue);
-				}
-				else
-				{
-					unApprovedDTO.setSign("");
-				}
-				if(!multiplierValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setMultiplier(multiplierValue);
-				}
-				else
-				{
-					unApprovedDTO.setMultiplier("");
-				}
-				if(!typeValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setType(typeValue);
-				}
-				else
-				{
-					unApprovedDTO.setType("");
-				}
-				if(!conditionValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setCondition(conditionValue);
-				}
-				else
-				{
-					unApprovedDTO.setCondition("");
-				}
-				if(!unitValue.replace("|", "").replace("/", "").replace("!", "").trim().equals(""))
-				{
-					unApprovedDTO.setUnit(unitValue);
-				}
-				else
-				{
-					unApprovedDTO.setUnit("");
-				}
-				unApprovedDTO.setUserId(groupRecord.getParaUserId());
-				result.add(unApprovedDTO);
-
-			}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}finally
-		{
-			session.close();
-		}
-		return result;
-	}
-
+	
 	public static long getPdfId(String pdfUrl, String supplierName)
 	{
 		Session session = SessionUtil.getSession();

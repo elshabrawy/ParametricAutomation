@@ -53,7 +53,6 @@ import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.PartMaskValue;
 import com.se.automation.db.client.mapping.PartMaskValueId;
 import com.se.automation.db.client.mapping.PartsFeedback;
-import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.PreQaCheckers;
@@ -2367,85 +2366,6 @@ public class DataDevQueryUtil
 			session.close();
 			return newsLink;
 		}
-	}
-
-	public static ArrayList<Map<String, String>> getParametricDataByPdfUrlAndPl(String pdfUrl, String plName) throws Exception
-	{
-		ArrayList<Map<String, String>> result = new ArrayList<Map<String, String>>();
-		Map<String, String> partFetNameValMap = new HashMap<String, String>();
-		Session session = SessionUtil.getSession();
-		Document document = ParaQueryUtil.getDocumentBySeUrl(pdfUrl, session);
-		Supplier supplier = document.getPdf().getSupplierUrl().getSupplier();
-		String vendorName = supplier.getName();
-		Pl pl = ParaQueryUtil.getPlByPlName(plName);
-		String engName = ParaQueryUtil.getEngName(document, pl);
-		SupplierPl suppPl = ParaQueryUtil.getSupplierPlByPlAndSup(supplier, pl);
-
-		Criteria componentCriteria = session.createCriteria(PartComponent.class);
-		componentCriteria.add(Restrictions.eq("document", document));
-		componentCriteria.add(Restrictions.eq("supplierPl", suppPl));
-
-		List components = componentCriteria.list();
-		if(components != null)
-		{
-			for(int i = 0; i < components.size(); i++)
-			{
-				partFetNameValMap = new HashMap<String, String>();
-				PartComponent component = (PartComponent) components.get(i);
-				String comPartNum = component.getPartNumber();
-				String family = component.getFamily().getName();
-				String mask = component.getMasterPartMask().getMstrPart();
-				String generic = component.getMapGeneric().getGeneric();
-				String comment = getFeedbackCommentByComId(component.getComId());
-				String partStatus = getPartStatusByComId(component.getComId());
-
-				partFetNameValMap.put("Part Number", comPartNum);
-				partFetNameValMap.put("Family", family);
-				partFetNameValMap.put("Mask", mask);
-				partFetNameValMap.put("Generic", generic);
-				partFetNameValMap.put("Taxonomy", plName);
-				partFetNameValMap.put("Eng Name", engName);
-				partFetNameValMap.put("Supplier Name", vendorName);
-				partFetNameValMap.put("Comment", comment);
-				partFetNameValMap.put("Status", partStatus);
-
-				Criteria reviewDataCriteria = session.createCriteria(ParametricReviewData.class);
-				reviewDataCriteria.add(Restrictions.eq("component", component));
-				List reviewDataObjs = reviewDataCriteria.list();
-				if(reviewDataObjs != null)
-				{
-					for(int j = 0; j < reviewDataObjs.size(); j++)
-					{
-						ParametricReviewData parametricReviewData = (ParametricReviewData) reviewDataObjs.get(j);
-						String featureName = parametricReviewData.getPlFeature().getFeature().getName();
-						long groupId = parametricReviewData.getGroupApprovedValueId();
-						String fetValue = ParaQueryUtil.getFetValue(groupId);
-						partFetNameValMap.put(featureName, fetValue);
-					}
-				}
-				else
-				{
-					System.out.println("No Review Data for this component : + " + component.getPartNumber() + "  !");
-				}
-
-				result.add(partFetNameValMap);
-
-			}
-		}
-		else
-		{
-			System.out.println("No Components found for this document : " + document.getId() + "!");
-		}
-
-		// for ( Map<String, String> map : result ) {
-		// Set<String> keys = map.keySet();
-		// for ( String key : keys ) {
-		// String val = map.get(key);
-		// System.out.println(key + " : " + val );
-		// }
-		// }
-
-		return result;
 	}
 
 	public static ArrayList<TableInfoDTO> getDevFeedbackPDF(long userId, String plName, String vendorName, String issuedBy, String feedbackTypeStr, Date startDate, Date endDate)

@@ -1061,26 +1061,6 @@ public class WorkingSheet
 
 	}
 
-	public void updateApprovedValues()
-	{
-		try
-		{
-			approvedFeatuer.clear();
-			for(int j = startParametricFT; j < HeaderList.size(); j++)
-			{
-				XCell fetCell = xHdrUnitrange.getCellByPosition(j, 1);
-				String fetName = getCellText(fetCell).getString();
-				List<String> appValues = ParaQueryUtil.getGroupFullValueByFeatureNameAndPl(fetName, selectedPL);
-				approvedFeatuer.put(fetName, appValues);
-				System.out.println(fetName + " New  AppValues size=" + appValues.size());
-				// cell.SetApprovedValues(appValues, getCellRangByPosission(j, RowSelectedRange));
-			}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
-
-	}
 
 	public void setPdfInfo(String url, String supplierName, String desc, List<String> newsData, String taxonomies, int rowNum)
 	{

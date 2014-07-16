@@ -66,7 +66,6 @@ import com.se.automation.db.client.mapping.NonPdf;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
-import com.se.automation.db.client.mapping.PartsParametricValuesGroup;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.PdfContent;
 import com.se.automation.db.client.mapping.PkgApprovedValue;
@@ -183,22 +182,6 @@ public class ParametricDevServerUtil
 		return ret;
 	}
 
-	private static void saveParametricValuesGroup(
-	/* Component component, */Session session, long groupId, ApprovedParametricValue approvedVal, String groupFullValue, PlFeature plFeature)
-	{
-		// save group
-		PartsParametricValuesGroup group = new PartsParametricValuesGroup();
-		group.setId(QueryUtil.getRandomID());
-		group.setGroupFullValue(groupFullValue);
-		group.setGroupId(groupId);
-		group.setStoreDate(new Date());
-		group.setPlFeature(plFeature);
-		// group.setComponent(component);
-		// group.setValueGroupOrder(order);
-		group.setApprovedParametricValue(approvedVal);
-		//
-		session.saveOrUpdate(group);
-	}
 
 	private static void savePkgValuesGroup(Session session, long groupId, PkgApprovedValue approvedVal)
 	{
@@ -382,34 +365,6 @@ public class ParametricDevServerUtil
 
 			isApproved = approvedValue.getIsApproved();
 		}
-		SessionUtil.closeSession(session);
-		return isApproved;
-	}
-
-	public static Long isApprovedFeatureValues(String value, /* PlFeature feature */
-			String featureName, String plName)
-	{
-		final Session session = SessionUtil.getSession();
-		//
-		Long isApproved = null;
-		// final String VALUES_DELIMETER = "|";
-		// String[] enteredValues = null;
-		// if(value.contains(VALUES_DELIMETER))
-		// enteredValues = value.trim().split("\\" + VALUES_DELIMETER);
-		// else
-		// enteredValues = new String[] { value };
-		//
-
-		// for(String val : enteredValues)
-		// {
-		PartsParametricValuesGroup approvedValue = ParaQueryUtil.getApprovedFeatureValues(value, featureName, plName, session);
-
-		if(approvedValue == null)
-			return 9L;
-		isApproved = approvedValue.getIsApproved();
-		if(isApproved == null)
-			return 9L;
-		// }
 		SessionUtil.closeSession(session);
 		return isApproved;
 	}
@@ -1288,89 +1243,6 @@ public class ParametricDevServerUtil
 
 	}
 
-	@SuppressWarnings("unchecked")
-	public static TrackingParametricDocApprovaleCountDTO getTrackingParametricApprovalValueData(String approvalStatus, String featureName, String fullValue, String taxonomy, String supplierName, String seUrl, Date storeDate, int from, int to,
-			long userId) throws Exception
-	{
-
-		Session session = SessionUtil.getSession();
-		try
-		{
-			TrackingParametricDocApprovaleCountDTO trackingParametricDocApprovaleCountDTO = new TrackingParametricDocApprovaleCountDTO();
-
-			List<TrackingParametricDocApprovaleDTO> listtraTrackingParametricApprovalValuesDto = new ArrayList<TrackingParametricDocApprovaleDTO>();
-			List<TrackingParamDocApprov> listtrTrackingParamDocApprovs = ParaQueryUtil.getTrackingParamDocApprovList(session, supplierName, seUrl, approvalStatus, featureName, fullValue, taxonomy, storeDate,/*
-																																																				 * from
-																																																				 * ,
-																																																				 * to
-																																																				 * ,
-																																																				 */userId);
-			int count = 0;
-
-			for(TrackingParamDocApprov trackingParamDocApprov : listtrTrackingParamDocApprovs)
-			{
-				if(from != 0 && from > count)
-				{
-					count++;
-					continue;
-				}
-				Pdf pdf = trackingParamDocApprov.getDocument().getPdf();
-				NonPdf nonPdf = trackingParamDocApprov.getDocument().getNonPdf();
-
-				TrackingParametricDocApprovaleDTO approvalValuedto = new TrackingParametricDocApprovaleDTO();
-
-				approvalValuedto.setApprovedParametricValue(trackingParamDocApprov.getApprovedParametricValue()); //
-				approvalValuedto.setTaxonomy(trackingParamDocApprov.getApprovedParametricValue().getPlFeature().getPl().getName());
-				approvalValuedto.setFullValue(trackingParamDocApprov.getApprovedParametricValue().getFullValue());
-				approvalValuedto.setFeatureName(trackingParamDocApprov.getApprovedParametricValue().getPlFeature().getFeature().getName());
-
-				if(pdf != null)
-				{
-					approvalValuedto.setSeUrl(pdf.getSeUrl());
-					approvalValuedto.setSupplierName(pdf.getSupplierUrl().getSupplier().getName());
-				}
-				else
-				{
-					approvalValuedto.setSeUrl(nonPdf.getSeUrl());
-					approvalValuedto.setSupplierName(nonPdf.getSupplierUrl().getSupplier().getName());
-				}
-
-				String groupFullValue = ParaQueryUtil.getGroupFullValueByGroupId(trackingParamDocApprov.getApprovedGroupId(), session);
-				approvalValuedto.setValue(groupFullValue);
-				// approvalValuedto.setType(valueType);
-				if(trackingParamDocApprov.getTrackingTaskStatus() != null)
-					approvalValuedto.setStatus(trackingParamDocApprov.getTrackingTaskStatus().getName());
-				else
-					approvalValuedto.setStatus("");
-				// approvalValuedto.setApprovedParametricValue(trackingParamDocApprov.getApprovedParametricValue());
-				approvalValuedto.setComments(trackingParamDocApprov.getComments());
-				approvalValuedto.setDDComment(trackingParamDocApprov.getDdComment());
-				approvalValuedto.setTrackingParamDocApprovId(trackingParamDocApprov.getId());
-				approvalValuedto.setDocument(trackingParamDocApprov.getDocument());
-				approvalValuedto.setClientGroupId(trackingParamDocApprov.getApprovedGroupId());
-				listtraTrackingParametricApprovalValuesDto.add(approvalValuedto);
-
-				// break;
-				// }
-
-				if(listtraTrackingParametricApprovalValuesDto.size() == to)
-					break;
-
-			}
-			List<TrackingParametricDocApprovaleDTO> TrackingParametricApprovalValueData = CloneUtil.cloneObjectList(listtraTrackingParametricApprovalValuesDto, new ArrayList<String>());
-			trackingParametricDocApprovaleCountDTO.setListTrackingParametricDocApprovaleDTOs(TrackingParametricApprovalValueData);
-			trackingParametricDocApprovaleCountDTO.setCount(listtrTrackingParamDocApprovs.size());
-
-			return trackingParametricDocApprovaleCountDTO;
-		}catch(Exception e)
-		{
-			throw getCatchException(e);
-		}finally
-		{
-			SessionUtil.closeSession(session);
-		}
-
-	}
 
 	@SuppressWarnings("unchecked")
 	public static List<PartComponent> getPartsByPkgApprovedParametricValue(PkgApprovedValue val, int from, int max) throws Exception
@@ -3443,21 +3315,7 @@ public class ParametricDevServerUtil
 		return true;
 	}
 
-	public static void updateGroupStatus(TrackingParamDocApprov trackingParametricDocVal, Long ApproveStatus) throws Exception
-	{
-		Session session = SessionUtil.getSession();
-		try
-		{
-			ParaQueryUtil.updateGroupStatus(trackingParametricDocVal, ApproveStatus, session);
-		}catch(Exception e)
-		{
-			throw getCatchException(e);
-		}finally
-		{
-			SessionUtil.closeSession(session);
-		}
 
-	}
 
 	private static List<String> readExcelFileOfForDistributionAndExport(InputStream inputStream)
 	{
@@ -3795,38 +3653,6 @@ public class ParametricDevServerUtil
 
 	}
 
-	private static void manageApprovedValueStatus(Document document, PartsParametricValuesGroup partsParametricValuesGroup, String status) throws Exception
-	{
-		final Session session = SessionUtil.getSession();
-		List<TrackingParamDocApprov> trackingParamDocApprovList = ParaQueryUtil.getTrackingParamDocumentApprovedValue(partsParametricValuesGroup.getGroupId(), session);
-		if(trackingParamDocApprovList.size() == 0)
-		{
-			ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), status, "", session);
-			return;
-		}
-		if(trackingParamDocApprovList.size() == 1)
-		{
-			if(trackingParamDocApprovList.get(0).getTrackingTaskStatus() == null)
-			{
-				if(document.getId() != trackingParamDocApprovList.get(0).getDocument().getId())
-				{
-					ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), status, "", session);
-				}
-				trackingParamDocApprovList.get(0).setTrackingTaskStatus(ParaQueryUtil.getTrackingTaskStatuesByExactName(session, status));
-				session.saveOrUpdate(trackingParamDocApprovList.get(0));
-
-			}
-			else
-				ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), trackingParamDocApprovList.get(0)
-						.getTrackingTaskStatus(), trackingParamDocApprovList.get(0).getTrackingTaskQaStatus(), session);
-
-			return;
-		}
-		ParaQueryUtil.addTrackingParamDocApprov(document, partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getApprovedParametricValue(), partsParametricValuesGroup.getGroupFullValue(), trackingParamDocApprovList.get(0)
-				.getTrackingTaskStatus(), trackingParamDocApprovList.get(0).getTrackingTaskQaStatus(), session);
-
-	}
-
 	@SuppressWarnings("unchecked")
 	private static boolean checkIfDocumentHasParts(Document formDocument, Session session)
 	{
@@ -3841,36 +3667,7 @@ public class ParametricDevServerUtil
 
 	static Map<String, ComponentDTO> componentsmap;
 
-	/**
-	 * @author mahmoud_salah
-	 * @param plId
-	 * @param documentid
-	 * @param maxresult
-	 * @return
-	 * @throws Exception
-	 */
-
-	private static List<PartsParametricValuesGroup> getPartsParametricValuesGroupByGroupId(Set<Long> groupIdSet, Session session)
-	{
-		List<PartsParametricValuesGroup> partsParametricValuesGroups = new ArrayList<PartsParametricValuesGroup>();
-		if(!groupIdSet.isEmpty())
-			for(int i = 0; i < groupIdSet.size();)
-			{
-				Criteria criteria = session.createCriteria(PartsParametricValuesGroup.class);
-				Set<Long> subSet = getSubSet(groupIdSet, i, i = (groupIdSet.size() - i > 1000) ? i + 1000 : groupIdSet.size());
-				criteria.add(Restrictions.in("groupId", subSet));
-				partsParametricValuesGroups.addAll(criteria.list());
-			}
-		return partsParametricValuesGroups;
-	}
-
-	/**
-	 * 
-	 * @param fullSet
-	 * @param from
-	 * @param to
-	 * @return
-	 */
+	
 	private static Set<Long> getSubSet(Set<Long> fullSet, int from, int to)
 	{
 		// subSet the Set to make the in performance better than in case of
@@ -3884,33 +3681,6 @@ public class ParametricDevServerUtil
 		return subSet;
 
 	}
-
-	/**
-	 * 
-	 * @param partsParametricValuesGroupList
-	 * @return
-	 */
-
-	protected static Map<Long, String> getGroupIDAndFullValue(List<PartsParametricValuesGroup> partsParametricValuesGroupList)
-	{
-		if(partsParametricValuesGroupList != null)
-		{
-			Map<Long, String> map = new HashMap<Long, String>();
-
-			for(PartsParametricValuesGroup partsParametricValuesGroup : partsParametricValuesGroupList)
-			{
-				map.put(partsParametricValuesGroup.getGroupId(), partsParametricValuesGroup.getGroupFullValue());
-			}
-			return map;
-		}
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param list
-	 * @return
-	 */
 
 	protected static Set<Long> getGroupIDs(List list)
 	{
@@ -4016,26 +3786,6 @@ public class ParametricDevServerUtil
 	public static TblPdfCompare getTblPdfCompare(long latestUrlId, long pdfUrlId)
 	{
 		return ParaQueryUtil.getTblPdfCompare(latestUrlId, pdfUrlId);
-	}
-
-	static Long getGroupIdByFullValueAndParametricApprovedId(Long parametricApprovedId, String fullValue)
-	{
-		final Session session = SessionUtil.getSession();
-		try
-		{
-			Criteria criteria = session.createCriteria(PartsParametricValuesGroup.class);
-			criteria.add(Restrictions.eq("groupFullValue", fullValue));
-			criteria.createCriteria("approvedParametricValue").add(Restrictions.eq("id", parametricApprovedId));
-			criteria.setProjection(Projections.property("groupId"));
-			return (Long) criteria.list().get(0);
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-			return null;
-		}finally
-		{
-			SessionUtil.closeSession(session);
-		}
 	}
 
 	public static PartsFeedback getCommentByPartAndDocument(Document feedbackDocument, PartComponent componentTbl, Session session)
