@@ -52,7 +52,6 @@ import com.se.automation.db.client.mapping.ParametricReviewData;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.PartMaskValue;
 import com.se.automation.db.client.mapping.PartMaskValueId;
-import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.PreQaCheckers;
@@ -455,7 +454,7 @@ public class DataDevQueryUtil
 	}
 
 	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
-			String pltype)
+			String pltype,Long userid)
 	{
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
@@ -509,6 +508,10 @@ public class DataDevQueryUtil
 					criteria.add(Restrictions.lt("qaReviewDate", endDate));
 				}
 
+			}
+			if(inputType.equals("QAReview"))
+			{
+				criteria.add(Restrictions.eq("qaUserId", userid));
 			}
 			if(extracted != null && !extracted.equals("All"))
 			{
@@ -2807,122 +2810,6 @@ public class DataDevQueryUtil
 
 	}
 
-	public static void saveQAPartsFeedback(List<PartInfoDTO> parts, String flowSource)
-	{
-		Session session = null;
-		try
-		{
-
-			session = SessionUtil.getSession();
-			for(int i = 0; i < parts.size(); i++)
-			{
-				PartInfoDTO partInfo = parts.get(i);
-				String partNum = partInfo.getPN();
-				String vendorName = partInfo.getSupplierName();
-				// String status = partInfo.getStatus();
-				String comment = partInfo.getComment();
-				String issuedByName = partInfo.getIssuedBy();
-				String issuedToName = partInfo.getIssuedTo();
-				String feedbackStatus = partInfo.getFeedBackStatus();
-				String feedbackTypeStr = partInfo.getFeedBackCycleType();
-				TrackingTaskStatus trackingTaskStatus = null;
-				if((feedbackStatus != null) && (!"".equals(feedbackStatus)))
-				{
-					Criteria trackingTaskStatusCriteria = session.createCriteria(TrackingTaskStatus.class);
-					trackingTaskStatusCriteria.add(Restrictions.eq("name", feedbackStatus));
-					trackingTaskStatus = (TrackingTaskStatus) trackingTaskStatusCriteria.uniqueResult();
-				}
-
-				PartComponent component = getComponentByPartNumberAndSupplierName(partNum, vendorName, session);
-				GrmUser issuedByUser = ParaQueryUtil.getGRMUserByName(issuedByName);
-				GrmUser issuedToUser = ParaQueryUtil.getGRMUserByName(issuedToName);
-				Date date = ParaQueryUtil.getDate();
-
-				// if feedback posted already return
-				Criteria criteria = session.createCriteria(PartsFeedback.class);
-				criteria.add(Restrictions.eq("partComponent", component));
-				criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-				criteria.add(Restrictions.eq("issuedById", issuedByUser.getId()));
-				criteria.add(Restrictions.eq("issuedToId", issuedToUser.getId()));
-				PartsFeedback alreadyPostedFeedBack = (PartsFeedback) criteria.uniqueResult();
-				if(alreadyPostedFeedBack != null)
-				{
-					continue;
-				}
-
-				Criteria partsFeedbackCriteria = session.createCriteria(PartsFeedback.class);
-				partsFeedbackCriteria.add(Restrictions.eq("partComponent", component));
-				// partsFeedbackCriteria.add(Restrictions.eq("fbComment", comment));
-				partsFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
-				// partsFeedbackCriteria.add(Restrictions.eq("issuedById", issuedToUser.getId()));
-				partsFeedbackCriteria.add(Restrictions.eq("issuedToId", issuedByUser.getId()));
-
-				PartsFeedback oldFeedback = (PartsFeedback) partsFeedbackCriteria.uniqueResult();
-
-				TrackingFeedbackType feedbackType = null;
-				if(feedbackTypeStr != null)
-				{
-					feedbackType = ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr);
-				}
-
-				// TrackingFeedbackType thisFlowSource = null;
-				// if(flowSource != null)
-				// {
-				// JOptionPane.showMessageDialog(null, "wrong FlowSpure name");
-				// }
-				// thisFlowSource = ParaQueryUtil.getTrackingFeedbackType(flowSource);
-
-				PartsFeedback partsFeedback = new PartsFeedback();
-				partsFeedback.setId(QueryUtil.getRandomID());
-				partsFeedback.setFbComment(comment);
-				partsFeedback.setTrackingFeedbackType(feedbackType);
-				partsFeedback.setPartComponent(component);
-				partsFeedback.setIssuedById(issuedByUser.getId());
-				partsFeedback.setIssuedToId(issuedToUser.getId());
-				partsFeedback.setStoreDate(date);
-				partsFeedback.setTrackingTaskStatus(trackingTaskStatus);
-				// partsFeedback.setFlowSource(thisFlowSource);
-				if("Feedback Closed".equals(feedbackStatus))
-				{
-					partsFeedback.setFeedbackRecieved(1l);
-				}
-				else
-				{
-					partsFeedback.setFeedbackRecieved(0l);
-				}
-
-				if(oldFeedback != null)
-				{
-					partsFeedback.setFlowSource(oldFeedback.getFlowSource());
-					oldFeedback.setFeedbackRecieved(1l); // it's answered
-					session.saveOrUpdate(oldFeedback);
-					if(feedbackTypeStr == null)
-					{
-						partsFeedback.setTrackingFeedbackType(oldFeedback.getTrackingFeedbackType());
-					}
-				}
-				else
-				{
-					TrackingFeedbackType thisFlowSource = null;
-					thisFlowSource = ParaQueryUtil.getTrackingFeedbackType(flowSource);
-					partsFeedback.setFlowSource(thisFlowSource);
-				}
-				session.saveOrUpdate(partsFeedback);
-
-				// session.beginTransaction().commit();
-			}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}finally
-		{
-			if((session != null) && (session.isOpen()))
-			{
-				session.close();
-			}
-		}
-	}
-
 	public static void savePartsFeedback(List<PartInfoDTO> parts)
 	{
 		Session session = null;
@@ -4771,7 +4658,7 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, ' ') ConfidentialStatus from TRACKING_PARAMETRIC t" + " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl
+			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Can't Read') ConfidentialStatus from TRACKING_PARAMETRIC t" + " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl
 					+ "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
 			SQLQuery sql = session.createSQLQuery(sqlstatment);
 			result = (String) sql.uniqueResult();

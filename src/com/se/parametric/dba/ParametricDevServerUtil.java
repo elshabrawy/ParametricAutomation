@@ -64,7 +64,6 @@ import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NonPdf;
 import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.PdfContent;
@@ -1611,138 +1610,6 @@ public class ParametricDevServerUtil
 			SessionUtil.closeSession(session);
 		}
 
-	}
-
-	// public static List<MainDataFeatureValuesDTO> getListOfPartNumberWithPKGMainDataByDocument(
-	// Document document) throws Exception {
-	// Session session = SessionUtil.getSession();
-	// try {
-	// List<Component> componentsList = getListOfPartNumberByDocument(document);
-	// List<PkgFeature> pkgFeatureList = new ArrayList<PkgFeature>();
-	// pkgFeatureList = getPkgFeaturesByPkgTypeId(2);
-	// List<MainDataFeatureValuesDTO> mainDataFeatureValuesDTOList = getDDSuppliersPackageByPkgFeatureList(
-	// componentsList, pkgFeatureList);
-	// return mainDataFeatureValuesDTOList;
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// throw new Exception();
-	// } finally {
-	// SessionUtil.closeSession(session);
-	// }
-	//
-	// }
-
-	@SuppressWarnings("unchecked")
-	// public static List<MainDataFeatureValuesDTO> getDDSuppliersPackageByPkgFeatureList(
-	// List<Component> components, List<PkgFeature> pkgFeatureList)
-	// throws Exception {
-	// Session session = SessionUtil.getSession();
-	// try {
-	// List<String> pkgValues = null;
-	// List<MainDataFeatureValuesDTO> mainDataFeaturesValues = new ArrayList<MainDataFeatureValuesDTO>();
-	// FeatureValuesDTO featureValuesDto = null;
-	//
-	// Criteria crit = session.createCriteria(PkgMainData.class);
-	// crit.add(Restrictions.in("component", components));
-	// List<PkgMainData> pkgMainDataList = crit.list();
-	// for (PkgMainData pkgMainData : pkgMainDataList) {
-	// List<FeatureValuesDTO> featureValuesDTOs = new ArrayList<FeatureValuesDTO>();
-	// MainDataFeatureValuesDTO mainDataFeatureValuesDTO = new MainDataFeatureValuesDTO();
-	// mainDataFeatureValuesDTO.setComponent(pkgMainData
-	// .getComponent());
-	// for (PkgFeature pkgFeatue : pkgFeatureList) {
-	// featureValuesDto = new FeatureValuesDTO();
-	// pkgValues = new ArrayList<String>();
-	// Method method;
-	// if (pkgFeatue.getId() == 39) {
-	// method = PkgMainData.class.getMethod("getDocument");
-	// Document document = (Document) method
-	// .invoke(pkgMainData);
-	// if (document != null) {
-	// String seUrl = document.getPdf() != null ? document
-	// .getPdf().getSeUrl() : document.getNonPdf()
-	// .getSeUrl();
-	// pkgValues.add(seUrl);
-	// }
-	// } else if (pkgFeatue.getId() == 36) {
-	// method = PkgMainData.class.getMethod("getPkgJedec");
-	// PkgJedec pkgJedec = (PkgJedec) method
-	// .invoke(pkgMainData);
-	// if (pkgJedec != null) {
-	// pkgValues.add(pkgJedec.getGenericJedec() + "/"
-	// + pkgJedec.getJedecVariations());
-	// }
-	// } else if (pkgFeatue.getId() == 40) {
-	// method = PkgMainData.class.getMethod("getCol"
-	// + pkgFeatue.getId());
-	// Date date = (Date) method.invoke(pkgMainData);
-	// if (date != null) {
-	// pkgValues.add(date + "");
-	// }
-	// } else {
-	//
-	// method = PkgMainData.class.getMethod("getCol"
-	// + pkgFeatue.getId());
-	//
-	// Long groupId = (Long) method.invoke(pkgMainData);
-	// List<PkgValueGroup> pkgValueGroup = ParaQueryUtil
-	// .getPkgValueGroupByGroupId(groupId, session);
-	// for (PkgValueGroup pkgValueGroup2 : pkgValueGroup) {
-	// pkgValues.add(pkgValueGroup2.getPkgApprovedValue()
-	// .getPkgValue().getValue());
-	// }
-	// }
-	// featureValuesDto.setFeature(pkgFeatue.getName());
-	// featureValuesDto.setValues(pkgValues);
-	// featureValuesDto.setColumnName(pkgFeatue.getName());
-	//
-	// featureValuesDTOs.add(featureValuesDto);
-	// }
-	// mainDataFeatureValuesDTO
-	// .setFeatureValuesDTOs(featureValuesDTOs);
-	// mainDataFeaturesValues.add(mainDataFeatureValuesDTO);
-	//
-	// }
-	// addRemiderComponents(components, mainDataFeaturesValues);
-	// List<MainDataFeatureValuesDTO> dataFeatureValuesDTOs = CloneUtil
-	// .cloneObjectList(mainDataFeaturesValues,
-	// new ArrayList<String>());
-	// return dataFeatureValuesDTOs;
-	// } catch (Exception e) {
-	//
-	// throw getCatchException(e);
-	// } finally {
-	// SessionUtil.closeSession(session);
-	// }
-	// }
-	private static void addRemiderComponents(List<PartComponent> componentList, List<MainDataFeatureValuesDTO> mainDataFeatureValuesDTOList)
-	{
-		int length = mainDataFeatureValuesDTOList.size();
-		boolean isFound = true;
-		MainDataFeatureValuesDTO mainDataFeatureValuesDTO = null;
-		for(PartComponent component : componentList)
-		{
-			for(int i = 0; i < length; i++)
-			{
-				if(mainDataFeatureValuesDTOList.get(i).getComponent().equals(component))
-				{
-					isFound = false;
-					break;
-				}
-			}
-			if(!isFound)
-			{
-				mainDataFeatureValuesDTO = new MainDataFeatureValuesDTO();
-				// mainDataFeatureValuesDTO.setComponent(component);
-				mainDataFeatureValuesDTO.setFeatureValuesDTOs(new ArrayList<FeatureValuesDTO>());
-
-				mainDataFeatureValuesDTOList.add(mainDataFeatureValuesDTO);
-			}
-			else
-			{
-				isFound = true;
-			}
-		}
 	}
 
 	public static GrmUser getGrmUserById(long userId) throws Exception
@@ -3788,20 +3655,6 @@ public class ParametricDevServerUtil
 		return ParaQueryUtil.getTblPdfCompare(latestUrlId, pdfUrlId);
 	}
 
-	public static PartsFeedback getCommentByPartAndDocument(Document feedbackDocument, PartComponent componentTbl, Session session)
-	{
-		try
-		{
-			Criteria criteria = session.createCriteria(PartsFeedback.class);
-			criteria.add(Restrictions.eq("document", feedbackDocument));
-			criteria.add(Restrictions.eq("component", componentTbl));
-			return (PartsFeedback) criteria.uniqueResult();
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-			return null;
-		}
-	}
 
 	public static boolean deletePartNumberByPartAndSupplier(String partNumber, Supplier supplier, Pl pl, Session session)
 	{

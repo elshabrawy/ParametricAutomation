@@ -20,7 +20,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
-import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.Condition;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.Feature;
@@ -34,7 +33,6 @@ import com.se.automation.db.client.mapping.ParametricFeedback;
 import com.se.automation.db.client.mapping.ParametricFeedbackCycle;
 import com.se.automation.db.client.mapping.ParametricReviewData;
 import com.se.automation.db.client.mapping.ParametricSeparationGroup;
-import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.PlFeature;
 import com.se.automation.db.client.mapping.Sign;
@@ -1206,6 +1204,11 @@ public class ApprovedDevUtil
 							{
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
+								long statusId = tp.getTrackingTaskStatus().getId();
+								if(statusId!=10)
+								{
+									continue;
+								}
 								row[1] = tp.getSupplier().getName();
 							}
 							else
@@ -1235,6 +1238,11 @@ public class ApprovedDevUtil
 							{
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
+								long statusId = tp.getTrackingTaskStatus().getId();
+								if(statusId!=10)
+								{
+									continue;
+								}
 								row[1] = tp.getSupplier().getName();
 							}
 							else
