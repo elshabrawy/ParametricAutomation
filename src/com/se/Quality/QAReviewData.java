@@ -404,7 +404,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType,userId);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)

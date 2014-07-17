@@ -208,7 +208,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview, null);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview, null,null);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
