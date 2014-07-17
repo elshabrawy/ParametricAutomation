@@ -455,7 +455,7 @@ public class DataDevQueryUtil
 	}
 
 	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
-			String pltype)
+			String pltype,Long userid)
 	{
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
@@ -509,6 +509,10 @@ public class DataDevQueryUtil
 					criteria.add(Restrictions.lt("qaReviewDate", endDate));
 				}
 
+			}
+			if(inputType.equals("QAReview"))
+			{
+				criteria.add(Restrictions.eq("qaUserId", userid));
 			}
 			if(extracted != null && !extracted.equals("All"))
 			{
@@ -4771,7 +4775,7 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, ' ') ConfidentialStatus from TRACKING_PARAMETRIC t" + " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl
+			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Can't Read') ConfidentialStatus from TRACKING_PARAMETRIC t" + " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl
 					+ "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
 			SQLQuery sql = session.createSQLQuery(sqlstatment);
 			result = (String) sql.uniqueResult();

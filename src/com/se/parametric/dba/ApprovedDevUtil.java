@@ -1206,6 +1206,11 @@ public class ApprovedDevUtil
 							{
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
+								long statusId = tp.getTrackingTaskStatus().getId();
+								if(statusId!=10)
+								{
+									continue;
+								}
 								row[1] = tp.getSupplier().getName();
 							}
 							else
@@ -1235,6 +1240,11 @@ public class ApprovedDevUtil
 							{
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
+								long statusId = tp.getTrackingTaskStatus().getId();
+								if(statusId!=10)
+								{
+									continue;
+								}
 								row[1] = tp.getSupplier().getName();
 							}
 							else
