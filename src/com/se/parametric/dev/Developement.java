@@ -236,7 +236,7 @@ public class Developement extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		LongRunProcess longRunProcess = new LongRunProcess(event);
-        longRunProcess.execute();
+		longRunProcess.execute();
 	}
 
 	public static void main(String[] args)
@@ -287,17 +287,21 @@ public class Developement extends JPanel implements ActionListener
 		alertsPanel2.updateFlags(flags);
 
 	}
+
 	class LongRunProcess extends SwingWorker
 	{
-		ActionEvent event=null;
-		LongRunProcess (ActionEvent event){
-			this.event=event;
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
 		}
+
 		/**
 		 * @throws Exception
 		 */
 		protected Object doInBackground() throws Exception
-		{			
+		{
 			Loading.show();
 			String pdfUrl = "";
 			ArrayList<DocumentInfoDTO> docsInfo = null;
@@ -314,7 +318,7 @@ public class Developement extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					
+
 					Loading.close();
 					return null;
 				}
@@ -386,7 +390,7 @@ public class Developement extends JPanel implements ActionListener
 					tablePanel.loadedPdfs.add(pdfUrl);
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 					autoFillProcess = new AutoFill(sheetpanel, userName, wsMap.get(plName), plName, suppName);
-					autoFillProcess.getRules();	
+					autoFillProcess.getRules();
 				}
 
 			}
@@ -400,7 +404,7 @@ public class Developement extends JPanel implements ActionListener
 					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					
+
 					Loading.close();
 					return null;
 				}
@@ -440,7 +444,7 @@ public class Developement extends JPanel implements ActionListener
 					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					
+
 					Loading.close();
 					return null;
 				}
@@ -462,9 +466,9 @@ public class Developement extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
-					
 					Loading.close();
+					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
+
 					return null;
 				}
 				// if("All".equals(supplierName))
@@ -601,9 +605,9 @@ public class Developement extends JPanel implements ActionListener
 				{
 					if(!validated)
 					{
-						JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-						
 						Loading.close();
+						JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+
 						return null;
 					}
 
@@ -693,7 +697,7 @@ public class Developement extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, null, "assigned", priority, StatusName.assigned, null,null);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, null, "assigned", priority, StatusName.assigned, null, null);
 
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
@@ -778,10 +782,9 @@ public class Developement extends JPanel implements ActionListener
 
 			}
 
-			
 			Loading.close();
 
-			 return null;
+			return null;
 		}
 	}
 

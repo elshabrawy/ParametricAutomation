@@ -199,7 +199,7 @@ public class Update extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		LongRunProcess longRunProcess = new LongRunProcess(event);
-        longRunProcess.execute();
+		longRunProcess.execute();
 	}
 
 	public static void main(String[] args)
@@ -258,7 +258,7 @@ public class Update extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					
+
 					Loading.close();
 					return null;
 				}
@@ -339,7 +339,7 @@ public class Update extends JPanel implements ActionListener
 					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					
+
 					Loading.close();
 					return null;
 				}
@@ -400,8 +400,9 @@ public class Update extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
 					Loading.close();
+					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
+
 					return null;
 				}
 				// if("All".equals(supplierName))
