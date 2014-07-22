@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -39,6 +40,7 @@ import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+import com.se.parametric.dev.Update.LongRunProcess;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 
@@ -146,127 +148,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-
-		/**
-		 * Show pdfs Action
-		 * **/
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-			try
-			{
-				dofilter(startDate, endDate);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-
-			filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
-			filterPanel.refreshFilters();
-
-		}
-		/**
-		 * Load Data development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load PDF"))
-		{
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-
-			int[] selectedPdfs = tablePanel.table.getSelectedRows();
-			int selectedPdfsCount = selectedPdfs.length;
-			if(selectedPdfsCount == 0)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select PDF First");
-			}
-			else if(selectedPdfsCount > 1)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select One PDF");
-			}
-			else
-			{
-				try
-				{
-					loadpdf(selectedPdfs);
-				}catch(Exception ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-		}
-		/**
-		 * Load All PDFs review and development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load All"))
-		{
-			Date startDate = null;
-			Date endDate = null;
-
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opening are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-
-			try
-			{
-				loadpdfall(startDate, endDate);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-		/**
-		 * Save Parts Action
-		 */
-		else if(event.getSource() == save)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).saveQAReviewAction(QAName, "FB", false);
-				}
-			}
-		}
-		else if(event.getSource() == Validate)
-		{
-			System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).validateQAReview();
-				}
-			}
-		}
-
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	private void loadpdfall(Date startDate, Date endDate) throws Exception
@@ -527,7 +410,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 					users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 			}
 		}
-		tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback, plType,userId);
+		tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, StatusName.qaFeedback, plType, userId);
 		System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 		tablePanel.setTableData1(0, tablePanel.selectedData);
 	}
@@ -580,4 +463,140 @@ public class QAFeedBack extends JPanel implements ActionListener
 		// alertsPanel2.updateFlags(flags);
 
 	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+
+			/**
+			 * Show pdfs Action
+			 * **/
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+				try
+				{
+					dofilter(startDate, endDate);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+
+				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
+				filterPanel.refreshFilters();
+
+			}
+			/**
+			 * Load Data development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load PDF"))
+			{
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+					Loading.close();
+					return null;
+				}
+
+				int[] selectedPdfs = tablePanel.table.getSelectedRows();
+				int selectedPdfsCount = selectedPdfs.length;
+				if(selectedPdfsCount == 0)
+				{
+					JOptionPane.showMessageDialog(null, "Please Select PDF First");
+				}
+				else if(selectedPdfsCount > 1)
+				{
+					JOptionPane.showMessageDialog(null, "Please Select One PDF");
+				}
+				else
+				{
+					try
+					{
+						loadpdf(selectedPdfs);
+					}catch(Exception ex)
+					{
+						ex.printStackTrace();
+					}
+				}
+			}
+			/**
+			 * Load All PDFs review and development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load All"))
+			{
+				Date startDate = null;
+				Date endDate = null;
+
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opening are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+					Loading.close();
+					return null;
+				}
+
+				try
+				{
+					loadpdfall(startDate, endDate);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			/**
+			 * Save Parts Action
+			 */
+			else if(event.getSource() == save)
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).saveQAReviewAction(QAName, "FB", false);
+					}
+				}
+			}
+			else if(event.getSource() == Validate)
+			{
+				System.out.println("~~~~~~~ Start validation Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).validateQAReview();
+					}
+				}
+			}
+
+			Loading.close();
+			return null;
+		}
+	}
+
 }

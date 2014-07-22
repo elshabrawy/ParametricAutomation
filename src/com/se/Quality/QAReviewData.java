@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -181,121 +182,8 @@ public class QAReviewData extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-		ArrayList<String> row = null;
-		// String[] statuses=null;
-		boolean isExclamationMark = false;
-		/**
-		 * Show pdfs Action
-		 * **/
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			dofilter();
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-			filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO);
-			filterPanel.refreshFilters();
-		}
-		else if(event.getSource() == filterPanel.addsummary)
-		{
-			addtosummary();
-		}
-
-		// Load pdf
-		else if(event.getActionCommand().equals("Load PDF"))
-		{
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			loadpdf();
-		}
-
-		// Load summary
-		else if(event.getActionCommand().equals("Summary"))
-		{
-			boolean ok = false;
-			if(SummaryPanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
-
-			if(SummaryPanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			loadsummary();
-		}
-
-		// validate sample
-		else if(event.getSource() == validate)
-		{
-			System.out.println("~~~~~~~ Start Validation Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
-				{
-					WorkingSheet ws = wsMap.get(wsName);
-					ws.validateQAReview();
-					JOptionPane.showMessageDialog(null, "Validation Done");
-				}
-			}
-		}
-		// save sample
-		else if(event.getSource() == save)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
-				{
-					wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
-				}
-			}
-		}
-		// validate summary
-		else if(event.getSource() == summaryvalidate)
-		{
-			System.out.println("~~~~~~~ Start validate Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "Summary")
-				{
-					WorkingSheet ws = wsMap.get(wsName);
-					ws.validateQASummary();
-					JOptionPane.showMessageDialog(null, "Validation Done");
-				}
-			}
-		}
-		// save summary
-		else if(event.getSource() == summarysave)
-		{
-			System.out.println("~~~~~~~ Start saving summary ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "Summary")
-				{
-					WorkingSheet ws = wsMap.get(wsName);
-					ws.saveQASummary(QAName);
-					
-				}
-			}
-		}
-
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	private void addtosummary()
@@ -343,13 +231,13 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		ArrayList<String> sheetHeader = ws.getHeader();
 		int statusIndex = sheetHeader.indexOf("Final QA Flag");
-//		for(int i = 0; i < data.size(); i++)
-//		{
-//			ArrayList<String> datarow = data.get(i);
-//			datarow.add("");
-//			String keyword = "";
-//			datarow.set(datarow.size() - 1, "");
-//		}
+		// for(int i = 0; i < data.size(); i++)
+		// {
+		// ArrayList<String> datarow = data.get(i);
+		// datarow.add("");
+		// String keyword = "";
+		// datarow.set(datarow.size() - 1, "");
+		// }
 		ws.writeReviewData(data, 2, statusIndex + 1);
 
 	}
@@ -404,7 +292,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType,userId);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType, userId);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -601,6 +489,135 @@ public class QAReviewData extends JPanel implements ActionListener
 		alertsPanel1.updateFlags(flags);
 		alertsPanel2.updateFlags(flags);
 
+	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			ArrayList<String> row = null;
+			// String[] statuses=null;
+			boolean isExclamationMark = false;
+			/**
+			 * Show pdfs Action
+			 * **/
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				dofilter();
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO);
+				filterPanel.refreshFilters();
+			}
+			else if(event.getSource() == filterPanel.addsummary)
+			{
+				addtosummary();
+			}
+
+			// Load pdf
+			else if(event.getActionCommand().equals("Load PDF"))
+			{
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+				if(sheetpanel.isOpened() && ok == false)
+				{
+					Loading.close();
+					return null;
+				}
+				loadpdf();
+			}
+
+			// Load summary
+			else if(event.getActionCommand().equals("Summary"))
+			{
+				boolean ok = false;
+				if(SummaryPanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
+
+				if(SummaryPanel.isOpened() && ok == false)
+				{
+					Loading.close();
+					return null;
+				}
+				loadsummary();
+			}
+
+			// validate sample
+			else if(event.getSource() == validate)
+			{
+				System.out.println("~~~~~~~ Start Validation Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
+					{
+						WorkingSheet ws = wsMap.get(wsName);
+						ws.validateQAReview();
+						JOptionPane.showMessageDialog(null, "Validation Done");
+					}
+				}
+			}
+			// save sample
+			else if(event.getSource() == save)
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
+					{
+						wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+					}
+				}
+			}
+			// validate summary
+			else if(event.getSource() == summaryvalidate)
+			{
+				System.out.println("~~~~~~~ Start validate Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName == "Summary")
+					{
+						WorkingSheet ws = wsMap.get(wsName);
+						ws.validateQASummary();
+						JOptionPane.showMessageDialog(null, "Validation Done");
+					}
+				}
+			}
+			// save summary
+			else if(event.getSource() == summarysave)
+			{
+				System.out.println("~~~~~~~ Start saving summary ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName == "Summary")
+					{
+						WorkingSheet ws = wsMap.get(wsName);
+						ws.saveQASummary(QAName);
+
+					}
+				}
+			}
+
+			Loading.close();
+			return null;
+		}
 	}
 
 }

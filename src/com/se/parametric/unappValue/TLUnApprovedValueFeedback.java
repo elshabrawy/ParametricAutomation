@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -125,363 +126,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		// WorkingSheet ws = null;
-		Thread thread = new Thread(loading);
-		thread.start();
-		UnApprovedDTO obj = null;
-		if(event.getSource().equals(filterPanel.filterButton))
-		{
-			Date startDate = null;
-			Date endDate = null;
-			if(filterPanel.jDateChooser1.isEnabled())
-			{
-				startDate = filterPanel.jDateChooser1.getDate();
-				endDate = filterPanel.jDateChooser2.getDate();
-			}
-
-			String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-			String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-			String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-			String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-			// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-			unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, "", startDate, endDate, plName, supplierName, StatusName.tlFeedback, taskType, "Parametric", "FB", TLDTO.getId());
-			list = new ArrayList<ArrayList<String>>();
-
-			list = new ArrayList<ArrayList<String>>();
-			row = new ArrayList<String>();
-			sheetPanel.openOfficeDoc();
-			ws = new WorkingSheet(sheetPanel, "Unapproved Values");
-			sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + TLDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			row.add("PL Name");// 0
-			row.add("Part Name");// 1
-			row.add("Pdf Url");// 2
-			row.add("Feature Name");// 3
-			row.add("Feature Value");// 4
-			row.add("Feature Unit");// 5
-			row.add("Sign");// 6
-			row.add("Value");// 7
-			row.add("Type");// 8
-			row.add("Condition");// 9
-			row.add("Multiplier");// 10
-			row.add("Unit");// 11
-			row.add("TL Status");// 12
-			row.add("TL Comment");// 13
-
-			row.add("C_ACTION");// 14
-			row.add("P_ACTION");// 15
-			row.add("ROOT_CAUSE");// 16
-			row.add("Action Due Date");// 17
-
-			row.add("FeedBack Type");// 18
-			row.add("Issue Type");// 19
-			row.add("Dev Status");// 20
-			row.add("Dev Comment");// 21
-			row.add("QA Status");// 22
-			row.add("QA Comment");// 23
-			row.add("Last TL Comment");// 24
-			row.add("Validation Result");// 25
-			wsMap.put("Unapproved Values", ws);
-			ws.setUnapprovedHeader(row);
-			for(int i = 0; i < unApproveds.size(); i++)
-			{
-				row = new ArrayList<String>();
-				obj = unApproveds.get(i);
-				row.add(obj.getPlName());
-				row.add(obj.getPartNumber());
-				row.add(obj.getPdfUrl());
-				row.add(obj.getFeatureName());
-				row.add(obj.getFeatureValue());
-				row.add(obj.getFeatureUnit());
-				row.add(obj.getSign());
-				row.add(obj.getValue());
-				row.add(obj.getType());
-				row.add(obj.getCondition());
-				row.add(obj.getMultiplier());
-				row.add(obj.getUnit());
-				row.add("");
-				row.add("");
-
-				row.add(obj.getCAction());
-				row.add(obj.getPAction());
-				row.add(obj.getRootCause());
-				row.add(obj.getActionDueDate());
-
-				row.add(obj.getFbType());
-				row.add(obj.getIssueType());
-				row.add(obj.getFbStatus());
-				row.add(obj.getComment());
-				row.add(obj.getQaStatus());
-				row.add(obj.getQaComment());
-				row.add(obj.getLastEngComment());
-				list.add(row);
-			}
-			ArrayList<String> statusValues = new ArrayList<String>();
-			statusValues.add("Update");
-			statusValues.add("Approved Eng.");
-			statusValues.add("Wrong Separation");
-			statusValues.add("Wrong Value");
-			statusValues.add("Reject QA");
-			statusValues.add("Accept QA & Forward");
-			ws.statusValues = statusValues;
-			ws.writeReviewData(list, 1, 13);
-			// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-			// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
-		}
-		else if(event.getSource().equals(filterPanel.refreshButton))
-		{
-			Date startDate = null;
-			Date endDate = null;
-			if(filterPanel.jDateChooser1.isEnabled())
-			{
-				startDate = filterPanel.jDateChooser1.getDate();
-				endDate = filterPanel.jDateChooser2.getDate();
-			}
-			filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate, "TL");
-			filterPanel.refreshFilters();
-		}
-
-		else if(event.getSource().equals(validate))
-		{
-			// tabbedPane.setSelectedIndex(0);
-			ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
-			if(wsheet.isEmpty())
-			{
-				tabbedPane.setSelectedIndex(1);
-				JOptionPane.showMessageDialog(null, "All Values are Approved");
-
-			}
-			else
-			{
-				ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
-				validated = true;
-				// Session session = SessionUtil.getSession();
-				for(int i = 0; i < wsheet.size(); i++)
-				{
-					row = wsheet.get(i);
-					List<String> result = ApprovedDevUtil.validateSeparation(row);
-					row.set(25, result.get(0));
-					validationResult.add(row);
-					if(result.get(0) != "" && result.get(1).equals("false"))
-					{
-						validated = false;
-					}
-				}
-				ws.writeSheetData(validationResult, 1);
-				// session.close();
-				JOptionPane.showMessageDialog(null, " Validation Done");
-			}
-		}
-
-		else if(event.getSource().equals(save))
-		{
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "Unapproved Values")
-				{
-
-					ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
-					int updateFlag = 1;
-					/** Team Leader approved and send to QA */
-					for(int i = 0; i < result.size(); i++)
-					{
-						ArrayList<String> newValReq = result.get(i);
-						if(newValReq.get(12).equals("Update"))
-						{
-							try
-							{
-								if(!validated)
-								{
-									JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-									thread.stop();
-									loading.frame.dispose();
-									return;
-								}
-							}catch(Exception e)
-							{
-								continue;
-							}
-						}
-						// if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
-						// {
-						// JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only in row :" + i + 1);
-						// thread.stop();
-						// loading.frame.dispose();
-						// return;
-						// }
-						if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + (i + 1));
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
-						if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
-						if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + (i + 1));
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
-						if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
-						if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
-						{
-							JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + (i + 1));
-							thread.stop();
-							loading.frame.dispose();
-							return;
-						}
-
-						if(newValReq.get(12).equals("Update") && newValReq.get(18).equals("QA"))
-						{
-							if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
-							{
-								JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
-								thread.stop();
-								loading.frame.dispose();
-								return;
-							}
-							if(!newValReq.get(17).isEmpty())
-							{
-								if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
-								{
-									JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
-									thread.stop();
-									loading.frame.dispose();
-									return;
-								}
-							}
-						}
-
-					}
-					for(int i = 0; i < result.size(); i++)
-					{
-						ArrayList<String> newValReq = result.get(i);
-						UnApprovedDTO oldValReq = unApproveds.get(i);
-						if(newValReq.get(0).equals(oldValReq.getPlName()) && newValReq.get(3).equals(oldValReq.getFeatureName()) && newValReq.get(4).equals(oldValReq.getFeatureValue()) && newValReq.get(5).equals(oldValReq.getFeatureUnit()))
-						{
-							oldValReq.setSign(newValReq.get(6));
-							oldValReq.setValue(newValReq.get(7));
-							oldValReq.setType(newValReq.get(8));
-							oldValReq.setCondition(newValReq.get(9));
-							oldValReq.setMultiplier(newValReq.get(10));
-							oldValReq.setUnit(newValReq.get(11));
-							oldValReq.setComment(newValReq.get(13));
-
-							// oldValReq.setIssuedby(issuedto);
-
-							if(newValReq.get(12).equals("Approved Eng."))
-							{
-
-								// ParaQueryUtil.saveTLApproved(result.get(i));
-								if(oldValReq.getFbType().equals("QA"))
-								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
-									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setFbStatus(StatusName.accept);
-									oldValReq.setGruopSatus(StatusName.qaFeedback);
-								}
-								else
-								{
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setIssueTo(oldValReq.getUserId());
-									oldValReq.setFbStatus(StatusName.fbClosed);
-									oldValReq.setGruopSatus(StatusName.qaReview);
-								}
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}
-							else if(newValReq.get(12).equals("Update"))
-							{
-								if(oldValReq.getFbType().equals("QA"))
-								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
-
-									oldValReq.setIssueTo(oldValReq.getQaUserId());
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setFbStatus(StatusName.accept);
-									oldValReq.setGruopSatus(StatusName.qaFeedback);
-								}
-								else
-								{
-									oldValReq.setIssuedby(TLDTO.getId());
-									oldValReq.setIssueTo(oldValReq.getUserId());
-									oldValReq.setFbStatus(StatusName.fbClosed);
-									oldValReq.setGruopSatus(StatusName.qaReview);
-								}
-								ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-
-							}
-							else if(newValReq.get(12).equals("Reject QA"))
-							{
-								oldValReq.setIssueTo(oldValReq.getQaUserId());
-								oldValReq.setIssuedby(TLDTO.getId());
-								oldValReq.setFbStatus(StatusName.reject);
-								oldValReq.setGruopSatus(StatusName.qaFeedback);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}
-							else if(newValReq.get(12).equals("Wrong Separation"))
-							{
-								oldValReq.setIssueType(newValReq.get(12));
-								oldValReq.setIssuedby(TLDTO.getId());
-								oldValReq.setIssueTo(oldValReq.getUserId());
-								oldValReq.setFbStatus(StatusName.reject);
-								oldValReq.setGruopSatus(StatusName.engFeedback);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}
-							else if(newValReq.get(12).equals("Accept QA & Forward"))
-							{
-								oldValReq.setIssueType(newValReq.get(12));
-								oldValReq.setIssuedby(TLDTO.getId());
-								oldValReq.setIssueTo(oldValReq.getUserId());
-								oldValReq.setFbStatus(StatusName.accept);
-								oldValReq.setGruopSatus(StatusName.engFeedback);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}
-							else if(newValReq.get(12).equals("Wrong Value"))
-							{
-								oldValReq.setIssueType(newValReq.get(12));
-								oldValReq.setIssuedby(TLDTO.getId());
-								oldValReq.setIssueTo(oldValReq.getUserId());
-								oldValReq.setFbStatus(StatusName.reject);
-								oldValReq.setGruopSatus(StatusName.engFeedback);
-								ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-							}
-
-						}
-						else
-						{
-							JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
-						}
-					}
-					System.out.println("size is " + result.size());
-				}
-
-			}
-			JOptionPane.showMessageDialog(null, "Saved Done");
-		}
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	public void updateFlags(ArrayList<String> flags)
@@ -530,4 +176,377 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		// }
 		// }
 	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			UnApprovedDTO obj = null;
+			if(event.getSource().equals(filterPanel.filterButton))
+			{
+				Date startDate = null;
+				Date endDate = null;
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+
+				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+				String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+				// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
+				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, "", startDate, endDate, plName, supplierName, StatusName.tlFeedback, taskType, "Parametric", "FB", TLDTO.getId());
+				list = new ArrayList<ArrayList<String>>();
+
+				list = new ArrayList<ArrayList<String>>();
+				row = new ArrayList<String>();
+				sheetPanel.openOfficeDoc();
+				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
+				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + TLDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				row.add("PL Name");// 0
+				row.add("Part Name");// 1
+				row.add("Pdf Url");// 2
+				row.add("Feature Name");// 3
+				row.add("Feature Value");// 4
+				row.add("Feature Unit");// 5
+				row.add("Sign");// 6
+				row.add("Value");// 7
+				row.add("Type");// 8
+				row.add("Condition");// 9
+				row.add("Multiplier");// 10
+				row.add("Unit");// 11
+				row.add("TL Status");// 12
+				row.add("TL Comment");// 13
+
+				row.add("C_ACTION");// 14
+				row.add("P_ACTION");// 15
+				row.add("ROOT_CAUSE");// 16
+				row.add("Action Due Date");// 17
+
+				row.add("FeedBack Type");// 18
+				row.add("Issue Type");// 19
+				row.add("Dev Status");// 20
+				row.add("Dev Comment");// 21
+				row.add("QA Status");// 22
+				row.add("QA Comment");// 23
+				row.add("Last TL Comment");// 24
+				row.add("Validation Result");// 25
+				wsMap.put("Unapproved Values", ws);
+				ws.setUnapprovedHeader(row);
+				for(int i = 0; i < unApproveds.size(); i++)
+				{
+					row = new ArrayList<String>();
+					obj = unApproveds.get(i);
+					row.add(obj.getPlName());
+					row.add(obj.getPartNumber());
+					row.add(obj.getPdfUrl());
+					row.add(obj.getFeatureName());
+					row.add(obj.getFeatureValue());
+					row.add(obj.getFeatureUnit());
+					row.add(obj.getSign());
+					row.add(obj.getValue());
+					row.add(obj.getType());
+					row.add(obj.getCondition());
+					row.add(obj.getMultiplier());
+					row.add(obj.getUnit());
+					row.add("");
+					row.add("");
+
+					row.add(obj.getCAction());
+					row.add(obj.getPAction());
+					row.add(obj.getRootCause());
+					row.add(obj.getActionDueDate());
+
+					row.add(obj.getFbType());
+					row.add(obj.getIssueType());
+					row.add(obj.getFbStatus());
+					row.add(obj.getComment());
+					row.add(obj.getQaStatus());
+					row.add(obj.getQaComment());
+					row.add(obj.getLastEngComment());
+					list.add(row);
+				}
+				ArrayList<String> statusValues = new ArrayList<String>();
+				statusValues.add("Update");
+				statusValues.add("Approved Eng.");
+				statusValues.add("Wrong Separation");
+				statusValues.add("Wrong Value");
+				statusValues.add("Reject QA");
+				statusValues.add("Accept QA & Forward");
+				ws.statusValues = statusValues;
+				ws.writeReviewData(list, 1, 13);
+				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
+				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+			}
+			else if(event.getSource().equals(filterPanel.refreshButton))
+			{
+				Date startDate = null;
+				Date endDate = null;
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate, "TL");
+				filterPanel.refreshFilters();
+			}
+
+			else if(event.getSource().equals(validate))
+			{
+				// tabbedPane.setSelectedIndex(0);
+				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+				if(wsheet.isEmpty())
+				{
+					tabbedPane.setSelectedIndex(1);
+					JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+				}
+				else
+				{
+					ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+					validated = true;
+					// Session session = SessionUtil.getSession();
+					for(int i = 0; i < wsheet.size(); i++)
+					{
+						row = wsheet.get(i);
+						List<String> result = ApprovedDevUtil.validateSeparation(row);
+						row.set(25, result.get(0));
+						validationResult.add(row);
+						if(result.get(0) != "" && result.get(1).equals("false"))
+						{
+							validated = false;
+						}
+					}
+					ws.writeSheetData(validationResult, 1);
+					// session.close();
+					JOptionPane.showMessageDialog(null, " Validation Done");
+				}
+			}
+
+			else if(event.getSource().equals(save))
+			{
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName == "Unapproved Values")
+					{
+
+						ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
+						int updateFlag = 1;
+						/** Team Leader approved and send to QA */
+						for(int i = 0; i < result.size(); i++)
+						{
+							ArrayList<String> newValReq = result.get(i);
+							if(newValReq.get(12).equals("Update"))
+							{
+								try
+								{
+									if(!validated)
+									{
+										Loading.close();
+										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+
+										return null;
+									}
+								}catch(Exception e)
+								{
+									continue;
+								}
+							}
+							// if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
+							// {
+							// JOptionPane.showMessageDialog(null, " You Can Approved Eng. on Internal Feedback only in row :" + i + 1);
+							// thread.stop();
+							// loading.frame.dispose();
+							// return;
+							// }
+							if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + (i + 1));
+
+								return null;
+							}
+							if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
+
+								return null;
+							}
+							if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + (i + 1));
+
+								return null;
+							}
+							if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
+
+								return null;
+							}
+							if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + (i + 1));
+
+								return null;
+							}
+
+							if(newValReq.get(12).equals("Update") && newValReq.get(18).equals("QA"))
+							{
+								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
+								{
+									Loading.close();
+									JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
+
+									return null;
+								}
+								if(!newValReq.get(17).isEmpty())
+								{
+									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
+									{
+										Loading.close();
+										JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
+
+										return null;
+									}
+								}
+							}
+
+						}
+						for(int i = 0; i < result.size(); i++)
+						{
+							ArrayList<String> newValReq = result.get(i);
+							UnApprovedDTO oldValReq = unApproveds.get(i);
+							if(newValReq.get(0).equals(oldValReq.getPlName()) && newValReq.get(3).equals(oldValReq.getFeatureName()) && newValReq.get(4).equals(oldValReq.getFeatureValue()) && newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+							{
+								oldValReq.setSign(newValReq.get(6));
+								oldValReq.setValue(newValReq.get(7));
+								oldValReq.setType(newValReq.get(8));
+								oldValReq.setCondition(newValReq.get(9));
+								oldValReq.setMultiplier(newValReq.get(10));
+								oldValReq.setUnit(newValReq.get(11));
+								oldValReq.setComment(newValReq.get(13));
+
+								// oldValReq.setIssuedby(issuedto);
+
+								if(newValReq.get(12).equals("Approved Eng."))
+								{
+
+									// ParaQueryUtil.saveTLApproved(result.get(i));
+									if(oldValReq.getFbType().equals("QA"))
+									{
+										oldValReq.setCAction(newValReq.get(14));
+										oldValReq.setPAction(newValReq.get(15));
+										oldValReq.setRootCause(newValReq.get(16));
+										oldValReq.setActionDueDate(newValReq.get(17));
+										oldValReq.setIssueTo(oldValReq.getQaUserId());
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setFbStatus(StatusName.accept);
+										oldValReq.setGruopSatus(StatusName.qaFeedback);
+									}
+									else
+									{
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setIssueTo(oldValReq.getUserId());
+										oldValReq.setFbStatus(StatusName.fbClosed);
+										oldValReq.setGruopSatus(StatusName.qaReview);
+									}
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+								else if(newValReq.get(12).equals("Update"))
+								{
+									if(oldValReq.getFbType().equals("QA"))
+									{
+										oldValReq.setCAction(newValReq.get(14));
+										oldValReq.setPAction(newValReq.get(15));
+										oldValReq.setRootCause(newValReq.get(16));
+										oldValReq.setActionDueDate(newValReq.get(17));
+
+										oldValReq.setIssueTo(oldValReq.getQaUserId());
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setFbStatus(StatusName.accept);
+										oldValReq.setGruopSatus(StatusName.qaFeedback);
+									}
+									else
+									{
+										oldValReq.setIssuedby(TLDTO.getId());
+										oldValReq.setIssueTo(oldValReq.getUserId());
+										oldValReq.setFbStatus(StatusName.fbClosed);
+										oldValReq.setGruopSatus(StatusName.qaReview);
+									}
+									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+
+								}
+								else if(newValReq.get(12).equals("Reject QA"))
+								{
+									oldValReq.setIssueTo(oldValReq.getQaUserId());
+									oldValReq.setIssuedby(TLDTO.getId());
+									oldValReq.setFbStatus(StatusName.reject);
+									oldValReq.setGruopSatus(StatusName.qaFeedback);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+								else if(newValReq.get(12).equals("Wrong Separation"))
+								{
+									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssuedby(TLDTO.getId());
+									oldValReq.setIssueTo(oldValReq.getUserId());
+									oldValReq.setFbStatus(StatusName.reject);
+									oldValReq.setGruopSatus(StatusName.engFeedback);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+								else if(newValReq.get(12).equals("Accept QA & Forward"))
+								{
+									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssuedby(TLDTO.getId());
+									oldValReq.setIssueTo(oldValReq.getUserId());
+									oldValReq.setFbStatus(StatusName.accept);
+									oldValReq.setGruopSatus(StatusName.engFeedback);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+								else if(newValReq.get(12).equals("Wrong Value"))
+								{
+									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssuedby(TLDTO.getId());
+									oldValReq.setIssueTo(oldValReq.getUserId());
+									oldValReq.setFbStatus(StatusName.reject);
+									oldValReq.setGruopSatus(StatusName.engFeedback);
+									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+								}
+
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
+							}
+						}
+						System.out.println("size is " + result.size());
+					}
+
+				}
+				JOptionPane.showMessageDialog(null, "Saved Done");
+			}
+			Loading.close();
+			return null;
+		}
+	}
+
 }

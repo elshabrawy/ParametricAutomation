@@ -59,15 +59,16 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-		try
-		{
-			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+//		try
+//		{
+//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 383, 249);
 		contentPane = new JPanel();
@@ -81,56 +82,12 @@ public class LoginForm extends JFrame
 
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0)
-			{
-				Loading loading = new Loading();
-				// Thread thread = new Thread(loading);
-				// thread.start();
-				userName = txtUserName.getText().toString();
-				password = txtPassword.getText().toString();
-				GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
-				if(grmUser == null)
-				{
-					JOptionPane.showMessageDialog(null, "User Name or Password is Error");
-				}
-				else
-				{
 
-					mainFrame = new MainWindow();
-					mainFrame.setVisible(true);
-					// primaryStage.hide();
-					Runtime.getRuntime().gc();
-					mainFrame.init(grmUser);
-					loginframe.setVisible(false);
-				}
-				// thread.stop();
-				LongRunProcess process = new LongRunProcess();
-				try
-				{
-					process.execute();
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-
-				// while(true)
-				// {
-				// if(mainFrame != null)
-				// {
-				// mainFrame.updateFlags();
-				// try
-				// {
-				// Thread.sleep(50000);
-				// }catch(InterruptedException e)
-				// {
-				// e.printStackTrace();
-				// }
-				// }
-				// }
-				// loading.frame.dispose();
-
-			}
-		});
+	        public void actionPerformed(ActionEvent evt) {	     
+	                LongRunProcess2 longRunProcess = new LongRunProcess2();
+	                longRunProcess.execute();	            
+	        }
+	    } );
 		btnNewButton.setBounds(144, 154, 81, 33);
 		panel.add(btnNewButton);
 
@@ -198,6 +155,51 @@ public class LoginForm extends JFrame
 			}
 
 			// return result;
+		}
+	}
+	
+	class LongRunProcess2 extends SwingWorker
+	{
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+			Loading loading = new Loading();
+			
+			loading.show();
+			userName = txtUserName.getText().toString();
+			password = txtPassword.getText().toString();
+			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
+			if(grmUser == null)
+			{
+				loading.close();
+				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
+			}
+			else
+			{
+
+				mainFrame = new MainWindow();
+				mainFrame.setVisible(true);
+				// primaryStage.hide();
+				Runtime.getRuntime().gc();
+				mainFrame.init(grmUser);
+				loginframe.setVisible(false);
+			}
+			// thread.stop();
+			LongRunProcess process = new LongRunProcess();
+			try
+			{
+				process.execute();
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			finally{
+			loading.close();
+			}
+
+			 return null;
 		}
 	}
 }
