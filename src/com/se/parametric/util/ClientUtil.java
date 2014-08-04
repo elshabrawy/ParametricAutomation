@@ -11,7 +11,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.RevisionPdfDTO;
 import com.se.automation.db.client.mapping.Document;
