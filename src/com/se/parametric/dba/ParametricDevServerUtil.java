@@ -64,7 +64,6 @@ import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NonPdf;
 import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.PdfContent;
@@ -3787,22 +3786,7 @@ public class ParametricDevServerUtil
 	{
 		return ParaQueryUtil.getTblPdfCompare(latestUrlId, pdfUrlId);
 	}
-
-	public static PartsFeedback getCommentByPartAndDocument(Document feedbackDocument, PartComponent componentTbl, Session session)
-	{
-		try
-		{
-			Criteria criteria = session.createCriteria(PartsFeedback.class);
-			criteria.add(Restrictions.eq("document", feedbackDocument));
-			criteria.add(Restrictions.eq("component", componentTbl));
-			return (PartsFeedback) criteria.uniqueResult();
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
+	
 	public static boolean deletePartNumberByPartAndSupplier(String partNumber, Supplier supplier, Pl pl, Session session)
 	{
 		try

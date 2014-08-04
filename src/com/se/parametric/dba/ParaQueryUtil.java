@@ -40,7 +40,6 @@ import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.mapping.ApprovedParametricValue;
-import com.se.automation.db.client.mapping.ApprovedValueFeedback;
 import com.se.automation.db.client.mapping.CheckFeature;
 import com.se.automation.db.client.mapping.Condition;
 import com.se.automation.db.client.mapping.DevelopmentCommentValue;
@@ -63,7 +62,6 @@ import com.se.automation.db.client.mapping.ParametricFeedbackCycle;
 import com.se.automation.db.client.mapping.ParametricReviewData;
 import com.se.automation.db.client.mapping.ParametricSeparationGroup;
 import com.se.automation.db.client.mapping.PartComponent;
-import com.se.automation.db.client.mapping.PartsFeedback;
 import com.se.automation.db.client.mapping.PartsParametric;
 import com.se.automation.db.client.mapping.Pdf;
 import com.se.automation.db.client.mapping.PkgApprovedValue;
@@ -4807,118 +4805,6 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static void saveRejectEng(GrmUserDTO user, UnApprovedDTO app, String comment)
-	{
-		Session session = SessionUtil.getSession();
-		Criteria criteria;
-		try
-		{
-
-			ParametricApprovedGroup groups = getParametricApprovedGroup(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
-			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("groupID", groups.getId()));
-			criteria.add(Restrictions.eq("issuedToId", user.getId()));
-			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			ApprovedValueFeedback approvedValueFeedback = (ApprovedValueFeedback) criteria.uniqueResult();
-			approvedValueFeedback.setFeedbackRecieved(1l);
-			approvedValueFeedback.setFbComment(app.getComment());
-			session.saveOrUpdate(approvedValueFeedback);
-			session.beginTransaction().commit();
-			ApprovedValueFeedback appFBObj = new ApprovedValueFeedback();
-			appFBObj.setGroupID(groups.getId());
-			criteria = session.createCriteria(TrackingTaskQaStatus.class);
-			criteria.add(Restrictions.eq("name", "Rejected"));
-			TrackingTaskQaStatus trackingTaskQaStatus = (TrackingTaskQaStatus) criteria.uniqueResult();//
-			appFBObj.setTrackingTaskStatus(trackingTaskQaStatus);
-			criteria = session.createCriteria(TrackingFeedbackType.class);
-			criteria.add(Restrictions.eq("name", "Internal"));
-			TrackingFeedbackType trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
-			appFBObj.setTrackingFeedbackType(trackingFeedbackType);
-			appFBObj.setFullValue(app.getFeatureValue());
-			appFBObj.setId(System.nanoTime());
-			appFBObj.setIssuedBy(user.getId());
-			appFBObj.setIssuedToId(user.getLeader().getId());
-			appFBObj.setFeedbackRecieved(0l);
-			appFBObj.setStoreDate(new Date());
-			appFBObj.setFbComment(comment);
-			session.saveOrUpdate(appFBObj);
-			session.beginTransaction().commit();
-
-			// PartsParametricValuesGroup groupObj = null;
-			criteria = session.createCriteria(TrackingTaskStatus.class);
-			criteria.add(Restrictions.eq("name", StatusName.tlFeedback));
-			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
-			// for(int i = 0; i < groups.size(); i++)
-			// {
-			// session.beginTransaction().begin();
-			// groupObj = groups.get(i);
-			groups.setStatus(trackingTaskStatus);
-			session.saveOrUpdate(groups);
-			// session.beginTransaction().commit();
-			// }
-
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			System.out.println("here");
-		}finally
-		{
-			session.close();
-		}
-	}
-
-	public static void EngUpdateApprovedValue(GrmUserDTO user, int updateFlag, UnApprovedDTO app)
-	{
-		Session session = SessionUtil.getSession();
-		Criteria criteria;
-		try
-		{
-
-			ParametricApprovedGroup groups = getParametricApprovedGroup(app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
-			criteria = session.createCriteria(ApprovedValueFeedback.class);
-			criteria.add(Restrictions.eq("groupID", groups.getId()));
-			criteria.add(Restrictions.eq("issuedToId", user.getId()));
-			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-
-			ApprovedValueFeedback approvedValueFeedback = (ApprovedValueFeedback) criteria.uniqueResult();
-			approvedValueFeedback.setFeedbackRecieved(1l);
-			session.saveOrUpdate(approvedValueFeedback);
-			session.beginTransaction().commit();
-
-			criteria = session.createCriteria(TrackingTaskQaStatus.class);
-			criteria.add(Restrictions.eq("name", "Approved"));
-			TrackingTaskQaStatus status = (TrackingTaskQaStatus) criteria.uniqueResult();
-			// approvedValueFeedback.setTrackingTaskStatus(status);
-			// approvedValueFeedback.setFbComment(app.getComment());
-			// session.saveOrUpdate(approvedValueFeedback);
-			// session.beginTransaction().commit();
-			// session.beginTransaction().begin();
-			criteria = session.createCriteria(TrackingFeedbackType.class);
-			criteria.add(Restrictions.eq("name", "Internal"));
-			TrackingFeedbackType trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
-			approvedValueFeedback = new ApprovedValueFeedback();
-			approvedValueFeedback.setTrackingFeedbackType(trackingFeedbackType);
-			approvedValueFeedback.setTrackingTaskStatus(status);
-			approvedValueFeedback.setFullValue(app.getFeatureValue());
-			approvedValueFeedback.setId(System.nanoTime());
-			approvedValueFeedback.setIssuedBy(user.getId());
-			approvedValueFeedback.setIssuedToId(user.getLeader().getId());
-			approvedValueFeedback.setFeedbackRecieved(0l);
-			approvedValueFeedback.setStoreDate(new Date());
-			approvedValueFeedback.setFbComment(app.getComment());
-			approvedValueFeedback.setGroupID(groups.getId());
-			session.saveOrUpdate(approvedValueFeedback);
-			// session.beginTransaction().commit();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			System.out.println("here");
-		}finally
-		{
-			session.close();
-		}
-	}
-
 	// pls ready for export for engineer
 	public static List<String> getEngExportablePLNames(long userId, Date startDate, Date endDate)
 	{
@@ -5570,57 +5456,6 @@ public class ParaQueryUtil
 		}finally
 		{
 			grmSession.close();
-		}
-		return result;
-
-	}
-
-	public static Long getIssueFirstSenderID(String partNum, String vendorName)
-	{
-
-		long result;
-		Session session = SessionUtil.getSession();
-		try
-		{
-			PartComponent component = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNum, vendorName, session);
-			Criteria crit = session.createCriteria(PartsFeedback.class);
-			crit.add(Restrictions.eq("partComponent", component)); // foreign key col
-			crit.add(Restrictions.eq("storeDate", session.createCriteria(PartsFeedback.class).add(Restrictions.eq("partComponent", component)).setProjection(Projections.min("storeDate")).uniqueResult())); // foreign
-																																																				// key
-																																																				// col
-			PartsFeedback p = (PartsFeedback) crit.uniqueResult();
-			result = p.getIssuedById();
-
-		}finally
-		{
-			session.close();
-		}
-		return result;
-
-	}
-
-	public static String getLastIssueSource(String partNum, String vendorName)
-	{
-
-		String result = null;
-		TrackingFeedbackType flowSource = null;
-		Session session = SessionUtil.getSession();
-		try
-		{
-			PartComponent component = DataDevQueryUtil.getComponentByPartNumberAndSupplierName(partNum, vendorName, session);
-			Criteria crit = session.createCriteria(PartsFeedback.class);
-			// crit.createCriteria("partComponent").add(Restrictions.eq("comId",component.getComId() )); //foreign key col
-			crit.add(Restrictions.eq("partComponent", component));
-			crit.add(Restrictions.eq("feedbackRecieved", 0l)); // foreign key col
-			PartsFeedback p = (PartsFeedback) crit.uniqueResult();
-			if(p != null)
-				flowSource = p.getFlowSource();
-			if(flowSource != null)
-				result = p.getFlowSource().getName();
-
-		}finally
-		{
-			session.close();
 		}
 		return result;
 

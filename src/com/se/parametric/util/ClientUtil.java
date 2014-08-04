@@ -13,7 +13,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.se.automation.db.SessionUtil;
-import com.se.automation.db.client.mapping.Component;
 import com.se.automation.db.client.dto.RevisionPdfDTO;
 import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.client.mapping.NonPdf;
@@ -29,19 +28,6 @@ import com.se.parametric.AppContext;
 
 public class ClientUtil
 {
-
-	public String getComponentPLName(Component component)
-	{
-		try
-		{
-			return component.getSupplierPl().getPl().getName();
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		return null;
-	}
-
 	public String getPdfTaxonomiesString(TrackingParametric tracking, Session session)
 	{
 		String tax = "";
