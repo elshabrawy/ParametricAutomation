@@ -188,6 +188,7 @@ public class FilterPanel extends JPanel implements ActionListener
 
 	public ArrayList<Object[]> getFilteredData(ArrayList<Object[]> list)
 	{
+		
 		ArrayList<Object[]> result = new ArrayList<Object[]>();
 		String[] data = new String[list.get(0).length];
 		boolean flag = false;
@@ -223,6 +224,7 @@ public class FilterPanel extends JPanel implements ActionListener
 
 	public void refreshFilters()
 	{
+		
 		if((filterList == null) || (filterList.size() < 1))
 		{
 			for(int i = 0; i < comboBoxItems.length; i++)
