@@ -3654,8 +3654,6 @@ public class ParametricDevServerUtil
 	{
 		return ParaQueryUtil.getTblPdfCompare(latestUrlId, pdfUrlId);
 	}
-
-
 	public static boolean deletePartNumberByPartAndSupplier(String partNumber, Supplier supplier, Pl pl, Session session)
 	{
 		try

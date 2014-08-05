@@ -3544,7 +3544,7 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery(" SELECT comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
+			SQLQuery query = session.createSQLQuery(" SELECT  comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
 					+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=GETSUPPLIERID (:suppName)");
 
 			query.setParameter("nanpartnum", NANINPUTPART.trim());

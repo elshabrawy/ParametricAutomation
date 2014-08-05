@@ -27,7 +27,6 @@ import com.se.parametric.AppContext;
 
 public class ClientUtil
 {
-
 	public String getPdfTaxonomiesString(TrackingParametric tracking, Session session)
 	{
 		String tax = "";

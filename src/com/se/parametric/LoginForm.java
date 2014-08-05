@@ -119,8 +119,8 @@ public class LoginForm extends JFrame
 		titleLab.setFont(new Font("Old English Text MT", Font.PLAIN, 26));
 		titleLab.setBounds(10, 11, 345, 34);
 		panel.add(titleLab);
-		
-		JLabel lblver = new JLabel("Ver 1.0 : 17-7-2014 ");
+
+		JLabel lblver = new JLabel("Ver 1.0 : 20-7-2014 ");
 		lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		lblver.setForeground(new Color(160, 82, 45));
 		lblver.setBounds(220, 170, 150, 60);
