@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
 
@@ -34,6 +35,7 @@ import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
@@ -140,150 +142,8 @@ public class QAChecks extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-		ArrayList<String> row = null;
-		/**
-		 * Show pdfs Action
-		 * **/
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-			try
-			{
-				dofilter(startDate, endDate);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-
-			filterPanel.filterList = DataDevQueryUtil.getQAchecksFilterData(userDTO);
-			filterPanel.refreshFilters();
-
-		}
-		else if(event.getActionCommand().equals("Save"))
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			if(!filterstatus.equals(StatusName.Open))
-			{
-				JOptionPane.showMessageDialog(null, "You can save Open checks only");
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "QAChecks")
-				{
-					wsMap.get(wsName).saveQAChecksAction(checker, engName);
-				}
-			}
-		}
-		else if(event.getActionCommand().equals("Seperation"))
-		{
-
-			input = new ArrayList<ArrayList<String>>();
-			tabbedPane.setSelectedIndex(2);
-			row = new ArrayList<String>();
-			row.add("PL_Name");// 0
-			row.add("Part");// 1
-			row.add("Datasheet");// 2
-			row.add("Feature Name");// 3
-			row.add("Feature Value");// 4
-			row.add("Feature Unit");// 5
-			row.add("Sign");// 6
-			row.add("Value");// 7
-			row.add("Type");// 8
-			row.add("Condition");// 9
-			row.add("Multiplier");// 10
-			row.add("Unit");// 11
-			row.add("Validation result");// 12
-
-			if(wsMap.get("Separation") != null)
-			{
-				wsMap.remove("Separation");
-			}
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					System.out.println("Sheet Name:" + wsName);
-					input = separationValues;
-				}
-			}
-			separationPanel.openOfficeDoc();
-			ws = new WorkingSheet(separationPanel, "Separation");
-			separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			ws.setSeparationHeader(row);
-			ws.writeSheetData(input, 1);
-			wsMap.put("Separation", ws);
-		}
-		else if(event.getActionCommand().equals(" validate "))
-		{
-			validated = ws.validateSeparation();
-			JOptionPane.showMessageDialog(null, " Validation Done");
-
-		}
-		else if(event.getActionCommand().equals(" save "))
-		{
-			tabbedPane.setSelectedIndex(2);
-			separationValues = wsMap.get("Separation").readSpreadsheet(1);
-			if(separationValues.isEmpty())
-			{
-				tabbedPane.setSelectedIndex(1);
-				JOptionPane.showMessageDialog(null, "All Values are Approved");
-			}
-			else
-			{
-				if(!validated)
-				{
-					JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-					thread.stop();
-					loading.frame.dispose();
-					return;
-				}
-
-				for(int i = 0; i < separationValues.size(); i++)
-				{
-					row = separationValues.get(i);
-
-					String plName = row.get(0);
-					String featureName = row.get(3);
-					String featureFullValue = row.get(4);
-
-					try
-					{
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
-
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-					}catch(ArrayIndexOutOfBoundsException ex)
-					{
-						try
-						{
-							Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-							cell.setText(ex.getMessage());
-						}catch(Exception e)
-						{
-							e.printStackTrace();
-						}
-						ex.printStackTrace();
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
-					}
-				}
-				JOptionPane.showMessageDialog(null, "Approved Saving Done");
-			}
-		}
-
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	private void dofilter(Date startDate, Date endDate) throws Exception
@@ -334,7 +194,7 @@ public class QAChecks extends JPanel implements ActionListener
 				{
 					flag = "InputPart";
 				}
-				System.out.println("no>>"+i);
+				System.out.println("no>>" + i);
 				ArrayList<String> row = new ArrayList<>();
 				row.add(reviewData.get(i).getCheckpartid().toString());
 				row.add(reviewData.get(i).getPart().getComId().toString());
@@ -421,4 +281,165 @@ public class QAChecks extends JPanel implements ActionListener
 		// alertsPanel2.updateFlags(flags);
 
 	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			ArrayList<String> row = null;
+			/**
+			 * Show pdfs Action
+			 * **/
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+				try
+				{
+					dofilter(startDate, endDate);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+
+				filterPanel.filterList = DataDevQueryUtil.getQAchecksFilterData(userDTO);
+				filterPanel.refreshFilters();
+
+			}
+			else if(event.getActionCommand().equals("Save"))
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+				if(!filterstatus.equals(StatusName.Open))
+				{
+					Loading.close();
+					JOptionPane.showMessageDialog(null, "You can save Open checks only");
+
+					return null;
+				}
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName == "QAChecks")
+					{
+						wsMap.get(wsName).saveQAChecksAction(checker, engName);
+					}
+				}
+			}
+			else if(event.getActionCommand().equals("Seperation"))
+			{
+
+				input = new ArrayList<ArrayList<String>>();
+				tabbedPane.setSelectedIndex(2);
+				row = new ArrayList<String>();
+				row.add("PL_Name");// 0
+				row.add("Part");// 1
+				row.add("Datasheet");// 2
+				row.add("Feature Name");// 3
+				row.add("Feature Value");// 4
+				row.add("Feature Unit");// 5
+				row.add("Sign");// 6
+				row.add("Value");// 7
+				row.add("Type");// 8
+				row.add("Condition");// 9
+				row.add("Multiplier");// 10
+				row.add("Unit");// 11
+				row.add("Validation result");// 12
+
+				if(wsMap.get("Separation") != null)
+				{
+					wsMap.remove("Separation");
+				}
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						System.out.println("Sheet Name:" + wsName);
+						input = separationValues;
+					}
+				}
+				separationPanel.openOfficeDoc();
+				ws = new WorkingSheet(separationPanel, "Separation");
+				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				ws.setSeparationHeader(row);
+				ws.writeSheetData(input, 1);
+				wsMap.put("Separation", ws);
+			}
+			else if(event.getActionCommand().equals(" validate "))
+			{
+				validated = ws.validateSeparation();
+				JOptionPane.showMessageDialog(null, " Validation Done");
+
+			}
+			else if(event.getActionCommand().equals(" save "))
+			{
+				tabbedPane.setSelectedIndex(2);
+				separationValues = wsMap.get("Separation").readSpreadsheet(1);
+				if(separationValues.isEmpty())
+				{
+					tabbedPane.setSelectedIndex(1);
+					JOptionPane.showMessageDialog(null, "All Values are Approved");
+				}
+				else
+				{
+					if(!validated)
+					{
+						Loading.close();
+						JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+
+						return null;
+					}
+
+					for(int i = 0; i < separationValues.size(); i++)
+					{
+						row = separationValues.get(i);
+
+						String plName = row.get(0);
+						String featureName = row.get(3);
+						String featureFullValue = row.get(4);
+
+						try
+						{
+							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+
+							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+						}catch(ArrayIndexOutOfBoundsException ex)
+						{
+							try
+							{
+								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+								cell.setText(ex.getMessage());
+							}catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+							ex.printStackTrace();
+						}catch(Exception ex)
+						{
+							ex.printStackTrace();
+						}
+					}
+					JOptionPane.showMessageDialog(null, "Approved Saving Done");
+				}
+			}
+
+			Loading.close();
+			return null;
+		}
+	}
+
 }

@@ -17,10 +17,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.text.JTextComponent;
 
+import com.se.parametric.Loading;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+
 
 public class SourcingFeedbackPanel extends JPanel implements ActionListener, KeyListener
 {
@@ -156,99 +159,10 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if(e.getSource() == statusCombo)
-		{
-			if("Wrong Taxonomy".equals(statusCombo.getSelectedItem()))
-			{
-				commentComboModel = getCommentComboBoxModel("PL", null);
-			}
-			else if("Reject".equals(statusCombo.getSelectedItem()))
-			{
-				commentComboModel = getCommentComboBoxModel("Reject", null);
-				commentCombo.setEditable(false);
-			}
-			else
-			{
-				commentComboModel = getCommentComboBoxModel(null, null);
-				commentCombo.setEditable(true);
-			}
-			commentCombo.setModel(commentComboModel);
+	public void actionPerformed(ActionEvent event)
+	{LongRunProcess longRunProcess = new LongRunProcess(event);
+    longRunProcess.execute();
 
-		}
-		if(e.getSource() == sendFeedbackBtn)
-		{
-			String revUrl = null, docFeedbackComment = null, rightTax = null;
-			String pdfLink = dsUrlTF.getText();
-			pdfLink = pdfLink.trim();
-			if("".equals(pdfLink) || pdfLink.length() < 7 || !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
-			{
-				JOptionPane.showMessageDialog(this, "Wrong PDF Link", "Wrong PDF Link", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			if("Wrong Revision".equals(statusCombo.getSelectedItem().toString()))
-			{
-				try
-				{
-					String comment = commentCombo.getSelectedItem().toString();
-					comment = comment.trim();
-					String sub = comment.substring(0, 7);
-					if(!"http://".equalsIgnoreCase(sub))
-					{
-						JOptionPane.showMessageDialog(this, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					revUrl = comment;
-					docFeedbackComment = "Wrong Revision";
-					rightTax = null;
-				}catch(Exception ex)
-				{
-					JOptionPane.showMessageDialog(this, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
-			else if("Not Available Data".equals(statusCombo.getSelectedItem().toString()))
-			{
-
-				if((commentCombo.getSelectedItem() == null) || "".equals(commentCombo.getSelectedItem().toString()))
-				{
-					docFeedbackComment = "Not Available Data";
-					revUrl = null;
-					rightTax = null;
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(this, "Comment should be null", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
-			else if("Wrong Taxonomy".equals(statusCombo.getSelectedItem().toString()))
-			{
-				docFeedbackComment = "Wrong tax";
-				rightTax = commentCombo.getEditor().getItem().toString();
-				revUrl = null;
-			}
-			else if("Reject".equals(statusCombo.getSelectedItem().toString()))
-			{
-				docFeedbackComment = commentCombo.getSelectedItem().toString();
-				rightTax = null;
-				revUrl = null;
-			}
-
-			String pdfUrl = dsUrlTF.getText().trim();
-			String plName = plTF.getText().trim();
-			String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
-			if("Done".equals(status))
-			{
-				JOptionPane.showMessageDialog(this, "Feedback Sent", "Feedback Sent", JOptionPane.INFORMATION_MESSAGE);
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(this, "Feedback Not Sent", "Feedback Not Sent>>>" + status, JOptionPane.ERROR_MESSAGE);
-			}
-
-		}
 	}
 
 	@Override
@@ -312,5 +226,123 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		// commentCombo.setModel(commentComboModel);
 
 	}
+	
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+			Loading.show();
+
+			if(event.getSource() == statusCombo)
+			{
+				if("Wrong Taxonomy".equals(statusCombo.getSelectedItem()))
+				{
+					commentComboModel = getCommentComboBoxModel("PL", null);
+				}
+				else if("Reject".equals(statusCombo.getSelectedItem()))
+				{
+					commentComboModel = getCommentComboBoxModel("Reject", null);
+					commentCombo.setEditable(false);
+				}
+				else
+				{
+					commentComboModel = getCommentComboBoxModel(null, null);
+					commentCombo.setEditable(true);
+				}
+				commentCombo.setModel(commentComboModel);
+
+			}
+			if(event.getSource() == sendFeedbackBtn)
+			{
+				String revUrl = null, docFeedbackComment = null, rightTax = null;
+				String pdfLink = dsUrlTF.getText();
+				pdfLink = pdfLink.trim();
+				if("".equals(pdfLink) || pdfLink.length() < 7 || !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
+				{
+					Loading.close();
+					JOptionPane.showMessageDialog(null, "Wrong PDF Link", "Wrong PDF Link", JOptionPane.ERROR_MESSAGE);
+					return null;
+				}
+				if("Wrong Revision".equals(statusCombo.getSelectedItem().toString()))
+				{
+					try
+					{
+						String comment = commentCombo.getSelectedItem().toString();
+						comment = comment.trim();
+						String sub = comment.substring(0, 7);
+						if(!"http://".equalsIgnoreCase(sub))
+						{
+							Loading.close();
+							JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
+							return null;
+						}
+						revUrl = comment;
+						docFeedbackComment = "Wrong Revision";
+						rightTax = null;
+					}catch(Exception ex)
+					{
+						Loading.close();
+						JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
+						
+						return null;
+					}
+				}
+				else if("Not Available Data".equals(statusCombo.getSelectedItem().toString()))
+				{
+
+					if((commentCombo.getSelectedItem() == null) || "".equals(commentCombo.getSelectedItem().toString()))
+					{
+						docFeedbackComment = "Not Available Data";
+						revUrl = null;
+						rightTax = null;
+					}
+					else
+					{
+						Loading.close();
+						JOptionPane.showMessageDialog(null, "Comment should be null", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
+						
+						return null;
+					}
+				}
+				else if("Wrong Taxonomy".equals(statusCombo.getSelectedItem().toString()))
+				{
+					docFeedbackComment = "Wrong tax";
+					rightTax = commentCombo.getEditor().getItem().toString();
+					revUrl = null;
+				}
+				else if("Reject".equals(statusCombo.getSelectedItem().toString()))
+				{
+					docFeedbackComment = commentCombo.getSelectedItem().toString();
+					rightTax = null;
+					revUrl = null;
+				}
+
+				String pdfUrl = dsUrlTF.getText().trim();
+				String plName = plTF.getText().trim();
+				String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
+				if("Done".equals(status))
+				{
+					JOptionPane.showMessageDialog(null, "Feedback Sent", "Feedback Sent", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Feedback Not Sent", "Feedback Not Sent>>>" + status, JOptionPane.ERROR_MESSAGE);
+				}
+
+			}
+			Loading.close();
+			return null;
+		}
+		}
 
 }

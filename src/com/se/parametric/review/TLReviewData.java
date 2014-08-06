@@ -8,10 +8,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -37,7 +36,6 @@ import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dev.Developement;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -176,314 +174,8 @@ public class TLReviewData extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-		ArrayList<String> row = null;
-		boolean isExclamationMark = false;
-		/**
-		 * Show pdfs Action
-		 * **/
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-			try
-			{
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				if(!userName.equals("All"))
-				{
-					long userId = ParaQueryUtil.getUserIdByExactName(userName);
-					teamMembers = new Long[] { userId };
-				}
-				else
-				{
-					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview, null,null);
-				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-				tablePanel.setTableData1(0, tablePanel.selectedData);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-
-			if(filterPanel.jDateChooser1.isEnabled())
-			{
-				startDate = filterPanel.jDateChooser1.getDate();
-				endDate = filterPanel.jDateChooser2.getDate();
-			}
-			filterPanel.filterList = DataDevQueryUtil.getTLReviewFilterData(userDTO, startDate, endDate);
-			tablePanel.clearTable();
-			filterPanel.refreshFilters();
-
-		}
-		/**
-		 * Load Data development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load PDF"))
-		{
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			int[] selectedPdfs = tablePanel.table.getSelectedRows();
-			int selectedPdfsCount = selectedPdfs.length;
-			if(selectedPdfsCount == 0)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select PDF First");
-			}
-			else if(selectedPdfsCount > 1)
-			{
-				JOptionPane.showMessageDialog(null, "Please Select One PDF");
-			}
-			else
-			{
-				try
-				{
-					JComboBox[] combos = filterPanel.comboBoxItems;
-
-					String plName = combos[0].getSelectedItem().toString();
-					String supplierName = combos[1].getSelectedItem().toString();
-					String taskType = combos[2].getSelectedItem().toString();
-					String userName = combos[3].getSelectedItem().toString();
-					wsMap.clear();
-					TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-					String pdfUrl = docInfoDTO.getPdfUrl();
-					Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-					Date startDate = null, endDate = null;
-					if(filterPanel.jDateChooser1.isEnabled())
-					{
-						startDate = filterPanel.jDateChooser1.getDate();
-						endDate = filterPanel.jDateChooser2.getDate();
-					}
-					System.out.println(pdfUrl);
-					if(!userName.equals("All"))
-					{
-						long userId = ParaQueryUtil.getUserIdByExactName(userName);
-						teamMembers = new Long[] { userId };
-					}
-					else
-					{
-						teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-					}
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, new Long[] { document.getId() });
-					int k = 0;
-					tabbedPane.setSelectedIndex(1);
-					sheetpanel.openOfficeDoc();
-
-					for(String pl : reviewData.keySet())
-					{
-						ws = new WorkingSheet(sheetpanel, pl, k);
-						sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
-						wsMap.put(pl, ws);
-						if(docInfoDTO.getTaskType().contains("NPI"))
-							ws.setNPIflag(true);
-						ws.setTLReviewHeader(null, false);
-						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-						ws.writeReviewData(plData, 2, 3);
-						k++;
-					}
-					tablePanel.loadedPdfs.add(pdfUrl);
-					tablePanel.setTableData1(0, tablePanel.selectedData);
-				}catch(Exception ex)
-				{
-					ex.printStackTrace();
-				}
-
-			}
-		}
-		/**
-		 * Load All PDFs review and development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load All"))
-		{
-			Date startDate = null;
-			Date endDate = null;
-
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-
-			try
-			{
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				if(!userName.equals("All"))
-				{
-					long userId = ParaQueryUtil.getUserIdByExactName(userName);
-					teamMembers = new Long[] { userId };
-				}
-				else
-				{
-					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, null);
-				int k = 0;
-				tabbedPane.setSelectedIndex(1);
-				sheetpanel.openOfficeDoc();
-				wsMap.clear();
-				for(String pl : reviewData.keySet())
-				{
-					ws = new WorkingSheet(sheetpanel, pl, k);
-					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-					wsMap.put(pl, ws);
-					if(DataDevQueryUtil.isNPITaskType(teamMembers, pl, supplierName, taskType, StatusName.tlReview, startDate, endDate, null))
-						ws.setNPIflag(true);
-					ws.setTLReviewHeader(null, false);
-					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
-					ws.writeReviewData(plData, 2, 3);
-					k++;
-				}
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		/**
-		 * Validate Parts Action
-		 */
-		else if(event.getSource() == validate)
-		{
-			System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).validateParts(true);
-				}
-			}
-			JOptionPane.showMessageDialog(null, "Validation Finished");
-
-		}
-		/**
-		 * Save Parts Action
-		 */
-		else if(event.getSource() == save)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
-				}
-			}
-		}
-
-		/**
-		 * Load Separation Sheet Action
-		 * **/
-		else if(event.getActionCommand().equals("Separation"))
-		{
-			input = new ArrayList<ArrayList<String>>();
-			tabbedPane.setSelectedIndex(2);
-			row = new ArrayList<String>();
-			row.add("PL_Name");
-			row.add("Part");
-			row.add("Datasheet");
-			row.add("Feature Name");
-			row.add("Feature Value");
-			row.add("Feature Unit");
-			row.add("Sign");
-			row.add("Value");
-			row.add("Type");
-			row.add("Condition");
-			row.add("Multiplier");
-			row.add("Unit");
-			if(wsMap.get("Separation") != null)
-			{
-				wsMap.remove("Separation");
-			}
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					System.out.println("Sheet Name:" + wsName);
-					input = wsMap.get(wsName).getUnApprovedValues(input);
-				}
-			}
-			separationPanel.openOfficeDoc();
-			ws = new WorkingSheet(separationPanel, "Separation");
-			sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-			ws.setSeparationHeader(row);
-			ws.writeSheetData(input, 1);
-			wsMap.put("Separation", ws);
-		}
-		/**
-		 * Save Separation Action
-		 */
-		else if(event.getActionCommand().equals(" Save "))
-		{
-			tabbedPane.setSelectedIndex(2);
-			separationValues = wsMap.get("Separation").readSpreadsheet(1);
-			if(separationValues.isEmpty())
-			{
-				tabbedPane.setSelectedIndex(1);
-				JOptionPane.showMessageDialog(null, "All Values are Approved");
-
-			}
-			else
-			{
-				for(int i = 0; i < separationValues.size(); i++)
-				{
-					row = separationValues.get(i);
-					String plName = row.get(0);
-					String featureName = row.get(3);
-					String featureFullValue = row.get(4);
-					List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
-					try
-					{
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
-					}
-					isExclamationMark = false;
-					List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
-					appValues.add(featureFullValue);
-				}
-				JOptionPane.showMessageDialog(null, "Approved Saving Done");
-			}
-
-		}
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	public void updateFlags(ArrayList<String> flags)
@@ -532,6 +224,331 @@ public class TLReviewData extends JPanel implements ActionListener
 			{
 				e.printStackTrace();
 			}
+		}
+	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			ArrayList<String> row = null;
+			boolean isExclamationMark = false;
+			/**
+			 * Show pdfs Action
+			 * **/
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+				try
+				{
+					if(filterPanel.jDateChooser1.isEnabled())
+					{
+						startDate = filterPanel.jDateChooser1.getDate();
+						endDate = filterPanel.jDateChooser2.getDate();
+					}
+					String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+					String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+					String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+					String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+					if(!userName.equals("All"))
+					{
+						long userId = ParaQueryUtil.getUserIdByExactName(userName);
+						teamMembers = new Long[] { userId };
+					}
+					else
+					{
+						teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+					}
+					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName, supplierName, taskType, null, startDate, endDate, null, "finished", null, StatusName.tlReview, null, null);
+					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+					tablePanel.setTableData1(0, tablePanel.selectedData);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				filterPanel.filterList = DataDevQueryUtil.getTLReviewFilterData(userDTO, startDate, endDate);
+				tablePanel.clearTable();
+				filterPanel.refreshFilters();
+
+			}
+			/**
+			 * Load Data development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load PDF"))
+			{
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+
+					Loading.close();
+					return null;
+				}
+				int[] selectedPdfs = tablePanel.table.getSelectedRows();
+				int selectedPdfsCount = selectedPdfs.length;
+				if(selectedPdfsCount == 0)
+				{
+					JOptionPane.showMessageDialog(null, "Please Select PDF First");
+				}
+				else if(selectedPdfsCount > 1)
+				{
+					JOptionPane.showMessageDialog(null, "Please Select One PDF");
+				}
+				else
+				{
+					try
+					{
+						JComboBox[] combos = filterPanel.comboBoxItems;
+
+						String plName = combos[0].getSelectedItem().toString();
+						String supplierName = combos[1].getSelectedItem().toString();
+						String taskType = combos[2].getSelectedItem().toString();
+						String userName = combos[3].getSelectedItem().toString();
+						wsMap.clear();
+						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+						String pdfUrl = docInfoDTO.getPdfUrl();
+						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+						Date startDate = null, endDate = null;
+						if(filterPanel.jDateChooser1.isEnabled())
+						{
+							startDate = filterPanel.jDateChooser1.getDate();
+							endDate = filterPanel.jDateChooser2.getDate();
+						}
+						System.out.println(pdfUrl);
+						if(!userName.equals("All"))
+						{
+							long userId = ParaQueryUtil.getUserIdByExactName(userName);
+							teamMembers = new Long[] { userId };
+						}
+						else
+						{
+							teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+						}
+						Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, new Long[] { document.getId() });
+						int k = 0;
+						tabbedPane.setSelectedIndex(1);
+						sheetpanel.openOfficeDoc();
+
+						for(String pl : reviewData.keySet())
+						{
+							ws = new WorkingSheet(sheetpanel, pl, k);
+							sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
+							wsMap.put(pl, ws);
+							if(docInfoDTO.getTaskType().contains("NPI"))
+								ws.setNPIflag(true);
+							ws.setTLReviewHeader(null, false);
+							ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+							ws.writeReviewData(plData, 2, 3);
+							k++;
+						}
+						tablePanel.loadedPdfs.add(pdfUrl);
+						tablePanel.setTableData1(0, tablePanel.selectedData);
+					}catch(Exception ex)
+					{
+						ex.printStackTrace();
+					}
+
+				}
+			}
+			/**
+			 * Load All PDFs review and development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load All"))
+			{
+				Date startDate = null;
+				Date endDate = null;
+
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+
+					Loading.close();
+					return null;
+				}
+
+				try
+				{
+					if(filterPanel.jDateChooser1.isEnabled())
+					{
+						startDate = filterPanel.jDateChooser1.getDate();
+						endDate = filterPanel.jDateChooser2.getDate();
+					}
+					String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+					String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+					String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+					String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+					if(!userName.equals("All"))
+					{
+						long userId = ParaQueryUtil.getUserIdByExactName(userName);
+						teamMembers = new Long[] { userId };
+					}
+					else
+					{
+						teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
+					}
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getParametricValueReview1(teamMembers, plName, supplierName, taskType, StatusName.tlReview, startDate, endDate, null);
+					int k = 0;
+					tabbedPane.setSelectedIndex(1);
+					sheetpanel.openOfficeDoc();
+					wsMap.clear();
+					for(String pl : reviewData.keySet())
+					{
+						ws = new WorkingSheet(sheetpanel, pl, k);
+						sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+						wsMap.put(pl, ws);
+						if(DataDevQueryUtil.isNPITaskType(teamMembers, pl, supplierName, taskType, StatusName.tlReview, startDate, endDate, null))
+							ws.setNPIflag(true);
+						ws.setTLReviewHeader(null, false);
+						ArrayList<ArrayList<String>> plData = reviewData.get(pl);
+						ws.writeReviewData(plData, 2, 3);
+						k++;
+					}
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			/**
+			 * Validate Parts Action
+			 */
+			else if(event.getSource() == validate)
+			{
+				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).validateParts(true);
+					}
+				}
+				JOptionPane.showMessageDialog(null, "Validation Finished");
+
+			}
+			/**
+			 * Save Parts Action
+			 */
+			else if(event.getSource() == save)
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+					}
+				}
+			}
+
+			/**
+			 * Load Separation Sheet Action
+			 * **/
+			else if(event.getActionCommand().equals("Separation"))
+			{
+				input = new ArrayList<ArrayList<String>>();
+				tabbedPane.setSelectedIndex(2);
+				row = new ArrayList<String>();
+				row.add("PL_Name");
+				row.add("Part");
+				row.add("Datasheet");
+				row.add("Feature Name");
+				row.add("Feature Value");
+				row.add("Feature Unit");
+				row.add("Sign");
+				row.add("Value");
+				row.add("Type");
+				row.add("Condition");
+				row.add("Multiplier");
+				row.add("Unit");
+				if(wsMap.get("Separation") != null)
+				{
+					wsMap.remove("Separation");
+				}
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						System.out.println("Sheet Name:" + wsName);
+						input = wsMap.get(wsName).getUnApprovedValues(input);
+					}
+				}
+				separationPanel.openOfficeDoc();
+				ws = new WorkingSheet(separationPanel, "Separation");
+				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				ws.setSeparationHeader(row);
+				ws.writeSheetData(input, 1);
+				wsMap.put("Separation", ws);
+			}
+			/**
+			 * Save Separation Action
+			 */
+			else if(event.getActionCommand().equals(" Save "))
+			{
+				tabbedPane.setSelectedIndex(2);
+				separationValues = wsMap.get("Separation").readSpreadsheet(1);
+				if(separationValues.isEmpty())
+				{
+					tabbedPane.setSelectedIndex(1);
+					JOptionPane.showMessageDialog(null, "All Values are Approved");
+
+				}
+				else
+				{
+					for(int i = 0; i < separationValues.size(); i++)
+					{
+						row = separationValues.get(i);
+						String plName = row.get(0);
+						String featureName = row.get(3);
+						String featureFullValue = row.get(4);
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+						try
+						{
+							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+						}catch(Exception ex)
+						{
+							ex.printStackTrace();
+						}
+						isExclamationMark = false;
+						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+						appValues.add(featureFullValue);
+					}
+					JOptionPane.showMessageDialog(null, "Approved Saving Done");
+				}
+
+			}
+
+			Loading.close();
+			return null;
 		}
 	}
 }

@@ -9,34 +9,39 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
 
-public class Loading implements Runnable
+
+public class Loading 
 {
-	public Loading()
-	{
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		this.width = screenSize.width;
-		this.height = screenSize.height;
-		System.out.println(this.width + " and " + this.height);
-	}
 
-	ImagePanel panel = new ImagePanel(new ImageIcon("Resources/loading.gif").getImage());
 	JProgressBar pbar;
-	int height;
-	int width;
+	static int height;
+	static int width;
 	int percent = 0;
-	public JFrame frame;
-
-	public void run()
+	public static JFrame frame;
+	ImagePanel panel = new ImagePanel("Resources/loading1.gif");
+	public static void show()
 	{
+		ImageIcon icon=new ImageIcon("Resources/loading1.gif");
+		ImagePanel panel =new ImagePanel(icon.getImage());
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		width = screenSize.width;
+		height = screenSize.height;
+		System.out.println(width + " and " + height);
 		frame = new JFrame();
-		frame.setContentPane(panel);
-		frame.setTitle("Progress Bar Example");
+		frame.add(panel);
 		frame.setUndecorated(true);
 		frame.pack();
-		frame.setBounds((width - 220) / 2, (height - 30) / 2, 220, 30);
+		frame.setAlwaysOnTop(true);
+		frame.setSize(350,280);
+		frame.setBounds((width - 350) / 2, (height - 280) / 2, 350, 280);
 		frame.setVisible(true);
+		
+	
+	}
+	public static void close(){
+		frame.hide();
+		frame.dispose();
 	}
 
 	public void updateBar(int newValue)
@@ -44,7 +49,7 @@ public class Loading implements Runnable
 		pbar.setValue(newValue);
 	}
 
-	class ImagePanel extends JPanel
+	static class ImagePanel extends JPanel
 	{
 
 		private Image img;
@@ -71,4 +76,10 @@ public class Loading implements Runnable
 			repaint();
 		}
 	}
+	public static void main(String args[]){
+		Loading loading = new Loading();		
+		loading.show();
+	}
+
+
 }

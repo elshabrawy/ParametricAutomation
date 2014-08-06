@@ -1,13 +1,11 @@
 package com.se.Quality;
 
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -15,10 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
 
-import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
@@ -31,10 +29,7 @@ import com.se.parametric.Loading;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
-import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
-import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
 public class QAException extends JPanel implements ActionListener
@@ -108,48 +103,8 @@ public class QAException extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-		ArrayList<String> row = null;
-		/**
-		 * Show pdfs Action
-		 * **/
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-			try
-			{
-				dofilter(startDate, endDate);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-
-			filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
-			filterPanel.refreshFilters();
-
-		}
-		else if(event.getActionCommand().equals("Save"))
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName == "QAChecks")
-				{
-					wsMap.get(wsName).saveQAexceptionAction(checker, engName, "QA");
-				}
-			}
-		}
-
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	private void dofilter(Date startDate, Date endDate) throws Exception
@@ -181,7 +136,7 @@ public class QAException extends JPanel implements ActionListener
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
 			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 			wsMap.put("QAChecks", ws);
-			ws.setqaexceptionheader(checkerType,"QA");
+			ws.setqaexceptionheader(checkerType, "QA");
 			ArrayList<String> sheetHeader = ws.getHeader();
 			int statusindx = sheetHeader.indexOf("QAStatus");
 			// int flag = sheetHeader.indexOf("Flag");
@@ -274,4 +229,63 @@ public class QAException extends JPanel implements ActionListener
 		// alertsPanel2.updateFlags(flags);
 
 	}
+
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			ArrayList<String> row = null;
+			/**
+			 * Show pdfs Action
+			 * **/
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+				try
+				{
+					dofilter(startDate, endDate);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+
+				filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
+				filterPanel.refreshFilters();
+
+			}
+			else if(event.getActionCommand().equals("Save"))
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName == "QAChecks")
+					{
+						wsMap.get(wsName).saveQAexceptionAction(checker, engName, "QA");
+					}
+				}
+			}
+
+			Loading.close();
+			return null;
+		}
+	}
+
 }

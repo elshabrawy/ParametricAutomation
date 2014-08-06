@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -38,6 +39,7 @@ import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
+
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -178,132 +180,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		Loading loading = new Loading();
-		Thread thread = new Thread(loading);
-		thread.start();
-		ArrayList<String> row = null;
-		boolean isExclamationMark = false;
-		if(event.getSource() == filterPanel.filterButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-			try
-			{
-				if(filterPanel.jDateChooser1.isEnabled())
-				{
-					startDate = filterPanel.jDateChooser1.getDate();
-					endDate = filterPanel.jDateChooser2.getDate();
-				}
-				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
-				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
-				String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
-				String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				String documentStatus = StatusName.tlFeedback;
-				tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId, issuer);
-				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
-				tablePanel.setTableData1(0, tablePanel.selectedData);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if(event.getSource() == filterPanel.refreshButton)
-		{
-			Date startDate = null;
-			Date endDate = null;
-
-			if(filterPanel.jDateChooser1.isEnabled())
-			{
-				startDate = filterPanel.jDateChooser1.getDate();
-				endDate = filterPanel.jDateChooser2.getDate();
-			}
-			filterPanel.filterList = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, startDate, endDate);
-			tablePanel.clearTable();
-			filterPanel.refreshFilters();
-
-		}
-		/**
-		 * Load Data development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load PDF"))
-		{
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			loadpdf();
-		}
-		/**
-		 * Load All PDFs review and development Sheet
-		 */
-		else if(event.getActionCommand().equals("Load All"))
-		{
-			boolean ok = false;
-			if(sheetpanel.isOpened())
-				ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
-
-			if(sheetpanel.isOpened() && ok == false)
-			{
-				thread.stop();
-				loading.frame.dispose();
-				return;
-			}
-			loadallpdf();
-		}
-		/**
-		 * Validate Parts Action
-		 */
-		else if(event.getSource() == validate)
-		{
-			System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).validateTLFBParts(true);
-				}
-			}
-			JOptionPane.showMessageDialog(null, "Validation Finished");
-		}
-		/**
-		 * Save Parts Action
-		 */
-		else if(event.getSource() == save)
-		{
-			System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
-			wsMap.keySet();
-			for(String wsName : wsMap.keySet())
-			{
-				if(wsName != "LoadAllData" && wsName != "Separation")
-				{
-					wsMap.get(wsName).saveTLFeedbackAction(userName);
-				}
-			}
-		}
-		/**
-		 * Load Separation Sheet Action
-		 * **/
-		else if(event.getActionCommand().equals("Separation"))
-		{
-			loadseparation();
-		}
-		/**
-		 * Save Separation Action
-		 */
-		else if(event.getActionCommand().equals(" Save "))
-		{
-			saveseparation();
-		}
-
-		thread.stop();
-		loading.frame.dispose();
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 	}
 
 	public void saveseparation()
@@ -644,4 +522,145 @@ public class TLFeedBack extends JPanel implements ActionListener
 
 	}
 
+	class LongRunProcess extends SwingWorker
+	{
+		ActionEvent event = null;
+
+		LongRunProcess(ActionEvent event)
+		{
+			this.event = event;
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		protected Object doInBackground() throws Exception
+		{
+
+			Loading.show();
+			ArrayList<String> row = null;
+			boolean isExclamationMark = false;
+			if(event.getSource() == filterPanel.filterButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+				try
+				{
+					if(filterPanel.jDateChooser1.isEnabled())
+					{
+						startDate = filterPanel.jDateChooser1.getDate();
+						endDate = filterPanel.jDateChooser2.getDate();
+					}
+					String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
+					String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
+					String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
+					String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+					String documentStatus = StatusName.tlFeedback;
+					tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId, issuer);
+					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+					tablePanel.setTableData1(0, tablePanel.selectedData);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else if(event.getSource() == filterPanel.refreshButton)
+			{
+				Date startDate = null;
+				Date endDate = null;
+
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				filterPanel.filterList = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, startDate, endDate);
+				tablePanel.clearTable();
+				filterPanel.refreshFilters();
+
+			}
+			/**
+			 * Load Data development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load PDF"))
+			{
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+
+					Loading.close();
+					return null;
+				}
+				loadpdf();
+			}
+			/**
+			 * Load All PDFs review and development Sheet
+			 */
+			else if(event.getActionCommand().equals("Load All"))
+			{
+				boolean ok = false;
+				if(sheetpanel.isOpened())
+					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+
+				if(sheetpanel.isOpened() && ok == false)
+				{
+
+					Loading.close();
+					return null;
+				}
+				loadallpdf();
+			}
+			/**
+			 * Validate Parts Action
+			 */
+			else if(event.getSource() == validate)
+			{
+				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).validateTLFBParts(true);
+					}
+				}
+				JOptionPane.showMessageDialog(null, "Validation Finished");
+			}
+			/**
+			 * Save Parts Action
+			 */
+			else if(event.getSource() == save)
+			{
+				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
+				wsMap.keySet();
+				for(String wsName : wsMap.keySet())
+				{
+					if(wsName != "LoadAllData" && wsName != "Separation")
+					{
+						wsMap.get(wsName).saveTLFeedbackAction(userName);
+					}
+				}
+			}
+			/**
+			 * Load Separation Sheet Action
+			 * **/
+			else if(event.getActionCommand().equals("Separation"))
+			{
+				loadseparation();
+			}
+			/**
+			 * Save Separation Action
+			 */
+			else if(event.getActionCommand().equals(" Save "))
+			{
+				saveseparation();
+			}
+
+			Loading.close();
+			return null;
+		}
+	}
 }

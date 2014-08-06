@@ -2,6 +2,7 @@ package com.se.parametric.dev;
 
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,11 +27,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -41,7 +39,6 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.toedter.calendar.JDateChooser;
-import java.awt.Font;
 
 public class PdfLinks extends JPanel implements ActionListener
 {
@@ -271,27 +268,8 @@ public class PdfLinks extends JPanel implements ActionListener
 		doFilterBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0)
 			{
-				Loading loading = new Loading();
-				Thread thread = new Thread(loading);
-				thread.start();
-				filteredData = new ArrayList<DocumentInfoDTO>();
-				if(jDateChooser1.isEnabled())
-				{
-					startDate = jDateChooser1.getDate();
-					endDate = jDateChooser2.getDate();
-				}
-				else
-				{
-					startDate = null;
-					endDate = null;
-				}
-				filteredData = ParaQueryUtil.getDevelopmentPDF(PdfLinks.this.userID, comboBoxItems[0].getSelectedItem().toString(), comboBoxItems[1].getSelectedItem().toString(), comboBoxItems[2].getSelectedItem().toString(), comboBoxItems[3]
-						.getSelectedItem().toString(), startDate, endDate);
-				// jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// jDateChooser2.setDate(new Date(System.currentTimeMillis()));
-				setTableData(0, filteredData);
-				thread.stop();
-				loading.frame.dispose();
+				LongRunProcess longRunProcess = new LongRunProcess();
+                longRunProcess.execute();
 			}
 		});
 		doFilterBtn.setBounds(542, 91, 100, 29);
@@ -630,4 +608,33 @@ public class PdfLinks extends JPanel implements ActionListener
 
 		}
 	}
+
+	class LongRunProcess extends SwingWorker
+	{
+
+		protected Object doInBackground() throws Exception
+		{
+			Loading.show();
+			filteredData = new ArrayList<DocumentInfoDTO>();
+			if(jDateChooser1.isEnabled())
+			{
+				startDate = jDateChooser1.getDate();
+				endDate = jDateChooser2.getDate();
+			}
+			else
+			{
+				startDate = null;
+				endDate = null;
+			}
+			filteredData = ParaQueryUtil.getDevelopmentPDF(PdfLinks.this.userID, comboBoxItems[0].getSelectedItem().toString(), comboBoxItems[1].getSelectedItem().toString(), comboBoxItems[2].getSelectedItem().toString(), comboBoxItems[3]
+					.getSelectedItem().toString(), startDate, endDate);
+			// jDateChooser1.setDate(new Date(System.currentTimeMillis()));
+			// jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+			setTableData(0, filteredData);
+
+			Loading.close();
+			return null;
+		}
+	}
+
 }
