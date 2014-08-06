@@ -1061,7 +1061,6 @@ public class WorkingSheet
 
 	}
 
-
 	public void setPdfInfo(String url, String supplierName, String desc, List<String> newsData, String taxonomies, int rowNum)
 	{
 		Cell cell;
@@ -1688,16 +1687,18 @@ public class WorkingSheet
 						// canSave = false;
 						continue part;
 					}
+					writeValidtionStatus(xcellrange, true);
+
 				}
-				writeValidtionStatus(xcellrange, true);
-
-				appFlag = isRowValuesApproved(xcellrange, endParametricFT);
-
-				if(!appFlag)
+				if(!update)
 				{
-					writeValidtionStatus(xcellrange, false);
-					// canSave = false;
-					// continue part;
+					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
+					if(!appFlag)
+					{
+						writeValidtionStatus(xcellrange, false);
+						// canSave = false;
+						// continue part;
+					}
 				}
 			}
 			if(NPIFlag && !npihasvalue && canSave)
@@ -3413,7 +3414,7 @@ public class WorkingSheet
 
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker)||checker.equals(StatusName.generic_part))
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker) || checker.equals(StatusName.generic_part))
 				{
 					FeatureName = partData.get(FeatureNameindex);
 					FeatureValue = partData.get(FeatureValueindex);
@@ -3434,7 +3435,7 @@ public class WorkingSheet
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
 				qachk.setCheckpartid(Long.valueOf(checkpartid));
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker)||checker.equals(StatusName.generic_part))
+				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker) || checker.equals(StatusName.generic_part))
 				{
 					qachk.setFeatureName(FeatureName);
 					qachk.setFeatureValue(FeatureValue);
@@ -4649,7 +4650,7 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
-				
+
 				cell = getCellByPosission(11, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
@@ -4662,7 +4663,6 @@ public class WorkingSheet
 				cell = getCellByPosission(14, 0);
 				cell.setText("RightValue");
 				HeaderList.add(cell);
-				
 
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongPart);
@@ -4671,7 +4671,7 @@ public class WorkingSheet
 			}
 			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
-				
+
 				cell = getCellByPosission(11, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
@@ -4707,7 +4707,7 @@ public class WorkingSheet
 				cell = getCellByPosission(15, 0);
 				cell.setText("RightValue");
 				HeaderList.add(cell);
-				
+
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateParametricData);

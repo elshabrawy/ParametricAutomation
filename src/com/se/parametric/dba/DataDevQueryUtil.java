@@ -4861,7 +4861,21 @@ public class DataDevQueryUtil
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
-
+			else if(checkerType.equals(StatusName.generic_part))
+			{
+				String Sql = "";
+				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
+				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID,gen.GENERIC FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com,MAP_GENERIC gen WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
+				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND gen.ID= com.GENERIC_ID ";
+				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
+				qury.append(Sql);
+			}
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -4890,8 +4904,13 @@ public class DataDevQueryUtil
 			{
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL order by chktax.CHECK_PART_ID");
 			}
+			else if(checkerType.equals(StatusName.generic_part))
+			{
+				qury.append(" GROUP BY chktax.CHECK_PART_ID,chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL,gen.GENERIC  order by chktax.CHECK_PART_ID");
+			}
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			SQLQuery query = session.createSQLQuery(qury.toString());
+			ArrayList<Object[]> result = (ArrayList<Object[]>) query.list();
 			// nunalpha 0 ,comid 1 ,DOCUMENT_ID 2,pl_id 3,pl_name 4,fetid 5,fetname 6
 			data = new ArrayList<>();
 			for(int i = 0; i < result.size(); i++)
@@ -4913,6 +4932,14 @@ public class DataDevQueryUtil
 					qachecks.setFeatureName(fet.getFeature().getName());
 					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
 					qachecks.setCheckpartid((result.get(i)[7] == null ? 0L : Long.valueOf(result.get(i)[7].toString())));
+				}
+				else if(checkerType.equals(StatusName.generic_part))
+				{
+					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+					qachecks.setGeneric(result.get(i)[8] == null ? "" : result.get(i)[8].toString());
+					qachecks.setFeatureName(fet.getFeature().getName());
+					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
+					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result.get(i)[7].toString()));
 				}
 				else
 				{
