@@ -85,7 +85,8 @@ public class DataDevQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select name from pl where is_pl=1 order by name");
+			SQLQuery query = session
+					.createSQLQuery("select name from pl where is_pl=1 order by name");
 			plNames = query.list();
 		}catch(Exception ex)
 		{
@@ -119,7 +120,8 @@ public class DataDevQueryUtil
 		if(startDate == null && endDate == null)
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
-					+ UserID + " and tp.TRACKING_TASK_STATUS_ID=6 and tp.tracking_task_type_id <> 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
+					+ UserID
+					+ " and tp.TRACKING_TASK_STATUS_ID=6 and tp.tracking_task_type_id <> 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
 
 			System.out.println("Server Mesage   " + sql);
 		}
@@ -140,7 +142,8 @@ public class DataDevQueryUtil
 		{
 			Object[] data = result.get(i);
 			row = new ArrayList<String>();
-			data[3] = (data[3] == null || data[3].equals(new BigDecimal(0))) ? "Not Extracted" : "Extracted";
+			data[3] = (data[3] == null || data[3].equals(new BigDecimal(0))) ? "Not Extracted"
+					: "Extracted";
 			data[4] = (data[4] == null) ? "" : data[4].toString();
 			result.set(i, data);
 		}
@@ -163,11 +166,16 @@ public class DataDevQueryUtil
 			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
 
 			String Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
-			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary + "' FROM Tracking_Parametric tp, pl p, supplier";
-			Sql = Sql + " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
-			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AN";
-			Sql = Sql + "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
-			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL";
+			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
+					+ "' FROM Tracking_Parametric tp, pl p, supplier";
+			Sql = Sql
+					+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
+			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
+					+ ") AND tp.supplier_id = s.id AN";
+			Sql = Sql
+					+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
+			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId()
+					+ " GROUP BY p.name, s.name, ttt.name, U.FULL";
 			Sql = Sql + "_NAME, st.NAME, Get_PL_Type(P.ID )";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 		}finally
@@ -178,7 +186,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<Object[]> getUserNPIData(GrmUserDTO grmUser, Date startDate, Date endDate)
+	public static ArrayList<Object[]> getUserNPIData(GrmUserDTO grmUser, Date startDate,
+			Date endDate)
 	{
 		String start = "";
 		String end = "";
@@ -202,7 +211,8 @@ public class DataDevQueryUtil
 		if(startDate == null && endDate == null)
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
-					+ UserID + " and tp.TRACKING_TASK_STATUS_ID=6  and tp.tracking_task_type_id = 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
+					+ UserID
+					+ " and tp.TRACKING_TASK_STATUS_ID=6  and tp.tracking_task_type_id = 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
 		}
 		else
 		{
@@ -225,7 +235,8 @@ public class DataDevQueryUtil
 			//
 			// row.add((data[j] == null) ? "" : data[j].toString());
 			// }
-			data[3] = (data[3] == null || data[3].equals(new BigDecimal(0))) ? "Not Extracted" : "Extracted";
+			data[3] = (data[3] == null || data[3].equals(new BigDecimal(0))) ? "Not Extracted"
+					: "Extracted";
 			data[4] = (data[4] == null) ? "" : data[4].toString();
 			// row.add((data[3] == null) ? "Not Extracted" : "Extracted");
 			result.set(i, data);
@@ -235,7 +246,8 @@ public class DataDevQueryUtil
 		return result;
 	}
 
-	public static ArrayList<Object[]> getUserFeedbackData(GrmUserDTO grmUser, Date startDate, Date endDate)
+	public static ArrayList<Object[]> getUserFeedbackData(GrmUserDTO grmUser, Date startDate,
+			Date endDate)
 	{
 		long UserID = grmUser.getId();
 		ArrayList<Object[]> result = new ArrayList<Object[]>();
@@ -260,23 +272,36 @@ public class DataDevQueryUtil
 		if(startDate == null && endDate == null)
 		{
 			sql = " SELECT DISTINCT PL.NAME pl_name, s.name supplier_name, TFT.NAME feedback_name";
-			sql = sql + ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
-			sql = sql + "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
-			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID + " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
-			sql = sql + "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
-			sql = sql + "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
-			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND FBc.ISSUED_TO = " + UserID + " AND FB.ID = FBC.P";
+			sql = sql
+					+ ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
+			sql = sql
+					+ "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
+			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID
+					+ " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
+			sql = sql
+					+ "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
+			sql = sql
+					+ "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
+			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND FBc.ISSUED_TO = " + UserID
+					+ " AND FB.ID = FBC.P";
 			sql = sql + "ARA_FEEDBACK_ID";
 		}
 		else
 		{
 			sql = " SELECT DISTINCT PL.NAME pl_name, s.name supplier_name, TFT.NAME feedback_name";
-			sql = sql + ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
-			sql = sql + "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
-			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID + " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
-			sql = sql + "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
-			sql = sql + "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
-			sql = sql + "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('" + startDate + "', 'MM/DD/YYYY')";
+			sql = sql
+					+ ", U.FULL_NAME FROM tracking_parametric tp, pl, supplier s, PARAMETRIC_FEEDBACK";
+			sql = sql
+					+ "_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user u, tracking";
+			sql = sql + "_feedback_type tft WHERE TP.USER_ID = " + UserID
+					+ " AND TP.TRACKING_TASK_STATUS_ID = " + taskStatus.getId() + " ";
+			sql = sql
+					+ "AND TP.PL_ID = PL.ID AND TP.SUPPLIER_ID = S.ID AND TP.DOCUMENT_ID = C.DOCUMENT";
+			sql = sql
+					+ "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
+			sql = sql
+					+ "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('"
+					+ startDate + "', 'MM/DD/YYYY')";
 			sql = sql + " AND TO_DATE ('" + endDate + "', 'MM/DD/YYYY') AND FBc.ISSUE";
 			sql = sql + "D_TO = " + UserID + " AND FB.ID = FBC.PARA_FEEDBACK_ID";
 		}
@@ -295,7 +320,9 @@ public class DataDevQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select distinct issued_by_id from parts_feedback where feedback_recieved=0 and issued_to_id=" + userId);
+			SQLQuery query = session
+					.createSQLQuery("select distinct issued_by_id from parts_feedback where feedback_recieved=0 and issued_to_id="
+							+ userId);
 			List<BigDecimal> list = query.list();
 			if(list != null)
 			{
@@ -314,7 +341,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<Object[]> getTLReviewFilterData(GrmUserDTO grmUser, Date startDate, Date endDate)
+	public static ArrayList<Object[]> getTLReviewFilterData(GrmUserDTO grmUser, Date startDate,
+			Date endDate)
 	{
 		Long UserID = grmUser.getId();
 		String start = "";
@@ -342,22 +370,39 @@ public class DataDevQueryUtil
 			if(startDate == null && endDate == null)
 			{
 				SqlStatement = " SELECT DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_N";
-				SqlStatement = SqlStatement + "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
-				SqlStatement = SqlStatement + "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
-				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
-				SqlStatement = SqlStatement + "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
-				SqlStatement = SqlStatement + "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = " + UserID + ") GROU";
+				SqlStatement = SqlStatement
+						+ "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
+				SqlStatement = SqlStatement
+						+ "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
+				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN ("
+						+ taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
+				SqlStatement = SqlStatement
+						+ "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
+				SqlStatement = SqlStatement
+						+ "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = "
+						+ UserID + ") GROU";
 				SqlStatement = SqlStatement + "P BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
 			}
 			else
 			{
 				SqlStatement = " SELECT DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_N";
-				SqlStatement = SqlStatement + "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
-				SqlStatement = SqlStatement + "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
-				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
-				SqlStatement = SqlStatement + "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
-				SqlStatement = SqlStatement + "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = " + UserID + ")";
-				SqlStatement = SqlStatement + "AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY') GROUP BY   p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
+				SqlStatement = SqlStatement
+						+ "ame FROM Tracking_Parametric tp, pl p, supplier s, trackin";
+				SqlStatement = SqlStatement
+						+ "g_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.pl_id = p.id";
+				SqlStatement = SqlStatement + " AND tp.TRACKING_TASK_STATUS_ID IN ("
+						+ taskStatus.getId() + ") AND tp.supplier_id = s.id AND tp.tracki";
+				SqlStatement = SqlStatement
+						+ "ng_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACKING_TASK_ST";
+				SqlStatement = SqlStatement
+						+ "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = "
+						+ UserID + ")";
+				SqlStatement = SqlStatement
+						+ "AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
+						+ start
+						+ "', 'MM/DD/YYYY') AND TO_DATE('"
+						+ end
+						+ "', 'MM/DD/YYYY') GROUP BY   p.name, s.name, ttt.name, U.FULL_NAME, st.NAME";
 
 			}
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(SqlStatement).list();
@@ -379,7 +424,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<Object[]> getTLFeedbackFilterData(GrmUserDTO grmUser, Date startDate, Date endDate)
+	public static ArrayList<Object[]> getTLFeedbackFilterData(GrmUserDTO grmUser, Date startDate,
+			Date endDate)
 	{
 		long UserID = grmUser.getId();
 		String start = "";
@@ -411,13 +457,21 @@ public class DataDevQueryUtil
 			if(startDate == null && endDate == null)
 			{
 				Sql = " SELECT DISTINCT pl.name pl_name, s.name supplier_name, u.full_name issuer_nam";
-				Sql = Sql + "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
-				Sql = Sql + "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
-				Sql = Sql + " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
-				Sql = Sql + "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = " + UserID + ") ";
-				Sql = Sql + "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
-				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID + " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
-				Sql = Sql + "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID";
+				Sql = Sql
+						+ "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
+				Sql = Sql
+						+ "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
+				Sql = Sql
+						+ " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
+				Sql = Sql
+						+ "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = "
+						+ UserID + ") ";
+				Sql = Sql
+						+ "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
+				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID
+						+ " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
+				Sql = Sql
+						+ "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID";
 				// sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " +
 				// " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
 				// + " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " +
@@ -428,13 +482,23 @@ public class DataDevQueryUtil
 			else
 			{
 				Sql = " SELECT DISTINCT pl.name pl_name, s.name supplier_name, u.full_name issuer_nam";
-				Sql = Sql + "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
-				Sql = Sql + "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
-				Sql = Sql + " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
-				Sql = Sql + "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = " + UserID + ") ";
-				Sql = Sql + "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
-				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID + " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
-				Sql = Sql + "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID" + " AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
+				Sql = Sql
+						+ "e, TFT.NAME feedback_name FROM tracking_parametric tp, pl, supplier s, PARAMET";
+				Sql = Sql
+						+ "RIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, part_component c, grm.grm_user";
+				Sql = Sql
+						+ " u, tracking_feedback_type tft WHERE TP.TRACKING_TASK_STATUS_ID = 28 AND TP.PL";
+				Sql = Sql
+						+ "_ID = pl.id AND TP.USER_ID IN (SELECT id FROM grm.grm_user WHERE leader = "
+						+ UserID + ") ";
+				Sql = Sql
+						+ "AND TP.SUPPLIER_ID = s.id AND FB.ITEM_ID = c.com_id AND C.DOCUMENT_ID = TP.DOC";
+				Sql = Sql + "UMENT_ID AND FBC.ISSUED_TO = " + UserID
+						+ " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
+				Sql = Sql
+						+ "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID"
+						+ " AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start
+						+ "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
 				// sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " +
 				// " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
 				// + " tracking_feedback_type tft where TP.TRACKING_TASK_STATUS_ID=28 and TP.PL_ID=pl.id " +
@@ -453,8 +517,10 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
-			String pltype,Long userid)
+	public static ArrayList<TableInfoDTO> getReviewPDF(Long[] usersId, String plName,
+			String vendorName, String type, String extracted, Date startDate, Date endDate,
+			String feedbackTypeStr, String inputType, String priority, String status,
+			String pltype, Long userid)
 	{
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
@@ -558,7 +624,8 @@ public class DataDevQueryUtil
 				List taskType = null;
 				if(type.equals("NPI"))
 				{
-					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"), Restrictions.eq("name", "NPI Transferred")));
+					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"),
+							Restrictions.eq("name", "NPI Transferred")));
 				}
 				else
 				{
@@ -595,13 +662,15 @@ public class DataDevQueryUtil
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
-				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
+						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
 
 				if(inputType.equals("QAReview"))
 				{
-					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
+					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj
+							.getPl().getId(), usersId, StatusName.qaReview);
 					docInfo.setPDFParts(noparts.get(0));
 					docInfo.setPLParts(noparts.get(1));
 					docInfo.setPDFDoneParts(noparts.get(2));
@@ -645,8 +714,9 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	public static ArrayList<TableInfoDTO> getReviewPDFupdate(Long[] usersId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate, String feedbackTypeStr, String inputType, String priority, String status,
-			String pltype)
+	public static ArrayList<TableInfoDTO> getReviewPDFupdate(Long[] usersId, String plName,
+			String vendorName, String type, String extracted, Date startDate, Date endDate,
+			String feedbackTypeStr, String inputType, String priority, String status, String pltype)
 	{
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
 		if(startDate != null)
@@ -783,13 +853,15 @@ public class DataDevQueryUtil
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
-				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
+						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				docInfo.setPriority("" + obj.getPrioriy());
 
 				if(inputType.equals("QAReview"))
 				{
-					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj.getPl().getId(), usersId, StatusName.qaReview);
+					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj
+							.getPl().getId(), usersId, StatusName.qaReview);
 					docInfo.setPDFParts(noparts.get(0));
 					docInfo.setPLParts(noparts.get(1));
 					docInfo.setPDFDoneParts(noparts.get(2));
@@ -833,7 +905,8 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid, Long[] usersId, String status)
+	private static List<Integer> getnoPartsPerPDFandPL(Long docid, Long plid, Long[] usersId,
+			String status)
 	{
 		Session session = null;
 		List<Integer> result = new ArrayList<>();
@@ -846,7 +919,9 @@ public class DataDevQueryUtil
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", status));
 			trackingTaskstatus = (TrackingTaskStatus) cri.uniqueResult();
-			SQLQuery query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + "");
+			SQLQuery query = session
+					.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x "
+							+ " WHERE   x.DOCUMENT_ID =" + docid + "");
 			Object obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -870,7 +945,8 @@ public class DataDevQueryUtil
 			String Sql = "";
 			Sql = " SELECT /*+ INDEX(x comp_doc_id_idx) */ COUNT (COM_ID) FROM PART_COMPONENT x ";
 			Sql = Sql + "where x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
-			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
+			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = "
+					+ trackingTaskstatus.getId() + " " + users + " ";
 			Sql = Sql + ")";
 			query = session.createSQLQuery(Sql);
 			obj = query.uniqueResult();
@@ -883,7 +959,9 @@ public class DataDevQueryUtil
 				result.add(0);
 			}
 
-			query = session.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x " + " WHERE   x.DOCUMENT_ID =" + docid + " and DONEFLAG = 1");
+			query = session
+					.createSQLQuery("SELECT   /*+ INDEX(x comp_doc_id_idx) */count(COM_ID)  FROM  PART_COMPONENT x "
+							+ " WHERE   x.DOCUMENT_ID =" + docid + " and DONEFLAG = 1");
 			obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -895,8 +973,10 @@ public class DataDevQueryUtil
 			}
 
 			Sql = " SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */ COUNT (COM_ID) FROM PART_COMPONENT x ";
-			Sql = Sql + "where  X.DONEFLAG = 1 AND x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
-			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = " + trackingTaskstatus.getId() + " " + users + " ";
+			Sql = Sql
+					+ "where  X.DONEFLAG = 1 AND x.DOCUMENT_ID in( select document_id from TRACKING_PARAMETRIC";
+			Sql = Sql + " z where z.PL_ID = " + plid + " and z.TRACKING_TASK_STATUS_ID = "
+					+ trackingTaskstatus.getId() + " " + users + " ";
 			Sql = Sql + ")";
 			query = session.createSQLQuery(Sql);
 			obj = query.uniqueResult();
@@ -908,7 +988,9 @@ public class DataDevQueryUtil
 			{
 				result.add(0);
 			}
-			query = session.createSQLQuery("SELECT  /*+ INDEX(x COM_DOC_IDX) */  COUNT(n.COM_ID) FROM PART_COMPONENT x,TBL_NPI_PARTS n WHERE x.COM_ID = n.COM_ID and x.DOCUMENT_ID =" + docid + "");
+			query = session
+					.createSQLQuery("SELECT  /*+ INDEX(x COM_DOC_IDX) */  COUNT(n.COM_ID) FROM PART_COMPONENT x,TBL_NPI_PARTS n WHERE x.COM_ID = n.COM_ID and x.DOCUMENT_ID ="
+							+ docid + "");
 			obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -932,7 +1014,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getShowAllData(long userId, String plName, String vendorName, String type, String extracted, String status, Date startDate, Date endDate, String priority)
+	public static ArrayList<TableInfoDTO> getShowAllData(long userId, String plName,
+			String vendorName, String type, String extracted, String status, Date startDate,
+			Date endDate, String priority)
 	{
 		Session session = SessionUtil.getSession();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -996,8 +1080,11 @@ public class DataDevQueryUtil
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 
 				// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + startDate + "','MM/DD/YYYY HH24:MI:SS')AND  TO_DATE ('" +
 				// endDate + "','MM/DD/YYYY HH24:MI:SS')";
@@ -1010,7 +1097,8 @@ public class DataDevQueryUtil
 			qury.append(" ORDER BY   plName,pdfurl");
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 
 			System.out.println("All Data Size:" + result.size());
@@ -1025,7 +1113,8 @@ public class DataDevQueryUtil
 				docInfo.setStatus(data[3].toString());
 				docInfo.setTaskType(data[4].toString());
 				docInfo.setDevUserName(data[5].toString());
-				docInfo.setExtracted(data[6] != null && data[6].toString().equals("1") ? "Yes" : "No");
+				docInfo.setExtracted(data[6] != null && data[6].toString().equals("1") ? "Yes"
+						: "No");
 				docInfo.setPriority(data[7] != null ? data[7].toString() : "");
 				docInfo.setDate(data[8].toString());
 				docInfo.setTaxonomies(data[9].toString());
@@ -1045,7 +1134,9 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	public static ArrayList<TableInfoDTO> getAllAssigined(long userId, String plName, String vendorName, String type, String extracted, String status, Date startDate, Date endDate, String priority)
+	public static ArrayList<TableInfoDTO> getAllAssigined(long userId, String plName,
+			String vendorName, String type, String extracted, String status, Date startDate,
+			Date endDate, String priority)
 	{
 		Session session = SessionUtil.getSession();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -1111,8 +1202,11 @@ public class DataDevQueryUtil
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 
 				// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" +
 				// formatter.format(endDate) + "','DD/MM/RRRR')";
@@ -1123,7 +1217,8 @@ public class DataDevQueryUtil
 			qury.append(" ORDER BY   plName,pdfurl");
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 
 			System.out.println("All Data Size:" + result.size());
@@ -1138,7 +1233,8 @@ public class DataDevQueryUtil
 				docInfo.setStatus(data[3].toString());
 				docInfo.setTaskType(data[4].toString());
 				docInfo.setDevUserName(data[5].toString());
-				docInfo.setExtracted(data[6] != null && data[6].toString().equals("1") ? "Yes" : "No");
+				docInfo.setExtracted(data[6] != null && data[6].toString().equals("1") ? "Yes"
+						: "No");
 				docInfo.setPriority(data[7].toString());
 				docInfo.setDate(data[8].toString());
 				docInfo.setTitle(data[9] != null ? data[9].toString() : "");
@@ -1155,7 +1251,9 @@ public class DataDevQueryUtil
 		return tableData;
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview(Long[] usersId, String plName, String vendorName, String type, String status, Date startDate, Date endDate, Long[] docsIds) throws Exception
+	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview(
+			Long[] usersId, String plName, String vendorName, String type, String status,
+			Date startDate, Date endDate, Long[] docsIds) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
@@ -1201,15 +1299,19 @@ public class DataDevQueryUtil
 			}
 			if(docsIds != null && docsIds.length > 0)
 			{
-				qury.append(" AND t.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds) + " )");
+				qury.append(" AND t.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
+						+ " )");
 			}
 			if(startDate != null && endDate != null)
 			{
 				endDate.setDate(endDate.getDate() + 1);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 				// qury = qury +
 				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
@@ -1217,7 +1319,8 @@ public class DataDevQueryUtil
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 			ArrayList<String> partData = new ArrayList<String>();
 			List<String> plFets = new ArrayList<String>();
@@ -1233,8 +1336,11 @@ public class DataDevQueryUtil
 				// int fetOrder= getPlFeatureByExactName(data[10].toString(), plout, session).getDevelopmentOrder();
 				if(plFetsMap.get(plout) == null)
 					plFetsMap.put(plout, ParaQueryUtil.getPlFeautreNames(plout));
-				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
-				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ " + data[10].toString() + " ~ " + data[11].toString() + " idx:" + partData.indexOf(data[10].toString()));
+				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session))
+						.getName();
+				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
+						+ data[10].toString() + " ~ " + data[11].toString() + " idx:"
+						+ partData.indexOf(data[10].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
@@ -1354,7 +1460,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview1(Long[] usersId, String plName, String vendorName, String type, String status, Date startDate, Date endDate, Long[] docsIds) throws Exception
+	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview1(
+			Long[] usersId, String plName, String vendorName, String type, String status,
+			Date startDate, Date endDate, Long[] docsIds) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
@@ -1384,7 +1492,9 @@ public class DataDevQueryUtil
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi + "'),getTaskTypeId('" + StatusName.npiTransferred + "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
+							+ "'),getTaskTypeId('" + StatusName.npiTransferred
+							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
 				}
 				else
 				{
@@ -1397,21 +1507,26 @@ public class DataDevQueryUtil
 			}
 			if(docsIds != null && docsIds.length > 0)
 			{
-				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds) + " )");
+				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
+						+ " )");
 			}
 			if(startDate != null && endDate != null)
 			{
 				endDate.setDate(endDate.getDate() + 1);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 			ArrayList<String> partData = new ArrayList<String>();
 			List<String> plFets = new ArrayList<String>();
@@ -1433,10 +1548,13 @@ public class DataDevQueryUtil
 				if(plFetsMap.get(plout) == null)
 				{
 					plFetsMap.put(plout, ParaQueryUtil.getPlFeautreNames(plout));
-					plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
+					plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session))
+							.getName();
 				}
 				// plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
-				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ " + data[13].toString() + " ~ " + data[14].toString() + " idx:" + partData.indexOf(data[13].toString()));
+				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
+						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
+						+ partData.indexOf(data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
@@ -1504,7 +1622,8 @@ public class DataDevQueryUtil
 					{
 						allData.put(lastPl, plData);
 					}
-					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type, status, startDate, endDate, docsIds);
+					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type, status,
+							startDate, endDate, docsIds);
 					partData = new ArrayList<String>();
 					/** Pl Name */
 					partData.add(data[0].toString());
@@ -1538,7 +1657,8 @@ public class DataDevQueryUtil
 						if(NPIFlag)
 						{
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -1560,7 +1680,8 @@ public class DataDevQueryUtil
 						if(NPIFlag)
 						{
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -1620,7 +1741,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getFeedbackParametricValueReview(Long[] usersId, String plName, String vendorName, String docStatus, String feedbackType, String issuedby, Date startDate, Date endDate, Long[] docsIds,
+	public static Map<String, ArrayList<ArrayList<String>>> getFeedbackParametricValueReview(
+			Long[] usersId, String plName, String vendorName, String docStatus,
+			String feedbackType, String issuedby, Date startDate, Date endDate, Long[] docsIds,
 			long issuedToId) throws Exception
 	{
 		Session session = SessionUtil.getSession();
@@ -1657,17 +1780,20 @@ public class DataDevQueryUtil
 
 			if(docsIds != null && docsIds.length > 0)
 			{
-				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds) + " )");
+				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
+						+ " )");
 			}
 			qury.append(" AND FBC.ISSUED_TO = " + issuedToId);
-			Criteria ParametricFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
+			Criteria ParametricFeedbackCriteria = session
+					.createCriteria(ParametricFeedbackCycle.class);
 			ParametricFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 			ParametricFeedbackCriteria.add(Restrictions.eq("issuedTo", issuedToId));
 			ParametricFeedbackCriteria.createAlias("parametricFeedback", "feedback");
 			ParametricFeedbackCriteria.add(Restrictions.eq("feedback.type", "P"));
 			if((feedbackType != null) && (!"All".equals(feedbackType)))
 			{
-				ParametricFeedbackCriteria.add(Restrictions.eq("feedback.trackingFeedbackType", ParaQueryUtil.getTrackingFeedbackType(feedbackType)));
+				ParametricFeedbackCriteria.add(Restrictions.eq("feedback.trackingFeedbackType",
+						ParaQueryUtil.getTrackingFeedbackType(feedbackType)));
 			}
 			if((issuedby != null) && (!"All".equals(issuedby)))
 			{
@@ -1675,34 +1801,41 @@ public class DataDevQueryUtil
 				ParametricFeedbackCriteria.add(Restrictions.eq("issuedBy", issuer.getId()));
 			}
 
-			List<ParametricFeedbackCycle> parametricfeedbackcycle = ParametricFeedbackCriteria.list();
+			List<ParametricFeedbackCycle> parametricfeedbackcycle = ParametricFeedbackCriteria
+					.list();
 			Set<Long> docSet = new HashSet<Long>();
 			if(parametricfeedbackcycle != null)
 			{
 				for(int i = 0; i < parametricfeedbackcycle.size(); i++)
 				{
-					docSet.add(parametricfeedbackcycle.get(i).getParametricFeedback().getDocument().getId());
+					docSet.add(parametricfeedbackcycle.get(i).getParametricFeedback().getDocument()
+							.getId());
 				}
 			}
 			if(docSet.size() > 0)
 			{
 				Long[] docsIds2 = new Long[docSet.size()];
 				docsIds2 = docSet.toArray(docsIds2);
-				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds2) + " )");
+				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds2)
+						+ " )");
 			}
 
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 			ArrayList<String> partData = new ArrayList<String>();
 			List<String> plFets = new ArrayList<String>();
@@ -1721,8 +1854,11 @@ public class DataDevQueryUtil
 				// int fetOrder= getPlFeatureByExactName(data[10].toString(), plout, session).getDevelopmentOrder();
 				if(plFetsMap.get(plout) == null)
 					plFetsMap.put(plout, ParaQueryUtil.getPlFeautreNames(plout));
-				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
-				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ " + data[13].toString() + " ~ " + data[14].toString() + " idx:" + partData.indexOf(data[13].toString()));
+				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session))
+						.getName();
+				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
+						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
+						+ partData.indexOf(data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
@@ -1790,7 +1926,8 @@ public class DataDevQueryUtil
 					{
 						allData.put(lastPl, plData);
 					}
-					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, null, docStatus, startDate, endDate, docsIds);
+					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, null, docStatus,
+							startDate, endDate, docsIds);
 					partData = new ArrayList<String>();
 					partData.add(data[0].toString());
 					/** Pl Name */
@@ -1839,7 +1976,8 @@ public class DataDevQueryUtil
 						{
 
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -1858,7 +1996,8 @@ public class DataDevQueryUtil
 						if(NPIFlag)
 						{
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -1922,8 +2061,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId, String plName, String vendorName, String type, Date startDate, Date endDate, Long[] docsIds, Long qaUser, String availableStatus, String Pltype)
-			throws Exception
+	public static Map<String, ArrayList<ArrayList<String>>> getQAPDFData(Long[] usersId,
+			String plName, String vendorName, String type, Date startDate, Date endDate,
+			Long[] docsIds, Long qaUser, String availableStatus, String Pltype) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
@@ -1934,20 +2074,34 @@ public class DataDevQueryUtil
 			StringBuffer qury = new StringBuffer();
 			String Sql = "";
 			Sql = " SELECT GET_PL_NAME (t.PL_ID) plName, getuserName (T.USER_ID), GetTaskTypeName";
-			Sql = Sql + " (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,";
-			Sql = Sql + " C.PART_NUMBER, FAM.NAME, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cros";
-			Sql = Sql + "s, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PA";
-			Sql = Sql + "RT_NUMBER) MASK, GETNPIBYCOMID(c.COM_ID) NPI_FLAG, GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) n";
-			Sql = Sql + "ewsLike, c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, F.NAME fetNam";
-			Sql = Sql + "e, G.GROUP_FULL_VALUE fetVal, t.ASSIGNED_DATE, GetTaskStatusName (TRACKING_TAS";
-			Sql = Sql + "K_STATUS_ID) task_Status, C.COM_ID, R.PL_FEATURE_ID, R.GROUP_APPROVED_VALUE_ID";
-			Sql = Sql + ", t.DOCUMENT_ID, t.PL_ID,Decode(C.DONEFLAG,null,'No',0,'No',1,'Yes')  DONEFLAG,";
-			Sql = Sql + " Decode(C.EXTRACTIONFLAG,null,'No',0,'No',1,'Yes') EXTRACTIONFLAG FROM TRACKING_PARAMETRIC T, Part_COMPONENT c, family ";
-			Sql = Sql + "fam, PARAMETRIC_REVIEW_DATA r, pl_feature_unit pf, feature f, PARAMETRIC_APPRO";
-			Sql = Sql + "VED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID AND T.SUPPLIER_PL_ID = C.SUPPL";
-			Sql = Sql + "IER_PL_ID AND c.COM_ID = R.COM_ID AND C.FAMILY_ID = FAM.ID AND R.PL_FEATURE_ID";
-			Sql = Sql + " = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID AND T.QA_US";
-			Sql = Sql + "ER_ID = " + qaUser + " AND T.TRACKING_TASK_STATUS_ID = getTaskstatusId ('" + availableStatus + "')";
+			Sql = Sql
+					+ " (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,";
+			Sql = Sql
+					+ " C.PART_NUMBER, FAM.NAME, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cros";
+			Sql = Sql
+					+ "s, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PA";
+			Sql = Sql
+					+ "RT_NUMBER) MASK, GETNPIBYCOMID(c.COM_ID) NPI_FLAG, GET_News_PDF_URL (c.DOCUMENT_ID, c.SUPPLIER_ID) n";
+			Sql = Sql
+					+ "ewsLike, c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl, F.NAME fetNam";
+			Sql = Sql
+					+ "e, G.GROUP_FULL_VALUE fetVal, t.ASSIGNED_DATE, GetTaskStatusName (TRACKING_TAS";
+			Sql = Sql
+					+ "K_STATUS_ID) task_Status, C.COM_ID, R.PL_FEATURE_ID, R.GROUP_APPROVED_VALUE_ID";
+			Sql = Sql
+					+ ", t.DOCUMENT_ID, t.PL_ID,Decode(C.DONEFLAG,null,'No',0,'No',1,'Yes')  DONEFLAG,";
+			Sql = Sql
+					+ " Decode(C.EXTRACTIONFLAG,null,'No',0,'No',1,'Yes') EXTRACTIONFLAG FROM TRACKING_PARAMETRIC T, Part_COMPONENT c, family ";
+			Sql = Sql
+					+ "fam, PARAMETRIC_REVIEW_DATA r, pl_feature_unit pf, feature f, PARAMETRIC_APPRO";
+			Sql = Sql
+					+ "VED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID AND T.SUPPLIER_PL_ID = C.SUPPL";
+			Sql = Sql
+					+ "IER_PL_ID AND c.COM_ID = R.COM_ID AND C.FAMILY_ID = FAM.ID AND R.PL_FEATURE_ID";
+			Sql = Sql
+					+ " = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID AND T.QA_US";
+			Sql = Sql + "ER_ID = " + qaUser + " AND T.TRACKING_TASK_STATUS_ID = getTaskstatusId ('"
+					+ availableStatus + "')";
 			qury.append(Sql);
 
 			if(plName != null && !plName.equals("All"))
@@ -1966,7 +2120,9 @@ public class DataDevQueryUtil
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi + "'),getTaskTypeId('" + StatusName.npiTransferred + "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
+							+ "'),getTaskTypeId('" + StatusName.npiTransferred
+							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
 				}
 				else
 				{
@@ -1979,14 +2135,18 @@ public class DataDevQueryUtil
 			}
 			if(docsIds != null && docsIds.length > 0)
 			{
-				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds) + " )");
+				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
+						+ " )");
 			}
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 				// qury = qury +
 				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
@@ -1995,7 +2155,8 @@ public class DataDevQueryUtil
 			// Medical Application|DD Review|Minimum Storage Temperature
 
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
 			ArrayList<String> partData = new ArrayList<String>();
 			List<String> plFets = new ArrayList<String>();
@@ -2014,8 +2175,11 @@ public class DataDevQueryUtil
 				// int fetOrder= getPlFeatureByExactName(data[10].toString(), plout, session).getDevelopmentOrder();
 				if(plFetsMap.get(plout) == null)
 					plFetsMap.put(plout, ParaQueryUtil.getPlFeautreNames(plout));
-				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
-				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ " + data[13].toString() + " ~ " + data[14].toString() + " idx:" + partData.indexOf(data[13].toString()));
+				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session))
+						.getName();
+				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
+						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
+						+ partData.indexOf(data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
@@ -2083,7 +2247,8 @@ public class DataDevQueryUtil
 					{
 						allData.put(lastPl, plData);
 					}
-					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type, availableStatus, startDate, endDate, docsIds);
+					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type,
+							availableStatus, startDate, endDate, docsIds);
 					partData = new ArrayList<String>();
 					/** Pl Name */
 					partData.add(data[0].toString());
@@ -2123,7 +2288,8 @@ public class DataDevQueryUtil
 						if(NPIFlag)
 						{
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** news link */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -2145,7 +2311,8 @@ public class DataDevQueryUtil
 						if(NPIFlag)
 						{
 							/** NPI Flag */
-							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes" : "");
+							partData.add((data[9] != null && data[9].toString().equals("1")) ? "Yes"
+									: "");
 							/** news link */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
@@ -2200,7 +2367,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<TableInfoDTO> getTlReviewFeedbackPDFs(Long[] usersId, String plName, String vendorName, String status, Date startDate, Date endDate, String feedbackTypeStr, long issuedToId, String issuer)
+	public static ArrayList<TableInfoDTO> getTlReviewFeedbackPDFs(Long[] usersId, String plName,
+			String vendorName, String status, Date startDate, Date endDate, String feedbackTypeStr,
+			long issuedToId, String issuer)
 	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -2262,7 +2431,8 @@ public class DataDevQueryUtil
 			{
 				for(int i = 0; i < parametricfeedbackcycles.size(); i++)
 				{
-					docsSet.add(parametricfeedbackcycles.get(i).getParametricFeedback().getDocument());
+					docsSet.add(parametricfeedbackcycles.get(i).getParametricFeedback()
+							.getDocument());
 				}
 			}
 			if(!docsSet.isEmpty())
@@ -2284,7 +2454,8 @@ public class DataDevQueryUtil
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
-				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
+						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				Date finishDate = obj.getFinishedDate();
 				if(finishDate != null)
@@ -2315,7 +2486,9 @@ public class DataDevQueryUtil
 		List<String> newsData = new ArrayList<String>();
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select GETPDFURLbydoc(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('" + pdfURL + "')");
+			SQLQuery query = session
+					.createSQLQuery("select GETPDFURLbydoc(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('"
+							+ pdfURL + "')");
 			Object[] list = (Object[]) query.uniqueResult();
 			newsLink = (list[0] == null) ? "" : list[0].toString();
 			newsDesc = (list[1] == null) ? "" : list[1].toString();
@@ -2339,7 +2512,9 @@ public class DataDevQueryUtil
 		String newsLink = null;
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select pdf_url from cm.pdf_table where pdf_id in (select pdf_id from cm.tbl_npi_new where offline_ds=" + pdfId + ")");
+			SQLQuery query = session
+					.createSQLQuery("select pdf_url from cm.pdf_table where pdf_id in (select pdf_id from cm.tbl_npi_new where offline_ds="
+							+ pdfId + ")");
 			newsLink = (String) query.uniqueResult();
 
 		}catch(Exception ex)
@@ -2358,7 +2533,8 @@ public class DataDevQueryUtil
 		String newsLink = null;
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select mvcode from cm.pdf_table where pdf_id=" + pdfId);
+			SQLQuery query = session.createSQLQuery("select mvcode from cm.pdf_table where pdf_id="
+					+ pdfId);
 			newsLink = (String) query.uniqueResult();
 
 		}catch(Exception ex)
@@ -2371,7 +2547,8 @@ public class DataDevQueryUtil
 		}
 	}
 
-	public static ArrayList<TableInfoDTO> getDevFeedbackPDF(long userId, String plName, String vendorName, String issuedBy, String feedbackTypeStr, Date startDate, Date endDate)
+	public static ArrayList<TableInfoDTO> getDevFeedbackPDF(long userId, String plName,
+			String vendorName, String issuedBy, String feedbackTypeStr, Date startDate, Date endDate)
 	{
 
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -2388,7 +2565,8 @@ public class DataDevQueryUtil
 			{
 				criteria.add(Expression.between("finishedDate", startDate, endDate));
 			}
-			criteria.add(Restrictions.eq("trackingTaskStatus", ParaQueryUtil.getTrackingTaskStatus(session, StatusName.engFeedback)));
+			criteria.add(Restrictions.eq("trackingTaskStatus",
+					ParaQueryUtil.getTrackingTaskStatus(session, StatusName.engFeedback)));
 
 			if(plName != null && !plName.equals("All"))
 			{
@@ -2405,7 +2583,8 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("supplier", supplier));
 			}
 
-			Criteria ParametricFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
+			Criteria ParametricFeedbackCriteria = session
+					.createCriteria(ParametricFeedbackCycle.class);
 			ParametricFeedbackCriteria.add(Restrictions.eq("issuedTo", userId));
 			ParametricFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
@@ -2418,15 +2597,18 @@ public class DataDevQueryUtil
 			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
 			{
 				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
-				ParametricFeedbackCriteria.add(Restrictions.eq("Feedback.trackingFeedbackType", ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr)));
+				ParametricFeedbackCriteria.add(Restrictions.eq("Feedback.trackingFeedbackType",
+						ParaQueryUtil.getTrackingFeedbackType(feedbackTypeStr)));
 			}
 
-			List<ParametricFeedbackCycle> parametricfeedbackCycles = ParametricFeedbackCriteria.list();
+			List<ParametricFeedbackCycle> parametricfeedbackCycles = ParametricFeedbackCriteria
+					.list();
 			if(parametricfeedbackCycles != null)
 			{
 				for(int i = 0; i < parametricfeedbackCycles.size(); i++)
 				{
-					ParametricFeedbackCycle parametricfeedbackCycle = parametricfeedbackCycles.get(i);
+					ParametricFeedbackCycle parametricfeedbackCycle = parametricfeedbackCycles
+							.get(i);
 					Document doc = parametricfeedbackCycle.getParametricFeedback().getDocument();
 					docsSet.add(doc);
 				}
@@ -2449,7 +2631,8 @@ public class DataDevQueryUtil
 				docInfo.setSupplierName(obj.getSupplier().getName());
 				docInfo.setStatus(obj.getTrackingTaskStatus().getName());
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
-				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
+						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				Date finishDate = obj.getFinishedDate();
 				if(finishDate != null)
@@ -2478,8 +2661,11 @@ public class DataDevQueryUtil
 		{
 			PartComponent com = new PartComponent();
 			MasterFamilyGeneric famGen = null;
+			FamilyCross fam = null;
+			MapGeneric gen = null;
 			// long comId = System.nanoTime();
-			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(), session);
+			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
+					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(), session);
 			// com.setComId(comId);
 			// com.setDocument(getDocumentBySeUrl(partInfo.getPdfUrl(), session));
 			// com.setSupplierPl(getSupplierPlBySupplierAndPl(QueryUtil.getPlByExactName(partInfo.getPlName(), session),
@@ -2522,23 +2708,18 @@ public class DataDevQueryUtil
 			// com.setNpiFlag(0l);
 			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
 			{
-				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
+				gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
 				if(gen == null)
 				{
 					gen = insertGeneric(partInfo.getGeneric(), session);
 				}
-				FamilyCross fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
+				fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
 				if(fam == null)
 				{
 					fam = insertFamilyCross(partInfo.getFamilycross(), session);
 				}
 				com.setFamilyCross(fam);
 				com.setMapGeneric(gen);
-
-				// famGen = new MasterFamilyGeneric();
-				// famGen.setComId(com);
-				// famGen.setFamilyCross(fam);
-				// famGen.setMapGeneric(gen);
 			}
 
 			if(partInfo.getFeedbackType() != null)
@@ -2571,23 +2752,31 @@ public class DataDevQueryUtil
 				insertNPIPart(com, partInfo.getNewsLink(), session);
 			}
 
-			if(famGen != null)
+			if(gen != null && fam != null)
+			{
+				famGen = new MasterFamilyGeneric();
+				famGen.setComId(com);
+				famGen.setFamilyCross(fam);
+				famGen.setMapGeneric(gen);
+				famGen.setAutoFlag(1l);
 				session.saveOrUpdate(famGen);
-			// session.beginTransaction().commit();
-
+				// session.beginTransaction().commit()
+			}
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
 			for(String fetName : fetNames)
 			{
 				// session.beginTransaction().begin();
-				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName, partInfo.getPlName(), session);
+				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+						partInfo.getPlName(), session);
 				String fetValue = fetsMap.get(fetName);
 				if(fetValue.isEmpty())
 				{
 					System.out.println(fetName + "Has blank Values ");
 					continue;
 				}
-				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue, plFeature, session);
+				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
+						plFeature, session);
 				ParametricReviewData data = new ParametricReviewData();
 				long id = QueryUtil.getRandomID();
 				data.setComponent(com);
@@ -2616,16 +2805,20 @@ public class DataDevQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
+			MasterFamilyGeneric famGen = null;
+			FamilyCross fam = null;
+			MapGeneric gen = null;
 			String partNumber = partInfo.getPN();
 			String vendorName = partInfo.getSupplierName();
-			PartComponent com = partInfo.getComponent();
-			// getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
-
+			PartComponent com = getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
+			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
+					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(),
+					session);
 			if(com == null)
 			{
 				com = new PartComponent();
 
-				TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(), session);
+				
 				com.setDocument(track.getDocument());
 				com.setSupplierPl(track.getSupplierPl());
 				com.setSupplierId(track.getSupplier());
@@ -2658,20 +2851,21 @@ public class DataDevQueryUtil
 			else
 				com.setNpiFlag(0l);
 
-			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty() && partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
+			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty()
+					&& partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
 			{
-				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
+				gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
 				if(gen == null)
 				{
 					gen = insertGeneric(partInfo.getGeneric(), session);
 				}
-				FamilyCross fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
+				fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
 				if(fam == null)
 				{
 					fam = insertFamilyCross(partInfo.getFamilycross(), session);
 				}
 				com.setFamilyCross(fam);
-
+				com.setMapGeneric(gen);
 			}
 			if(partInfo.getFeedbackType() != null)
 				com.setTrackingFeedbackType(getFeedbackType(partInfo.getFeedbackType()));
@@ -2683,22 +2877,36 @@ public class DataDevQueryUtil
 			session.saveOrUpdate(com);
 			session.beginTransaction().commit();
 
+			if(gen != null && fam != null)
+			{
+				famGen = new MasterFamilyGeneric();
+				famGen.setComId(com);
+				famGen.setFamilyCross(fam);
+				famGen.setMapGeneric(gen);
+				famGen.setAutoFlag(1l);
+				session.saveOrUpdate(famGen);
+				// session.beginTransaction().commit()
+			}
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
 			for(String fetName : fetNames)
 			{
 				// session.beginTransaction().begin();
-				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName, partInfo.getPlName(), session);
+				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+						partInfo.getPlName(), session);
 				String fetValue = fetsMap.get(fetName);
 				if((fetValue == null) || ("".equals(fetValue)))
 				{
 					continue;
 				}
-				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue, plFeature, session);
-				Criteria parametricReviewDataCriteria = session.createCriteria(ParametricReviewData.class);
+				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
+						plFeature, session);
+				Criteria parametricReviewDataCriteria = session
+						.createCriteria(ParametricReviewData.class);
 				parametricReviewDataCriteria.add(Restrictions.eq("component", com));
 				parametricReviewDataCriteria.add(Restrictions.eq("plFeature", plFeature));
-				ParametricReviewData data = (ParametricReviewData) parametricReviewDataCriteria.uniqueResult();
+				ParametricReviewData data = (ParametricReviewData) parametricReviewDataCriteria
+						.uniqueResult();
 				if(data == null)
 				{
 					data = new ParametricReviewData();
@@ -2706,6 +2914,7 @@ public class DataDevQueryUtil
 					data.setId(id);
 					data.setComponent(com);
 					data.setPlFeature(plFeature);
+					data.setTrackingParametric(track);
 				}
 				// data.setComponent(com);
 				data.setGroupApprovedValueId(group.getId());
@@ -2725,7 +2934,8 @@ public class DataDevQueryUtil
 		return true;
 	}
 
-	public static void saveTrackingParamtric(List<String> pdfSet, String plName, String supplierName, String status, String user) throws Exception
+	public static void saveTrackingParamtric(List<String> pdfSet, String plName,
+			String supplierName, String status, String user) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
@@ -2739,7 +2949,8 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, plName)));
 				if(supplierName != null)
 				{
-					criteria.add(Restrictions.eq("supplier", ParaQueryUtil.getSupplierByExactName(session, supplierName)));
+					criteria.add(Restrictions.eq("supplier",
+							ParaQueryUtil.getSupplierByExactName(session, supplierName)));
 				}
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
@@ -2752,16 +2963,19 @@ public class DataDevQueryUtil
 				// // if document has opened feedbacks
 				// don't transfere to QA Team
 				GrmUser issuedByUser = null;
-				if(!user.equals("")){
-				issuedByUser = ParaQueryUtil.getGRMUserByName(user);
+				if(!user.equals(""))
+				{
+					issuedByUser = ParaQueryUtil.getGRMUserByName(user);
 				}
 				if(hasIssues(document.getId(), issuedByUser == null ? 0l : issuedByUser.getId()))
 				{
-					System.err.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^ Document : " + document.getId() + " Has opened feedbacks^^^^^^^^^^^^^^^^^^");
+					System.err.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^ Document : " + document.getId()
+							+ " Has opened feedbacks^^^^^^^^^^^^^^^^^^");
 					continue;
 				}
 				// }
-				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, status);
+				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
+						session, status);
 				track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
 				// session.beginTransaction().commit();
@@ -2774,7 +2988,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static void saveTrackingParamtric(Map<String, List<String>> pdfSet, String status) throws Exception
+	public static void saveTrackingParamtric(Map<String, List<String>> pdfSet, String status)
+			throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
@@ -2785,10 +3000,12 @@ public class DataDevQueryUtil
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdf, session);
 				criteria.add(Restrictions.eq("document", document));
-				criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
+				criteria.add(Restrictions.eq("pl",
+						ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
 				if(pdfSet.get(pdf).get(1) != null && pdfSet.get(pdf).get(1).equals(""))
 				{
-					criteria.add(Restrictions.eq("supplier", ParaQueryUtil.getSupplierByExactName(session, pdfSet.get(pdf).get(1))));
+					criteria.add(Restrictions.eq("supplier",
+							ParaQueryUtil.getSupplierByExactName(session, pdfSet.get(pdf).get(1))));
 				}
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
@@ -2798,7 +3015,8 @@ public class DataDevQueryUtil
 				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
 				track.setQaUserId(qaUserId);
 				track.setQaReviewDate(ParaQueryUtil.getDate());
-				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, status);
+				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
+						session, status);
 				track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
 			}
@@ -2884,7 +3102,8 @@ public class DataDevQueryUtil
 				fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
-				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria.uniqueResult();
+				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria
+						.uniqueResult();
 				if(parametricFeedbackCycle != null)
 				{
 					parametricFeedbackCycle.setFeedbackRecieved(1l);
@@ -2915,11 +3134,16 @@ public class DataDevQueryUtil
 				FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 				FBCyc.setFeedbackRecieved(fbRecieved);
 
-				if(partInfo.getCAction() != null && partInfo.getPAction() != null && partInfo.getRootCause() != null && partInfo.getActinDueDate() != null)
+				if(partInfo.getCAction() != null && partInfo.getPAction() != null
+						&& partInfo.getRootCause() != null && partInfo.getActinDueDate() != null)
 				{
-					if(!partInfo.getCAction().equals("") && !partInfo.getPAction().equals("") && !partInfo.getRootCause().equals("") && !partInfo.getActinDueDate().equals(""))
+					if(!partInfo.getCAction().equals("") && !partInfo.getPAction().equals("")
+							&& !partInfo.getRootCause().equals("")
+							&& !partInfo.getActinDueDate().equals(""))
 					{
-						feedbackAction = ApprovedDevUtil.getParaAction(partInfo.getCAction(), partInfo.getPAction(), partInfo.getRootCause(), partInfo.getActinDueDate(), session);
+						feedbackAction = ApprovedDevUtil.getParaAction(partInfo.getCAction(),
+								partInfo.getPAction(), partInfo.getRootCause(),
+								partInfo.getActinDueDate(), session);
 						if(feedbackAction != null)
 						{
 							FBCyc.setParaFeedbackAction(feedbackAction);
@@ -2930,7 +3154,8 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(FBCyc);
 				session.beginTransaction().commit();
 				if(wrongfeatures != null && !wrongfeatures.isEmpty())
-					savewrongfeatures(session, FBObj, comment, wrongfeatures, parametricFeedbackCycle);
+					savewrongfeatures(session, FBObj, comment, wrongfeatures,
+							parametricFeedbackCycle);
 				if(fbStatus.equals(StatusName.closed))
 				{
 					System.err.println("edit in summary status");
@@ -2994,7 +3219,8 @@ public class DataDevQueryUtil
 		}
 	}
 
-	private static void savewrongfeatures(Session session, ParametricFeedback FBObj, String comment, String wrongfeatures, ParametricFeedbackCycle parametricFeedbackCycle)
+	private static void savewrongfeatures(Session session, ParametricFeedback FBObj,
+			String comment, String wrongfeatures, ParametricFeedbackCycle parametricFeedbackCycle)
 	{
 		Criteria criteria;
 		if(parametricFeedbackCycle == null)
@@ -3122,7 +3348,8 @@ public class DataDevQueryUtil
 		}
 	}
 
-	public static String sendFeedbackToSourcingTeam(String userName, String pdfUrl, String plName, String docFeedbackComment, String revUrl, String rightTax)
+	public static String sendFeedbackToSourcingTeam(String userName, String pdfUrl, String plName,
+			String docFeedbackComment, String revUrl, String rightTax)
 	{
 		String status = "Done";
 		Session session = null;
@@ -3170,8 +3397,10 @@ public class DataDevQueryUtil
 			docFeedback.setStatus("unexecuted");
 			session.saveOrUpdate(docFeedback);
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
-			TrackingParametric trackingParametric = getTrackingParametricByDocumentAndPl(document, pl, session);
-			TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(session, StatusName.srcFeedback);
+			TrackingParametric trackingParametric = getTrackingParametricByDocumentAndPl(document,
+					pl, session);
+			TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(
+					session, StatusName.srcFeedback);
 			trackingParametric.setTrackingTaskStatus(trackingTaskStatus);
 			session.update(trackingParametric);
 			// session.beginTransaction().commit();
@@ -3187,7 +3416,9 @@ public class DataDevQueryUtil
 		return status;
 	}
 
-	public static ArrayList<TableInfoDTO> getShowAllPDFReview(Long[] usersId, String plName, String vendorName, String type, String extracted, String status, Date startDate, Date endDate, String feedbackTypeStr)
+	public static ArrayList<TableInfoDTO> getShowAllPDFReview(Long[] usersId, String plName,
+			String vendorName, String type, String extracted, String status, Date startDate,
+			Date endDate, String feedbackTypeStr)
 	{
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<TableInfoDTO> tableData = new ArrayList<TableInfoDTO>();
@@ -3276,7 +3507,8 @@ public class DataDevQueryUtil
 				docInfo.setSupplierName(obj.getSupplier().getName());
 				docInfo.setStatus(obj.getTrackingTaskStatus().getName());
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
-				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId()).getFullName());
+				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
+						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
 				Date finishDate = obj.getFinishedDate();
 				if(finishDate != null)
@@ -3338,7 +3570,9 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select tft.name from tracking_feedback_type tft, parts_feedback pf where pf.feedback_type=tft.id and pf.com_id=" + comId + " and pf.feedback_recieved=0");
+			SQLQuery query = session
+					.createSQLQuery("select tft.name from tracking_feedback_type tft, parts_feedback pf where pf.feedback_type=tft.id and pf.com_id="
+							+ comId + " and pf.feedback_recieved=0");
 
 			Object obj = query.uniqueResult();
 			if(obj != null)
@@ -3385,8 +3619,10 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select count(distinct pf.ITEM_ID) from PARAMETRIC_FEEDBACK pf, part_component c,PARAMETRIC_FEEDBACK_CYCLE fbc where c.document_id=" + docId
-					+ " and c.com_id=pf.ITEM_ID and fbc.PARA_FEEDBACK_ID = pf.ID and fbc.feedback_recieved=0");
+			SQLQuery query = session
+					.createSQLQuery("select count(distinct pf.ITEM_ID) from PARAMETRIC_FEEDBACK pf, part_component c,PARAMETRIC_FEEDBACK_CYCLE fbc where c.document_id="
+							+ docId
+							+ " and c.com_id=pf.ITEM_ID and fbc.PARA_FEEDBACK_ID = pf.ID and fbc.feedback_recieved=0");
 			Object obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -3413,8 +3649,10 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select count(distinct c.supplier_pl_id) from PARAMETRIC_FEEDBACK pf, part_component c,PARAMETRIC_FEEDBACK_CYCLE fbc where c.document_id=" + docId
-					+ " and c.com_id=pf.ITEM_ID and fbc.PARA_FEEDBACK_ID = pf.ID and fbc.feedback_recieved=0");
+			SQLQuery query = session
+					.createSQLQuery("select count(distinct c.supplier_pl_id) from PARAMETRIC_FEEDBACK pf, part_component c,PARAMETRIC_FEEDBACK_CYCLE fbc where c.document_id="
+							+ docId
+							+ " and c.com_id=pf.ITEM_ID and fbc.PARA_FEEDBACK_ID = pf.ID and fbc.feedback_recieved=0");
 			System.out.println(query.getQueryString());
 			Object obj = query.uniqueResult();
 			if(obj != null)
@@ -3442,7 +3680,9 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select pf.fb_comment from parts_feedback pf, part_component c where c.document_id=" + docId + " and c.com_id=pf.com_id");
+			SQLQuery query = session
+					.createSQLQuery("select pf.fb_comment from parts_feedback pf, part_component c where c.document_id="
+							+ docId + " and c.com_id=pf.com_id");
 			List<Object> list = query.list();
 			for(int i = 0; i < list.size(); i++)
 			{
@@ -3476,7 +3716,10 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select FBc.FB_COMMENT from PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB where FB.ITEM_ID=" + comID + " and FBc.FEEDBACK_RECIEVED=0 AND FB.ID = FBC.PARA_FEEDBACK_ID");
+			SQLQuery query = session
+					.createSQLQuery("select FBc.FB_COMMENT from PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB where FB.ITEM_ID="
+							+ comID
+							+ " and FBc.FEEDBACK_RECIEVED=0 AND FB.ID = FBC.PARA_FEEDBACK_ID");
 			List<Object> list = query.list();
 			for(int i = 0; i < list.size(); i++)
 			{
@@ -3507,8 +3750,11 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select pf.ID from PARAMETRIC_FEEDBACK pf,PARAMETRIC_FEEDBACK_CYCLE pfc where ITEM_ID in ( select com_id from part_component where document_id=" + docId
-					+ " ) and pfc.feedback_recieved=0 and pf.ID = pfc.PARA_FEEDBACK_ID and pfc.ISSUED_BY <> " + user);
+			SQLQuery query = session
+					.createSQLQuery("select pf.ID from PARAMETRIC_FEEDBACK pf,PARAMETRIC_FEEDBACK_CYCLE pfc where ITEM_ID in ( select com_id from part_component where document_id="
+							+ docId
+							+ " ) and pfc.feedback_recieved=0 and pf.ID = pfc.PARA_FEEDBACK_ID and pfc.ISSUED_BY <> "
+							+ user);
 			List<Object> list = query.list();
 			if((list != null) && (list.size() > 0))
 			{
@@ -3547,12 +3793,15 @@ public class DataDevQueryUtil
 
 			Criteria ParametricFeedbackCriteria = session.createCriteria(ParametricFeedback.class);
 			ParametricFeedbackCriteria.add(Restrictions.eq("itemId", comID));
-			ParametricFeedbackCriteria.add(Restrictions.in("paraFeedbackStatus", new Object[] { paraFeedbackStatus.get(0), paraFeedbackStatus.get(1) }));
+			ParametricFeedbackCriteria.add(Restrictions.in("paraFeedbackStatus", new Object[] {
+					paraFeedbackStatus.get(0), paraFeedbackStatus.get(1) }));
 
-			List<ParametricFeedback> fb = (List<ParametricFeedback>) ParametricFeedbackCriteria.list();
+			List<ParametricFeedback> fb = (List<ParametricFeedback>) ParametricFeedbackCriteria
+					.list();
 			if(!fb.isEmpty())
 			{
-				user = ParaQueryUtil.getUserByUserId(Long.valueOf(fb.get(0).getFbInitiator().toString()), session2);
+				user = ParaQueryUtil.getUserByUserId(
+						Long.valueOf(fb.get(0).getFbInitiator().toString()), session2);
 				if(user != null)
 				{
 					userDto.setId(user.getId());
@@ -3592,9 +3841,11 @@ public class DataDevQueryUtil
 
 			Criteria ParametricFeedbackCriteria = session.createCriteria(ParametricFeedback.class);
 			ParametricFeedbackCriteria.add(Restrictions.eq("itemId", comID));
-			ParametricFeedbackCriteria.add(Restrictions.in("paraFeedbackStatus", new Object[] { paraFeedbackStatus.get(0), paraFeedbackStatus.get(1) }));
+			ParametricFeedbackCriteria.add(Restrictions.in("paraFeedbackStatus", new Object[] {
+					paraFeedbackStatus.get(0), paraFeedbackStatus.get(1) }));
 
-			List<ParametricFeedback> fb = (List<ParametricFeedback>) ParametricFeedbackCriteria.list();
+			List<ParametricFeedback> fb = (List<ParametricFeedback>) ParametricFeedbackCriteria
+					.list();
 			if(!fb.isEmpty())
 			{
 				trackingfeedbacktype = fb.get(0).getTrackingFeedbackType();
@@ -3631,11 +3882,16 @@ public class DataDevQueryUtil
 			// + "')");
 			String sql = "";
 			sql = " SELECT FB_COMMENT, u.full_name, U.GROUP_ID, FB.ITEM_ID, FB.FEEDBACK_TYPE , s.";
-			sql = sql + "name status_name,fbs.FEEDBACK_STATUS FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
-			sql = sql + "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s,PARA_FEEDBACK_STATUS fbs";
-			sql = sql + " WHERE c.com_id = FB.ITEM_ID AND FBC.ISSUED_BY = u.id AND FBC.FEEDBACK_RECIEVE";
-			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber + "' AND C.SUPPLIER_ID = GETSUPPLIERID";
-			sql = sql + " ('" + supName + "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_STATUS_ID = S.ID ";
+			sql = sql
+					+ "name status_name,fbs.FEEDBACK_STATUS FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
+			sql = sql
+					+ "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s,PARA_FEEDBACK_STATUS fbs";
+			sql = sql
+					+ " WHERE c.com_id = FB.ITEM_ID AND FBC.ISSUED_BY = u.id AND FBC.FEEDBACK_RECIEVE";
+			sql = sql + "D = 0 AND C.PART_NUMBER = '" + partNumber
+					+ "' AND C.SUPPLIER_ID = GETSUPPLIERID";
+			sql = sql + " ('" + supName
+					+ "') AND FB.ID = FBC.PARA_FEEDBACK_ID AND T.TRACKING_TASK_STATUS_ID = S.ID ";
 			sql = sql + "AND T.DOCUMENT_ID = FB.DOCUMENT_ID and fbs.ID = FBc.FEEDBACK_ACTION";
 			SQLQuery query = session.createSQLQuery(sql);
 			List<Object[]> list = query.list();
@@ -3715,7 +3971,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static boolean isNPITaskType(Long[] usersId, String plName, String vendorName, String type, String status, Date startDate, Date endDate, Long[] docsIds) throws Exception
+	public static boolean isNPITaskType(Long[] usersId, String plName, String vendorName,
+			String type, String status, Date startDate, Date endDate, Long[] docsIds)
+			throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		boolean NPIFlag = false;
@@ -3755,14 +4013,18 @@ public class DataDevQueryUtil
 			}
 			if(docsIds != null && docsIds.length > 0)
 			{
-				qury.append(" AND t.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds) + " )");
+				qury.append(" AND t.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
+						+ " )");
 			}
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 				// qury = qury +
 				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
@@ -3786,13 +4048,15 @@ public class DataDevQueryUtil
 
 	}
 
-	public static PartComponent getComponentByPartNumAndSupplier(String partNumber, Supplier supplier) throws Exception
+	public static PartComponent getComponentByPartNumAndSupplier(String partNumber,
+			Supplier supplier) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
 		{
 			System.out.println(supplier.getName());
-			PartComponent component = getComponentByPartNumberAndSupplierName(partNumber, supplier.getName(), session);
+			PartComponent component = getComponentByPartNumberAndSupplierName(partNumber,
+					supplier.getName(), session);
 			return (PartComponent) CloneUtil.cloneObject(component, new ArrayList<String>());
 		}catch(Exception ex)
 		{
@@ -3803,14 +4067,16 @@ public class DataDevQueryUtil
 		}
 	}
 
-	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber, String suppliername) throws Exception
+	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber,
+			String suppliername) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
 		{
 			Criteria crit = session.createCriteria(PartComponent.class);
 			crit.add(Restrictions.eq("partNumber", partnumber));
-			crit.createCriteria("supplierPl").createCriteria("supplier").add(Restrictions.eq("name", suppliername));
+			crit.createCriteria("supplierPl").createCriteria("supplier")
+					.add(Restrictions.eq("name", suppliername));
 			PartComponent component = (PartComponent) crit.uniqueResult();
 			return component;
 		}catch(Exception ex)
@@ -3854,7 +4120,8 @@ public class DataDevQueryUtil
 		}
 	}
 
-	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber, String suppliername, Session session)
+	public static PartComponent getComponentByPartNumberAndSupplierName(String partnumber,
+			String suppliername, Session session)
 	{
 		if(session == null)
 		{
@@ -3862,12 +4129,14 @@ public class DataDevQueryUtil
 		}
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		crit.add(Restrictions.eq("partNumber", partnumber));
-		crit.createCriteria("supplierPl").createCriteria("supplier").add(Restrictions.eq("name", suppliername));
+		crit.createCriteria("supplierPl").createCriteria("supplier")
+				.add(Restrictions.eq("name", suppliername));
 		PartComponent component = (PartComponent) crit.uniqueResult();
 		return component;
 	}
 
-	public static PartComponent getComponentByPartAndSupplierPl(String partnumber, SupplierPl supplierPl)
+	public static PartComponent getComponentByPartAndSupplierPl(String partnumber,
+			SupplierPl supplierPl)
 	{
 
 		Session session = SessionUtil.getSession();
@@ -3888,7 +4157,8 @@ public class DataDevQueryUtil
 		return component;
 	}
 
-	public static TrackingParametric getTrackingParametricByDocumentAndPl(Document document, Pl pl, Session session)
+	public static TrackingParametric getTrackingParametricByDocumentAndPl(Document document, Pl pl,
+			Session session)
 	{
 		TrackingParametric trackingParametric = null;
 
@@ -3977,7 +4247,8 @@ public class DataDevQueryUtil
 
 	public static MasterPartMask insertMask(String maskStr, Session session)
 	{
-		String maskMaster = getNonAlphaMask(maskStr).replaceAll("_", "%").replaceAll("(%){2,}", "%");
+		String maskMaster = getNonAlphaMask(maskStr).replaceAll("_", "%")
+				.replaceAll("(%){2,}", "%");
 		if(!maskMaster.contains("%"))
 		{
 			maskMaster = maskMaster + "%";
@@ -4015,7 +4286,8 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select cm.NONALPHANUM_MASK(:nanpartnum) from dual");
+			SQLQuery query = session
+					.createSQLQuery("select cm.NONALPHANUM_MASK(:nanpartnum) from dual");
 			query.setParameter("nanpartnum", maskValue.trim());
 
 			return (String) query.uniqueResult();
@@ -4039,7 +4311,8 @@ public class DataDevQueryUtil
 		MasterPartMask mask = null;
 		try
 		{
-			String maskMaster = getNonAlphaMask(maskValue).replaceAll("_", "%").replaceAll("(%){2,}", "%");
+			String maskMaster = getNonAlphaMask(maskValue).replaceAll("_", "%").replaceAll(
+					"(%){2,}", "%");
 			if(!maskMaster.contains("%"))
 			{
 				maskMaster = maskMaster + "%";
@@ -4049,7 +4322,8 @@ public class DataDevQueryUtil
 			mask = (MasterPartMask) q.uniqueResult();
 			if(mask == null)
 				return null;
-			q = session.createSQLQuery("select * from PART_MASK_VALUE  where MASK_PN=:val and mask_id =:mskid");
+			q = session
+					.createSQLQuery("select * from PART_MASK_VALUE  where MASK_PN=:val and mask_id =:mskid");
 			q.setParameter("val", maskValue);
 			q.setParameter("mskid", mask.getId());
 			// q.list();
@@ -4078,7 +4352,8 @@ public class DataDevQueryUtil
 		return mask;
 	}
 
-	private static TrackingParametric getTrackingParametricByPdfUrlAndSupName(String pdfUrl, String plName, String supplierName, Session session)
+	private static TrackingParametric getTrackingParametricByPdfUrlAndSupName(String pdfUrl,
+			String plName, String supplierName, Session session)
 	{
 		Criteria criteria = session.createCriteria(TrackingParametric.class);
 		try
@@ -4088,7 +4363,8 @@ public class DataDevQueryUtil
 			criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, plName)));
 			if(supplierName != null)
 			{
-				criteria.add(Restrictions.eq("supplier", ParaQueryUtil.getSupplierByExactName(session, supplierName)));
+				criteria.add(Restrictions.eq("supplier",
+						ParaQueryUtil.getSupplierByExactName(session, supplierName)));
 			}
 		}catch(Exception e)
 		{
@@ -4098,15 +4374,18 @@ public class DataDevQueryUtil
 		return (TrackingParametric) criteria.uniqueResult();
 	}
 
-	private static PartComponent getComponentByPartNumberAndSupplier(String partnumber, String supplierName) throws Exception
+	private static PartComponent getComponentByPartNumberAndSupplier(String partnumber,
+			String supplierName) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
 		{
 
 			System.out.println("part number = " + partnumber + "suppliername =   " + supplierName);
-			PartComponent component = getComponentByPartNumberAndSupplierName(partnumber, supplierName, session);
-			String newDiscription = ParaQueryUtil.getNewDiscription(component.getSupplierPl().getPl().getId(), component.getComId(), session);
+			PartComponent component = getComponentByPartNumberAndSupplierName(partnumber,
+					supplierName, session);
+			String newDiscription = ParaQueryUtil.getNewDiscription(component.getSupplierPl()
+					.getPl().getId(), component.getComId(), session);
 			if(newDiscription != null)
 			{
 				component.setDescription(newDiscription);
@@ -4174,7 +4453,8 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("SELECT   u.full_name, g.name  FROM   parts_feedback pf, grm.grm_user u, grm.grm_group g WHERE  com_id =28862724  AND pf.issued_by_id = u.id  AND u.GROUP_ID = g.id AND pf.feedback_recieved = 0");
+			SQLQuery query = session
+					.createSQLQuery("SELECT   u.full_name, g.name  FROM   parts_feedback pf, grm.grm_user u, grm.grm_group g WHERE  com_id =28862724  AND pf.issued_by_id = u.id  AND u.GROUP_ID = g.id AND pf.feedback_recieved = 0");
 			Object[] objArr = (Object[]) query.uniqueResult();
 			if(objArr != null)
 			{
@@ -4200,7 +4480,8 @@ public class DataDevQueryUtil
 	/*
 	 * if we set group only the parametrc will conflict between (TL,ENG)
 	 */
-	public static String getLastFeedbackCommentByComIdAndSenderGroup(long comID, String senderGroup, Long recieverId, Pl pl)
+	public static String getLastFeedbackCommentByComIdAndSenderGroup(long comID,
+			String senderGroup, Long recieverId, Pl pl)
 	{
 		Session session = null;
 		session = SessionUtil.getSession();
@@ -4210,7 +4491,8 @@ public class DataDevQueryUtil
 			if(senderGroup.equals("QUALITY"))
 			{
 				ParametricFeedbackCycle appFB = null;
-				Long qaUserId = ParaQueryUtil.getQAUserId(pl, ParaQueryUtil.getTrackingTaskTypeByName("NPI", session));
+				Long qaUserId = ParaQueryUtil.getQAUserId(pl,
+						ParaQueryUtil.getTrackingTaskTypeByName("NPI", session));
 				Criteria feedBCri = session.createCriteria(ParametricFeedbackCycle.class);
 				feedBCri.add(Restrictions.eq("issuedBy", qaUserId));
 				feedBCri.createAlias("parametricFeedback", "feedback");
@@ -4271,9 +4553,18 @@ public class DataDevQueryUtil
 		{
 
 			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,Get_PL_Type(P.ID ) "
-					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  " + " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
-					+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qaFeedback + "')  " + "         AND tp.supplier_id = s.id  " + "         AND tp.tracking_task_type_id = ttt.id   " + "        AND u.id = tp.user_id     "
-					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  " + "         and QA_USER_ID=" + grmUser.getId() + " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
+					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
+					+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
+					+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+					+ StatusName.qaFeedback
+					+ "')  "
+					+ "         AND tp.supplier_id = s.id  "
+					+ "         AND tp.tracking_task_type_id = ttt.id   "
+					+ "        AND u.id = tp.user_id     "
+					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  "
+					+ "         and QA_USER_ID="
+					+ grmUser.getId()
+					+ " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
 			for(int i = 0; i < list2.size(); i++)
 			{
@@ -4322,12 +4613,18 @@ public class DataDevQueryUtil
 
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
 			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
-			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_T";
-			Sql = Sql + "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
-			Sql = Sql + "Id('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id = ";
-			Sql = Sql + "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
-			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + status + "'";
-			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp." + column + " =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql
+					+ "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_T";
+			Sql = Sql
+					+ "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
+			Sql = Sql + "Id('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id  AND st.id = ";
+			Sql = Sql
+					+ "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
+			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + status
+					+ "'";
+			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp." + column + " ="
+					+ grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
 
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			// for(int i = 0; i < list2.size(); i++)
@@ -4343,12 +4640,18 @@ public class DataDevQueryUtil
 			// }
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
 			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
-			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_D";
-			Sql = Sql + "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
-			Sql = Sql + "usId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id ";
-			Sql = Sql + "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
-			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + status + "'";
-			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp." + column + " =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql
+					+ "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_D";
+			Sql = Sql
+					+ "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
+			Sql = Sql + "usId('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id  AND st.id ";
+			Sql = Sql
+					+ "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
+			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + status
+					+ "'";
+			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp." + column + " ="
+					+ grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
 			Sql = Sql + "";
 			list = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list.size(); i++)
@@ -4379,12 +4682,18 @@ public class DataDevQueryUtil
 
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
 			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
-			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_T";
-			Sql = Sql + "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
-			Sql = Sql + "Id('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id = ";
-			Sql = Sql + "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
-			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '" + StatusName.RejectException + "'";
-			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql
+					+ "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_T";
+			Sql = Sql
+					+ "AX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatus";
+			Sql = Sql + "Id('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id  AND st.id = ";
+			Sql = Sql
+					+ "tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = tp";
+			Sql = Sql + ".DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chkac.NAME = '"
+					+ StatusName.RejectException + "'";
+			Sql = Sql + " AND chktax.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId()
+					+ " GROUP BY s.name, P.name, chks.NAME";
 
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			// for(int i = 0; i < list2.size(); i++)
@@ -4400,12 +4709,18 @@ public class DataDevQueryUtil
 			// }
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype FROM Tracking_P";
 			Sql = Sql + "arametric tp, pl p, supplier s, TRACKING_TASK_STATUS st, QA_CH";
-			Sql = Sql + "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_D";
-			Sql = Sql + "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
-			Sql = Sql + "usId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id  AND st.id ";
-			Sql = Sql + "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
-			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '" + StatusName.RejectException + "'";
-			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + " GROUP BY s.name, P.name, chks.NAME";
+			Sql = Sql
+					+ "ECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chks, QA_CHECK_MULTI_D";
+			Sql = Sql
+					+ "ATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS_ID = getTaskstat";
+			Sql = Sql + "usId('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id  AND st.id ";
+			Sql = Sql
+					+ "= tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = ";
+			Sql = Sql + "tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION AND chkac.NAME = '"
+					+ StatusName.RejectException + "'";
+			Sql = Sql + " AND chkdata.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId()
+					+ " GROUP BY s.name, P.name, chks.NAME";
 			Sql = Sql + "";
 			list = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list.size(); i++)
@@ -4434,13 +4749,18 @@ public class DataDevQueryUtil
 
 			String Sql = "";
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype, chkac.NAME sta";
-			Sql = Sql + "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
-			Sql = Sql + "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
-			Sql = Sql + "s, QA_CHECK_MULTI_TAX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS";
-			Sql = Sql + "_ID = getTaskstatusId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id AND u.id = tp.u";
+			Sql = Sql
+					+ "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
+			Sql = Sql
+					+ "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
+			Sql = Sql
+					+ "s, QA_CHECK_MULTI_TAX chktax WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STATUS";
+			Sql = Sql + "_ID = getTaskstatusId('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id AND u.id = tp.u";
 			Sql = Sql + "ser_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID ";
 			Sql = Sql + "AND chp.DOCUMENT_ID = tp.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID ";
-			Sql = Sql + "AND chktax.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + "" + " GROUP BY s.name, P.name, chks.NAME, chkac.NAME";
+			Sql = Sql + "AND chktax.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + ""
+					+ " GROUP BY s.name, P.name, chks.NAME, chkac.NAME";
 
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			// for(int i = 0; i < list2.size(); i++)
@@ -4455,13 +4775,19 @@ public class DataDevQueryUtil
 			// result.add(row);
 			// }
 			Sql = " SELECT DISTINCT p.name pl, s.name supplier, chks.NAME chktype, chkac.NAME sta";
-			Sql = Sql + "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
-			Sql = Sql + "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
-			Sql = Sql + "s, QA_CHECK_MULTI_DATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STAT";
-			Sql = Sql + "US_ID = getTaskstatusId('" + StatusName.qachecking + "') AND tp.supplier_id = s.id AND u.id = tp";
-			Sql = Sql + ".user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND";
+			Sql = Sql
+					+ "tus FROM Tracking_Parametric tp, pl p, supplier s, grm.GRM_USER u, TRACKING_TA";
+			Sql = Sql
+					+ "SK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CHECKERS chk";
+			Sql = Sql
+					+ "s, QA_CHECK_MULTI_DATA chkdata WHERE tp.pl_id = p.id AND tp.TRACKING_TASK_STAT";
+			Sql = Sql + "US_ID = getTaskstatusId('" + StatusName.qachecking
+					+ "') AND tp.supplier_id = s.id AND u.id = tp";
+			Sql = Sql
+					+ ".user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND";
 			Sql = Sql + " chp.DOCUMENT_ID = tp.DOCUMENT_ID AND chkac.ID = chkdata.ACTION ";
-			Sql = Sql + "AND chkdata.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId() + "" + " GROUP BY s.name, P.name, chks.NAME, chkac.NAME";
+			Sql = Sql + "AND chkdata.CHECK_PART_ID = chp.ID AND tp.USER_ID =" + grmUser.getId()
+					+ "" + " GROUP BY s.name, P.name, chks.NAME, chkac.NAME";
 			list = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 			for(int i = 0; i < list.size(); i++)
 			{
@@ -4578,7 +4904,8 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<ArrayList<String>> getsummarydata(Date startDate, Date endDate, GrmUserDTO userDTO)
+	public static ArrayList<ArrayList<String>> getsummarydata(Date startDate, Date endDate,
+			GrmUserDTO userDTO)
 	{
 		Session session = SessionUtil.getSession();
 		// ArrayList<SummaryDTO> alldata = new ArrayList<>();
@@ -4589,14 +4916,22 @@ public class DataDevQueryUtil
 			StringBuffer qury = new StringBuffer();
 			String Sql = "";
 			Sql = " SELECT GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
-			Sql = Sql + "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
-			Sql = Sql + " C.COM_ID, C.PART_NUMBER, GETSUPPLIERNAME (t.supplier_id) supName, GetTaskType";
-			Sql = Sql + "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
-			Sql = Sql + "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
-			Sql = Sql + "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
-			Sql = Sql + "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
-			Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID = " + userDTO.getId() + " AND T.TRACK";
-			Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary + "')";
+			Sql = Sql
+					+ "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
+			Sql = Sql
+					+ " C.COM_ID, C.PART_NUMBER, GETSUPPLIERNAME (t.supplier_id) supName, GetTaskType";
+			Sql = Sql
+					+ "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
+			Sql = Sql
+					+ "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
+			Sql = Sql
+					+ "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
+			Sql = Sql
+					+ "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
+			Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID = "
+					+ userDTO.getId() + " AND T.TRACK";
+			Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary
+					+ "')";
 			qury.append(Sql);
 			// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
 			// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12
@@ -4604,14 +4939,19 @@ public class DataDevQueryUtil
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
+				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 
 			}
 			System.out.println(qury.toString());
-			Long[] users = ParaQueryUtil.getusersbyqualityandstatus(userDTO, StatusName.waitingsummary);
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			Long[] users = ParaQueryUtil.getusersbyqualityandstatus(userDTO,
+					StatusName.waitingsummary);
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			for(int i = 0; i < result.size(); i++)
 			{
 				Object[] data = result.get(i);
@@ -4621,7 +4961,8 @@ public class DataDevQueryUtil
 				summary.add(data[2] == null ? "" : data[2].toString());// pltype_2
 				summary.add(data[3] == null ? "" : data[3].toString());// plName_3
 
-				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()), Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
+				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
+						Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
 				summary.add(noparts.get(0).toString());// PDFParts_4
 				summary.add(noparts.get(2).toString());// PDFDoneParts_5
 				summary.add(noparts.get(1).toString());// PLparts_6
@@ -4635,11 +4976,13 @@ public class DataDevQueryUtil
 				summary.add(data[9] == null ? "" : data[9].toString());// DATE_13
 				summary.add(data[10] == null ? "" : data[10].toString());// OLDQAFLAG_14
 				summary.add("");// NEWQAFLAG_15
-				String comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()), userDTO.getId());
+				String comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()),
+						userDTO.getId());
 				summary.add(comment);// QAcomment_16
 				summary.add(data[11] == null ? "" : data[11].toString());// DONEFLAG_17
 				summary.add(data[12] == null ? "" : data[12].toString());// EXTRACTIONFLAG_18
-				String keyword = getConfidentialStatus(data[0] == null ? "" : data[0].toString(), data[3] == null ? "" : data[3].toString());
+				String keyword = getConfidentialStatus(data[0] == null ? "" : data[0].toString(),
+						data[3] == null ? "" : data[3].toString());
 				summary.add(keyword == null ? "" : keyword);// ConfidentialStatus_19
 				allsummary.add(summary);
 			}
@@ -4658,7 +5001,9 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Can't Read') ConfidentialStatus from TRACKING_PARAMETRIC t" + " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('" + pdfurl
+			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Can't Read') ConfidentialStatus from TRACKING_PARAMETRIC t"
+					+ " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('"
+					+ pdfurl
 					+ "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
 			SQLQuery sql = session.createSQLQuery(sqlstatment);
 			result = (String) sql.uniqueResult();
@@ -4793,7 +5138,8 @@ public class DataDevQueryUtil
 			{
 				parametricfeedback = parametricfeedbackcycle.getParametricFeedback();
 				cri = session.createCriteria(ParaFeedbackFets.class);
-				cri.add(Restrictions.eq("paraFeedbackId", parametricfeedbackcycle.getParametricFeedback()));
+				cri.add(Restrictions.eq("paraFeedbackId",
+						parametricfeedbackcycle.getParametricFeedback()));
 				List<ParaFeedbackFets> fets = cri.list();
 				if(!fets.isEmpty())
 				{
@@ -4812,7 +5158,9 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<QAChecksDTO> getQAexceptionData(String plName, String supplierName, String checkerType, Date startDate, Date endDate, long userid, String screen, Session session)
+	public static ArrayList<QAChecksDTO> getQAexceptionData(String plName, String supplierName,
+			String checkerType, Date startDate, Date endDate, long userid, String screen,
+			Session session)
 	{
 		ArrayList<QAChecksDTO> data = null;
 
@@ -4831,42 +5179,85 @@ public class DataDevQueryUtil
 				status = StatusName.RejectException;
 			}
 			StringBuffer qury = new StringBuffer();
-			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier)
+					|| checkerType.equals(StatusName.MaskMultiSupplier)
+					|| checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				String Sql = "";
 				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
-				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
-				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
-				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
-				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
-				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
-				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
-				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " ="
+						+ userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status
+						+ "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
-			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			else if(checkerType.equals(StatusName.MaskMultiData)
+					|| checkerType.equals(StatusName.RootPartChecker))
 			{
 				String Sql = "";
 				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
-				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
-				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
-				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
-				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
-				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
-				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " =" + userid + "";
-				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status + "'";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " ="
+						+ userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND chkac.NAME = '" + status
+						+ "'";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
-
+			else if(checkerType.equals(StatusName.generic_part))
+			{
+				String Sql = "";
+				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID,gen.GENERIC FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com,MAP_GENERIC gen WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp." + column + " ="
+						+ userid + "";
+				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND gen.ID= com.GENERIC_ID ";
+				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
+				qury.append(Sql);
+			}
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
-				String dateRangeCond = " AND chp.STOREDATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
+				String dateRangeCond = " AND chp.STOREDATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 
 			}
@@ -4882,23 +5273,34 @@ public class DataDevQueryUtil
 				String suppliercri = " AND tp.supplier_id = " + supplier.getId() + " ";
 				qury.append(suppliercri);
 			}
-			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier)
+					|| checkerType.equals(StatusName.MaskMultiSupplier)
+					|| checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER order by chktax.CHECK_PART_ID");
 			}
-			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			else if(checkerType.equals(StatusName.MaskMultiData)
+					|| checkerType.equals(StatusName.RootPartChecker))
 			{
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL order by chktax.CHECK_PART_ID");
 			}
+			else if(checkerType.equals(StatusName.generic_part))
+			{
+				qury.append(" GROUP BY chktax.CHECK_PART_ID,chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL,gen.GENERIC  order by chktax.CHECK_PART_ID");
+			}
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			SQLQuery query = session.createSQLQuery(qury.toString());
+			ArrayList<Object[]> result = (ArrayList<Object[]>) query.list();
 			// nunalpha 0 ,comid 1 ,DOCUMENT_ID 2,pl_id 3,pl_name 4,fetid 5,fetname 6
 			data = new ArrayList<>();
 			for(int i = 0; i < result.size(); i++)
 			{
 				QAChecksDTO qachecks = new QAChecksDTO();
-				qachecks.setNanAlphaPart(result.get(i)[0] == null ? "" : result.get(i)[0].toString());
-				PartComponent part = getComponentBycomid(result.get(i)[1] == null ? 0l : Long.valueOf(result.get(i)[1].toString()), session);
+				qachecks.setNanAlphaPart(result.get(i)[0] == null ? "" : result.get(i)[0]
+						.toString());
+				PartComponent part = getComponentBycomid(
+						result.get(i)[1] == null ? 0l : Long.valueOf(result.get(i)[1].toString()),
+						session);
 				qachecks.setPart(part);
 				qachecks.setVendor(part.getSupplierId());
 				qachecks.setDatasheet(part.getDocument());
@@ -4907,16 +5309,32 @@ public class DataDevQueryUtil
 				qachecks.setFamily(part.getFamily());
 				Pl pl = part.getSupplierPl().getPl();
 				qachecks.setProductLine(pl);
-				if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+				if(checkerType.equals(StatusName.MaskMultiData)
+						|| checkerType.equals(StatusName.RootPartChecker))
 				{
-					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l
+							: Long.valueOf(result.get(i)[5].toString()), pl, session);
 					qachecks.setFeatureName(fet.getFeature().getName());
-					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
-					qachecks.setCheckpartid((result.get(i)[7] == null ? 0L : Long.valueOf(result.get(i)[7].toString())));
+					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6]
+							.toString());
+					qachecks.setCheckpartid((result.get(i)[7] == null ? 0L : Long.valueOf(result
+							.get(i)[7].toString())));
+				}
+				else if(checkerType.equals(StatusName.generic_part))
+				{
+					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l
+							: Long.valueOf(result.get(i)[5].toString()), pl, session);
+					qachecks.setGeneric(result.get(i)[8] == null ? "" : result.get(i)[8].toString());
+					qachecks.setFeatureName(fet.getFeature().getName());
+					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6]
+							.toString());
+					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result
+							.get(i)[7].toString()));
 				}
 				else
 				{
-					qachecks.setCheckpartid((result.get(i)[5] == null ? 0L : Long.valueOf(result.get(i)[5].toString())));
+					qachecks.setCheckpartid((result.get(i)[5] == null ? 0L : Long.valueOf(result
+							.get(i)[5].toString())));
 				}
 				qachecks.setChecker(checkerType);
 				data.add(qachecks);
@@ -4933,7 +5351,9 @@ public class DataDevQueryUtil
 		return data;
 	}
 
-	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName, String checkerType, String status, Date startDate, Date endDate, long userid, Session session)
+	public static ArrayList<QAChecksDTO> getQAchecksData(String plName, String supplierName,
+			String checkerType, String status, Date startDate, Date endDate, long userid,
+			Session session)
 	{
 		ArrayList<QAChecksDTO> data = null;
 
@@ -4941,32 +5361,49 @@ public class DataDevQueryUtil
 		{
 
 			StringBuffer qury = new StringBuffer();
-			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier)
+					|| checkerType.equals(StatusName.MaskMultiSupplier)
+					|| checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				String Sql = "";
 				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
-				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
-				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
-				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
-				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
-				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
-				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_TAX chktax, part_component com WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION_ID AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid
+						+ "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' ";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
 			}
-			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			else if(checkerType.equals(StatusName.MaskMultiData)
+					|| checkerType.equals(StatusName.RootPartChecker))
 			{
 				String Sql = "";
 				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
-				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
-				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
-				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
-				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
-				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
-				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid
+						+ "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' ";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4975,13 +5412,20 @@ public class DataDevQueryUtil
 			{
 				String Sql = "";
 				Sql = " SELECT  CM.NONALPHANUM(com.PART_NUMBER) nunalpha , com.COM_ID comid, tp";
-				Sql = Sql + ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID,gen.GENERIC FROM Tracking_Parametric tp, pl p, T";
-				Sql = Sql + "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
-				Sql = Sql + "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com,MAP_GENERIC gen WHERE tp.pl_id = p.";
-				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + StatusName.qachecking + "') AND st.id =";
-				Sql = Sql + " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
-				Sql = Sql + "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
-				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid + "";
+				Sql = Sql
+						+ ".DOCUMENT_ID , p.ID pl_id, p.NAME pl_name,chktax.PL_FET_ID,chktax.FET_VAL,chktax.CHECK_PART_ID,gen.GENERIC FROM Tracking_Parametric tp, pl p, T";
+				Sql = Sql
+						+ "RACKING_TASK_STATUS st, QA_CHECKS_ACTIONS chkac, QA_CHECK_PARTS chp, PRE_QA_CH";
+				Sql = Sql
+						+ "ECKERS chks, QA_CHECK_MULTI_DATA chktax, part_component com,MAP_GENERIC gen WHERE tp.pl_id = p.";
+				Sql = Sql + "id AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qachecking + "') AND st.id =";
+				Sql = Sql
+						+ " tp.TRACKING_TASK_STATUS_ID AND chp.CHECK_ID = chks.ID AND chp.DOCUMENT_ID = t";
+				Sql = Sql
+						+ "p.DOCUMENT_ID AND chkac.ID = chktax.ACTION AND chktax.CHECK_PART_ID = chp.ID ";
+				Sql = Sql + "AND com.COM_ID = chktax.CONFLICTED_PART AND tp.USER_ID =" + userid
+						+ "";
 				Sql = Sql + " AND chks.NAME = '" + checkerType + "' AND gen.ID= com.GENERIC_ID ";
 				// Sql = Sql + "GROUP BY com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,chktax.CONFLICTED_PART";
 				qury.append(Sql);
@@ -4990,8 +5434,11 @@ public class DataDevQueryUtil
 			if(startDate != null && endDate != null)
 			{
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************" + formatter.format(endDate));
-				String dateRangeCond = " AND chp.STOREDATE BETWEEN TO_DATE ('" + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('" + formatter.format(endDate) + "','DD/MM/RRRR')";
+				System.out.println(formatter.format(startDate) + "**************"
+						+ formatter.format(endDate));
+				String dateRangeCond = " AND chp.STOREDATE BETWEEN TO_DATE ('"
+						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
 
 			}
@@ -5013,11 +5460,14 @@ public class DataDevQueryUtil
 				qury.append(suppliercri);
 
 			}
-			if(checkerType.equals(StatusName.NonAlphaMultiSupplier) || checkerType.equals(StatusName.MaskMultiSupplier) || checkerType.equals(StatusName.FamilyMultiSupplier))
+			if(checkerType.equals(StatusName.NonAlphaMultiSupplier)
+					|| checkerType.equals(StatusName.MaskMultiSupplier)
+					|| checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER  order by chktax.CHECK_PART_ID");
 			}
-			else if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			else if(checkerType.equals(StatusName.MaskMultiData)
+					|| checkerType.equals(StatusName.RootPartChecker))
 			{
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL  order by chktax.CHECK_PART_ID");
 			}
@@ -5026,14 +5476,18 @@ public class DataDevQueryUtil
 				qury.append(" GROUP BY chktax.CHECK_PART_ID,chktax.ID,com.COM_ID,tp.DOCUMENT_ID,p.ID,p.NAME,com.PART_NUMBER,chktax.PL_FET_ID,chktax.FET_VAL,gen.GENERIC  order by chktax.CHECK_PART_ID");
 			}
 			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(qury.toString()).list();
+			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
+					qury.toString()).list();
 			// nunalpha 0 ,comid 1 ,DOCUMENT_ID 2,pl_id 3,pl_name 4,fetid 5,fetname 6
 			data = new ArrayList<>();
 			for(int i = 0; i < result.size(); i++)
 			{
 				QAChecksDTO qachecks = new QAChecksDTO();
-				qachecks.setNanAlphaPart(result.get(i)[0] == null ? "" : result.get(i)[0].toString());
-				PartComponent part = getComponentBycomid(result.get(i)[1] == null ? 0l : Long.valueOf(result.get(i)[1].toString()), session);
+				qachecks.setNanAlphaPart(result.get(i)[0] == null ? "" : result.get(i)[0]
+						.toString());
+				PartComponent part = getComponentBycomid(
+						result.get(i)[1] == null ? 0l : Long.valueOf(result.get(i)[1].toString()),
+						session);
 				qachecks.setPart(part);
 				qachecks.setVendor(part.getSupplierId());
 				qachecks.setDatasheet(part.getDocument());
@@ -5042,24 +5496,32 @@ public class DataDevQueryUtil
 				qachecks.setFamily(part.getFamily());
 				Pl pl = part.getSupplierPl().getPl();
 				qachecks.setProductLine(part.getSupplierPl().getPl());
-				if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+				if(checkerType.equals(StatusName.MaskMultiData)
+						|| checkerType.equals(StatusName.RootPartChecker))
 				{
-					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l
+							: Long.valueOf(result.get(i)[5].toString()), pl, session);
 					qachecks.setFeatureName(fet.getFeature().getName());
-					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
-					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result.get(i)[7].toString()));
+					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6]
+							.toString());
+					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result
+							.get(i)[7].toString()));
 				}
 				else if(checkerType.equals(StatusName.generic_part))
 				{
-					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()), pl, session);
+					PlFeature fet = ParaQueryUtil.getPlFeatureid(result.get(i)[5] == null ? 0l
+							: Long.valueOf(result.get(i)[5].toString()), pl, session);
 					qachecks.setGeneric(result.get(i)[8] == null ? "" : result.get(i)[8].toString());
 					qachecks.setFeatureName(fet.getFeature().getName());
-					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6].toString());
-					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result.get(i)[7].toString()));
+					qachecks.setFeatureValue(result.get(i)[6] == null ? "" : result.get(i)[6]
+							.toString());
+					qachecks.setCheckpartid(result.get(i)[7] == null ? 0l : Long.valueOf(result
+							.get(i)[7].toString()));
 				}
 				else
 				{
-					qachecks.setCheckpartid(result.get(i)[5] == null ? 0l : Long.valueOf(result.get(i)[5].toString()));
+					qachecks.setCheckpartid(result.get(i)[5] == null ? 0l : Long.valueOf(result
+							.get(i)[5].toString()));
 				}
 				qachecks.setChecker(checkerType);
 				data.add(qachecks);
@@ -5112,7 +5574,8 @@ public class DataDevQueryUtil
 			QaChecksStatus staus = null;
 			QaChecksActions action = null;
 			String partaction = "";
-			if(qachk.getStatus().equals(StatusName.WrongPart) || qachk.getStatus().equals(StatusName.WrongTax))
+			if(qachk.getStatus().equals(StatusName.WrongPart)
+					|| qachk.getStatus().equals(StatusName.WrongTax))
 			{
 				if(qachk.getFlag().equals("AffectedPart"))
 				{
@@ -5125,7 +5588,9 @@ public class DataDevQueryUtil
 					partaction = StatusName.Done;
 				}
 			}
-			else if(qachk.getStatus().equals(StatusName.UpdateFamily) || qachk.getStatus().equals(StatusName.UpdateMask)|| qachk.getStatus().equals(StatusName.UpdateGeneric))
+			else if(qachk.getStatus().equals(StatusName.UpdateFamily)
+					|| qachk.getStatus().equals(StatusName.UpdateMask)
+					|| qachk.getStatus().equals(StatusName.UpdateGeneric))
 			{
 				if(qachk.getFlag().equals("AffectedPart"))
 				{
@@ -5165,14 +5630,17 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("name", partaction));
 			action = (QaChecksActions) cri.uniqueResult();
 
-			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
+			if(qachk.getChecker().equals(StatusName.MaskMultiData)
+					|| qachk.getChecker().equals(StatusName.RootPartChecker)
+					|| qachk.getChecker().equals(StatusName.generic_part))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
 				cri.createAlias("qaCheckParts", "qaCheckParts");
 				cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
 				cri.createAlias("plFeature", "plFeature");
-				PlFeature plfet = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
+				PlFeature plfet = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(),
+						qachk.getProductLine().getName(), session);
 				cri.add(Restrictions.eq("plFeature", plfet));
 				cri.createAlias("qaChecksActions", "action");
 				cri.add(Restrictions.eq("action.name", StatusName.Open));
@@ -5237,10 +5705,13 @@ public class DataDevQueryUtil
 				}
 
 				// set Other qachecks to closed
-				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)||qachk.getChecker().equals(StatusName.generic_part))
+				if(qachk.getChecker().equals(StatusName.MaskMultiData)
+						|| qachk.getChecker().equals(StatusName.RootPartChecker)
+						|| qachk.getChecker().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckMultiData.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
+					cri.add(Restrictions
+							.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					// cri.createAlias("qaChecksActions", "action");
 					// cri.add(Restrictions.eq("action.name", StatusName.Open));
 					cri.createAlias("qaCheckParts", "qaCheckParts");
@@ -5254,7 +5725,8 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
-						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId() + "------");
+						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId()
+								+ "------");
 					}
 					session.delete(qapart);
 					System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
@@ -5262,10 +5734,12 @@ public class DataDevQueryUtil
 				else
 				{
 					cri = session.createCriteria(QaCheckMultiTax.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
+					cri.add(Restrictions
+							.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					cri.add(Restrictions.eq("qaChecksActions.name", StatusName.Open));
 					cri = session.createCriteria(QaCheckMultiTax.class);
-					cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
+					cri.add(Restrictions
+							.eq("conflictedPart", qachk.getPart().getComId().toString()));
 					// cri.createAlias("qaChecksActions", "action");
 					// cri.add(Restrictions.eq("action.name", StatusName.Open));
 					cri.createAlias("qaCheckParts", "qaCheckParts");
@@ -5279,7 +5753,8 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
-						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId() + "------");
+						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId()
+								+ "------");
 					}
 					session.delete(qapart);
 					System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
@@ -5295,13 +5770,15 @@ public class DataDevQueryUtil
 					cri = session.createCriteria(TrackingParametric.class);
 					cri.add(Restrictions.eq("document", qachk.getDatasheet()));
 					TrackingParametric track = (TrackingParametric) cri.uniqueResult();
-					TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(session, StatusName.assigned);
+					TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
+							session, StatusName.assigned);
 					track.setTrackingTaskStatus(trackingTaskStatus);
 				}
 
 				// delete part from component
 				session.delete(qachk.getPart());
-				System.err.println("-----PartComponent deleted : " + qachk.getPart().getPartNumber() + "------");
+				System.err.println("-----PartComponent deleted : "
+						+ qachk.getPart().getPartNumber() + "------");
 			}
 			else if(qachk.getStatus().equals(StatusName.WrongTax))
 			{
@@ -5329,15 +5806,20 @@ public class DataDevQueryUtil
 				for(ParametricReviewData para : review)
 				{
 					session.delete(para);
-					System.err.println("-----ParametricReviewData deleted : " + para.getId() + "------");
+					System.err.println("-----ParametricReviewData deleted : " + para.getId()
+							+ "------");
 				}
 
 				// send feedBack to sourcing team
-				String feedbackStatus = sendFeedbackToSourcingTeam(qachk.getEngname(), qachk.getDatasheet().getPdf().getSeUrl(), qachk.getProductLine().getName(), "Wrong tax", null, qachk.getNewValue());
+				String feedbackStatus = sendFeedbackToSourcingTeam(qachk.getEngname(), qachk
+						.getDatasheet().getPdf().getSeUrl(), qachk.getProductLine().getName(),
+						"Wrong tax", null, qachk.getNewValue());
 				System.out.println(feedbackStatus);
 
 				// set Other qachecks to closed
-				if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
+				if(qachk.getChecker().equals(StatusName.MaskMultiData)
+						|| qachk.getChecker().equals(StatusName.RootPartChecker)
+						|| qachk.getChecker().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckParts.class);
 					cri.add(Restrictions.in("partComponent", parts));
@@ -5354,12 +5836,14 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
-						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId() + "------");
+						System.err.println("-----QaCheckMultiData deleted : " + qadata.getId()
+								+ "------");
 					}
 					for(QaCheckParts qapart : qaparts)
 					{
 						session.delete(qapart);
-						System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
+						System.err.println("-----QaCheckParts deleted : " + qapart.getId()
+								+ "------");
 					}
 				}
 				else
@@ -5378,26 +5862,30 @@ public class DataDevQueryUtil
 					{
 						// qadata.setQaChecksActions(action);
 						session.delete(qadata);
-						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId() + "------");
+						System.err.println("-----QaCheckMultiTax deleted : " + qadata.getId()
+								+ "------");
 					}
 					for(QaCheckParts qapart : qaparts)
 					{
 						session.delete(qapart);
-						System.err.println("-----QaCheckParts deleted : " + qapart.getId() + "------");
+						System.err.println("-----QaCheckParts deleted : " + qapart.getId()
+								+ "------");
 					}
 				}
 				// delete parts from component
 				for(PartComponent part : parts)
 				{
 					session.delete(part);
-					System.err.println("-----PartComponent deleted : " + part.getPartNumber() + "------");
+					System.err.println("-----PartComponent deleted : " + part.getPartNumber()
+							+ "------");
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateFamily))
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
-					Family family = ParaQueryUtil.getFamilyByExactName(qachk.getNewValue(), session);
+					Family family = ParaQueryUtil
+							.getFamilyByExactName(qachk.getNewValue(), session);
 					// if family not found insert new family record
 					if(family == null)
 					{
@@ -5417,12 +5905,14 @@ public class DataDevQueryUtil
 						cri = session.createCriteria(QaCheckMultiData.class);
 						cri.createAlias("qaCheckParts", "qaCheckParts");
 						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
-						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId()
+								.toString()));
 						List<QaCheckMultiData> list = cri.list();
 						for(QaCheckMultiData qadata : list)
 						{
 							qadata.setQaChecksActions(action);
-							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
+							System.err.println("-----QaCheckMultiData closed : " + qadata.getId()
+									+ "------");
 						}
 					}
 					else if(qachk.getChecker().equals(StatusName.FamilyMultiSupplier))
@@ -5431,12 +5921,14 @@ public class DataDevQueryUtil
 						cri = session.createCriteria(QaCheckMultiTax.class);
 						cri.createAlias("qaCheckParts", "qaCheckParts");
 						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
-						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId()
+								.toString()));
 						List<QaCheckMultiTax> list = cri.list();
 						for(QaCheckMultiTax qadata : list)
 						{
 							qadata.setQaChecksActions(action);
-							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId() + "------");
+							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId()
+									+ "------");
 						}
 					}
 				}
@@ -5465,12 +5957,14 @@ public class DataDevQueryUtil
 						cri = session.createCriteria(QaCheckMultiData.class);
 						cri.createAlias("qaCheckParts", "qaCheckParts");
 						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
-						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId()
+								.toString()));
 						List<QaCheckMultiData> list = cri.list();
 						for(QaCheckMultiData qadata : list)
 						{
 							qadata.setQaChecksActions(action);
-							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
+							System.err.println("-----QaCheckMultiData closed : " + qadata.getId()
+									+ "------");
 						}
 					}
 					else if(qachk.getChecker().equals(StatusName.MaskMultiSupplier))
@@ -5479,12 +5973,14 @@ public class DataDevQueryUtil
 						cri = session.createCriteria(QaCheckMultiTax.class);
 						cri.createAlias("qaCheckParts", "qaCheckParts");
 						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
-						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
+						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId()
+								.toString()));
 						List<QaCheckMultiTax> list = cri.list();
 						for(QaCheckMultiTax qadata : list)
 						{
 							qadata.setQaChecksActions(action);
-							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId() + "------");
+							System.err.println("-----QaCheckMultiTax closed : " + qadata.getId()
+									+ "------");
 						}
 					}
 				}
@@ -5500,7 +5996,8 @@ public class DataDevQueryUtil
 					}
 					qachk.getPart().setMapGeneric(generic);
 					session.saveOrUpdate(qachk.getPart());
-					System.err.println("-----generic updated to: " + generic.getGeneric() + "------");
+					System.err.println("-----generic updated to: " + generic.getGeneric()
+							+ "------");
 
 					// get QA Check Action
 					Criteria cri = session.createCriteria(QaChecksActions.class);
@@ -5508,16 +6005,18 @@ public class DataDevQueryUtil
 					QaChecksActions action = (QaChecksActions) cri.uniqueResult();
 
 					// set Other qachecks to closed
-						cri = session.createCriteria(QaCheckMultiData.class);
-						cri.createAlias("qaCheckParts", "qaCheckParts");
-						cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
-						cri.add(Restrictions.ne("conflictedPart", qachk.getPart().getComId().toString()));
-						List<QaCheckMultiData> list = cri.list();
-						for(QaCheckMultiData qadata : list)
-						{
-							qadata.setQaChecksActions(action);
-							System.err.println("-----QaCheckMultiData closed : " + qadata.getId() + "------");
-						}
+					cri = session.createCriteria(QaCheckMultiData.class);
+					cri.createAlias("qaCheckParts", "qaCheckParts");
+					cri.add(Restrictions.eq("qaCheckParts.id", qachk.getCheckpartid()));
+					cri.add(Restrictions
+							.ne("conflictedPart", qachk.getPart().getComId().toString()));
+					List<QaCheckMultiData> list = cri.list();
+					for(QaCheckMultiData qadata : list)
+					{
+						qadata.setQaChecksActions(action);
+						System.err.println("-----QaCheckMultiData closed : " + qadata.getId()
+								+ "------");
+					}
 				}
 			}
 			else if(qachk.getStatus().equals(StatusName.UpdateParametricData))
@@ -5525,14 +6024,19 @@ public class DataDevQueryUtil
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
 					// get PlFeature byFeatureName
-					PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
+					PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(
+							qachk.getFeatureName(), qachk.getProductLine().getName(), session);
 					// get Approved Values
-					List<String> appValues = ParaQueryUtil.getGroupFullValueByPlFeature(plFeature, session);
+					List<String> appValues = ParaQueryUtil.getGroupFullValueByPlFeature(plFeature,
+							session);
 					// Save New Value if it is approved
 					if(appValues.contains(qachk.getNewValue()))
 					{
-						ParametricApprovedGroup groupexist = ParaQueryUtil.getParametricApprovedGroup(qachk.getFeatureValue(), plFeature, session);
-						ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(qachk.getNewValue(), plFeature, session);
+						ParametricApprovedGroup groupexist = ParaQueryUtil
+								.getParametricApprovedGroup(qachk.getFeatureValue(), plFeature,
+										session);
+						ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(
+								qachk.getNewValue(), plFeature, session);
 						Criteria cri = session.createCriteria(ParametricReviewData.class);
 						cri.add(Restrictions.eq("component", qachk.getPart()));
 						cri.add(Restrictions.eq("plFeature", plFeature));
@@ -5540,7 +6044,8 @@ public class DataDevQueryUtil
 						review.setGroupApprovedValueId(group.getId());
 						review.setStoreDate(new Date());
 						session.saveOrUpdate(review);
-						System.err.println("-----fetvalue updated to: " + group.getGroupFullValue() + "------");
+						System.err.println("-----fetvalue updated to: " + group.getGroupFullValue()
+								+ "------");
 					}
 					else
 					{
@@ -5602,7 +6107,10 @@ public class DataDevQueryUtil
 			for(QaCheckParts qachkpart : qaparts)
 			{
 				boolean done = true;
-				if(qachkpart.getPreQaCheckers().getName().equals(StatusName.MaskMultiData) || qachkpart.getPreQaCheckers().getName().equals(StatusName.RootPartChecker) || qachkpart.getPreQaCheckers().getName().equals(StatusName.generic_part))
+				if(qachkpart.getPreQaCheckers().getName().equals(StatusName.MaskMultiData)
+						|| qachkpart.getPreQaCheckers().getName()
+								.equals(StatusName.RootPartChecker)
+						|| qachkpart.getPreQaCheckers().getName().equals(StatusName.generic_part))
 				{
 					cri = session.createCriteria(QaCheckMultiData.class);
 					cri.add(Restrictions.eq("qaCheckParts", qachkpart));
@@ -5730,7 +6238,9 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("name", partaction));
 			action = (QaChecksActions) cri.uniqueResult();
 
-			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker)|| qachk.getChecker().equals(StatusName.generic_part))
+			if(qachk.getChecker().equals(StatusName.MaskMultiData)
+					|| qachk.getChecker().equals(StatusName.RootPartChecker)
+					|| qachk.getChecker().equals(StatusName.generic_part))
 			{
 				cri = session.createCriteria(QaCheckMultiData.class);
 				cri.add(Restrictions.eq("conflictedPart", qachk.getPart().getComId().toString()));
@@ -5793,10 +6303,13 @@ public class DataDevQueryUtil
 			qaexception.setId(System.nanoTime());
 			qaexception.setComid(qachk.getPart().getComId());
 			qaexception.setFamily(qachk.getFamily());
-			if(qachk.getChecker().equals(StatusName.MaskMultiData) || qachk.getChecker().equals(StatusName.RootPartChecker))
+			if(qachk.getChecker().equals(StatusName.MaskMultiData)
+					|| qachk.getChecker().equals(StatusName.RootPartChecker))
 			{
-				qaexception.setFetValue(qachk.getFeatureValue() == null ? "" : qachk.getFeatureValue());
-				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(), qachk.getProductLine().getName(), session);
+				qaexception.setFetValue(qachk.getFeatureValue() == null ? "" : qachk
+						.getFeatureValue());
+				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(),
+						qachk.getProductLine().getName(), session);
 				qaexception.setPlFetId(plFeature.getId());
 			}
 			qaexception.setPlId(qachk.getProductLine().getId());
@@ -5821,8 +6334,11 @@ public class DataDevQueryUtil
 			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 			ParaFeedbackAction feedbackAction = null;
 			TrackingFeedbackType trackingFeedbackType = null;
-			QaCheckParts qacheckPart = ParaQueryUtil.getqacheckdocbychkpartid(qachk.getCheckpartid(), session);
-			TrackingParametric track = getTrackingParametricByDocumentAndPl(qacheckPart.getDocument(), qacheckPart.getPartComponent().getSupplierPl().getPl(), session);
+			QaCheckParts qacheckPart = ParaQueryUtil.getqacheckdocbychkpartid(
+					qachk.getCheckpartid(), session);
+			TrackingParametric track = getTrackingParametricByDocumentAndPl(
+					qacheckPart.getDocument(), qacheckPart.getPartComponent().getSupplierPl()
+							.getPl(), session);
 			String comment = qachk.getNewValue();
 			String issuedByName = qachk.getEngname();
 
@@ -5876,7 +6392,8 @@ public class DataDevQueryUtil
 			fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
 			fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 			fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria.uniqueResult();
+			ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria
+					.uniqueResult();
 
 			if(parametricFeedbackCycle != null)
 			{
