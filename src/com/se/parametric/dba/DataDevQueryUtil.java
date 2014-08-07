@@ -2661,6 +2661,8 @@ public class DataDevQueryUtil
 		{
 			PartComponent com = new PartComponent();
 			MasterFamilyGeneric famGen = null;
+			FamilyCross fam = null;
+			MapGeneric gen = null;
 			// long comId = System.nanoTime();
 			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
 					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(), session);
@@ -2706,23 +2708,18 @@ public class DataDevQueryUtil
 			// com.setNpiFlag(0l);
 			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
 			{
-				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
+				gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
 				if(gen == null)
 				{
 					gen = insertGeneric(partInfo.getGeneric(), session);
 				}
-				FamilyCross fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
+				fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
 				if(fam == null)
 				{
 					fam = insertFamilyCross(partInfo.getFamilycross(), session);
 				}
 				com.setFamilyCross(fam);
 				com.setMapGeneric(gen);
-
-				// famGen = new MasterFamilyGeneric();
-				// famGen.setComId(com);
-				// famGen.setFamilyCross(fam);
-				// famGen.setMapGeneric(gen);
 			}
 
 			if(partInfo.getFeedbackType() != null)
@@ -2755,10 +2752,16 @@ public class DataDevQueryUtil
 				insertNPIPart(com, partInfo.getNewsLink(), session);
 			}
 
-			if(famGen != null)
+			if(gen != null && fam != null)
+			{
+				famGen = new MasterFamilyGeneric();
+				famGen.setComId(com);
+				famGen.setFamilyCross(fam);
+				famGen.setMapGeneric(gen);
+				famGen.setAutoFlag(1l);
 				session.saveOrUpdate(famGen);
-			// session.beginTransaction().commit();
-
+				// session.beginTransaction().commit()
+			}
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
 			for(String fetName : fetNames)
@@ -2802,6 +2805,9 @@ public class DataDevQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
+			MasterFamilyGeneric famGen = null;
+			FamilyCross fam = null;
+			MapGeneric gen = null;
 			String partNumber = partInfo.getPN();
 			String vendorName = partInfo.getSupplierName();
 			PartComponent com = partInfo.getComponent();
@@ -2849,18 +2855,18 @@ public class DataDevQueryUtil
 			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty()
 					&& partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
 			{
-				MapGeneric gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
+				gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
 				if(gen == null)
 				{
 					gen = insertGeneric(partInfo.getGeneric(), session);
 				}
-				FamilyCross fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
+				fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
 				if(fam == null)
 				{
 					fam = insertFamilyCross(partInfo.getFamilycross(), session);
 				}
 				com.setFamilyCross(fam);
-
+				com.setMapGeneric(gen);
 			}
 			if(partInfo.getFeedbackType() != null)
 				com.setTrackingFeedbackType(getFeedbackType(partInfo.getFeedbackType()));
@@ -2872,6 +2878,16 @@ public class DataDevQueryUtil
 			session.saveOrUpdate(com);
 			session.beginTransaction().commit();
 
+			if(gen != null && fam != null)
+			{
+				famGen = new MasterFamilyGeneric();
+				famGen.setComId(com);
+				famGen.setFamilyCross(fam);
+				famGen.setMapGeneric(gen);
+				famGen.setAutoFlag(1l);
+				session.saveOrUpdate(famGen);
+				// session.beginTransaction().commit()
+			}
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
 			for(String fetName : fetNames)
