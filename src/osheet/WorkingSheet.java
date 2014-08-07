@@ -1690,7 +1690,7 @@ public class WorkingSheet
 					writeValidtionStatus(xcellrange, true);
 
 				}
-				if(!update)
+				if(!update||(update&&!status.equals("Rejected")))
 				{
 					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
 					if(!appFlag)
@@ -2560,7 +2560,7 @@ public class WorkingSheet
 				}
 			}
 			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.doneFLagEngine, "");
-			JOptionPane.showMessageDialog(null, "Saving Data Finished");
+			
 		}catch(Exception e)
 		{
 			e.printStackTrace();

@@ -2804,16 +2804,15 @@ public class DataDevQueryUtil
 		{
 			String partNumber = partInfo.getPN();
 			String vendorName = partInfo.getSupplierName();
-			PartComponent com = partInfo.getComponent();
-			// getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
-
+			PartComponent com = getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
+			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
+					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(),
+					session);
 			if(com == null)
 			{
 				com = new PartComponent();
 
-				TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
-						partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(),
-						session);
+				
 				com.setDocument(track.getDocument());
 				com.setSupplierPl(track.getSupplierPl());
 				com.setSupplierId(track.getSupplier());
@@ -2899,6 +2898,7 @@ public class DataDevQueryUtil
 					data.setId(id);
 					data.setComponent(com);
 					data.setPlFeature(plFeature);
+					data.setTrackingParametric(track);
 				}
 				// data.setComponent(com);
 				data.setGroupApprovedValueId(group.getId());
