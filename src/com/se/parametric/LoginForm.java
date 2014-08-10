@@ -2,8 +2,10 @@ package com.se.parametric;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -70,7 +72,10 @@ public class LoginForm extends JFrame
 //		}
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 383, 249);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int width=(int) screenSize.getWidth();
+		int height=(int) screenSize.getHeight();
+		setBounds((width-383)/2, (height-249)/2, 383, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
