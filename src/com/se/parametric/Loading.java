@@ -19,7 +19,7 @@ public class Loading
 	static int width;
 	int percent = 0;
 	public static JFrame frame;
-	ImagePanel panel = new ImagePanel("Resources/loading1.gif");
+	ImagePanel panel = new ImagePanel("Resources/loading.gif");
 	public static void show()
 	{
 		ImageIcon icon=new ImageIcon("Resources/loading1.gif");
