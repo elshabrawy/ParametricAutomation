@@ -580,16 +580,18 @@ public class Developement extends JPanel implements ActionListener
 				row.add("PL_Name");// 0
 				row.add("Part");// 1
 				row.add("Datasheet");// 2
-				row.add("Feature Name");// 3
-				row.add("Feature Value");// 4
-				row.add("Feature Unit");// 5
-				row.add("Sign");// 6
-				row.add("Value");// 7
-				row.add("Type");// 8
-				row.add("Condition");// 9
-				row.add("Multiplier");// 10
-				row.add("Unit");// 11
-				row.add("Validation result");// 12
+				row.add("Supplier");// 3
+				row.add("ReceivedDate");// 4
+				row.add("Feature Name");// 5
+				row.add("Feature Value");// 6
+				row.add("Feature Unit");// 7
+				row.add("Sign");// 8
+				row.add("Value");// 9
+				row.add("Type");// 10
+				row.add("Condition");// 11
+				row.add("Multiplier");// 12
+				row.add("Unit");// 13
+				row.add("Validation result");// 14
 
 				if(wsMap.get("Separation") != null)
 				{
@@ -640,15 +642,15 @@ public class Developement extends JPanel implements ActionListener
 						row = separationValues.get(i);
 
 						String plName = row.get(0);
-						String featureName = row.get(3);
-						String featureFullValue = row.get(4);
+						String featureName = row.get(5);
+						String featureFullValue = row.get(6);
 
 						try
 						{
 							List<ApprovedParametricDTO> approved = ApprovedDevUtil
 									.createApprovedValuesList(featureFullValue, plName,
-											featureName, row.get(5), row.get(6), row.get(7),
-											row.get(10), row.get(11), row.get(9), row.get(8));
+											featureName, row.get(7), row.get(8), row.get(9),
+											row.get(12), row.get(13), row.get(11), row.get(10));
 
 							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
 									featureName, featureFullValue, row.get(2), userId);
@@ -656,7 +658,7 @@ public class Developement extends JPanel implements ActionListener
 						{
 							try
 							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+								Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
 								cell.setText(ex.getMessage());
 							}catch(Exception e)
 							{
@@ -697,7 +699,7 @@ public class Developement extends JPanel implements ActionListener
 					{
 						row = separationValues.get(i);
 						List<String> result = ApprovedDevUtil.validateSeparation(row);
-						row.set(12, result.get(0));
+						row.set(14, result.get(0));
 						validationResult.add(row);
 						if(result.get(0) != "" && result.get(1).equals("false"))
 						{

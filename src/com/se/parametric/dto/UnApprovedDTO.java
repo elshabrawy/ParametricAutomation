@@ -5,6 +5,27 @@ public class UnApprovedDTO
 	String plName, partNumber, pdfUrl, featureName, featureValue, featureUnit, sign, value, type, condition, multiplier, unit;
 	String fbStatus, comment, gruopSatus, fbType, qaComment, qaStatus, IssueType, lastEngComment;
 	String CAction, PAction, RootCause, ActionDueDate;
+	String supplier , ReceivedDate;
+
+	public String getSupplier()
+	{
+		return supplier;
+	}
+
+	public void setSupplier(String supplier)
+	{
+		this.supplier = supplier;
+	}
+
+	public String getReceivedDate()
+	{
+		return ReceivedDate;
+	}
+
+	public void setReceivedDate(String receivedDate)
+	{
+		ReceivedDate = receivedDate;
+	}
 
 	public String getCAction()
 	{

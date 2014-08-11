@@ -3,7 +3,17 @@ package com.se.parametric.dto;
 public class FeedBackData
 {
 	String fbStatus, comment, fbType, qaComment, qaStatus, lastEngComment, issuetype;
-	String CAction, PAction, RootCause, ActionDueDate;
+	String CAction, PAction, RootCause, ActionDueDate,RecievedDate;
+
+	public String getRecievedDate()
+	{
+		return RecievedDate;
+	}
+
+	public void setRecievedDate(String recievedDate)
+	{
+		RecievedDate = recievedDate;
+	}
 
 	public String getCAction()
 	{

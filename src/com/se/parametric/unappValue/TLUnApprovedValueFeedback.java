@@ -74,15 +74,18 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null, "TL");
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,
+				"TL");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
 		sheetPanel = new SheetPanel();
 		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110, (((height - 100) * 7) / 10));
+		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110,
+				(((height - 100) * 7) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 110,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
 		alertsPanel = new AlertsPanel(TLDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
@@ -98,7 +101,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		// tabSheet = new JPanel();
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
@@ -209,42 +213,47 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String feedBackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				// unApproveds = ParaQueryUtil.getTLUnapprovedFeedBack(TLDTO, startDate, endDate, plName, supplierName, taskType, feedBackType);
-				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, "", startDate, endDate, plName, supplierName, StatusName.tlFeedback, taskType, "Parametric", "FB", TLDTO.getId());
+				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, "", startDate,
+						endDate, plName, supplierName, StatusName.tlFeedback, taskType,
+						"Parametric", "FB", TLDTO.getId());
 				list = new ArrayList<ArrayList<String>>();
 
 				list = new ArrayList<ArrayList<String>>();
 				row = new ArrayList<String>();
 				sheetPanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
-				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@" + TLDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@"
+						+ TLDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				row.add("PL Name");// 0
 				row.add("Part Name");// 1
 				row.add("Pdf Url");// 2
-				row.add("Feature Name");// 3
-				row.add("Feature Value");// 4
-				row.add("Feature Unit");// 5
-				row.add("Sign");// 6
-				row.add("Value");// 7
-				row.add("Type");// 8
-				row.add("Condition");// 9
-				row.add("Multiplier");// 10
-				row.add("Unit");// 11
-				row.add("TL Status");// 12
-				row.add("TL Comment");// 13
+				row.add("Supplier");// 3
+				row.add("ReceivedDate");// 4
+				row.add("Feature Name");// 5
+				row.add("Feature Value");// 6
+				row.add("Feature Unit");// 7
+				row.add("Sign");// 8
+				row.add("Value");// 9
+				row.add("Type");// 10
+				row.add("Condition");// 11
+				row.add("Multiplier");// 12
+				row.add("Unit");// 13
+				row.add("TL Status");// 14
+				row.add("TL Comment");// 15
 
-				row.add("C_ACTION");// 14
-				row.add("P_ACTION");// 15
-				row.add("ROOT_CAUSE");// 16
-				row.add("Action Due Date");// 17
+				row.add("C_ACTION");// 16
+				row.add("P_ACTION");// 17
+				row.add("ROOT_CAUSE");// 18
+				row.add("Action Due Date");// 19
 
-				row.add("FeedBack Type");// 18
-				row.add("Issue Type");// 19
-				row.add("Dev Status");// 20
-				row.add("Dev Comment");// 21
-				row.add("QA Status");// 22
-				row.add("QA Comment");// 23
-				row.add("Last TL Comment");// 24
-				row.add("Validation Result");// 25
+				row.add("FeedBack Type");// 20
+				row.add("Issue Type");// 21
+				row.add("Dev Status");// 22
+				row.add("Dev Comment");// 23
+				row.add("QA Status");// 24
+				row.add("QA Comment");// 25
+				row.add("Last TL Comment");// 26
+				row.add("Validation Result");// 27
 				wsMap.put("Unapproved Values", ws);
 				ws.setUnapprovedHeader(row);
 				for(int i = 0; i < unApproveds.size(); i++)
@@ -254,6 +263,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 					row.add(obj.getPlName());
 					row.add(obj.getPartNumber());
 					row.add(obj.getPdfUrl());
+					row.add(obj.getSupplier());
+					row.add(obj.getReceivedDate());
 					row.add(obj.getFeatureName());
 					row.add(obj.getFeatureValue());
 					row.add(obj.getFeatureUnit());
@@ -288,7 +299,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Reject QA");
 				statusValues.add("Accept QA & Forward");
 				ws.statusValues = statusValues;
-				ws.writeReviewData(list, 1, 13);
+				ws.writeReviewData(list, 1, 15);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			}
@@ -301,14 +312,16 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate, endDate, "TL");
+				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate,
+						endDate, "TL");
 				filterPanel.refreshFilters();
 			}
 
 			else if(event.getSource().equals(validate))
 			{
 				// tabbedPane.setSelectedIndex(0);
-				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values")
+						.readSpreadsheet(1);
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
@@ -324,7 +337,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 					{
 						row = wsheet.get(i);
 						List<String> result = ApprovedDevUtil.validateSeparation(row);
-						row.set(25, result.get(0));
+						row.set(27, result.get(0));
 						validationResult.add(row);
 						if(result.get(0) != "" && result.get(1).equals("false"))
 						{
@@ -350,14 +363,15 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						for(int i = 0; i < result.size(); i++)
 						{
 							ArrayList<String> newValReq = result.get(i);
-							if(newValReq.get(12).equals("Update"))
+							if(newValReq.get(14).equals("Update"))
 							{
 								try
 								{
 									if(!validated)
 									{
 										Loading.close();
-										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
+										JOptionPane.showMessageDialog(null,
+												" Validate First due to some errors in your data");
 
 										return null;
 									}
@@ -373,57 +387,81 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							// loading.frame.dispose();
 							// return;
 							// }
-							if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
+							if(newValReq.get(14).equals("Reject QA")
+									&& !newValReq.get(20).equals("QA"))
 							{
 								Loading.close();
-								JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + (i + 1));
+								JOptionPane
+										.showMessageDialog(null,
+												" You Can Reject QA on QA Feedback only in row :"
+														+ (i + 1));
 
 								return null;
 							}
-							if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
+							if(newValReq.get(14).equals("Accept QA & Forward")
+									&& !newValReq.get(20).equals("QA"))
 							{
 								Loading.close();
-								JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
+								JOptionPane.showMessageDialog(null,
+										" You Can Accept QA & Forward on QA Feedback only in row :"
+												+ (i + 1));
 
 								return null;
 							}
-							if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
+							if(newValReq.get(14).equals("Update")
+									&& newValReq.get(21).equals("Wrong Value"))
 							{
 								Loading.close();
-								JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + (i + 1));
+								JOptionPane
+										.showMessageDialog(null,
+												" You Can't Update Wrong Value Feedback in row :"
+														+ (i + 1));
 
 								return null;
 							}
-							if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
+							if(newValReq.get(14).equals("Wrong Separation")
+									&& !newValReq.get(20).equals("Internal"))
 							{
 								Loading.close();
-								JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
+								JOptionPane.showMessageDialog(null,
+										" You Can set Wrong Separation on Internal Feedback only in row :"
+												+ (i + 1));
 
 								return null;
 							}
-							if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
+							if(newValReq.get(14).equals("Wrong Value")
+									&& !newValReq.get(20).equals("Internal"))
 							{
 								Loading.close();
-								JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + (i + 1));
+								JOptionPane.showMessageDialog(null,
+										" You Can set Wrong Value on Internal Feedback only in row :"
+												+ (i + 1));
 
 								return null;
 							}
 
-							if(newValReq.get(12).equals("Update") && newValReq.get(18).equals("QA"))
+							if(newValReq.get(14).equals("Update") && newValReq.get(20).equals("QA"))
 							{
-								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
+								if(newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty()
+										|| newValReq.get(18).isEmpty()
+										|| newValReq.get(19).isEmpty())
 								{
 									Loading.close();
-									JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
+									JOptionPane.showMessageDialog(null,
+											" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :"
+													+ (i + 1));
 
 									return null;
 								}
-								if(!newValReq.get(17).isEmpty())
+								if(!newValReq.get(19).isEmpty())
 								{
-									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
+									if(ApprovedDevUtil.isThisDateValid(newValReq.get(19),
+											"DD/MM/YYYY") == false)
 									{
 										Loading.close();
-										JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
+										JOptionPane.showMessageDialog(null,
+												" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+														+ (i + 1));
 
 										return null;
 									}
@@ -435,28 +473,31 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						{
 							ArrayList<String> newValReq = result.get(i);
 							UnApprovedDTO oldValReq = unApproveds.get(i);
-							if(newValReq.get(0).equals(oldValReq.getPlName()) && newValReq.get(3).equals(oldValReq.getFeatureName()) && newValReq.get(4).equals(oldValReq.getFeatureValue()) && newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+							if(newValReq.get(0).equals(oldValReq.getPlName())
+									&& newValReq.get(5).equals(oldValReq.getFeatureName())
+									&& newValReq.get(6).equals(oldValReq.getFeatureValue())
+									&& newValReq.get(7).equals(oldValReq.getFeatureUnit()))
 							{
-								oldValReq.setSign(newValReq.get(6));
-								oldValReq.setValue(newValReq.get(7));
-								oldValReq.setType(newValReq.get(8));
-								oldValReq.setCondition(newValReq.get(9));
-								oldValReq.setMultiplier(newValReq.get(10));
-								oldValReq.setUnit(newValReq.get(11));
-								oldValReq.setComment(newValReq.get(13));
+								oldValReq.setSign(newValReq.get(8));
+								oldValReq.setValue(newValReq.get(9));
+								oldValReq.setType(newValReq.get(10));
+								oldValReq.setCondition(newValReq.get(11));
+								oldValReq.setMultiplier(newValReq.get(12));
+								oldValReq.setUnit(newValReq.get(13));
+								oldValReq.setComment(newValReq.get(14));
 
 								// oldValReq.setIssuedby(issuedto);
 
-								if(newValReq.get(12).equals("Approved Eng."))
+								if(newValReq.get(14).equals("Approved Eng."))
 								{
 
 									// ParaQueryUtil.saveTLApproved(result.get(i));
 									if(oldValReq.getFbType().equals("QA"))
 									{
-										oldValReq.setCAction(newValReq.get(14));
-										oldValReq.setPAction(newValReq.get(15));
-										oldValReq.setRootCause(newValReq.get(16));
-										oldValReq.setActionDueDate(newValReq.get(17));
+										oldValReq.setCAction(newValReq.get(16));
+										oldValReq.setPAction(newValReq.get(17));
+										oldValReq.setRootCause(newValReq.get(18));
+										oldValReq.setActionDueDate(newValReq.get(19));
 										oldValReq.setIssueTo(oldValReq.getQaUserId());
 										oldValReq.setIssuedby(TLDTO.getId());
 										oldValReq.setFbStatus(StatusName.accept);
@@ -471,14 +512,14 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									}
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(newValReq.get(12).equals("Update"))
+								else if(newValReq.get(14).equals("Update"))
 								{
 									if(oldValReq.getFbType().equals("QA"))
 									{
-										oldValReq.setCAction(newValReq.get(14));
-										oldValReq.setPAction(newValReq.get(15));
-										oldValReq.setRootCause(newValReq.get(16));
-										oldValReq.setActionDueDate(newValReq.get(17));
+										oldValReq.setCAction(newValReq.get(16));
+										oldValReq.setPAction(newValReq.get(17));
+										oldValReq.setRootCause(newValReq.get(18));
+										oldValReq.setActionDueDate(newValReq.get(19));
 
 										oldValReq.setIssueTo(oldValReq.getQaUserId());
 										oldValReq.setIssuedby(TLDTO.getId());
@@ -496,7 +537,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 
 								}
-								else if(newValReq.get(12).equals("Reject QA"))
+								else if(newValReq.get(14).equals("Reject QA"))
 								{
 									oldValReq.setIssueTo(oldValReq.getQaUserId());
 									oldValReq.setIssuedby(TLDTO.getId());
@@ -504,27 +545,27 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setGruopSatus(StatusName.qaFeedback);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(newValReq.get(12).equals("Wrong Separation"))
+								else if(newValReq.get(14).equals("Wrong Separation"))
 								{
-									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssueType(newValReq.get(14));
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
 									oldValReq.setFbStatus(StatusName.reject);
 									oldValReq.setGruopSatus(StatusName.engFeedback);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(newValReq.get(12).equals("Accept QA & Forward"))
+								else if(newValReq.get(14).equals("Accept QA & Forward"))
 								{
-									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssueType(newValReq.get(14));
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
 									oldValReq.setFbStatus(StatusName.accept);
 									oldValReq.setGruopSatus(StatusName.engFeedback);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(newValReq.get(12).equals("Wrong Value"))
+								else if(newValReq.get(14).equals("Wrong Value"))
 								{
-									oldValReq.setIssueType(newValReq.get(12));
+									oldValReq.setIssueType(newValReq.get(14));
 									oldValReq.setIssuedby(TLDTO.getId());
 									oldValReq.setIssueTo(oldValReq.getUserId());
 									oldValReq.setFbStatus(StatusName.reject);
@@ -535,7 +576,9 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else
 							{
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
+								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
+										+ newValReq.get(6)
+										+ " Can't Save dueto change in main columns");
 							}
 						}
 						System.out.println("size is " + result.size());

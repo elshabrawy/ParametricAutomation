@@ -239,7 +239,8 @@ public class ParaQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-			SQLQuery query = session.createSQLQuery("select name from pl where is_pl=1 order by name");
+			SQLQuery query = session
+					.createSQLQuery("select name from pl where is_pl=1 order by name");
 			plNames = query.list();
 		}catch(Exception ex)
 		{
@@ -260,7 +261,8 @@ public class ParaQueryUtil
 		Session session = com.se.grm.db.SessionUtil.getSession();
 		Criteria criteria = session.createCriteria(GrmUser.class);
 		criteria.add(Restrictions.eq("password", pass));
-		criteria.add(Restrictions.or(Restrictions.like("email", userName + "@%").ignoreCase(), Restrictions.eq("fullName", userName).ignoreCase()));
+		criteria.add(Restrictions.or(Restrictions.like("email", userName + "@%").ignoreCase(),
+				Restrictions.eq("fullName", userName).ignoreCase()));
 		GrmUser grmUser = (GrmUser) criteria.uniqueResult();
 
 		com.se.grm.db.SessionUtil.getSession().close();
@@ -371,13 +373,15 @@ public class ParaQueryUtil
 		return null;
 	}
 
-	public static void updateTrackingParamDocApprov(Session session, TrackingParamDocApprov trackingParamDocApprov)
+	public static void updateTrackingParamDocApprov(Session session,
+			TrackingParamDocApprov trackingParamDocApprov)
 	{
 		session.saveOrUpdate(trackingParamDocApprov);
 		session.beginTransaction().commit();
 	}
 
-	public static TrackingParamDocApprov getTrackingParamDocApprovById(Session session, long idTrackingParamDocApprov) throws Exception
+	public static TrackingParamDocApprov getTrackingParamDocApprovById(Session session,
+			long idTrackingParamDocApprov) throws Exception
 	{
 		Criteria c = session.createCriteria(TrackingParamDocApprov.class);
 		c.add(Restrictions.eq("id", idTrackingParamDocApprov));
@@ -386,7 +390,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingPkgDocApprov getTrackingPkgDocApprovById(Session session, long idTrackingPkgDocApprov) throws Exception
+	public static TrackingPkgDocApprov getTrackingPkgDocApprovById(Session session,
+			long idTrackingPkgDocApprov) throws Exception
 	{
 		Criteria c = session.createCriteria(TrackingPkgDocApprov.class);
 		c.add(Restrictions.eq("id", idTrackingPkgDocApprov));
@@ -396,10 +401,12 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int getCountApprovedParametricValue(Session session, String plname) throws Exception
+	public static int getCountApprovedParametricValue(Session session, String plname)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingParametricApprovVal.class);
-		crit.createCriteria("approvedParametricValue").createCriteria("plFeature").createCriteria("pl").add(Restrictions.ilike("name", plname, MatchMode.START));
+		crit.createCriteria("approvedParametricValue").createCriteria("plFeature")
+				.createCriteria("pl").add(Restrictions.ilike("name", plname, MatchMode.START));
 
 		crit.setProjection(Projections.count("id")).list();
 
@@ -422,7 +429,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<DevelopmentCommentValue> getDevelopmentCommentValues(long SupplierId, Session session)
+	public static List<DevelopmentCommentValue> getDevelopmentCommentValues(long SupplierId,
+			Session session)
 	{
 		Criteria crit = session.createCriteria(DevelopmentCommentValue.class);
 		crit.createCriteria("supplier").add(Restrictions.eq("id", SupplierId));
@@ -455,7 +463,9 @@ public class ParaQueryUtil
 		Criteria crit = session.createCriteria(PlFeature.class);
 		crit.createCriteria("pl").add(Restrictions.eq("id", plId));
 		crit.createCriteria("feature").add(
-				Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME", "Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description", "Introduction Name", "Pin Count",
+				Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME",
+						"Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET",
+						"Vendor", "Vendor Code", "Description", "Introduction Name", "Pin Count",
 						"Supplier Package", "ROHS", "Life Cycle" })));
 		crit.add(Restrictions.isNotNull("columnName"));
 		crit.add(Restrictions.ne("columnName", "man_id"));
@@ -467,7 +477,8 @@ public class ParaQueryUtil
 		return crit.list();
 	}
 
-	public static PlFeature getFeaturebyName(String plName, String fetName, Session session) throws Exception
+	public static PlFeature getFeaturebyName(String plName, String fetName, Session session)
+			throws Exception
 	{
 		Criteria crit = session.createCriteria(PlFeature.class);
 		crit.createCriteria("pl").add(Restrictions.eq("name", plName));
@@ -498,7 +509,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getPartNumberByDocuomentId(Session session, long docuomentId/* , String taxonomy */) throws Exception
+	public static List<PartComponent> getPartNumberByDocuomentId(Session session, long docuomentId/* , String taxonomy */)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		// if(!taxonomy.equals(""))
@@ -545,7 +557,8 @@ public class ParaQueryUtil
 		for(int t = 0; t < data.size(); t++)
 		{
 			plFetConverter = (PlFetConverter) data.get(t);
-			map.put((String) ((plFetConverter.getUnit() != null) ? plFetConverter.getUnit() : ""), (Long) ((plFetConverter.getValue() != null) ? plFetConverter.getValue() : "")
+			map.put((String) ((plFetConverter.getUnit() != null) ? plFetConverter.getUnit() : ""),
+					(Long) ((plFetConverter.getValue() != null) ? plFetConverter.getValue() : "")
 
 			);
 
@@ -568,7 +581,8 @@ public class ParaQueryUtil
 	// approvedValue = (ApprovedParametricValue) list.get(0);
 	// return approvedValue;
 	// }
-	public static ApprovedParametricValue getApprovedFeatureValue(String value, String plFeatureName, String plName, Session session)
+	public static ApprovedParametricValue getApprovedFeatureValue(String value,
+			String plFeatureName, String plName, Session session)
 	{
 		// Criteria crit =
 		// session.createCriteria(ApprovedParametricValue.class);
@@ -695,10 +709,20 @@ public class ParaQueryUtil
 
 	public static Pdf getPdfWithNonParametricParts(Vector<Long> skipedPdfIds, final Session session)
 	{
-		StringBuilder queryStr = new StringBuilder("SELECT   p.*" + " FROM   pdf p,document doc,component com,document_supplier_pl_family doc_family,supplier_pl_family family,pl ,pl_feature_unit pl_fet" + " WHERE   " + " DOC.PDF_ID = p.id"
-				+ " AND com.document_id = doc.id" + " and doc.id = doc_family.document_id" + " and doc_family.supplier_pl_family_id = family.id" + " and family.pl_id = pl.id" + " and pl.id = pl_fet.pl_id " + " AND DOC.PROGRESS_STATUS = '"
-				+ StatusName.finshed + "' " + " and p.id NOT IN" + "            (SELECT   DISTINCT p.id" + "             FROM   pdf p," + "                  document doc," + "                part_component com," + "              parts_parametric pp"
-				+ "    WHERE       DOC.PDF_ID = p.id" + "          AND com.document_id = doc.id" + "        AND com.com_id = pp.com_id)" + " AND ROWNUM = 1");
+		StringBuilder queryStr = new StringBuilder(
+				"SELECT   p.*"
+						+ " FROM   pdf p,document doc,component com,document_supplier_pl_family doc_family,supplier_pl_family family,pl ,pl_feature_unit pl_fet"
+						+ " WHERE   " + " DOC.PDF_ID = p.id" + " AND com.document_id = doc.id"
+						+ " and doc.id = doc_family.document_id"
+						+ " and doc_family.supplier_pl_family_id = family.id"
+						+ " and family.pl_id = pl.id" + " and pl.id = pl_fet.pl_id "
+						+ " AND DOC.PROGRESS_STATUS = '" + StatusName.finshed + "' "
+						+ " and p.id NOT IN" + "            (SELECT   DISTINCT p.id"
+						+ "             FROM   pdf p," + "                  document doc,"
+						+ "                part_component com,"
+						+ "              parts_parametric pp" + "    WHERE       DOC.PDF_ID = p.id"
+						+ "          AND com.document_id = doc.id"
+						+ "        AND com.com_id = pp.com_id)" + " AND ROWNUM = 1");
 
 		if(skipedPdfIds != null && skipedPdfIds.size() > 0)
 		{
@@ -722,9 +746,9 @@ public class ParaQueryUtil
 		return c.getTime();
 	}
 
-
 	@SuppressWarnings("unchecked")
-	public static List<String> getFullValuesByApprovedParametricValueId(long ApprovedParametricValues, Session session)
+	public static List<String> getFullValuesByApprovedParametricValueId(
+			long ApprovedParametricValues, Session session)
 	{
 
 		Criteria crit = session.createCriteria(ApprovedParametricValue.class);
@@ -736,11 +760,11 @@ public class ParaQueryUtil
 
 	}
 
-	public static List<Pdf> getPdfsForParametricDev(String plName, String supplierName, String downloadJob, Date lastCheckDate, Date downloadDate/*
-																																				 * ,
-																																				 * Date
-																																				 * dueDate
-																																				 */, String pdfType, String seUrl, boolean forRevision, Session session)
+	public static List<Pdf> getPdfsForParametricDev(String plName, String supplierName,
+			String downloadJob, Date lastCheckDate, Date downloadDate/*
+																	 * , Date dueDate
+																	 */, String pdfType,
+			String seUrl, boolean forRevision, Session session)
 	{
 		Criteria pdfCrit = session.createCriteria(Pdf.class);
 		Criteria docCrit = pdfCrit.createCriteria("documents");
@@ -766,14 +790,16 @@ public class ParaQueryUtil
 		if(lastCheckDate != null)
 		{
 			Date lastCheckDatePlusDay = addDay(lastCheckDate);
-			pdfCrit.add(Restrictions.between("lastCheckDate", getDate(lastCheckDate), getDate(lastCheckDatePlusDay)));
+			pdfCrit.add(Restrictions.between("lastCheckDate", getDate(lastCheckDate),
+					getDate(lastCheckDatePlusDay)));
 
 		}
 		// join download date
 		if(downloadDate != null)
 		{
 			Date downloadDatePlusDay = addDay(downloadDate);
-			pdfCrit.add(Restrictions.between("downloadDate", getDate(downloadDate), getDate(downloadDatePlusDay)));
+			pdfCrit.add(Restrictions.between("downloadDate", getDate(downloadDate),
+					getDate(downloadDatePlusDay)));
 		}
 		// join supplier
 		if(supplierName != null && !supplierName.equalsIgnoreCase("all"))
@@ -799,7 +825,8 @@ public class ParaQueryUtil
 			DocumentDownloadJob ddj = QueryUtil.getDownloadJobByExactName(downloadJob, session);
 			if(ddj != null)
 			{
-				docCrit.createCriteria("documentDownloadJobs").add(Restrictions.eq("id", ddj.getId()));
+				docCrit.createCriteria("documentDownloadJobs").add(
+						Restrictions.eq("id", ddj.getId()));
 			}
 		}
 		//
@@ -835,23 +862,24 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	
-
-	public static void updateTrackingApprovalStatus(Session session, TrackingParamDocApprov trackingParametricDocVal) throws Exception
+	public static void updateTrackingApprovalStatus(Session session,
+			TrackingParamDocApprov trackingParametricDocVal) throws Exception
 	{
 		session.saveOrUpdate(trackingParametricDocVal);
 		session.beginTransaction().commit();
 
 	}
 
-	public static void updateTrackingPkgDocApprov(Session session, TrackingPkgDocApprov trackingPkgDocApprov) throws Exception
+	public static void updateTrackingPkgDocApprov(Session session,
+			TrackingPkgDocApprov trackingPkgDocApprov) throws Exception
 	{
 		session.saveOrUpdate(trackingPkgDocApprov);
 		session.beginTransaction().commit();
 
 	}
 
-	public static TrackingTaskQaStatus getTrackingTaskQaStatus(String trackingName) throws Exception
+	public static TrackingTaskQaStatus getTrackingTaskQaStatus(String trackingName)
+			throws Exception
 	{
 		Session se = SessionUtil.getSession();
 		Criteria crit = se.createCriteria(TrackingTaskQaStatus.class);
@@ -859,7 +887,8 @@ public class ParaQueryUtil
 		return (TrackingTaskQaStatus) crit.uniqueResult();
 	}
 
-	public static TrackingTaskQaStatus getTrackingTaskQaStatus(Session session, String nameTaskQaStatus) throws Exception
+	public static TrackingTaskQaStatus getTrackingTaskQaStatus(Session session,
+			String nameTaskQaStatus) throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingTaskQaStatus.class);
 		crit.add(Restrictions.eq("name", nameTaskQaStatus));
@@ -868,7 +897,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingTaskStatus getTrackingTaskStatus(Session session, String nameTaskStatus) throws Exception
+	public static TrackingTaskStatus getTrackingTaskStatus(Session session, String nameTaskStatus)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingTaskStatus.class);
 		crit.add(Restrictions.eq("name", nameTaskStatus));
@@ -877,11 +907,13 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingTransferStatus getTrackingTransferStatus(Session session, String nameTaskStatus) throws Exception
+	public static TrackingTransferStatus getTrackingTransferStatus(Session session,
+			String nameTaskStatus) throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingTransferStatus.class);
 		crit.add(Restrictions.eq("name", nameTaskStatus));
-		TrackingTransferStatus trackingTransferStatus = (TrackingTransferStatus) crit.uniqueResult();
+		TrackingTransferStatus trackingTransferStatus = (TrackingTransferStatus) crit
+				.uniqueResult();
 		return trackingTransferStatus;
 
 	}
@@ -895,19 +927,23 @@ public class ParaQueryUtil
 	// return listtTrackingTaskQaStatus;
 	// }
 
-	public static TrackingParamDocApprov getTrackingParametricDocApproval(Session session, long docuomentId, long approvedParametricValue)
+	public static TrackingParamDocApprov getTrackingParametricDocApproval(Session session,
+			long docuomentId, long approvedParametricValue)
 	{
 		final Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
-		crit.createCriteria("approvedParametricValue").add(Restrictions.eq("id", approvedParametricValue));
+		crit.createCriteria("approvedParametricValue").add(
+				Restrictions.eq("id", approvedParametricValue));
 		crit.createCriteria("document").add(Restrictions.eq("id", docuomentId));
-		TrackingParamDocApprov listtrTrackingParamDocApprovs = (TrackingParamDocApprov) crit.uniqueResult();
+		TrackingParamDocApprov listtrTrackingParamDocApprovs = (TrackingParamDocApprov) crit
+				.uniqueResult();
 
 		return listtrTrackingParamDocApprovs;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingParamDocApprov> getTrackingParamDocApprov(Session session) throws Exception
+	public static List<TrackingParamDocApprov> getTrackingParamDocApprov(Session session)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
 		List<TrackingParamDocApprov> listtrTrackingParamDocApprovs = crit.list();
@@ -917,7 +953,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingPkgDocApprov> getTrackingPkgDocApprov(Session session) throws Exception
+	public static List<TrackingPkgDocApprov> getTrackingPkgDocApprov(Session session)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingPkgDocApprov.class);
 		List<TrackingPkgDocApprov> listtrTrackingPkgDocApprov = crit.list();
@@ -927,8 +964,6 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	
-
 	public static Family getFamilyByExactName(String name, Session session)
 	{
 		final Criteria crit = session.createCriteria(Family.class);
@@ -972,10 +1007,21 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Object[]> getUrlRevisionsDocumentsByPdfId(long pdfId, Session session) throws Exception
+	public static List<Object[]> getUrlRevisionsDocumentsByPdfId(long pdfId, Session session)
+			throws Exception
 	{
-		String quar = " SELECT   xxx.id,xxx.PDF_ID,xxx.SE_URL ,xxx.REVISION_DOCUMENT_ID,LEVEL ,xxx.REVISION_DATE" + " FROM   (SELECT   D.ID," + " D.PDF_ID," + " P.SE_URL," + " D.REVISION_DOCUMENT_ID," + " D.REVISION_DATE"
-				+ " FROM   DOCUMENT D,pdf p" + " WHERE   (D.ID <> D.REVISION_DOCUMENT_ID" + "       OR D.REVISION_DOCUMENT_ID IS NULL)" + " and D.PDF_ID = p.id" + " ) xxx" + " CONNECT BY   PRIOR xxx.REVISION_DOCUMENT_ID = xxx.ID"
+		String quar = " SELECT   xxx.id,xxx.PDF_ID,xxx.SE_URL ,xxx.REVISION_DOCUMENT_ID,LEVEL ,xxx.REVISION_DATE"
+				+ " FROM   (SELECT   D.ID,"
+				+ " D.PDF_ID,"
+				+ " P.SE_URL,"
+				+ " D.REVISION_DOCUMENT_ID,"
+				+ " D.REVISION_DATE"
+				+ " FROM   DOCUMENT D,pdf p"
+				+ " WHERE   (D.ID <> D.REVISION_DOCUMENT_ID"
+				+ "       OR D.REVISION_DOCUMENT_ID IS NULL)"
+				+ " and D.PDF_ID = p.id"
+				+ " ) xxx"
+				+ " CONNECT BY   PRIOR xxx.REVISION_DOCUMENT_ID = xxx.ID"
 				+ " START WITH   xxx.ID = " + pdfId + " ORDER BY   LEVEL ASC ";
 		SQLQuery query = session.createSQLQuery(quar);
 		List<Object[]> list = query.list();
@@ -984,10 +1030,21 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Object[]> getUrlRevisionsDocumentsByNonPdfId(long nonPdfId, Session session) throws Exception
+	public static List<Object[]> getUrlRevisionsDocumentsByNonPdfId(long nonPdfId, Session session)
+			throws Exception
 	{
-		String quar = " SELECT   xxx.id,xxx.NON_PDF_ID,xxx.SE_URL ,xxx.REVISION_DOCUMENT_ID,LEVEL ,xxx.REVISION_DATE" + " FROM   (SELECT   D.ID," + " D.NON_PDF_ID," + " P.SE_URL," + " D.REVISION_DOCUMENT_ID," + " D.REVISION_DATE"
-				+ " FROM   DOCUMENT D,non_pdf p" + " WHERE   (D.ID <> D.REVISION_DOCUMENT_ID" + "       OR D.REVISION_DOCUMENT_ID IS NULL)" + " and D.NON_PDF_ID = p.id" + " ) xxx" + " CONNECT BY   PRIOR xxx.REVISION_DOCUMENT_ID = xxx.ID"
+		String quar = " SELECT   xxx.id,xxx.NON_PDF_ID,xxx.SE_URL ,xxx.REVISION_DOCUMENT_ID,LEVEL ,xxx.REVISION_DATE"
+				+ " FROM   (SELECT   D.ID,"
+				+ " D.NON_PDF_ID,"
+				+ " P.SE_URL,"
+				+ " D.REVISION_DOCUMENT_ID,"
+				+ " D.REVISION_DATE"
+				+ " FROM   DOCUMENT D,non_pdf p"
+				+ " WHERE   (D.ID <> D.REVISION_DOCUMENT_ID"
+				+ "       OR D.REVISION_DOCUMENT_ID IS NULL)"
+				+ " and D.NON_PDF_ID = p.id"
+				+ " ) xxx"
+				+ " CONNECT BY   PRIOR xxx.REVISION_DOCUMENT_ID = xxx.ID"
 				+ " START WITH   xxx.ID = " + nonPdfId + " ORDER BY   LEVEL ASC ";
 		SQLQuery query = session.createSQLQuery(quar);
 		List<Object[]> list = query.list();
@@ -996,7 +1053,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getPartNumberByDocumentsId(long documentid, Session session) throws Exception
+	public static List<PartComponent> getPartNumberByDocumentsId(long documentid, Session session)
+			throws Exception
 	{
 		Criteria crit = session.createCriteria(PartComponent.class);
 		// crit.add(Restrictions.eq("document.id", documentid));
@@ -1006,29 +1064,34 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getPartNumberByDocumentAndPl(long documentid, Long plId, int maxResult, Session session) throws Exception
+	public static List<PartComponent> getPartNumberByDocumentAndPl(long documentid, Long plId,
+			int maxResult, Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(PartComponent.class);
 		// crit.add(Restrictions.eq("document.id", documentid));
 		crit.createCriteria("document").add(Restrictions.eq("id", documentid));
-		crit.createCriteria("supplierPl").createCriteria("pl").add(Restrictions.idEq(new Long(plId)));
+		crit.createCriteria("supplierPl").createCriteria("pl")
+				.add(Restrictions.idEq(new Long(plId)));
 		List<PartComponent> list = crit.setMaxResults(maxResult).list();
 		return list;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getPartNumberByDocumentAndPl(long documentid, Long plId, Session session) throws Exception
+	public static List<PartComponent> getPartNumberByDocumentAndPl(long documentid, Long plId,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(PartComponent.class);
 		// crit.add(Restrictions.eq("document.id", documentid));
 		crit.createCriteria("document").add(Restrictions.eq("id", documentid));
-		crit.createCriteria("supplierPl").createCriteria("pl").add(Restrictions.idEq(new Long(plId)));
+		crit.createCriteria("supplierPl").createCriteria("pl")
+				.add(Restrictions.idEq(new Long(plId)));
 		List<PartComponent> list = crit.list();
 		return list;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getListOfPartNumberByDocument(Document document, Session session) throws Exception
+	public static List<PartComponent> getListOfPartNumberByDocument(Document document,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(PartComponent.class);
 		crit.add(Restrictions.eq("document", document));
@@ -1037,7 +1100,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getFullValueListstr(String featureName, String plName, Session session)
+	public static List<String> getFullValueListstr(String featureName, String plName,
+			Session session)
 	{
 		Criteria crit = session.createCriteria(ApprovedParametricValue.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
@@ -1054,7 +1118,8 @@ public class ParaQueryUtil
 		return list;
 	}
 
-	public static PlFeature getPlFeatureByExactName(String featureName, String plName, Session session)
+	public static PlFeature getPlFeatureByExactName(String featureName, String plName,
+			Session session)
 	{
 		try
 		{
@@ -1088,7 +1153,8 @@ public class ParaQueryUtil
 		return null;
 	}
 
-	public static PkgFeature getPkgFeatureByExactName(String featureName, long pkgType, Session session)
+	public static PkgFeature getPkgFeatureByExactName(String featureName, long pkgType,
+			Session session)
 	{
 		try
 		{
@@ -1105,7 +1171,9 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingParametric> getParamDevTrackingPdfs(long userId, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast, int pagenum, int max, Session session) throws Exception
+	public static List<TrackingParametric> getParamDevTrackingPdfs(long userId, boolean forCS,
+			boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast,
+			int pagenum, int max, Session session) throws Exception
 	{
 
 		Criteria crit = session.createCriteria(TrackingParametric.class);
@@ -1119,7 +1187,8 @@ public class ParaQueryUtil
 		}
 		if(forTaxonomyTransfer)
 		{
-			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer",
+					session);
 			crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 		}
 		if(forDaily)
@@ -1127,9 +1196,11 @@ public class ParaQueryUtil
 
 			TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
 
-			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
+			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)",
+					session);
 
-			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+					Restrictions.eq("trackingTaskType", dailyTransferTask)));
 		}
 		if(forUpdate)
 		{
@@ -1141,16 +1212,20 @@ public class ParaQueryUtil
 			TrackingTaskType updateFastTask = getTrackingTaskTypeByName("Fast", session);
 			crit.add(Restrictions.eq("trackingTaskType", updateFastTask));
 		}
-		crit.createCriteria("document").createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
+		crit.createCriteria("document").createCriteria("documentType")
+				.add(Restrictions.eq("name", "Datasheet"));
 		// add filters
 
 		crit.addOrder(Order.desc("prioriy"));
-		List<TrackingParametric> documents = crit.setFirstResult(pagenum * max).setMaxResults(max).list();
+		List<TrackingParametric> documents = crit.setFirstResult(pagenum * max).setMaxResults(max)
+				.list();
 		return documents;
 	}
 
-	public static void getParamDevPdfscount(long userId, String vendor, String taxonomy, String Datasheetflag, String deliverydate, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast, int pagenum,
-			int max, Session session) throws Exception
+	public static void getParamDevPdfscount(long userId, String vendor, String taxonomy,
+			String Datasheetflag, String deliverydate, boolean forCS, boolean forTaxonomyTransfer,
+			boolean forDaily, boolean forUpdate, boolean forFast, int pagenum, int max,
+			Session session) throws Exception
 	{
 
 		Criteria crit = session.createCriteria(TrackingParametric.class);
@@ -1168,7 +1243,8 @@ public class ParaQueryUtil
 		}
 		if(forTaxonomyTransfer)
 		{
-			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer",
+					session);
 			crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 		}
 		if(forDaily)
@@ -1177,14 +1253,17 @@ public class ParaQueryUtil
 			if(Datasheetflag != null && !Datasheetflag.isEmpty())
 			{
 
-				TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag, session);
+				TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag,
+						session);
 				crit.add(Restrictions.eq("trackingTaskType", dailyTransferTask));
 			}
 			else
 			{
 				TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
-				TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
-				crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+				TrackingTaskType NPITransferTask = getTrackingTaskTypeByName(
+						"NPI(Flag from Sourcing)", session);
+				crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+						Restrictions.eq("trackingTaskType", dailyTransferTask)));
 			}
 		}
 		if(forUpdate)
@@ -1201,22 +1280,27 @@ public class ParaQueryUtil
 		Criteria docCriteria = crit.createCriteria("document");
 		if(vendor != null && vendor.trim().length() > 0)
 		{
-			docCriteria.createCriteria("pdf").createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+			docCriteria.createCriteria("pdf").createCriteria("supplierUrl")
+					.createCriteria("supplier").add(Restrictions.eq("name", vendor));
 		}
-		docCriteria.createCriteria("document").createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
+		docCriteria.createCriteria("document").createCriteria("documentType")
+				.add(Restrictions.eq("name", "Datasheet"));
 		crit.addOrder(Order.desc("prioriy"));
 		crit.setProjection(Projections.property("document"));
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Document> getParamDevTracPdfs(long userId, String vendor, String taxonomy, String Datasheetflag, String deliverydate, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast,
-			int pagenum, int max, Session session) throws Exception
+	public static List<Document> getParamDevTracPdfs(long userId, String vendor, String taxonomy,
+			String Datasheetflag, String deliverydate, boolean forCS, boolean forTaxonomyTransfer,
+			boolean forDaily, boolean forUpdate, boolean forFast, int pagenum, int max,
+			Session session) throws Exception
 	{
 		try
 		{
 			Criteria crit = session.createCriteria(TrackingParametric.class);
-			crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("name", StatusName.assigned));
+			crit.createCriteria("trackingTaskStatus").add(
+					Restrictions.eq("name", StatusName.assigned));
 			if(userId != 0)
 				crit.add(Restrictions.eq("parametricUserId", userId));
 			if(taxonomy != null && taxonomy.trim().length() > 0)
@@ -1231,7 +1315,8 @@ public class ParaQueryUtil
 			}
 			if(forTaxonomyTransfer)
 			{
-				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName(
+						"TaxonomyTransfer", session);
 				crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 			}
 
@@ -1241,14 +1326,17 @@ public class ParaQueryUtil
 				if(Datasheetflag != null && !Datasheetflag.isEmpty())
 				{
 
-					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag, session);
+					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag,
+							session);
 					crit.add(Restrictions.eq("trackingTaskType", dailyTransferTask));
 				}
 				else
 				{
 					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
-					TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
-					crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+					TrackingTaskType NPITransferTask = getTrackingTaskTypeByName(
+							"NPI(Flag from Sourcing)", session);
+					crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+							Restrictions.eq("trackingTaskType", dailyTransferTask)));
 				}
 			}
 
@@ -1264,10 +1352,12 @@ public class ParaQueryUtil
 			}
 			Criteria docCriteria = crit.createCriteria("document");
 
-			if(deliverydate != null && deliverydate.trim().length() > 0 && vendor != null && vendor.trim().length() > 0)
+			if(deliverydate != null && deliverydate.trim().length() > 0 && vendor != null
+					&& vendor.trim().length() > 0)
 			{
 				Criteria pdfCriteria = docCriteria.createCriteria("pdf");
-				pdfCriteria.createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+				pdfCriteria.createCriteria("supplierUrl").createCriteria("supplier")
+						.add(Restrictions.eq("name", vendor));
 
 			}
 			else
@@ -1277,7 +1367,8 @@ public class ParaQueryUtil
 				}
 				if(vendor != null && vendor.trim().length() > 0)
 				{
-					docCriteria.createCriteria("pdf").createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+					docCriteria.createCriteria("pdf").createCriteria("supplierUrl")
+							.createCriteria("supplier").add(Restrictions.eq("name", vendor));
 				}
 			}
 			docCriteria.createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
@@ -1301,14 +1392,17 @@ public class ParaQueryUtil
 		return null;
 	}
 
-	public static List<TrackingParametric> getParamDevTrackingPdfs(long userId, String vendor, String taxonomy, String Datasheetflag, String deliverydate, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate,
-			boolean forFast, int pagenum, int max, Session session) throws Exception
+	public static List<TrackingParametric> getParamDevTrackingPdfs(long userId, String vendor,
+			String taxonomy, String Datasheetflag, String deliverydate, boolean forCS,
+			boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast,
+			int pagenum, int max, Session session) throws Exception
 	{
 		System.out.println("Get Parametric PDFs");
 		try
 		{
 			Criteria crit = session.createCriteria(TrackingParametric.class);
-			crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("name", StatusName.assigned));
+			crit.createCriteria("trackingTaskStatus").add(
+					Restrictions.eq("name", StatusName.assigned));
 			if(userId != 0)
 				crit.add(Restrictions.eq("parametricUserId", userId));
 			if(taxonomy != null && taxonomy.trim().length() > 0)
@@ -1323,7 +1417,8 @@ public class ParaQueryUtil
 			}
 			if(forTaxonomyTransfer)
 			{
-				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName(
+						"TaxonomyTransfer", session);
 				crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 			}
 
@@ -1332,15 +1427,18 @@ public class ParaQueryUtil
 
 				if(Datasheetflag != null && !Datasheetflag.isEmpty())
 				{
-					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag, session);
+					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName(Datasheetflag,
+							session);
 					crit.add(Restrictions.eq("trackingTaskType", dailyTransferTask));
 
 				}
 				else
 				{
 					TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
-					TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
-					crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+					TrackingTaskType NPITransferTask = getTrackingTaskTypeByName(
+							"NPI(Flag from Sourcing)", session);
+					crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+							Restrictions.eq("trackingTaskType", dailyTransferTask)));
 				}
 			}
 
@@ -1356,10 +1454,12 @@ public class ParaQueryUtil
 			}
 			Criteria docCriteria = crit.createCriteria("document");
 
-			if(deliverydate != null && deliverydate.trim().length() > 0 && vendor != null && vendor.trim().length() > 0)
+			if(deliverydate != null && deliverydate.trim().length() > 0 && vendor != null
+					&& vendor.trim().length() > 0)
 			{
 				Criteria pdfCriteria = docCriteria.createCriteria("pdf");
-				pdfCriteria.createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+				pdfCriteria.createCriteria("supplierUrl").createCriteria("supplier")
+						.add(Restrictions.eq("name", vendor));
 
 			}
 			else
@@ -1371,7 +1471,8 @@ public class ParaQueryUtil
 				}
 				if(vendor != null && vendor.trim().length() > 0)
 				{
-					docCriteria.createCriteria("pdf").createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+					docCriteria.createCriteria("pdf").createCriteria("supplierUrl")
+							.createCriteria("supplier").add(Restrictions.eq("name", vendor));
 				}
 			}
 			docCriteria.createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
@@ -1394,7 +1495,9 @@ public class ParaQueryUtil
 		return null;
 	}
 
-	public static List<Document> getParamDevPdfs(long userId, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast, Session session) throws Exception
+	public static List<Document> getParamDevPdfs(long userId, boolean forCS,
+			boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParametric.class);
 		crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("name", StatusName.assigned));
@@ -1409,14 +1512,17 @@ public class ParaQueryUtil
 		}
 		if(forTaxonomyTransfer)
 		{
-			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer",
+					session);
 			crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 		}
 		if(forDaily)
 		{
 			TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
-			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
-			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)",
+					session);
+			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+					Restrictions.eq("trackingTaskType", dailyTransferTask)));
 		}
 		if(forUpdate)
 		{
@@ -1428,7 +1534,8 @@ public class ParaQueryUtil
 			TrackingTaskType updateFastTask = getTrackingTaskTypeByName("Fast", session);
 			crit.add(Restrictions.eq("trackingTaskType", updateFastTask));
 		}
-		crit.createCriteria("document").createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
+		crit.createCriteria("document").createCriteria("documentType")
+				.add(Restrictions.eq("name", "Datasheet"));
 
 		crit.addOrder(Order.desc("prioriy"));
 		crit.setProjection(Projections.property("document"));
@@ -1437,7 +1544,9 @@ public class ParaQueryUtil
 		return documents;
 	}
 
-	public static List<Document> getParamDevPdfs(long userId, String vendor, String taxonomy, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast, Session session) throws Exception
+	public static List<Document> getParamDevPdfs(long userId, String vendor, String taxonomy,
+			boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate,
+			boolean forFast, Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParametric.class);
 		crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("name", StatusName.assigned));
@@ -1456,14 +1565,17 @@ public class ParaQueryUtil
 		}
 		if(forTaxonomyTransfer)
 		{
-			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+			TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer",
+					session);
 			crit.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 		}
 		if(forDaily)
 		{
 			TrackingTaskType dailyTransferTask = getTrackingTaskTypeByName("New", session);
-			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)", session);
-			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask), Restrictions.eq("trackingTaskType", dailyTransferTask)));
+			TrackingTaskType NPITransferTask = getTrackingTaskTypeByName("NPI(Flag from Sourcing)",
+					session);
+			crit.add(Restrictions.or(Restrictions.eq("trackingTaskType", NPITransferTask),
+					Restrictions.eq("trackingTaskType", dailyTransferTask)));
 		}
 		if(forUpdate)
 		{
@@ -1478,7 +1590,8 @@ public class ParaQueryUtil
 		Criteria docCriteria = crit.createCriteria("document");
 		if(vendor != null && vendor.trim().length() > 0)
 		{
-			docCriteria.createCriteria("pdf").createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", vendor));
+			docCriteria.createCriteria("pdf").createCriteria("supplierUrl")
+					.createCriteria("supplier").add(Restrictions.eq("name", vendor));
 		}
 		docCriteria.createCriteria("documentType").add(Restrictions.eq("name", "Datasheet"));
 
@@ -1496,7 +1609,8 @@ public class ParaQueryUtil
 		return (TrackingTaskType) crit.uniqueResult();
 	}
 
-	public static ApprovedParametricValue insertNewApprovedValue(PlFeature plFeature, String valueStr, long isApprovedByQA, Session session)
+	public static ApprovedParametricValue insertNewApprovedValue(PlFeature plFeature,
+			String valueStr, long isApprovedByQA, Session session)
 	{
 		Value value = ParaQueryUtil.getValueByName(valueStr, session);
 		if(value == null)
@@ -1530,9 +1644,12 @@ public class ParaQueryUtil
 		return list.size() > 0 ? (Value) crit.list().get(0) : null;
 	}
 
-	public static void addTrackingParamDocApprov(Document document, Long clientGroupId, ApprovedParametricValue approvedParametricValue, String groupFullValue, String trackingStatus, String ddComment, Session session) throws Exception
+	public static void addTrackingParamDocApprov(Document document, Long clientGroupId,
+			ApprovedParametricValue approvedParametricValue, String groupFullValue,
+			String trackingStatus, String ddComment, Session session) throws Exception
 	{
-		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId, document, session);
+		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId,
+				document, session);
 		if(trackingParamDocApprov == null)
 		{
 			trackingParamDocApprov = new TrackingParamDocApprov();
@@ -1542,7 +1659,8 @@ public class ParaQueryUtil
 		trackingParamDocApprov.setApprovedGroupId(clientGroupId);
 		trackingParamDocApprov.setApprovedParametricValue(approvedParametricValue);
 		if(trackingStatus != null)
-			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session, trackingStatus/* "Pending" */));
+			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session,
+					trackingStatus/* "Pending" */));
 		else
 			trackingParamDocApprov.setTrackingTaskStatus(null);
 		trackingParamDocApprov.setTrackingTaskQaStatus(null);
@@ -1552,10 +1670,13 @@ public class ParaQueryUtil
 		session.saveOrUpdate(trackingParamDocApprov);
 	}
 
-	public static void addTrackingParametricApprovedValue(ApprovedParametricValue approvedVal, Long groupId, String groupFullValue, String trackingStatus, Session session) throws Exception
+	public static void addTrackingParametricApprovedValue(ApprovedParametricValue approvedVal,
+			Long groupId, String groupFullValue, String trackingStatus, Session session)
+			throws Exception
 	{
 
-		TrackingParametricApprovVal trackingParametricApprovVal = getTrackingParametricApprovVal(groupId, session);
+		TrackingParametricApprovVal trackingParametricApprovVal = getTrackingParametricApprovVal(
+				groupId, session);
 		if(trackingParametricApprovVal == null)
 		{
 			trackingParametricApprovVal = new TrackingParametricApprovVal();
@@ -1564,14 +1685,18 @@ public class ParaQueryUtil
 		trackingParametricApprovVal.setApprovedParametricValue(approvedVal);
 		trackingParametricApprovVal.setApprovedGroupId(groupId);
 		trackingParametricApprovVal.setApprovedGroup(groupFullValue);
-		trackingParametricApprovVal.setTrackingTaskQaStatus(getTrackingTaskQaStatus(trackingStatus /* "Pending" */, session));
+		trackingParametricApprovVal.setTrackingTaskQaStatus(getTrackingTaskQaStatus(
+				trackingStatus /* "Pending" */, session));
 
 		session.saveOrUpdate(trackingParametricApprovVal);
 	}
 
-	public static void addTrackingParamDocApprov(Document document, Long clientGroupId, ApprovedParametricValue approvedParametricValue, String groupFullValue, String trackingStatus, Session session) throws Exception
+	public static void addTrackingParamDocApprov(Document document, Long clientGroupId,
+			ApprovedParametricValue approvedParametricValue, String groupFullValue,
+			String trackingStatus, Session session) throws Exception
 	{
-		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId, document, session);
+		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId,
+				document, session);
 		if(trackingParamDocApprov == null)
 		{
 			trackingParamDocApprov = new TrackingParamDocApprov();
@@ -1581,7 +1706,8 @@ public class ParaQueryUtil
 		trackingParamDocApprov.setApprovedGroupId(clientGroupId);
 		trackingParamDocApprov.setApprovedParametricValue(approvedParametricValue);
 		if(trackingStatus != null)
-			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session, trackingStatus/* "Pending" */));
+			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session,
+					trackingStatus/* "Pending" */));
 		else
 			trackingParamDocApprov.setTrackingTaskStatus(null);
 		trackingParamDocApprov.setTrackingTaskQaStatus(null);
@@ -1590,10 +1716,13 @@ public class ParaQueryUtil
 		session.saveOrUpdate(trackingParamDocApprov);
 	}
 
-	public static void addTrackingParamDocApprov(Document document, Long clientGroupId, ApprovedParametricValue approvedParametricValue, String groupFullValue, TrackingTaskStatus trackingTaskStatus, TrackingTaskQaStatus trackingTaskQaStatus,
+	public static void addTrackingParamDocApprov(Document document, Long clientGroupId,
+			ApprovedParametricValue approvedParametricValue, String groupFullValue,
+			TrackingTaskStatus trackingTaskStatus, TrackingTaskQaStatus trackingTaskQaStatus,
 			Session session) throws Exception
 	{
-		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId, document, session);
+		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprov(clientGroupId,
+				document, session);
 		if(trackingParamDocApprov == null)
 		{
 			trackingParamDocApprov = new TrackingParamDocApprov();
@@ -1641,7 +1770,8 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select GET_DOCID_BY_PDFURL('" + seUrl + "') from dual");
+			SQLQuery query = session.createSQLQuery("select GET_DOCID_BY_PDFURL('" + seUrl
+					+ "') from dual");
 			long docId = ((BigDecimal) query.uniqueResult()).longValue();
 			Criteria crit = session.createCriteria(Document.class);
 			crit.add(Restrictions.eq("id", docId));
@@ -1680,8 +1810,9 @@ public class ParaQueryUtil
 	 */
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingParamDocApprov> getTrackingParamDocApprovList(Session session, String supplierName, String seUrl, String aprrovalStatus, String featureName, String fullValue, String taxonomy, Date storeDate, long userId)
-			throws Exception
+	public static List<TrackingParamDocApprov> getTrackingParamDocApprovList(Session session,
+			String supplierName, String seUrl, String aprrovalStatus, String featureName,
+			String fullValue, String taxonomy, Date storeDate, long userId) throws Exception
 	{
 
 		final Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
@@ -1713,7 +1844,8 @@ public class ParaQueryUtil
 		}
 		if(!featureName.equals(""))
 		{
-			fetCrit.createCriteria("feature").add(Restrictions.ilike("name", featureName, MatchMode.START));
+			fetCrit.createCriteria("feature").add(
+					Restrictions.ilike("name", featureName, MatchMode.START));
 		}
 
 		if(storeDate != null)
@@ -1747,7 +1879,8 @@ public class ParaQueryUtil
 		List<Long> groupIds = new ArrayList<Long>();
 		for(TrackingParamDocApprov trackingParamDocApprov : listTrackingParamDocApprovs)
 		{
-			TrackingTaskQaStatus trackingTaskQaStatus = trackingParamDocApprov.getTrackingTaskQaStatus();
+			TrackingTaskQaStatus trackingTaskQaStatus = trackingParamDocApprov
+					.getTrackingTaskQaStatus();
 			if(trackingTaskQaStatus != null && trackingTaskQaStatus.getName().equals("Approved"))
 				continue;
 			Long groupId = trackingParamDocApprov.getApprovedGroupId();
@@ -1787,8 +1920,10 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingParamDocApprov> getTrackingParamDocApprovList(Session session, String engName, String task, String supplierName, String seUrl, String aprrovalStatus, String featureName, String fullValue, String taxonomy,
-			Date storeDate, long tlId) throws Exception
+	public static List<TrackingParamDocApprov> getTrackingParamDocApprovList(Session session,
+			String engName, String task, String supplierName, String seUrl, String aprrovalStatus,
+			String featureName, String fullValue, String taxonomy, Date storeDate, long tlId)
+			throws Exception
 	{
 		final Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
 		Criteria criteria = crit.createCriteria("approvedParametricValue");
@@ -1820,7 +1955,8 @@ public class ParaQueryUtil
 		}
 		if(!featureName.equals(""))
 		{
-			fetCrit.createCriteria("feature").add(Restrictions.ilike("name", featureName, MatchMode.START));
+			fetCrit.createCriteria("feature").add(
+					Restrictions.ilike("name", featureName, MatchMode.START));
 		}
 
 		if(storeDate != null)
@@ -1879,10 +2015,13 @@ public class ParaQueryUtil
 				List<TrackingParamDocApprov> statusTrackingParamDocApprovs = new ArrayList<TrackingParamDocApprov>();
 				for(TrackingParamDocApprov docApp : trackingParamDocApprovs)
 				{
-					Criteria trackingParametricCriteria = session.createCriteria(TrackingParametric.class);
-					trackingParametricCriteria.add(Restrictions.eq("document", docApp.getDocument()));
+					Criteria trackingParametricCriteria = session
+							.createCriteria(TrackingParametric.class);
+					trackingParametricCriteria
+							.add(Restrictions.eq("document", docApp.getDocument()));
 					trackingParametricCriteria.add(Restrictions.eq("trackingTaskType", taskType));
-					TrackingParametric parametric = (TrackingParametric) trackingParametricCriteria.uniqueResult();
+					TrackingParametric parametric = (TrackingParametric) trackingParametricCriteria
+							.uniqueResult();
 					if(parametric != null)
 						statusTrackingParamDocApprovs.add(docApp);
 				}
@@ -1898,10 +2037,14 @@ public class ParaQueryUtil
 				List<TrackingParamDocApprov> engNameTrackingParamDocApprovs = new ArrayList<TrackingParamDocApprov>();
 				for(TrackingParamDocApprov docApp : trackingParamDocApprovs)
 				{
-					Criteria trackingParametricCriteria = session.createCriteria(TrackingParametric.class);
-					trackingParametricCriteria.add(Restrictions.eq("document", docApp.getDocument()));
-					trackingParametricCriteria.add(Restrictions.eq("parametricUserId", user.getId()));
-					TrackingParametric parametric = (TrackingParametric) trackingParametricCriteria.uniqueResult();
+					Criteria trackingParametricCriteria = session
+							.createCriteria(TrackingParametric.class);
+					trackingParametricCriteria
+							.add(Restrictions.eq("document", docApp.getDocument()));
+					trackingParametricCriteria
+							.add(Restrictions.eq("parametricUserId", user.getId()));
+					TrackingParametric parametric = (TrackingParametric) trackingParametricCriteria
+							.uniqueResult();
 					if(parametric != null)
 						engNameTrackingParamDocApprovs.add(docApp);
 				}
@@ -1939,8 +2082,11 @@ public class ParaQueryUtil
 	@SuppressWarnings("unchecked")
 	public static long getGroupByPkgApprovedParametricValue(PkgApprovedValue val, Session session)
 	{
-		String queryString = "select OUTER_GROUP.GROUP_ID FROM PKG_VALUE_GROUP outer_group," + " (SELECT   GROUP_ID inner_group_id" + " FROM   PKG_VALUE_GROUP" + " WHERE   pkg_approved_value_id = " + val.getId() + " )inner_query"
-				+ " where inner_query.inner_group_id = OUTER_GROUP.GROUP_ID" + " GROUP BY OUTER_GROUP.GROUP_ID" + " HAVING   COUNT (OUTER_GROUP.GROUP_ID) = 1";
+		String queryString = "select OUTER_GROUP.GROUP_ID FROM PKG_VALUE_GROUP outer_group,"
+				+ " (SELECT   GROUP_ID inner_group_id" + " FROM   PKG_VALUE_GROUP"
+				+ " WHERE   pkg_approved_value_id = " + val.getId() + " )inner_query"
+				+ " where inner_query.inner_group_id = OUTER_GROUP.GROUP_ID"
+				+ " GROUP BY OUTER_GROUP.GROUP_ID" + " HAVING   COUNT (OUTER_GROUP.GROUP_ID) = 1";
 
 		SQLQuery query = session.createSQLQuery(queryString);
 		List<BigDecimal> list = query.list();
@@ -1951,10 +2097,16 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getPartsByPkgMainDataColumn(long col, int from, int max, long groupId, Session session)
+	public static List<PartComponent> getPartsByPkgMainDataColumn(long col, int from, int max,
+			long groupId, Session session)
 	{
 		int last = from + max;
-		String queryStr = "select * from" + " (" + " select * from" + " (" + " select rownum rn,c.* from PKG_MAIN_DATA  p,component c where P.COM_ID = C.COM_ID and P.COL_" + col + " = " + groupId + " )" + " WHERE   ROWNUM <= " + last + " )"
+		String queryStr = "select * from"
+				+ " ("
+				+ " select * from"
+				+ " ("
+				+ " select rownum rn,c.* from PKG_MAIN_DATA  p,component c where P.COM_ID = C.COM_ID and P.COL_"
+				+ col + " = " + groupId + " )" + " WHERE   ROWNUM <= " + last + " )"
 				+ " where rn > " + from;
 		SQLQuery query = session.createSQLQuery(queryStr);
 		query.addEntity(PartComponent.class);
@@ -1972,7 +2124,8 @@ public class ParaQueryUtil
 		return count.get(0);
 	}
 
-	public static TrackingPkgDocApprov getTrackingPkgDocApproval(Session session, long docuomentId, long pkgApprovalvalueId)
+	public static TrackingPkgDocApprov getTrackingPkgDocApproval(Session session, long docuomentId,
+			long pkgApprovalvalueId)
 	{
 
 		final Criteria crit = session.createCriteria(TrackingPkgDocApprov.class);
@@ -1983,7 +2136,8 @@ public class ParaQueryUtil
 		return listTrackingPkgDocApprov;
 	}
 
-	public static void updateTrackinPkgApproval(Session session, TrackingPkgDocApprov trackingPkgDocApproval)
+	public static void updateTrackinPkgApproval(Session session,
+			TrackingPkgDocApprov trackingPkgDocApproval)
 	{
 		session.saveOrUpdate(trackingPkgDocApproval);
 		session.beginTransaction().commit();
@@ -1991,18 +2145,13 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingPkgDocApprov> getTrackingPkgDocApproval(Session session, String supplierName, String seUrl, String approvalStatus, String featureName, String fullValue/*
-																																													 * ,
-																																													 * String
-																																													 * taxonomy
-																																													 */, Date storeDate/*
-																																																		 * ,
-																																																		 * int
-																																																		 * from
-																																																		 * ,
-																																																		 * int
-																																																		 * to
-																																																		 */) throws Exception
+	public static List<TrackingPkgDocApprov> getTrackingPkgDocApproval(Session session,
+			String supplierName, String seUrl, String approvalStatus, String featureName,
+			String fullValue/*
+							 * , String taxonomy
+							 */, Date storeDate/*
+												 * , int from , int to
+												 */) throws Exception
 	{
 
 		final Criteria crit = session.createCriteria(TrackingPkgDocApprov.class);
@@ -2012,7 +2161,8 @@ public class ParaQueryUtil
 									 * || !taxonomy.equals("") || !fullValue.equals("") || !featureName.equals("")
 									 */)
 		{
-			crit.createCriteria("trackingTaskStatus").add(Restrictions.ilike("name", approvalStatus, MatchMode.START));
+			crit.createCriteria("trackingTaskStatus").add(
+					Restrictions.ilike("name", approvalStatus, MatchMode.START));
 		}
 		// if(!taxonomy.equals(""))
 		// {
@@ -2020,11 +2170,13 @@ public class ParaQueryUtil
 		// }
 		if(!featureName.equals(""))
 		{
-			createCriteria.createCriteria("pkgFeature").add(Restrictions.ilike("name", featureName, MatchMode.START));
+			createCriteria.createCriteria("pkgFeature").add(
+					Restrictions.ilike("name", featureName, MatchMode.START));
 		}
 		if(!fullValue.equals(""))
 		{
-			createCriteria.createCriteria("pkgValue").add(Restrictions.ilike("value", fullValue, MatchMode.START));
+			createCriteria.createCriteria("pkgValue").add(
+					Restrictions.ilike("value", fullValue, MatchMode.START));
 		}
 
 		// storedate
@@ -2082,12 +2234,14 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getComponentByPlNameAndDocuomentIDList(Session session, Long docuomentId, String taxonomy)
+	public static List<PartComponent> getComponentByPlNameAndDocuomentIDList(Session session,
+			Long docuomentId, String taxonomy)
 	{
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		if(!taxonomy.equals(""))
 		{
-			crit.createCriteria("supplierPl").createCriteria("pl").add(Restrictions.ilike("name", taxonomy, MatchMode.START));
+			crit.createCriteria("supplierPl").createCriteria("pl")
+					.add(Restrictions.ilike("name", taxonomy, MatchMode.START));
 		}
 
 		crit.createCriteria("document").add(Restrictions.eq("id", docuomentId));
@@ -2231,7 +2385,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static GrmUser getGrmUserAndTypeByName(final Session session, final String userName, String type) throws Exception
+	public static GrmUser getGrmUserAndTypeByName(final Session session, final String userName,
+			String type) throws Exception
 	{
 
 		// Session grmSession = com.se.grm.db.SessionUtil.getSession();
@@ -2264,7 +2419,9 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int getTrackingParamUserPlRateCount(Session se, String TLName, String PLName, String UserName, Long Rate, boolean isDistributedTaxs, GrmUser grmTlUser) throws Exception
+	public static int getTrackingParamUserPlRateCount(Session se, String TLName, String PLName,
+			String UserName, Long Rate, boolean isDistributedTaxs, GrmUser grmTlUser)
+			throws Exception
 	{
 		final Criteria crit = se.createCriteria(TrackingParamUserPlRate.class);
 		crit.add(Restrictions.eq("type", "Parametric"));
@@ -2320,7 +2477,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static Supplier getSupplierByExactName(final Session session, final String SupplierName) throws Exception
+	public static Supplier getSupplierByExactName(final Session session, final String SupplierName)
+			throws Exception
 	{
 		try
 		{
@@ -2336,12 +2494,14 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingFeedback> getTrackingFeedbackBySeUrlFromNonPdf(final Session se, final String seUrl) throws Exception
+	public static List<TrackingFeedback> getTrackingFeedbackBySeUrlFromNonPdf(final Session se,
+			final String seUrl) throws Exception
 	{
 		try
 		{
 			final Criteria crit = se.createCriteria(TrackingFeedback.class);
-			crit.createCriteria("document").createCriteria("nonPdf").add(Restrictions.eq("seUrl", seUrl));
+			crit.createCriteria("document").createCriteria("nonPdf")
+					.add(Restrictions.eq("seUrl", seUrl));
 
 			final List<TrackingFeedback> document = crit.list();
 
@@ -2354,12 +2514,14 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingFeedback> getTrackingFeedbackBySupplierNameFromNonPdf(final Session se, final String supplierName) throws Exception
+	public static List<TrackingFeedback> getTrackingFeedbackBySupplierNameFromNonPdf(
+			final Session se, final String supplierName) throws Exception
 	{
 		try
 		{
 			final Criteria crit = se.createCriteria(TrackingFeedback.class);
-			crit.createCriteria("document").createCriteria("nonPdf").createCriteria("supplierUrl").createCriteria("supplier").add(Restrictions.eq("name", supplierName));
+			crit.createCriteria("document").createCriteria("nonPdf").createCriteria("supplierUrl")
+					.createCriteria("supplier").add(Restrictions.eq("name", supplierName));
 
 			final List<TrackingFeedback> document = crit.list();
 
@@ -2370,7 +2532,8 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static TrackingTaskStatus getTrackingTaskStatusByExactName(final Session session, final String TrackingTaskStatues) throws Exception
+	public static TrackingTaskStatus getTrackingTaskStatusByExactName(final Session session,
+			final String TrackingTaskStatues) throws Exception
 	{
 		try
 		{
@@ -2392,7 +2555,8 @@ public class ParaQueryUtil
 		return crit.list();
 	}
 
-	public static TrackingTaskStatus getTrackingTaskStatuesByExactName(Session se, String statuesName)
+	public static TrackingTaskStatus getTrackingTaskStatuesByExactName(Session se,
+			String statuesName)
 	{
 		Criteria crit = se.createCriteria(TrackingTaskStatus.class);
 		crit.add(Restrictions.eq("name", statuesName));
@@ -2400,7 +2564,8 @@ public class ParaQueryUtil
 		return (TrackingTaskStatus) crit.uniqueResult();
 	}
 
-	public static TrackingTaskQaStatus getTrackingTaskQaStatusByExactName(Session se, String statuesName)
+	public static TrackingTaskQaStatus getTrackingTaskQaStatusByExactName(Session se,
+			String statuesName)
 	{
 		Criteria crit = se.createCriteria(TrackingTaskQaStatus.class);
 		crit.add(Restrictions.eq("name", statuesName));
@@ -2416,7 +2581,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int getTrackingPkgTlVendoreCount(Session se, String supplierName, String userName) throws Exception
+	public static int getTrackingPkgTlVendoreCount(Session se, String supplierName, String userName)
+			throws Exception
 	{
 		final Criteria crit = se.createCriteria(TrackingPkgTlVendor.class);
 		crit.add(Restrictions.eq("type", "PKG"));
@@ -2443,7 +2609,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static PartComponent getComponentByPartNumAndSupplierPl(String partNumber, SupplierPl supplierPl, Session session) throws Exception
+	public static PartComponent getComponentByPartNumAndSupplierPl(String partNumber,
+			SupplierPl supplierPl, Session session) throws Exception
 	{
 		try
 		{
@@ -2459,7 +2626,8 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static void updateTrackingParametric(Session session, TrackingParametric trackingParametric)
+	public static void updateTrackingParametric(Session session,
+			TrackingParametric trackingParametric)
 	{
 		session.saveOrUpdate(trackingParametric);
 		session.beginTransaction().commit();
@@ -2473,7 +2641,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static void updateApprovedParametricValue(Session session, ApprovedParametricValue approvedParametricValue)
+	public static void updateApprovedParametricValue(Session session,
+			ApprovedParametricValue approvedParametricValue)
 	{
 		session.saveOrUpdate(approvedParametricValue);
 		session.beginTransaction().commit();
@@ -2481,7 +2650,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static PartsParametric getPartsParametricByComponentAndFeatures(PartComponent component, Session session) throws Exception
+	public static PartsParametric getPartsParametricByComponentAndFeatures(PartComponent component,
+			Session session) throws Exception
 	{
 		final Criteria crit = session.createCriteria(PartsParametric.class);
 		try
@@ -2497,7 +2667,8 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static TrackingTaskStatus getTrackingStatuesByName(final String statuesName, Session se) throws Exception
+	public static TrackingTaskStatus getTrackingStatuesByName(final String statuesName, Session se)
+			throws Exception
 	{
 
 		try
@@ -2513,7 +2684,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingParametric getTrackingParametricByDocuomentId(Session session, Document document)
+	public static TrackingParametric getTrackingParametricByDocuomentId(Session session,
+			Document document)
 	{
 		final Criteria crit = session.createCriteria(TrackingParametric.class);
 		crit.add(Restrictions.eq("document", document));
@@ -2526,9 +2698,11 @@ public class ParaQueryUtil
 	{
 		final Criteria crit = session.createCriteria(TrackingFeedback.class);
 		if(seUrl.endsWith(".pdf"))
-			crit.createCriteria("document").createCriteria("pdf").add(Restrictions.eq("seUrl", seUrl));
+			crit.createCriteria("document").createCriteria("pdf")
+					.add(Restrictions.eq("seUrl", seUrl));
 		else
-			crit.createCriteria("document").createCriteria("nonPdf").add(Restrictions.eq("seUrl", seUrl));
+			crit.createCriteria("document").createCriteria("nonPdf")
+					.add(Restrictions.eq("seUrl", seUrl));
 
 		crit.addOrder(Order.desc("feedbackDate"));
 		List<TrackingFeedback> listTrackingFeedbacks = crit.list();
@@ -2553,7 +2727,9 @@ public class ParaQueryUtil
 		// new String[] {"diff"}, new Type[] {
 		// Hibernate.STRING});
 
-		Projection projection = Projections.sqlProjection("(GENERIC_JEDEC||'/'||JEDEC_VARIATIONS) as diff", new String[] { "diff" }, new Type[] { StringType.INSTANCE });
+		Projection projection = Projections.sqlProjection(
+				"(GENERIC_JEDEC||'/'||JEDEC_VARIATIONS) as diff", new String[] { "diff" },
+				new Type[] { StringType.INSTANCE });
 		List<String> list = crit.setProjection(projection).list();
 
 		return list;
@@ -2588,7 +2764,8 @@ public class ParaQueryUtil
 		session.beginTransaction().commit();
 	}
 
-	public static PkgJedec getPkgJedecByStandardAndVariation(String standard, String variation, Session session)
+	public static PkgJedec getPkgJedecByStandardAndVariation(String standard, String variation,
+			Session session)
 	{
 		final Criteria crit = session.createCriteria(PkgJedec.class);
 		crit.add(Restrictions.eq("genericJedec", standard));
@@ -2627,7 +2804,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingFeedbackType getTrackingFeedbackTypeByexactName(String trackingFeedbackTypeName, Session session)
+	public static TrackingFeedbackType getTrackingFeedbackTypeByexactName(
+			String trackingFeedbackTypeName, Session session)
 	{
 		Criteria criteria = session.createCriteria(TrackingFeedbackType.class);
 		criteria.add(Restrictions.eq("name", trackingFeedbackTypeName));
@@ -2643,14 +2821,16 @@ public class ParaQueryUtil
 		return trackingTeam;
 	}
 
-	public static void saveDataSheetAlert(TrackingDatasheetAlert trackingDatasheetAlert, Session session) throws Exception
+	public static void saveDataSheetAlert(TrackingDatasheetAlert trackingDatasheetAlert,
+			Session session) throws Exception
 
 	{
 		session.saveOrUpdate(trackingDatasheetAlert);
 		session.beginTransaction().commit();
 	}
 
-	public static int getCountTrackingSheetAlert(Session session, String partNumber) throws Exception
+	public static int getCountTrackingSheetAlert(Session session, String partNumber)
+			throws Exception
 	{
 		//
 		// final Criteria crit =
@@ -2663,14 +2843,16 @@ public class ParaQueryUtil
 
 		final Criteria crit = session.createCriteria(TrackingDatasheetAlert.class);
 		if(!partNumber.equals(""))
-			crit.createCriteria("comId").add(Restrictions.ilike("partNumber", partNumber, MatchMode.START));
+			crit.createCriteria("comId").add(
+					Restrictions.ilike("partNumber", partNumber, MatchMode.START));
 		crit.add(Restrictions.eq("tlFlag", false));
 		Integer count = (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 		return count;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<TrackingDatasheetAlert> getTrackingDatasheetAlertList(Session session, String partNumber, int from, int to) throws Exception
+	public static List<TrackingDatasheetAlert> getTrackingDatasheetAlertList(Session session,
+			String partNumber, int from, int to) throws Exception
 	{
 		// if(partNumber.equals(""))
 		// {
@@ -2687,11 +2869,13 @@ public class ParaQueryUtil
 		final Criteria crit = session.createCriteria(TrackingDatasheetAlert.class);
 		if(!partNumber.equals(""))
 		{
-			crit.createCriteria("comId").add(Restrictions.ilike("partNumber", partNumber, MatchMode.START));
+			crit.createCriteria("comId").add(
+					Restrictions.ilike("partNumber", partNumber, MatchMode.START));
 
 		}
 		crit.add(Restrictions.eq("tlFlag", false));
-		final List<TrackingDatasheetAlert> list = crit.setMaxResults(to).setFirstResult(from).list();
+		final List<TrackingDatasheetAlert> list = crit.setMaxResults(to).setFirstResult(from)
+				.list();
 
 		return list;
 
@@ -2711,11 +2895,13 @@ public class ParaQueryUtil
 		return null;
 	}
 
-	public static TrackingDatasheetAlert getTrackingDatasheetAlertByObject(Session session, TrackingDatasheetAlert trackingDatasheetAlert)
+	public static TrackingDatasheetAlert getTrackingDatasheetAlertByObject(Session session,
+			TrackingDatasheetAlert trackingDatasheetAlert)
 	{
 		Criteria crit = session.createCriteria(TrackingDatasheetAlert.class);
 		crit.add(Restrictions.eq("id", trackingDatasheetAlert.getId()));
-		TrackingDatasheetAlert trackingDatasheetAlert2 = (TrackingDatasheetAlert) crit.uniqueResult();
+		TrackingDatasheetAlert trackingDatasheetAlert2 = (TrackingDatasheetAlert) crit
+				.uniqueResult();
 		return trackingDatasheetAlert2;
 	}
 
@@ -2789,7 +2975,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static MultiplierUnit getMultiplierUnitByExactMultiplierAndUnit(Multiplier multiplier, Unit unit, Session session)
+	public static MultiplierUnit getMultiplierUnitByExactMultiplierAndUnit(Multiplier multiplier,
+			Unit unit, Session session)
 	{
 		Criteria crit = session.createCriteria(MultiplierUnit.class);
 		if(multiplier != null)
@@ -2876,7 +3063,8 @@ public class ParaQueryUtil
 	// return trackingPkg;
 	// }
 
-	public static TrackingParametric getTrackingParametricByDocument(Session session, Document document)
+	public static TrackingParametric getTrackingParametricByDocument(Session session,
+			Document document)
 	{
 		Criteria crit = session.createCriteria(TrackingParametric.class);
 		crit.add(Restrictions.eq("document", document));
@@ -2884,7 +3072,8 @@ public class ParaQueryUtil
 		return trackingParametric;
 	}
 
-	public static TrackingFast getTrackingFastByPartNumberAndDocument(Document document, String partNumber, Session session)
+	public static TrackingFast getTrackingFastByPartNumberAndDocument(Document document,
+			String partNumber, Session session)
 	{
 		Criteria crit = session.createCriteria(TrackingFast.class);
 		crit.add(Restrictions.eq("document", document));
@@ -2893,7 +3082,8 @@ public class ParaQueryUtil
 		return trackingFast;
 	}
 
-	public static TrackingFastStatus getTrackingFastStatusByExactName(String name, Session session) throws Exception
+	public static TrackingFastStatus getTrackingFastStatusByExactName(String name, Session session)
+			throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingFastStatus.class);
 		crit.add(Restrictions.eq("name", name));
@@ -2903,7 +3093,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getGroupFullValueByFeatureNameandPlName(String featureName, String plName, Session session)
+	public static List<String> getGroupFullValueByFeatureNameandPlName(String featureName,
+			String plName, Session session)
 	{
 		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
@@ -2930,7 +3121,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ParametricApprovedGroup> getAppGroupListByFullValAndFetNameAndPlName(String featureName, String plName, String groupFullValue, Session session)
+	public static List<ParametricApprovedGroup> getAppGroupListByFullValAndFetNameAndPlName(
+			String featureName, String plName, String groupFullValue, Session session)
 	{
 		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		Criteria plFeatureCrit = crit.createCriteria("plFeature");
@@ -2944,8 +3136,8 @@ public class ParaQueryUtil
 		return parametricApprovedGroup;
 	}
 
-	
-	public static void insertNewTrackingPkgApprovedValue(PkgApprovedValue pkgApprovedVal, Session session)
+	public static void insertNewTrackingPkgApprovedValue(PkgApprovedValue pkgApprovedVal,
+			Session session)
 	{
 		TrackingPkgApprovVal trackingPkgApprovVal = new TrackingPkgApprovVal();
 		trackingPkgApprovVal.setId(QueryUtil.getRandomID());
@@ -2954,8 +3146,9 @@ public class ParaQueryUtil
 		session.save(trackingPkgApprovVal);
 	}
 
-	public static void insertNewTrackingPkgDocumentApprovedValue(PkgApprovedValue pkgApprovedVal, Document document,
-	/* Component component, */Session session) throws Exception
+	public static void insertNewTrackingPkgDocumentApprovedValue(PkgApprovedValue pkgApprovedVal,
+			Document document,
+			/* Component component, */Session session) throws Exception
 	{
 		TrackingPkgDocApprov trackingPkgDocApprov = new TrackingPkgDocApprov();
 		trackingPkgDocApprov.setId(QueryUtil.getRandomID());
@@ -2985,7 +3178,9 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ApprovedParametricValue> getApprovedParametricValueByFullValues(List<String> fullValues, String plName, String featureName, Session session) throws Exception
+	public static List<ApprovedParametricValue> getApprovedParametricValueByFullValues(
+			List<String> fullValues, String plName, String featureName, Session session)
+			throws Exception
 	{
 		Criteria crit = session.createCriteria(ApprovedParametricValue.class);
 		crit.add(Restrictions.in("fullValue", fullValues));
@@ -3005,8 +3200,12 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ApprovedParametricValue> getApprovedParametricValueByFullValues(List<String> fullValues, List<String> fromConditionList, List<String> toConditionList, List<String> fromMultiplierList, List<String> toMultiplierList,
-			List<String> fromUnitList, List<String> toUnitList, List<String> fromSignList, List<String> toSignList, List<String> fromValueList, List<String> toValueList, List<String> fromValueTypeList, List<String> toValueTypeList, String plName,
+	public static List<ApprovedParametricValue> getApprovedParametricValueByFullValues(
+			List<String> fullValues, List<String> fromConditionList, List<String> toConditionList,
+			List<String> fromMultiplierList, List<String> toMultiplierList,
+			List<String> fromUnitList, List<String> toUnitList, List<String> fromSignList,
+			List<String> toSignList, List<String> fromValueList, List<String> toValueList,
+			List<String> fromValueTypeList, List<String> toValueTypeList, String plName,
 			String featureName, Session session) throws Exception
 	{
 		Criteria criteria = session.createCriteria(ApprovedParametricValue.class);
@@ -3025,13 +3224,17 @@ public class ParaQueryUtil
 		Criteria fromMultiplierUnitCriteria = criteria.createCriteria("fromMultiplierUnit");
 		Criteria toMultiplierUnitCriteria = criteria.createCriteria("toMultiplierUnit");
 		if(fromMultiplierList != null && fromMultiplierList.size() > 0)
-			fromMultiplierUnitCriteria.createCriteria("multiplier").add(Restrictions.in("name", fromMultiplierList));
+			fromMultiplierUnitCriteria.createCriteria("multiplier").add(
+					Restrictions.in("name", fromMultiplierList));
 		if(toMultiplierList != null && toMultiplierList.size() > 0)
-			toMultiplierUnitCriteria.createCriteria("multiplier").add(Restrictions.in("name", toMultiplierList));
+			toMultiplierUnitCriteria.createCriteria("multiplier").add(
+					Restrictions.in("name", toMultiplierList));
 		if(fromUnitList != null && fromUnitList.size() > 0)
-			fromMultiplierUnitCriteria.createCriteria("unit").add(Restrictions.in("name", fromUnitList));
+			fromMultiplierUnitCriteria.createCriteria("unit").add(
+					Restrictions.in("name", fromUnitList));
 		if(toUnitList != null && toUnitList.size() > 0)
-			toMultiplierUnitCriteria.createCriteria("unit").add(Restrictions.in("name", toUnitList));
+			toMultiplierUnitCriteria.createCriteria("unit")
+					.add(Restrictions.in("name", toUnitList));
 
 		Criteria fromValueCriteria = criteria.createCriteria("fromValue");
 		Criteria toValueCriteria = criteria.createCriteria("toValue");
@@ -3050,13 +3253,15 @@ public class ParaQueryUtil
 		return values;
 	}
 
-	public static Long getValueIDByFullValue(String fullValue, String plName, String featureName, Session session) throws Exception
+	public static Long getValueIDByFullValue(String fullValue, String plName, String featureName,
+			Session session) throws Exception
 	{
 
 		Criteria crit = session.createCriteria(ApprovedParametricValue.class);
 		crit.add(Restrictions.eq("fullValue", fullValue));
 		crit.createCriteria("plFeature").createCriteria("pl").add(Restrictions.eq("name", plName));
-		crit.createCriteria("plFeature").createCriteria("feature").add(Restrictions.eq("name", featureName));
+		crit.createCriteria("plFeature").createCriteria("feature")
+				.add(Restrictions.eq("name", featureName));
 		crit.setProjection(Projections.property("id"));
 		Long valueId = 0L;
 		valueId = (Long) crit.uniqueResult();
@@ -3065,15 +3270,19 @@ public class ParaQueryUtil
 
 	}
 
-	public static ParametricApprovedGroup addAppValueGroup(int engine, int update, Document document, String plName, String featureName, String groupFullValue, Long paraUserId, Session session) throws Exception
+	public static ParametricApprovedGroup addAppValueGroup(int engine, int update,
+			Document document, String plName, String featureName, String groupFullValue,
+			Long paraUserId, Session session) throws Exception
 	{
 
-		ParametricApprovedGroup parametricApprovedGroup = ParaQueryUtil.getParametricApprovedGroup(groupFullValue, plName, featureName, session);
+		ParametricApprovedGroup parametricApprovedGroup = ParaQueryUtil.getParametricApprovedGroup(
+				groupFullValue, plName, featureName, session);
 		if(parametricApprovedGroup == null)
 		{
 			parametricApprovedGroup = new ParametricApprovedGroup();
 			parametricApprovedGroup.setId(System.nanoTime());
-			parametricApprovedGroup.setPlFeature(getPlFeatureByExactName(featureName, plName, session));
+			parametricApprovedGroup.setPlFeature(getPlFeatureByExactName(featureName, plName,
+					session));
 			parametricApprovedGroup.setGroupFullValue(groupFullValue);
 		}
 		if(document != null)
@@ -3101,8 +3310,12 @@ public class ParaQueryUtil
 		Date d = new Date();
 		// System.out.println("Date is " + d.toString());
 		parametricApprovedGroup.setStoreDate(d);
-
-		Long qaUserId = getQAUserId(getPlByPlName(session, plName), getTrackingTaskTypeByName("Approved Values", session));
+		if(update == 1)
+		{
+			parametricApprovedGroup.setReviewedDate(d);
+		}
+		Long qaUserId = getQAUserId(getPlByPlName(session, plName),
+				getTrackingTaskTypeByName("Approved Values", session));
 		if(qaUserId != null && paraUserId != 120)
 			parametricApprovedGroup.setQaUserId(qaUserId);
 		session.saveOrUpdate(parametricApprovedGroup);
@@ -3111,7 +3324,10 @@ public class ParaQueryUtil
 
 	}
 
-	public static void addSeparationGroup(int engine, int update, ApprovedParametricValue approvedParametricValue, String pattern, ParametricApprovedGroup parametricApprovedGroup, int approvedValueOrder, Session session) throws Exception
+	public static void addSeparationGroup(int engine, int update,
+			ApprovedParametricValue approvedParametricValue, String pattern,
+			ParametricApprovedGroup parametricApprovedGroup, int approvedValueOrder, Session session)
+			throws Exception
 	{
 		ParametricSeparationGroup paraSepGroup = new ParametricSeparationGroup();
 		paraSepGroup.setId(System.nanoTime());
@@ -3125,9 +3341,8 @@ public class ParaQueryUtil
 
 	}
 
-	
-
-	public static PartComponent getComponentByPartAndSupplierAndDocument(String partNumber, long documentId, Session session)
+	public static PartComponent getComponentByPartAndSupplierAndDocument(String partNumber,
+			long documentId, Session session)
 	{
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		crit.add(Restrictions.eq("partNumber", partNumber));
@@ -3135,7 +3350,8 @@ public class ParaQueryUtil
 		return (PartComponent) crit.uniqueResult();
 	}
 
-	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValue, PlFeature plFeature, Session session)
+	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValue,
+			PlFeature plFeature, Session session)
 	{
 		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
 		crit.add(Restrictions.eq("groupFullValue", groupFullValue));
@@ -3144,7 +3360,8 @@ public class ParaQueryUtil
 		return group;
 	}
 
-	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValues, String plName, String featureName, Session session) throws Exception
+	public static ParametricApprovedGroup getParametricApprovedGroup(String groupFullValues,
+			String plName, String featureName, Session session) throws Exception
 	{
 
 		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
@@ -3159,7 +3376,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static ParametricApprovedGroup getParametricApprovedGroup(Long clientGroupId, Session session) throws Exception
+	public static ParametricApprovedGroup getParametricApprovedGroup(Long clientGroupId,
+			Session session) throws Exception
 	{
 
 		Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
@@ -3170,7 +3388,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static void deleteSeprationGroups(ParametricApprovedGroup parametricApprovedGroup, Session session) throws Exception
+	public static void deleteSeprationGroups(ParametricApprovedGroup parametricApprovedGroup,
+			Session session) throws Exception
 	{
 
 		for(Object ob : parametricApprovedGroup.getParametricSeparationGroups())
@@ -3181,7 +3400,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static void deleteUnUsedApprovedValues(ParametricApprovedGroup parametricApprovedGroup, Session session) throws Exception
+	public static void deleteUnUsedApprovedValues(ParametricApprovedGroup parametricApprovedGroup,
+			Session session) throws Exception
 	{
 
 		for(Object ob : parametricApprovedGroup.getParametricSeparationGroups())
@@ -3194,15 +3414,15 @@ public class ParaQueryUtil
 
 			}catch(ConstraintViolationException cv)
 			{
-				System.err.println(parametricSeparationGroup.getApprovedParametricValue().getId() + " Can't Deleted Used by " + cv.getMessage());
+				System.err.println(parametricSeparationGroup.getApprovedParametricValue().getId()
+						+ " Can't Deleted Used by " + cv.getMessage());
 				// cv.printStackTrace();
 			}
 		}
 	}
 
-	
-
-	public static TrackingParamDocApprov getTrackingParamDocApprov(Long groupId, Document document, Session session) throws Exception
+	public static TrackingParamDocApprov getTrackingParamDocApprov(Long groupId, Document document,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
 		crit.add(Restrictions.eq("approvedGroupId", groupId));
@@ -3211,7 +3431,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static TrackingParametricApprovVal getTrackingParametricApprovVal(Long groupId, Session session) throws Exception
+	public static TrackingParametricApprovVal getTrackingParametricApprovVal(Long groupId,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParametricApprovVal.class);
 		crit.add(Restrictions.eq("approvedGroupId", groupId));
@@ -3221,9 +3442,6 @@ public class ParaQueryUtil
 
 	}
 
-	
-
-	
 	@SuppressWarnings("unchecked")
 	public static List<PartComponent> getComponentListByPLS(List<String> plList, Session session)
 	{
@@ -3245,12 +3463,15 @@ public class ParaQueryUtil
 
 	public static String getNewDiscription(Long plId, Long comId, Session session) throws Exception
 	{
-		String newDistribution = (String) session.createSQLQuery("select AUTO_DESC_ND.get_desc(" + plId + "," + comId + ") from dual").uniqueResult();
+		String newDistribution = (String) session.createSQLQuery(
+				"select AUTO_DESC_ND.get_desc(" + plId + "," + comId + ") from dual")
+				.uniqueResult();
 		return newDistribution;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PartComponent> getComponentListByPartNumberAndVendor(List<List<String>> allData, Session session)
+	public static List<PartComponent> getComponentListByPartNumberAndVendor(
+			List<List<String>> allData, Session session)
 	{
 		final Criteria crit = session.createCriteria(PartComponent.class);
 		crit.createAlias("supplierPl", "suppPl");
@@ -3282,7 +3503,8 @@ public class ParaQueryUtil
 
 	}
 
-	public static void updateComponentByNewDescription(PartComponent component, Session session) throws Exception
+	public static void updateComponentByNewDescription(PartComponent component, Session session)
+			throws Exception
 
 	{
 		session.saveOrUpdate(component);
@@ -3291,7 +3513,8 @@ public class ParaQueryUtil
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getPartNumberBySupplier(Supplier supplier, List<String> newParts, Session session) throws Exception
+	public static List<String> getPartNumberBySupplier(Supplier supplier, List<String> newParts,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(PartComponent.class);
 		// crit.add(Restrictions.eq("document", document));
@@ -3312,7 +3535,8 @@ public class ParaQueryUtil
 		return pls;
 	}
 
-	public static List<TrackingParamDocApprov> getTrackingParamDocumentApprovedValue(Long groupId, Session session) throws Exception
+	public static List<TrackingParamDocApprov> getTrackingParamDocumentApprovedValue(Long groupId,
+			Session session) throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
 		crit.add(Restrictions.eq("approvedGroupId", groupId));
@@ -3357,7 +3581,8 @@ public class ParaQueryUtil
 	 * @return List<String>
 	 */
 
-	public static List<String> getAllVendorsFromDocuments(long userId, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast)
+	public static List<String> getAllVendorsFromDocuments(long userId, boolean forCS,
+			boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast)
 	{
 		List<String> vendors = new ArrayList<String>();
 		Session session = null;
@@ -3375,7 +3600,8 @@ public class ParaQueryUtil
 			}
 			if(forTaxonomyTransfer)
 			{
-				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName(
+						"TaxonomyTransfer", session);
 				criteria.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 			}
 			if(forDaily)
@@ -3438,7 +3664,8 @@ public class ParaQueryUtil
 	 * @return List<String>
 	 */
 
-	public static List<String> getAllTaxonomiesFromDocuments(long userId, boolean forCS, boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast)
+	public static List<String> getAllTaxonomiesFromDocuments(long userId, boolean forCS,
+			boolean forTaxonomyTransfer, boolean forDaily, boolean forUpdate, boolean forFast)
 	{
 		List<String> pls = new ArrayList<String>();
 		Session session = null;
@@ -3456,7 +3683,8 @@ public class ParaQueryUtil
 			}
 			if(forTaxonomyTransfer)
 			{
-				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName("TaxonomyTransfer", session);
+				TrackingTaskType taxonomyTransferTask = getTrackingTaskTypeByName(
+						"TaxonomyTransfer", session);
 				criteria.add(Restrictions.eq("trackingTaskType", taxonomyTransferTask));
 			}
 			if(forDaily)
@@ -3497,7 +3725,8 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select lut.id from CM.PART_LOOKUP lut where lut.NAN_INPUT_PART =:nanpartnum and lut.SE_MAN_ID =CM.GET_MAN_ID(:suppName)");
+			SQLQuery query = session
+					.createSQLQuery("select lut.id from CM.PART_LOOKUP lut where lut.NAN_INPUT_PART =:nanpartnum and lut.SE_MAN_ID =CM.GET_MAN_ID(:suppName)");
 			query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
 			query.setParameter("suppName", supplierName);
 
@@ -3520,7 +3749,8 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select comp.COM_ID from CM.XLP_SE_COMPONENT comp where comp.NAN_PARTNUM =:nanpartnum and comp.MAN_ID =CM.GET_MAN_ID_BY_CODE(:suppcode)");
+			SQLQuery query = session
+					.createSQLQuery("select comp.COM_ID from CM.XLP_SE_COMPONENT comp where comp.NAN_PARTNUM =:nanpartnum and comp.MAN_ID =CM.GET_MAN_ID_BY_CODE(:suppcode)");
 			query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
 			query.setParameter("suppcode", supplier.getCode());
 
@@ -3544,8 +3774,9 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery(" SELECT  comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
-					+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=GETSUPPLIERID (:suppName)");
+			SQLQuery query = session
+					.createSQLQuery(" SELECT  comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
+							+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=GETSUPPLIERID (:suppName)");
 
 			query.setParameter("nanpartnum", NANINPUTPART.trim());
 			query.setParameter("suppName", supplierName);
@@ -3570,7 +3801,8 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM =:nanpartnum and acq.OLD_MAN_ID =CM.GET_MAN_ID(:suppName)");
+			SQLQuery query = session
+					.createSQLQuery("select acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM =:nanpartnum and acq.OLD_MAN_ID =CM.GET_MAN_ID(:suppName)");
 			query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
 			query.setParameter("suppName", supplierName);
 
@@ -3615,7 +3847,8 @@ public class ParaQueryUtil
 		Session session = null;
 		Long id = null;
 		session = SessionUtil.getSession();
-		SQLQuery query = session.createSQLQuery("select CM.GET_MAN_ID_BY_CODE(:suppcode) from dual");
+		SQLQuery query = session
+				.createSQLQuery("select CM.GET_MAN_ID_BY_CODE(:suppcode) from dual");
 		query.setParameter("suppcode", supplier.getCode());
 		String idstring = query.uniqueResult().toString();
 		if(idstring != null && !idstring.equalsIgnoreCase("null") && !idstring.isEmpty())
@@ -3733,9 +3966,13 @@ public class ParaQueryUtil
 		return fet;
 	}
 
-	private static Criteria getFormulaCriteria(Session session, PlFeature plfets, com.se.parametric.dto.FeatureDTO feture)
+	private static Criteria getFormulaCriteria(Session session, PlFeature plfets,
+			com.se.parametric.dto.FeatureDTO feture)
 	{
-		Criteria crit = session.createCriteria(QaChecksInDependentFeature.class).add(Restrictions.eq("plFeatureId", plfets.getId())).add(Restrictions.isNotNull("formula")).add(Restrictions.eq("qaChecksValidatetype", new QaChecksValidatetype(5L)))
+		Criteria crit = session.createCriteria(QaChecksInDependentFeature.class)
+				.add(Restrictions.eq("plFeatureId", plfets.getId()))
+				.add(Restrictions.isNotNull("formula"))
+				.add(Restrictions.eq("qaChecksValidatetype", new QaChecksValidatetype(5L)))
 				.add(Restrictions.eq("dependencyType", 0L));
 		return crit;
 	}
@@ -3821,7 +4058,8 @@ public class ParaQueryUtil
 		{
 			session = SessionUtil.getSession();
 			Criteria criteria = session.createCriteria(TblPdfCompare.class);
-			criteria.createCriteria("documentByLatestPdfId").add(Restrictions.eq("id", latestUrlId));
+			criteria.createCriteria("documentByLatestPdfId")
+					.add(Restrictions.eq("id", latestUrlId));
 			criteria.createCriteria("documentByCmPdfId").add(Restrictions.eq("id", pdfUrlId));
 			tblPdfCompare = (TblPdfCompare) criteria.uniqueResult();
 		}catch(Exception ex)
@@ -3848,8 +4086,10 @@ public class ParaQueryUtil
 			criteria.add(Restrictions.eq("name", feature));
 			Feature fet = (Feature) criteria.uniqueResult();
 			Criteria criteriacustomerflag = session.createCriteria(TblFullDataCtrl.class);
-			criteriacustomerflag.add(Restrictions.sqlRestriction("PL_ID =? and FET_ID=? and lower(CUSTOMER_FLAG)=lower(?)", new Object[] { pl.getId(), fet.getId(), "Specific_Customer" }, new Type[] { LongType.INSTANCE, LongType.INSTANCE,
-					StringType.INSTANCE }));
+			criteriacustomerflag.add(Restrictions.sqlRestriction(
+					"PL_ID =? and FET_ID=? and lower(CUSTOMER_FLAG)=lower(?)",
+					new Object[] { pl.getId(), fet.getId(), "Specific_Customer" }, new Type[] {
+							LongType.INSTANCE, LongType.INSTANCE, StringType.INSTANCE }));
 			List ls = criteriacustomerflag.list();
 			if(ls != null && ls.size() > 0)
 			{
@@ -3867,7 +4107,8 @@ public class ParaQueryUtil
 		return false;
 	}
 
-	public static RelatedFeaturesDTO getQAChecksInDependentFeature(Pl pl, com.se.parametric.dto.FeatureDTO feture)
+	public static RelatedFeaturesDTO getQAChecksInDependentFeature(Pl pl,
+			com.se.parametric.dto.FeatureDTO feture)
 	{
 
 		PlFeature plfets = null;
@@ -3893,18 +4134,24 @@ public class ParaQueryUtil
 					relatedfet = new RelatedFeaturesDTO();
 					relatedfet.setQachecksrelatedfet(qchecks);
 					relatedfet.setIndependent(feture);
-					if(qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId() != null && qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId().size() > 0)
+					if(qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId() != null
+							&& qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId().size() > 0)
 					{
-						Iterator iter = qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId().iterator();
+						Iterator iter = qchecks.getQaCheckRelatedFunctionsesForIndepFunctionId()
+								.iterator();
 						while(iter.hasNext())
 						{
 							QaCheckRelatedFunctions f = ((QaCheckRelatedFunctions) iter.next());
-							Long plfetid = f.getQaChecksInDependentFeatureByDepFunctionId().getPlFeatureId();
+							Long plfetid = f.getQaChecksInDependentFeatureByDepFunctionId()
+									.getPlFeatureId();
 							plfetcrit = session.createCriteria(PlFeature.class);
 							plfetcrit.add(Restrictions.eq("id", plfetid));
-							relatedfet.addDependentFeature(((PlFeature) plfetcrit.uniqueResult()).getFeature().getName(), f.getQaChecksInDependentFeatureByDepFunctionId());
+							relatedfet.addDependentFeature(((PlFeature) plfetcrit.uniqueResult())
+									.getFeature().getName(), f
+									.getQaChecksInDependentFeatureByDepFunctionId());
 							{
-								f.getQaChecksInDependentFeatureByDepFunctionId().getQaChecksValidatetype().getId();
+								f.getQaChecksInDependentFeatureByDepFunctionId()
+										.getQaChecksValidatetype().getId();
 
 							}
 						}
@@ -3924,16 +4171,26 @@ public class ParaQueryUtil
 		return relatedfet;
 	}
 
-	private static Criteria getCondetionsCriteria(Session session, PlFeature plfets, com.se.parametric.dto.FeatureDTO feture)
+	private static Criteria getCondetionsCriteria(Session session, PlFeature plfets,
+			com.se.parametric.dto.FeatureDTO feture)
 	{
-		Criteria crit = session.createCriteria(QaChecksInDependentFeature.class).add(Restrictions.eq("plFeatureId", plfets.getId())).add(Restrictions.eq("value", feture.getFeaturevalue())).add(Restrictions.eq("dependencyType", 0L));
+		Criteria crit = session.createCriteria(QaChecksInDependentFeature.class)
+				.add(Restrictions.eq("plFeatureId", plfets.getId()))
+				.add(Restrictions.eq("value", feture.getFeaturevalue()))
+				.add(Restrictions.eq("dependencyType", 0L));
 		return crit;
 	}
 
-	private static Criteria getContainsCriteria(Session session, PlFeature plfets, com.se.parametric.dto.FeatureDTO feture)
+	private static Criteria getContainsCriteria(Session session, PlFeature plfets,
+			com.se.parametric.dto.FeatureDTO feture)
 	{
-		Criteria crit = session.createCriteria(QaChecksInDependentFeature.class).add(Restrictions.eq("plFeatureId", plfets.getId())).add(Restrictions.eq("dependencyType", 0L))
-				.add(Restrictions.eq("qaChecksValidatetype", new QaChecksValidatetype(3L))).add(Restrictions.sqlRestriction("? like '%'value'%'", feture.getFeatureName(), StringType.INSTANCE));
+		Criteria crit = session
+				.createCriteria(QaChecksInDependentFeature.class)
+				.add(Restrictions.eq("plFeatureId", plfets.getId()))
+				.add(Restrictions.eq("dependencyType", 0L))
+				.add(Restrictions.eq("qaChecksValidatetype", new QaChecksValidatetype(3L)))
+				.add(Restrictions.sqlRestriction("? like '%'value'%'", feture.getFeatureName(),
+						StringType.INSTANCE));
 		return crit;
 	}
 
@@ -3969,15 +4226,18 @@ public class ParaQueryUtil
 		}
 	}
 
-	
-
-	public static void updateTrackingParamDocApprov(Long clientGroupId, ApprovedParametricValue approvedParametricValue, Long trackingParamDocApprovId, String groupFullValue, String trackingStatus, String ddComment, Session session) throws Exception
+	public static void updateTrackingParamDocApprov(Long clientGroupId,
+			ApprovedParametricValue approvedParametricValue, Long trackingParamDocApprovId,
+			String groupFullValue, String trackingStatus, String ddComment, Session session)
+			throws Exception
 	{
-		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprovById(trackingParamDocApprovId, session);
+		TrackingParamDocApprov trackingParamDocApprov = getTrackingParamDocApprovById(
+				trackingParamDocApprovId, session);
 		trackingParamDocApprov.setApprovedGroupId(clientGroupId);
 		trackingParamDocApprov.setApprovedParametricValue(approvedParametricValue);
 		if(trackingStatus != null)
-			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session, trackingStatus/* "Pending" */));
+			trackingParamDocApprov.setTrackingTaskStatus(getTrackingTaskStatus(session,
+					trackingStatus/* "Pending" */));
 		else
 			trackingParamDocApprov.setTrackingTaskStatus(null);
 		// if(trackingStatus.equals("Send To QA")){
@@ -3990,7 +4250,8 @@ public class ParaQueryUtil
 		session.saveOrUpdate(trackingParamDocApprov);
 	}
 
-	public static TrackingParamDocApprov getTrackingParamDocApprovById(Long id, Session session) throws Exception
+	public static TrackingParamDocApprov getTrackingParamDocApprovById(Long id, Session session)
+			throws Exception
 	{
 		Criteria crit = session.createCriteria(TrackingParamDocApprov.class);
 		crit.add(Restrictions.eq("id", id));
@@ -4020,7 +4281,8 @@ public class ParaQueryUtil
 		{
 			Criteria criteria = session.createCriteria(TrackingFeedback.class);
 			criteria.add(Restrictions.eq("userId", userId));
-			criteria.createCriteria("trackingTaskStatus").add(Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
+			criteria.createCriteria("trackingTaskStatus").add(
+					Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
 			criteria.setProjection(Projections.distinct(Projections.property("pl")));
 			return criteria.list();
 		}catch(Exception ex)
@@ -4036,7 +4298,8 @@ public class ParaQueryUtil
 		{
 			Criteria criteria = session.createCriteria(TrackingFeedback.class);
 			criteria.add(Restrictions.eq("userId", userId));
-			criteria.createCriteria("trackingTaskStatus").add(Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
+			criteria.createCriteria("trackingTaskStatus").add(
+					Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
 			criteria.setProjection(Projections.distinct(Projections.property("document")));
 			return criteria.list();
 		}catch(Exception ex)
@@ -4058,7 +4321,8 @@ public class ParaQueryUtil
 			List<Long> users = grmCriteria.list();
 			Criteria criteria = session.createCriteria(TrackingFeedback.class);
 			criteria.add(Restrictions.in("userId", users));
-			criteria.createCriteria("trackingTaskStatus").add(Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
+			criteria.createCriteria("trackingTaskStatus").add(
+					Restrictions.in("name", new String[] { "Wrong Data", "Wrong Value" }));
 			criteria.setProjection(Projections.distinct(Projections.property("document")));
 			return criteria.list();
 		}catch(Exception ex)
@@ -4145,8 +4409,11 @@ public class ParaQueryUtil
 			Criteria criteria = session.createCriteria(PlFeature.class);
 			criteria.add(Restrictions.eq("pl", pl));
 			criteria.createCriteria("feature").add(
-					Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME", "Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description", "Introduction Name",
-							"Pin Count", "Supplier Package", "ROHS", "Life Cycle" })));
+					Restrictions.not(Restrictions.in("name", new String[] { "Family",
+							"PRODUCT_NAME", "Standard_Package_Name", "Introduction Date",
+							"PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description",
+							"Introduction Name", "Pin Count", "Supplier Package", "ROHS",
+							"Life Cycle" })));
 			criteria.add(Restrictions.isNotNull("columnName"));
 			criteria.add(Restrictions.ne("columnName", "man_id"));
 			criteria.addOrder(Order.asc("DevelopmentOrder"));
@@ -4222,7 +4489,8 @@ public class ParaQueryUtil
 			return true;
 	}
 
-	public static ArrayList<DocumentInfoDTO> getDevelopmentPDF(long userId, String plName, String vendorName, String type, String extracted, Date startDate, Date endDate)
+	public static ArrayList<DocumentInfoDTO> getDevelopmentPDF(long userId, String plName,
+			String vendorName, String type, String extracted, Date startDate, Date endDate)
 	{
 		ArrayList<DocumentInfoDTO> result = new ArrayList<DocumentInfoDTO>();
 		DocumentInfoDTO docInfo = null;
@@ -4519,7 +4787,8 @@ public class ParaQueryUtil
 		Session session = SessionUtil.getSession();
 		try
 		{
-			if(!taskType.getName().contains("NPI") && !taskType.getName().contains("Approved") && !taskType.getName().contains("New"))
+			if(!taskType.getName().contains("NPI") && !taskType.getName().contains("Approved")
+					&& !taskType.getName().contains("New"))
 			{
 				taskType = getTrackingTaskTypeByName("New", session);
 			}
@@ -4542,11 +4811,10 @@ public class ParaQueryUtil
 		return user;
 	}
 
-	
-
 	public static boolean getDialogMessage(String message, String title)
 	{
-		int choice = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+		int choice = JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION,
+				JOptionPane.ERROR_MESSAGE);
 
 		if(choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION)
 		{
@@ -4558,7 +4826,6 @@ public class ParaQueryUtil
 		}
 	}
 
-	
 	public static String getEngName(Document document, Pl pl)
 	{
 		String engName = "";
@@ -4567,7 +4834,9 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session.createSQLQuery("select full_name from grm.grm_user u, tracking_parametric p where u.id=p.user_id and p.document_id=" + document.getId() + "and p.pl_id=" + pl.getId());
+			SQLQuery query = session
+					.createSQLQuery("select full_name from grm.grm_user u, tracking_parametric p where u.id=p.user_id and p.document_id="
+							+ document.getId() + "and p.pl_id=" + pl.getId());
 			engName = query.uniqueResult().toString();
 		}catch(Exception ex)
 		{
@@ -4615,7 +4884,8 @@ public class ParaQueryUtil
 		{
 			grmSession = com.se.grm.db.SessionUtil.getSession();
 			Criteria grmUserCriteria = grmSession.createCriteria(GrmUser.class);
-			grmUserCriteria.add(Restrictions.or(Restrictions.eq("fullName", userName),Restrictions.like("email", userName+"%")));
+			grmUserCriteria.add(Restrictions.or(Restrictions.eq("fullName", userName),
+					Restrictions.like("email", userName + "%")));
 			user = (GrmUser) grmUserCriteria.uniqueResult();
 		}catch(Exception ex)
 		{
@@ -4679,7 +4949,7 @@ public class ParaQueryUtil
 	// }
 	// }
 	// }
-	
+
 	public static List<String> getPlFeautreNames(String Plname) throws Exception
 	{
 		Session session = SessionUtil.getSession();
@@ -4689,8 +4959,11 @@ public class ParaQueryUtil
 			Criteria criteria = session.createCriteria(PlFeature.class);
 			criteria.add(Restrictions.eq("pl", getPlByPlName(session, Plname)));
 			criteria.createCriteria("feature").add(
-					Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME", "Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description", "Introduction Name",
-							"Pin Count", "Supplier Package", "ROHS", "Life Cycle" })));
+					Restrictions.not(Restrictions.in("name", new String[] { "Family",
+							"PRODUCT_NAME", "Standard_Package_Name", "Introduction Date",
+							"PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description",
+							"Introduction Name", "Pin Count", "Supplier Package", "ROHS",
+							"Life Cycle" })));
 			criteria.add(Restrictions.isNotNull("columnName"));
 			criteria.add(Restrictions.ne("columnName", "man_id"));
 			criteria.addOrder(Order.asc("DevelopmentOrder"));
@@ -4720,8 +4993,11 @@ public class ParaQueryUtil
 			Criteria criteria = session.createCriteria(PlFeature.class);
 			criteria.add(Restrictions.eq("pl", getPlByPlName(session, Plname)));
 			criteria.createCriteria("feature").add(
-					Restrictions.not(Restrictions.in("name", new String[] { "Family", "PRODUCT_NAME", "Standard_Package_Name", "Introduction Date", "PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description", "Introduction Name",
-							"Pin Count", "Supplier Package", "ROHS", "Life Cycle" })));
+					Restrictions.not(Restrictions.in("name", new String[] { "Family",
+							"PRODUCT_NAME", "Standard_Package_Name", "Introduction Date",
+							"PRODUCT_EXTERNAL_DATASHEET", "Vendor", "Vendor Code", "Description",
+							"Introduction Name", "Pin Count", "Supplier Package", "ROHS",
+							"Life Cycle" })));
 			criteria.add(Restrictions.isNotNull("columnName"));
 			criteria.add(Restrictions.ne("columnName", "man_id"));
 
@@ -4752,7 +5028,8 @@ public class ParaQueryUtil
 		return list;
 	}
 
-	public static ApprovedParametricValue getApprovedValueObject(String plName, String featureName, String featureValue, Session session)
+	public static ApprovedParametricValue getApprovedValueObject(String plName, String featureName,
+			String featureValue, Session session)
 	{
 		Criteria criteria;
 		ApprovedParametricValue valueObj = null;
@@ -4780,14 +5057,14 @@ public class ParaQueryUtil
 		return valueObj;
 	}
 
-	
 	public static long getPdfId(String pdfUrl, String supplierName)
 	{
 		Session session = SessionUtil.getSession();
 		long pdfId = -1;
 		try
 		{
-			SQLQuery query = session.createSQLQuery("SELECT CM.GET_PDF_ID ('" + pdfUrl + "',CM.GET_MAN_CODE_BY_MANNAME ('" + supplierName + "'))FROM DUAL");
+			SQLQuery query = session.createSQLQuery("SELECT CM.GET_PDF_ID ('" + pdfUrl
+					+ "',CM.GET_MAN_CODE_BY_MANNAME ('" + supplierName + "'))FROM DUAL");
 			Object obj = query.uniqueResult();
 			if(obj != null)
 			{
@@ -4822,7 +5099,8 @@ public class ParaQueryUtil
 			endDate.setDate(endDate.getDate() + 1);
 			start = new SimpleDateFormat("MM/dd/yyyy").format(startDate);
 			end = new SimpleDateFormat("MM/dd/yyyy").format(endDate);
-			dateCond = " and FINISHED_DATE BETWEEN TO_DATE('" + start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
+			dateCond = " and FINISHED_DATE BETWEEN TO_DATE('" + start
+					+ "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
 		}
 		// if(endDate != null)
 		// {
@@ -4837,7 +5115,11 @@ public class ParaQueryUtil
 			// SQLQuery query = session.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where FINISHED_DATE BETWEEN TO_DATE('" +
 			// start + "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY') and user_id=" + userId
 			// + " and TRACKING_TASK_STATUS_ID=3");
-			SQLQuery query = session.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where user_id=" + userId + " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('" + StatusName.cmTransfere+ "')" + dateCond);
+			SQLQuery query = session
+					.createSQLQuery("select distinct getpl(pl_id) from tracking_parametric where user_id="
+							+ userId
+							+ " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('"
+							+ StatusName.cmTransfere + "')" + dateCond);
 			plNames = query.list();
 		}catch(Exception e)
 		{
@@ -4889,12 +5171,20 @@ public class ParaQueryUtil
 				headerList.add(fet.getFeatureName());
 			}
 			List<Map<String, Object>> components = new ArrayList<Map<String, Object>>();
-			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id=" + userDto.getId() + " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('" + StatusName.cmTransfere+ "') and pl_id=" + pl.getId()
-					+ ") and supplier_pl_id in ( select id from supplier_pl where pl_id=" + pl.getId() + ")";
+			String queryString = "select com_id from part_component where document_id in (select document_id from tracking_parametric where user_id="
+					+ userDto.getId()
+					+ " and TRACKING_TASK_STATUS_ID=GETTASKSTATUSID('"
+					+ StatusName.cmTransfere
+					+ "') and pl_id="
+					+ pl.getId()
+					+ ") and supplier_pl_id in ( select id from supplier_pl where pl_id="
+					+ pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy HH:mm:ss");
-				queryString += " AND STORE_DATE between TO_DATE('" + sdf.format(startDate) + "', 'MM/DD/YYYY HH24:MI:SS') and TO_DATE('" + sdf.format(endDate) + "', 'MM/DD/YYYY HH24:MI:SS')";
+				queryString += " AND STORE_DATE between TO_DATE('" + sdf.format(startDate)
+						+ "', 'MM/DD/YYYY HH24:MI:SS') and TO_DATE('" + sdf.format(endDate)
+						+ "', 'MM/DD/YYYY HH24:MI:SS')";
 			}
 
 			SQLQuery query = session.createSQLQuery(queryString);
@@ -4903,9 +5193,12 @@ public class ParaQueryUtil
 			{
 				Map<String, Object> fetsMap = new HashMap<String, Object>();
 				long comId = comIds.get(i).longValue();
-				query = session.createSQLQuery("select c.part_number, GET_PDF_SEURL(GET_PDFIDBYDOCID(c.document_id)), "
-						+ " f.name family_name, c.description, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PART_NUMBER) MASK, s.name vendor_name, S.CODE, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross "
-						+ " from part_component c, family f, supplier_pl spl, supplier s where c.com_id=" + comId + " and c.family_id=f.id(+) and c.supplier_pl_id=spl.id and spl.supplier_id=s.id");
+				query = session
+						.createSQLQuery("select c.part_number, GET_PDF_SEURL(GET_PDFIDBYDOCID(c.document_id)), "
+								+ " f.name family_name, c.description, Get_GENERIC_Name (C.GENERIC_ID) generic_Nam, GET_MSK_Value (c.MASK_ID, C.PART_NUMBER) MASK, s.name vendor_name, S.CODE, Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross "
+								+ " from part_component c, family f, supplier_pl spl, supplier s where c.com_id="
+								+ comId
+								+ " and c.family_id=f.id(+) and c.supplier_pl_id=spl.id and spl.supplier_id=s.id");
 
 				Object[] mainFets = (Object[]) query.uniqueResult();
 				fetsMap.put("PRODUCT_NAME", mainFets[0]);
@@ -4922,8 +5215,11 @@ public class ParaQueryUtil
 				fetsMap.put("Pin Count", "");
 				fetsMap.put("Life Cycle", "");
 
-				query = session.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review," + " pl_feature_unit plFet, feature fet, PARAMETRIC_APPROVED_GROUP g where review.com_id=" + comId
-						+ " and review.pl_feature_id=plfet.id and plfet.fet_id=fet.id and review.group_approved_value_id=g.id(+)");
+				query = session
+						.createSQLQuery("select fet.name fet_name, g.group_full_value from parametric_review_data review,"
+								+ " pl_feature_unit plFet, feature fet, PARAMETRIC_APPROVED_GROUP g where review.com_id="
+								+ comId
+								+ " and review.pl_feature_id=plfet.id and plfet.fet_id=fet.id and review.group_approved_value_id=g.id(+)");
 				List<Object[]> paramFets = query.list();
 				for(int j = 0; j < paramFets.size(); j++)
 				{
@@ -4947,10 +5243,17 @@ public class ParaQueryUtil
 			fileName += "@" + sdf.format(new Date()) + "@Insert";
 			fileName += ".xls";
 
-			xlsHandler.writeExcelFile(headerList.toArray(new String[headerList.size()]), components, fileName);
+			xlsHandler.writeExcelFile(headerList.toArray(new String[headerList.size()]),
+					components, fileName);
 			exportNPIParts(plName, userDto, startDate, endDate);
-			query = session.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('" + StatusName.finshed + "') " + " where user_id=" + userDto.getId() + " and tracking_task_status_id=GETTASKSTATUSID('"
-					+ StatusName.cmTransfere + "') and pl_id=GETPLID('" + plName + "')");
+			query = session
+					.createSQLQuery("update tracking_parametric set tracking_task_status_id=GETTASKSTATUSID('"
+							+ StatusName.finshed
+							+ "') "
+							+ " where user_id="
+							+ userDto.getId()
+							+ " and tracking_task_status_id=GETTASKSTATUSID('"
+							+ StatusName.cmTransfere + "') and pl_id=GETPLID('" + plName + "')");
 			// Transaction tx = session.beginTransaction();
 			int x = query.executeUpdate();
 			// tx.commit();
@@ -4968,7 +5271,8 @@ public class ParaQueryUtil
 		}
 	}
 
-	public static void exportNPIParts(String plName, GrmUserDTO userDto, Date startDate, Date endDate)
+	public static void exportNPIParts(String plName, GrmUserDTO userDto, Date startDate,
+			Date endDate)
 	{
 		Session session = null;
 		ExcelHandler2003 xlsHandler = null;
@@ -4976,13 +5280,20 @@ public class ParaQueryUtil
 		{
 			session = SessionUtil.getSession();
 			Pl pl = getPlByPlName(session, plName);
-			String queryString = "select '" + userDto.getFullName() + "' eng_name, c.part_number, GETSUPPLIERBYDOC(c.document_id) sup_name, "
-					+ " GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id " + " in (select document_id from tracking_parametric where user_id=" + userDto.getId()
-					+ " and tracking_task_status_id=34 and pl_id=" + pl.getId() + ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id=" + pl.getId() + ")";
+			String queryString = "select '"
+					+ userDto.getFullName()
+					+ "' eng_name, c.part_number, GETSUPPLIERBYDOC(c.document_id) sup_name, "
+					+ " GETPDFURLBYDOCID(document_id) pdf_url, GETNPINewsPDFURL (c.DOCUMENT_ID) news_link from part_component c where npi_flag=1 and document_id "
+					+ " in (select document_id from tracking_parametric where user_id="
+					+ userDto.getId() + " and tracking_task_status_id=34 and pl_id=" + pl.getId()
+					+ ") " + " and supplier_pl_id in (select id from supplier_pl where pl_id="
+					+ pl.getId() + ")";
 			if((startDate != null) && (endDate != null))
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy HH:mm:ss");
-				queryString += " AND STORE_DATE between TO_DATE('" + sdf.format(startDate) + "', 'MM/DD/YYYY HH24:MI:SS') and TO_DATE('" + sdf.format(endDate) + "', 'MM/DD/YYYY HH24:MI:SS')";
+				queryString += " AND STORE_DATE between TO_DATE('" + sdf.format(startDate)
+						+ "', 'MM/DD/YYYY HH24:MI:SS') and TO_DATE('" + sdf.format(endDate)
+						+ "', 'MM/DD/YYYY HH24:MI:SS')";
 			}
 			SQLQuery query = session.createSQLQuery(queryString);
 			query.addScalar("eng_name", StringType.INSTANCE);
@@ -4994,9 +5305,11 @@ public class ParaQueryUtil
 			if(npiComponents.size() > 0)
 			{
 				xlsHandler = new ExcelHandler2003();
-				String[] header = { "Eng Name", "Part Number", "Vendor Name", "Offline Datasheet", "News Link" };
+				String[] header = { "Eng Name", "Part Number", "Vendor Name", "Offline Datasheet",
+						"News Link" };
 				SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-				String fileName = userDto.getFullName() + "@" + formatter.format(new Date()) + "@NPI.xls";
+				String fileName = userDto.getFullName() + "@" + formatter.format(new Date())
+						+ "@NPI.xls";
 				xlsHandler.writeExcelFile(header, new ArrayList<Object[]>(npiComponents), fileName);
 
 			}
@@ -5046,7 +5359,8 @@ public class ParaQueryUtil
 		try
 		{
 
-			Query q = session.createQuery("select o from MapGeneric o " + " where CM.NONALPHANUM (o.generic)=:man");
+			Query q = session.createQuery("select o from MapGeneric o "
+					+ " where CM.NONALPHANUM (o.generic)=:man");
 			q.setParameter("man", getNonAlphaPart(genName));
 
 			generic = (MapGeneric) q.uniqueResult();
@@ -5083,7 +5397,8 @@ public class ParaQueryUtil
 		try
 		{
 
-			Query q = session.createQuery("select o from FamilyCross o " + " where CM.NONALPHANUM (o.family)=:man");
+			Query q = session.createQuery("select o from FamilyCross o "
+					+ " where CM.NONALPHANUM (o.family)=:man");
 			q.setParameter("man", getNonAlphaPart(famName));
 
 			familyCross = (FamilyCross) q.uniqueResult();
@@ -5219,12 +5534,14 @@ public class ParaQueryUtil
 		return flags;
 	}
 
-	public static int getNPIAssigned(Long[] userIds, String colName, long statusId, final Session session)
+	public static int getNPIAssigned(Long[] userIds, String colName, long statusId,
+			final Session session)
 	{
 
 		final Criteria crit = session.createCriteria(TrackingParametric.class);
 		crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("id", statusId));
-		crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		crit.createCriteria("trackingTaskType").add(
+				Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
 		crit.add(Restrictions.in(colName, userIds));
 
 		if(crit.list() != null)
@@ -5232,7 +5549,8 @@ public class ParaQueryUtil
 		return 0;
 	}
 
-	public static int getNewAssigned(Long[] userIds, String colName, long statusId, final Session session)
+	public static int getNewAssigned(Long[] userIds, String colName, long statusId,
+			final Session session)
 	{
 
 		final Criteria crit = session.createCriteria(TrackingParametric.class);
@@ -5247,7 +5565,8 @@ public class ParaQueryUtil
 		return 0;
 	}
 
-	public static int getBacklogAssigned(Long[] userIds, String colName, long statusId, final Session session)
+	public static int getBacklogAssigned(Long[] userIds, String colName, long statusId,
+			final Session session)
 	{
 
 		final Criteria crit = session.createCriteria(TrackingParametric.class);
@@ -5263,7 +5582,8 @@ public class ParaQueryUtil
 		return 0;
 	}
 
-	public static int getFeedBackCount(Long[] userIds, String colName, long statusId, final Session session)
+	public static int getFeedBackCount(Long[] userIds, String colName, long statusId,
+			final Session session)
 	{
 		List<Document> docs = new ArrayList<>();
 		List<TrackingParametric> tracks = null;
@@ -5320,7 +5640,8 @@ public class ParaQueryUtil
 			return 0;
 	}
 
-	public static int getAppValueCount(Long[] userIds, String colName, long statusId, String type, final Session session)
+	public static int getAppValueCount(Long[] userIds, String colName, long statusId, String type,
+			final Session session)
 	{
 
 		List<ParametricApprovedGroup> groups = null;
@@ -5348,11 +5669,14 @@ public class ParaQueryUtil
 					cri.add(Restrictions.eq("document", docs.get(d)));
 					if(type.equals("NPI"))
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+						cri.createCriteria("trackingTaskType").add(
+								Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
 					}
 					else
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l, 15l })));
+						cri.createCriteria("trackingTaskType")
+								.add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
+										15l })));
 					}
 					if(!cri.list().isEmpty())
 						count++;
@@ -5364,7 +5688,8 @@ public class ParaQueryUtil
 		return count;
 	}
 
-	public static int getAppFeedBackCount(Long[] userIds, String colName, long statusId, String type, final Session session)
+	public static int getAppFeedBackCount(Long[] userIds, String colName, long statusId,
+			String type, final Session session)
 	{
 
 		List<ParametricApprovedGroup> groups = null;
@@ -5404,11 +5729,14 @@ public class ParaQueryUtil
 					cri.add(Restrictions.eq("document", docs.get(d)));
 					if(type.equals("NPI"))
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+						cri.createCriteria("trackingTaskType").add(
+								Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
 					}
 					else
 					{
-						cri.createCriteria("trackingTaskType").add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l, 15l })));
+						cri.createCriteria("trackingTaskType")
+								.add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
+										15l })));
 					}
 					if(!cri.list().isEmpty())
 						count++;
@@ -5473,8 +5801,11 @@ public class ParaQueryUtil
 			task = (TrackingTaskStatus) cri.uniqueResult();
 			String Sql = "";
 			Sql = " SELECT DISTINCT U.ID user_id FROM Tracking_Parametric tp, grm.GRM_USER u";
-			Sql = Sql + ", TRACKING_TASK_STATUS st WHERE tp.TRACKING_TASK_STATUS_ID IN (" + task.getId() + ") AND u.id";
-			Sql = Sql + " = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND tp.QA_USER_ID  = " + userDTO.getId() + " ";
+			Sql = Sql + ", TRACKING_TASK_STATUS st WHERE tp.TRACKING_TASK_STATUS_ID IN ("
+					+ task.getId() + ") AND u.id";
+			Sql = Sql
+					+ " = tp.user_id AND st.id = tp.TRACKING_TASK_STATUS_ID AND tp.QA_USER_ID  = "
+					+ userDTO.getId() + " ";
 			Sql = Sql + " GROUP BY U.ID";
 			List<Object> result = session.createSQLQuery(Sql).list();
 			users = new Long[session.createSQLQuery(Sql).list().size()];
