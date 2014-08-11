@@ -62,7 +62,7 @@ public class Developement extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel selectionPanel, tabSheet, separationTab, alerts, flowChart;
+	JPanel selectionPanel, tabSheet, separationTab, alerts/* , flowChart */;
 	JPanel devSheetButtonPanel, separationButtonPanel;
 	// Update mainInfo = new Update();
 	JTabbedPane tabbedPane;
@@ -232,8 +232,8 @@ public class Developement extends JPanel implements ActionListener
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
-		flowChart = new ImagePanel("Development-chart.jpg");
-		tabbedPane.addTab("Development Flow", null, flowChart, null);
+		// flowChart = new ImagePanel("Development-chart.jpg");
+		// tabbedPane.addTab("Development Flow", null, flowChart, null);
 	}
 
 	@Override

@@ -57,7 +57,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel, flowChart;
+	JPanel tabSheet, selectionPanel/*, flowChart*/;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -142,8 +142,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("TL UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("TL UnApproved FeedBack", null, TLfeedBack, null);
-		flowChart = new ImagePanel("QASeparation.jpg");
-		tabbedPane.addTab("Separation Flow", null, flowChart, null);
+//		flowChart = new ImagePanel("QASeparation.jpg");
+//		tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
 	@Override

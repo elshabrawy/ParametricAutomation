@@ -16,8 +16,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
@@ -59,15 +57,15 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		try
-//		{
-//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+		// try
+		// {
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+		// {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 383, 249);
@@ -83,11 +81,12 @@ public class LoginForm extends JFrame
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.addActionListener(new ActionListener() {
 
-	        public void actionPerformed(ActionEvent evt) {	     
-	                LongRunProcess2 longRunProcess = new LongRunProcess2();
-	                longRunProcess.execute();	            
-	        }
-	    } );
+			public void actionPerformed(ActionEvent evt)
+			{
+				LongRunProcess2 longRunProcess = new LongRunProcess2();
+				longRunProcess.execute();
+			}
+		});
 		btnNewButton.setBounds(144, 154, 81, 33);
 		panel.add(btnNewButton);
 
@@ -157,7 +156,7 @@ public class LoginForm extends JFrame
 			// return result;
 		}
 	}
-	
+
 	class LongRunProcess2 extends SwingWorker
 	{
 		/**
@@ -166,7 +165,7 @@ public class LoginForm extends JFrame
 		protected Object doInBackground() throws Exception
 		{
 			Loading loading = new Loading();
-			
+
 			loading.show();
 			userName = txtUserName.getText().toString();
 			password = txtPassword.getText().toString();
@@ -194,12 +193,12 @@ public class LoginForm extends JFrame
 			}catch(Exception e)
 			{
 				e.printStackTrace();
-			}
-			finally{
-			loading.close();
+			}finally
+			{
+				loading.close();
 			}
 
-			 return null;
+			return null;
 		}
 	}
 }
