@@ -96,24 +96,32 @@ public class MainWindow extends JFrame
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
 		container.add(contentPane);
-
-		try
-		{
-			// Set cross-platform Java L&F (also called "Metal")
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}catch(UnsupportedLookAndFeelException e)
-		{
-
-		}catch(ClassNotFoundException e)
-		{
-
-		}catch(InstantiationException e)
-		{
-
-		}catch(IllegalAccessException e)
-		{
-
-		}
+//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+//		try
+//		{
+//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		try
+//		{
+//			// Set cross-platform Java L&F (also called "Metal")
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//		}catch(UnsupportedLookAndFeelException e)
+//		{
+//
+//		}catch(ClassNotFoundException e)
+//		{
+//
+//		}catch(InstantiationException e)
+//		{
+//
+//		}catch(IllegalAccessException e)
+//		{
+//
+//		}
 
 	}
 
