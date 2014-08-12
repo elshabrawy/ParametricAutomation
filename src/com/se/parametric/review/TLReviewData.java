@@ -72,7 +72,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamLeaderName = userDTO.getFullName();
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		height = Toolkit.getDefaultToolkit().getScreenSize().height;
+		height = Toolkit.getDefaultToolkit().getScreenSize().height-10;
 		ArrayList<Object[]> filterData = DataDevQueryUtil
 				.getTLReviewFilterData(userDTO, null, null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
