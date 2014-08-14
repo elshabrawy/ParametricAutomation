@@ -31,13 +31,13 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
-
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
@@ -214,9 +214,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-//			Loading.show();
-			// WorkingSheet ws = null;
-			
+			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
 			if(event.getSource().equals(filterPanel.filterButton))
@@ -286,6 +284,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				// session.close();
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -299,6 +298,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				}
 				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate, "parametric");
 				filterPanel.refreshFilters();
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals(" validate "))
@@ -307,6 +307,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
 				if(wsheet.isEmpty())
 				{
+					MainWindow.glass.setVisible(false);
 					tabbedPane.setSelectedIndex(1);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
@@ -328,7 +329,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						}
 					}
 					ws.writeSheetData(validationResult, 1);
-					// session.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
@@ -360,7 +361,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 								{
 									if(!validated)
 									{
-//										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 										
 										return null;
@@ -417,9 +418,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						System.out.println("size is " + result.size());
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

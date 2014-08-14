@@ -34,13 +34,13 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 
@@ -478,8 +478,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-
-//			Loading.show();
+			MainWindow.glass.setVisible(true);
 
 			/**
 			 * Show pdfs Action
@@ -514,7 +513,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 
@@ -522,10 +521,12 @@ public class QAFeedBack extends JPanel implements ActionListener
 				int selectedPdfsCount = selectedPdfs.length;
 				if(selectedPdfsCount == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfsCount > 1)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 				}
 				else
@@ -553,7 +554,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 
@@ -594,7 +595,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 			}
 
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

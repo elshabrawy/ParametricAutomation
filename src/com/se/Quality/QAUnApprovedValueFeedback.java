@@ -26,6 +26,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -198,7 +199,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-//			 Loading.show();
+			MainWindow.glass.setVisible(false);
 			WorkingSheet ws = null;
 			// Thread thread = new Thread(loading);
 			// thread.start();
@@ -367,13 +368,13 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if(newValReq.get(12).equals("Approved") && newValReq.get(13).isEmpty())
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
 								return null;
 							}
 							if(newValReq.get(12).equals("Approved") && (!newValReq.get(13).equals(StatusName.approved) && !newValReq.get(13).equals(StatusName.reject)))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
 								return null;
 							}
@@ -427,9 +428,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 						System.out.println("size is " + result.size());
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 			}
 		}

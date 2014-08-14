@@ -30,6 +30,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -356,7 +357,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									if(!validated)
 									{
-//										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 
 										return null;
@@ -375,35 +376,35 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							// }
 							if(newValReq.get(12).equals("Reject QA") && !newValReq.get(18).equals("QA"))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Can Reject QA on QA Feedback only in row :" + (i + 1));
 
 								return null;
 							}
 							if(newValReq.get(12).equals("Accept QA & Forward") && !newValReq.get(18).equals("QA"))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Can Accept QA & Forward on QA Feedback only in row :" + (i + 1));
 
 								return null;
 							}
 							if(newValReq.get(12).equals("Update") && newValReq.get(19).equals("Wrong Value"))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Can't Update Wrong Value Feedback in row :" + (i + 1));
 
 								return null;
 							}
 							if(newValReq.get(12).equals("Wrong Separation") && !newValReq.get(18).equals("Internal"))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
 
 								return null;
 							}
 							if(newValReq.get(12).equals("Wrong Value") && !newValReq.get(18).equals("Internal"))
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Can set Wrong Value on Internal Feedback only in row :" + (i + 1));
 
 								return null;
@@ -413,7 +414,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
 								{
-//									Loading.close();
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
 
 									return null;
@@ -422,7 +423,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
 									{
-//										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
 
 										return null;
@@ -542,9 +543,10 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 					}
 
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Saved Done");
 			}
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

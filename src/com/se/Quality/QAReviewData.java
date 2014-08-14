@@ -30,6 +30,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -525,7 +526,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-//			Loading.show();
+			MainWindow.glass.setVisible(false);
 			ArrayList<String> row = null;
 			// String[] statuses=null;
 			boolean isExclamationMark = false;
@@ -556,7 +557,7 @@ public class QAReviewData extends JPanel implements ActionListener
 							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadpdf();
@@ -573,7 +574,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 				if(SummaryPanel.isOpened() && ok == false)
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadsummary();
@@ -590,6 +591,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					{
 						WorkingSheet ws = wsMap.get(wsName);
 						ws.validateQAReview();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null, "Validation Done");
 					}
 				}
@@ -618,6 +620,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					{
 						WorkingSheet ws = wsMap.get(wsName);
 						ws.validateQASummary();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null, "Validation Done");
 					}
 				}
@@ -638,7 +641,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

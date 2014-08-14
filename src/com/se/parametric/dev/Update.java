@@ -32,7 +32,7 @@ import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.Loading;
-
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
@@ -89,16 +89,19 @@ public class Update extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserNPIData(userDTO, null, null);
 		JPanel selectionPanel = new JPanel();
-		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType", "Extracted", "Priority", "Date" };
+		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
+				"Extracted", "Priority", "Date" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
 		// tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
+		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		// filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterHeader, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
@@ -123,7 +126,8 @@ public class Update extends JPanel implements ActionListener
 		separationTab = new JPanel();
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
@@ -240,8 +244,7 @@ public class Update extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-//			Loading.show();
-
+			MainWindow.glass.setVisible(true);
 			String pdfUrl = "";
 			ArrayList<DocumentInfoDTO> docsInfo = null;
 			ArrayList<String> row = null;
@@ -254,12 +257,14 @@ public class Update extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 
@@ -272,7 +277,10 @@ public class Update extends JPanel implements ActionListener
 					if(wsName == "Separation")
 					{
 						ws = new WorkingSheet(separationPanel, "Separation");
-						separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+						separationPanel
+								.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+										+ userDTO.getFullName() + "@" + System.currentTimeMillis()
+										+ ".xls");
 					}
 				}
 				int selectedPdfs[] = tablePanel.table.getSelectedRows();
@@ -288,7 +296,8 @@ public class Update extends JPanel implements ActionListener
 				else
 				{
 					wsMap.clear();
-					int selectedDataIndex = (tablePanel.getCurrentPage() - 1) * tablePanel.getRecordsPerPage() + selectedPdfs[0];
+					int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
+							* tablePanel.getRecordsPerPage() + selectedPdfs[0];
 					// TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 					TableInfoDTO tableInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 					pdfUrl = tableInfoDTO.getPdfUrl();
@@ -303,7 +312,9 @@ public class Update extends JPanel implements ActionListener
 						String suppName = docInfo.getSupplierName();
 						String plName = docInfo.getPlName();
 						ws = new WorkingSheet(sheetpanel, plName, i);
-						sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+						sheetpanel.saveDoc("C:/Report/Parametric_Auto/"
+								+ pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@"
+								+ System.currentTimeMillis() + ".xls");
 						if(docInfo.getTaskType().contains("NPI"))
 						{
 							ws.setNPIflag(true);
@@ -336,11 +347,13 @@ public class Update extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				separation.setEnabled(false);
@@ -360,12 +373,14 @@ public class Update extends JPanel implements ActionListener
 				}
 				// ArrayList<TableInfoDTO> tableRecs = ParaQueryUtil.getShowAllPDFReview(new Long[] { userId }, plName, supplierName, type,
 				// extracted, "Assigned", startDate, endDate, null);
-				ArrayList<TableInfoDTO> tableRecs = DataDevQueryUtil.getShowAllData(userId, plName, supplierName, type, extracted, "Assigned", startDate, endDate, priority);
+				ArrayList<TableInfoDTO> tableRecs = DataDevQueryUtil.getShowAllData(userId, plName,
+						supplierName, type, extracted, "Assigned", startDate, endDate, priority);
 				tablePanel.setTableData1(0, tableRecs);
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetpanel, "LoadAllData");
-				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "LoadAllData@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "LoadAllData@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.getShowAllData(tableRecs);
 				wsMap.put("LoadAllData", ws);
 			}
@@ -376,10 +391,12 @@ public class Update extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				separation.setEnabled(true);
@@ -400,8 +417,9 @@ public class Update extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-//					Loading.close();
-					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
+					MainWindow.glass.setVisible(false);
+					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!",
+							JOptionPane.ERROR_MESSAGE);
 
 					return null;
 				}
@@ -420,15 +438,20 @@ public class Update extends JPanel implements ActionListener
 				}
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
-				System.out.println("PL Name : " + plName + "\nSupplier Name : " + supplierName + " " + typeBuilder.toString());
+				System.out.println("PL Name : " + plName + "\nSupplier Name : " + supplierName
+						+ " " + typeBuilder.toString());
 
 				// ArrayList<TableInfoDTO> tableRecs = ParaQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, type, extracted,
 				// "Assigned", startDate, endDate, null, "assigned", priority);
-				ArrayList<TableInfoDTO> tableRecs = DataDevQueryUtil.getAllAssigined(userId, plName, supplierName, type, extracted, "Assigned", startDate, endDate, priority);
+				ArrayList<TableInfoDTO> tableRecs = DataDevQueryUtil.getAllAssigined(userId,
+						plName, supplierName, type, extracted, "Assigned", startDate, endDate,
+						priority);
 
 				ws = new WorkingSheet(sheetpanel, plName, 0);
-				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-				if((typeBuilder.toString().contains("NPI") && type.equals("All")) || (type.contains("NPI")))
+				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				if((typeBuilder.toString().contains("NPI") && type.equals("All"))
+						|| (type.contains("NPI")))
 				{
 					ws.setNPIflag(true);
 				}
@@ -466,7 +489,8 @@ public class Update extends JPanel implements ActionListener
 					ws.setPdfInfo(pdfUrl, supplierName, desc, newsData, taxonomies, i + 2);
 					if(tableRecord.getExtracted().equals("Yes"))
 						ws.setExtractionData1(pdfUrl, supplierName, plName, i + 2);
-					System.out.println("PDF_No: " + i + " ~ Extr: " + tableRecord.getExtracted() + " ~ NPI: " + tableRecord.getTaskType());
+					System.out.println("PDF_No: " + i + " ~ Extr: " + tableRecord.getExtracted()
+							+ " ~ NPI: " + tableRecord.getTaskType());
 				}
 
 				wsMap.put(plName, ws);
@@ -505,7 +529,8 @@ public class Update extends JPanel implements ActionListener
 				}
 				separationPanel.openOfficeDoc();
 				ws = new WorkingSheet(separationPanel, "Separation");
-				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.setSeparationHeader(row);
 				ws.writeSheetData(input, 1);
 				wsMap.put("Separation", ws);
@@ -537,9 +562,13 @@ public class Update extends JPanel implements ActionListener
 						String featureFullValue = row.get(4);
 						try
 						{
-							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+							List<ApprovedParametricDTO> approved = ApprovedDevUtil
+									.createApprovedValuesList(featureFullValue, plName,
+											featureName, row.get(5), row.get(6), row.get(7),
+											row.get(10), row.get(11), row.get(9), row.get(8));
 
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
+									featureName, featureFullValue, row.get(2), userId);
 						}catch(ArrayIndexOutOfBoundsException ex)
 						{
 							try
@@ -556,7 +585,8 @@ public class Update extends JPanel implements ActionListener
 							ex.printStackTrace();
 						}
 						isExclamationMark = false;
-						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
+								.get(featureName);
 						appValues.add(featureFullValue);
 					}
 					JOptionPane.showMessageDialog(null, "Approved Saving Done");
@@ -581,7 +611,9 @@ public class Update extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDFupdate(new Long[] { userId }, plName, supplierName, taskType, extracted, startDate, endDate, null, "assigned", priority, StatusName.assigned, null);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDFupdate(
+						new Long[] { userId }, plName, supplierName, taskType, extracted,
+						startDate, endDate, null, "assigned", priority, StatusName.assigned, null);
 
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
@@ -592,7 +624,8 @@ public class Update extends JPanel implements ActionListener
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
-				filterPanel.filterList = DataDevQueryUtil.getUserData(userDTO, filterPanel.startDate, filterPanel.endDate);
+				filterPanel.filterList = DataDevQueryUtil.getUserData(userDTO,
+						filterPanel.startDate, filterPanel.endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
 
@@ -656,7 +689,7 @@ public class Update extends JPanel implements ActionListener
 
 			}
 
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

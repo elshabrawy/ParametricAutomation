@@ -290,43 +290,41 @@ public class MainPanel extends JPanel implements ActionListener
 		@Override
 		protected Object doInBackground() throws Exception
 		{
+			MainWindow.glass.setVisible(true);
 			if(event.getSource() == tlfeedBackBu)
 			{
 				if(tabbedPane.indexOfComponent(tlfeedBack) == -1)
 				{
-//					Loading.show();
+
 					tlfeedBack = new TLFeedBack(userDTO);
 					tabbedPane.addTab("TL Feedback", null, tlfeedBack, null);
 					int index = tabbedPane.indexOfComponent(tlfeedBack);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == tlreviewDataBu)
 			{
 				if(tabbedPane.indexOfComponent(reviewData) == -1)
 				{
-//					Loading.show();
+
 					reviewData = new TLReviewData(userDTO);
 					tabbedPane.addTab("TL Review", null, reviewData, null);
 					int index = tabbedPane.indexOfComponent(reviewData);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == tlunApprovedBu)
 			{
 				if(tabbedPane.indexOfComponent(tlunApprovedPanel) == -1)
 				{
-//					Loading.show();
+
 					tlunApprovedPanel = new TLUnApprovedValue(userDTO);
 					tabbedPane.addTab("TL UnApproved Value", null, tlunApprovedPanel, null);
 					int index = tabbedPane.indexOfComponent(tlunApprovedPanel);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 
@@ -334,145 +332,135 @@ public class MainPanel extends JPanel implements ActionListener
 			{
 				if(tabbedPane.indexOfComponent(developement) == -1)
 				{
-//					Loading.show();
+
 					developement = new Developement(userDTO);
 					tabbedPane.addTab("Development", null, developement, null);
 					int index = tabbedPane.indexOfComponent(developement);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == updateBu)
 			{
 				if(tabbedPane.indexOfComponent(update) == -1)
 				{
-//					Loading.show();
+
 					update = new Update(userDTO);
 					tabbedPane.addTab("NPI Update", null, update, null);
 					int index = tabbedPane.indexOfComponent(update);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == engfeedBackBu)
 			{
 				if(tabbedPane.indexOfComponent(engfeedBack) == -1)
 				{
-//					Loading.show();
+
 					engfeedBack = new EngFeedBack(userDTO);
 					tabbedPane.addTab("Eng Data Feedback", null, engfeedBack, null);
 					int index = tabbedPane.indexOfComponent(engfeedBack);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == engunApprovedBu)
 			{
 				if(tabbedPane.indexOfComponent(engunApprovedPanel) == -1)
 				{
-//					Loading.show();
+
 					engunApprovedPanel = new EngUnApprovedValueFeedback(userDTO);
 					tabbedPane.addTab("Eng UnApproved Value", null, engunApprovedPanel, null);
 					int index = tabbedPane.indexOfComponent(engunApprovedPanel);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == qachecksBu)
 			{
 				if(tabbedPane.indexOfComponent(qachecks) == -1)
 				{
-//					Loading.show();
+
 					qachecks = new QAChecks(userDTO);
 					tabbedPane.addTab("QA Checks", null, qachecks, null);
 					int index = tabbedPane.indexOfComponent(qachecks);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == exceptionfbBu)
 			{
 				if(tabbedPane.indexOfComponent(exceptionfb) == -1)
 				{
-//					Loading.show();
+
 					exceptionfb = new ExceptionFB(userDTO);
 					tabbedPane.addTab("QA ExceptionFeedback", null, exceptionfb, null);
 					int index = tabbedPane.indexOfComponent(exceptionfb);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == exportPanelBu)
 			{
 				if(tabbedPane.indexOfComponent(exportPanel) == -1)
 				{
-//					Loading.show();
+
 					exportPanel = new ComponentExporterPanel(userDTO);
 					tabbedPane.addTab("QA Checks", null, exportPanel, null);
 					int index = tabbedPane.indexOfComponent(exportPanel);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == qaReviewDataBu)
 			{
 				if(tabbedPane.indexOfComponent(qaReviewData) == -1)
 				{
-//					Loading.show();
+
 					qaReviewData = new QAReviewData(userDTO);
 					tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
 					int index = tabbedPane.indexOfComponent(qaReviewData);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == qaFeedBackBu)
 			{
 				if(tabbedPane.indexOfComponent(qaFeedBack) == -1)
 				{
-//					Loading.show();
+
 					qaFeedBack = new QAFeedBack(userDTO);
 					tabbedPane.addTab("Quality Feedback", null, qaFeedBack, null);
 					int index = tabbedPane.indexOfComponent(qaFeedBack);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == qUnApprovedBu)
 			{
 				if(tabbedPane.indexOfComponent(qUnApproved) == -1)
 				{
-//					Loading.show();
+
 					qUnApproved = new QualityUnApprovedValue(userDTO);
 					tabbedPane.addTab("Quality UnApproved", null, qUnApproved, null);
 					int index = tabbedPane.indexOfComponent(qUnApproved);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
 				}
 			}
 			if(event.getSource() == qaexceptionBu)
 			{
 				if(tabbedPane.indexOfComponent(qaexception) == -1)
 				{
-//					Loading.show();
+
 					qaexception = new QAException(userDTO);
 					tabbedPane.addTab("Quality Exception", null, qaexception, null);
 					int index = tabbedPane.indexOfComponent(qaexception);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
-					tabbedPane.setSelectedIndex(index);
-//					Loading.close();
+					tabbedPane.setSelectedIndex(index);	
 				}
 			}
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

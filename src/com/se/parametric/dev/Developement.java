@@ -327,7 +327,7 @@ public class Developement extends JPanel implements ActionListener
 				boolean ok = false;
 				if(sheetpanel.isOpened())
 				{
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					ok = ParaQueryUtil.getDialogMessage(
 							"another PDF is opend are you need to replace this",
 							"Confermation Dailog");
@@ -336,12 +336,12 @@ public class Developement extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 					 MainWindow.glass.setVisible(false);
-//					Loading.close();
+
 					return null;
 				}
 				else if(sheetpanel.isOpened() && ok == true)
 				{
-//					Loading.show();
+
 				}
 
 				separation.setEnabled(true);
@@ -367,6 +367,7 @@ public class Developement extends JPanel implements ActionListener
 				}
 				else if(selectedPdfs.length > 1)
 				{
+					 MainWindow.glass.setVisible(false);
 					
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 					
@@ -439,7 +440,6 @@ public class Developement extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 					 MainWindow.glass.setVisible(false);
-//					Loading.close();
 					return null;
 				}
 				separation.setEnabled(false);
@@ -484,7 +484,7 @@ public class Developement extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 					 MainWindow.glass.setVisible(false);
-//					Loading.close();
+
 					return null;
 				}
 				separation.setEnabled(true);
@@ -506,7 +506,7 @@ public class Developement extends JPanel implements ActionListener
 				if("All".equals(plName))
 				{
 					 MainWindow.glass.setVisible(false);
-//					Loading.close();
+
 					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!",
 							JOptionPane.ERROR_MESSAGE);
 
@@ -613,7 +613,8 @@ public class Developement extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
-//					Loading.close();
+					 MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 				}
 				else
@@ -625,8 +626,7 @@ public class Developement extends JPanel implements ActionListener
 					saveseparation();
 
 
-
-//					Loading.close();
+					MainWindow.glass.setVisible(false);
 					int reply = JOptionPane.showConfirmDialog(null,
 							"Approved Saving Done , Press OK to save Parts", "Development",
 							JOptionPane.OK_OPTION);
@@ -647,7 +647,6 @@ public class Developement extends JPanel implements ActionListener
 				// if(separationValues.isEmpty())
 				// {
 				// tabbedPane.setSelectedIndex(1);
-				// Loading.close();
 				// JOptionPane.showMessageDialog(null, "All Values are Approved");
 				//
 				// }
@@ -655,7 +654,6 @@ public class Developement extends JPanel implements ActionListener
 				// {
 				//
 				// // session.close();
-				// Loading.close();
 				// JOptionPane.showMessageDialog(null, " Validation Done");
 				// }
 
@@ -688,7 +686,7 @@ public class Developement extends JPanel implements ActionListener
 				tablePanel.setCurrentPage(1);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 				 MainWindow.glass.setVisible(false);
-//				Loading.close();
+
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -704,7 +702,7 @@ public class Developement extends JPanel implements ActionListener
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
 				 MainWindow.glass.setVisible(false);
-//				Loading.close();
+
 			}
 			/**
 			 * Validate Parts Action
@@ -722,7 +720,7 @@ public class Developement extends JPanel implements ActionListener
 				// wsMap.get(wsName).validateParts(false);
 				// }
 				// }
-				// Loading.close();
+
 				// JOptionPane.showMessageDialog(null, "Validation Finished");
 
 			}
@@ -745,7 +743,6 @@ public class Developement extends JPanel implements ActionListener
 							input = wsMap.get(wsName).getUnApprovedValues(input);
 							if(input.size() > 0)
 							{
-//								Loading.close();
 								int reply = JOptionPane
 										.showConfirmDialog(
 												null,
@@ -753,18 +750,18 @@ public class Developement extends JPanel implements ActionListener
 												"Seperation", JOptionPane.YES_NO_OPTION);
 								if(reply == JOptionPane.YES_OPTION)
 								{
-//									Loading.show();
+
 									openseperation();
 								}
 								else
 								{
-//									Loading.close();
+									MainWindow.glass.setVisible(false);
 									return null;
 								}
 							}
 							else
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										"can't save sheet duto some errors in your data");
 							}
@@ -772,14 +769,14 @@ public class Developement extends JPanel implements ActionListener
 						else
 						{
 							wsMap.get(wsName).saveParts(false);
-//							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "Saving Data Finished");
 						}
 					}
 				}
 
 				 MainWindow.glass.setVisible(false);
-//				Loading.close();
+
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 
 			}
@@ -807,10 +804,10 @@ public class Developement extends JPanel implements ActionListener
 					srcFeedbackFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				}
 				 MainWindow.glass.setVisible(false);
-//				Loading.close();
+
 			}
 			 MainWindow.glass.setVisible(false);
-//			Loading.close();
+
 
 			return null;
 		}
@@ -820,7 +817,7 @@ public class Developement extends JPanel implements ActionListener
 			ArrayList<String> row;
 			if(!validated)
 			{
-//				Loading.close();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null,
 						" Validate First due to some errors in your data");
 
@@ -923,7 +920,7 @@ public class Developement extends JPanel implements ActionListener
 			ws.setSeparationHeader(row);
 			ws.writeSheetData(input, 1);
 			wsMap.put("Separation", ws);
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 		}
 	}
 

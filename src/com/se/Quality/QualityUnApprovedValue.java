@@ -25,6 +25,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -204,7 +205,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-//			Loading.show();
+			MainWindow.glass.setVisible(true);
 			WorkingSheet ws = null;
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
@@ -306,7 +307,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(12)
 									.equals("Wrong Value")) && newValReq.get(13).trim().isEmpty())
 							{
-//								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, " You Must Write Comment with Status Wrong Separation,Wrong Value Check row : " + (i + 1));
 
 
@@ -367,9 +368,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 						System.out.println("size is " + result.size());
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-//			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

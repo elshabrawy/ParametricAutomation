@@ -35,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
@@ -614,7 +615,7 @@ public class PdfLinks extends JPanel implements ActionListener
 
 		protected Object doInBackground() throws Exception
 		{
-//			Loading.show();
+			MainWindow.glass.setVisible(true);
 			filteredData = new ArrayList<DocumentInfoDTO>();
 			if(jDateChooser1.isEnabled())
 			{
@@ -631,8 +632,7 @@ public class PdfLinks extends JPanel implements ActionListener
 			// jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 			// jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			setTableData(0, filteredData);
-
-//			Loading.close();
+			MainWindow.glass.setVisible(true);
 			return null;
 		}
 	}
