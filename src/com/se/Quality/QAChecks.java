@@ -297,7 +297,7 @@ public class QAChecks extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
@@ -326,7 +326,7 @@ public class QAChecks extends JPanel implements ActionListener
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				if(!filterstatus.equals(StatusName.Open))
 				{
-					Loading.close();
+//					Loading.close();
 					JOptionPane.showMessageDialog(null, "You can save Open checks only");
 
 					return null;
@@ -398,7 +398,7 @@ public class QAChecks extends JPanel implements ActionListener
 				{
 					if(!validated)
 					{
-						Loading.close();
+//						Loading.close();
 						JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 
 						return null;
@@ -437,7 +437,7 @@ public class QAChecks extends JPanel implements ActionListener
 				}
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

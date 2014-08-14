@@ -537,7 +537,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			if(event.getSource() == filterPanel.filterButton)
@@ -591,7 +591,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				loadpdf();
@@ -608,7 +608,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				loadallpdf();
@@ -659,7 +659,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				saveseparation();
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

@@ -614,7 +614,7 @@ public class PdfLinks extends JPanel implements ActionListener
 
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+//			Loading.show();
 			filteredData = new ArrayList<DocumentInfoDTO>();
 			if(jDateChooser1.isEnabled())
 			{
@@ -632,7 +632,7 @@ public class PdfLinks extends JPanel implements ActionListener
 			// jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			setTableData(0, filteredData);
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

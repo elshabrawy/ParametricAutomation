@@ -241,7 +241,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+//			Loading.show();
 
 			if(event.getSource() == statusCombo)
 			{
@@ -269,7 +269,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 				pdfLink = pdfLink.trim();
 				if("".equals(pdfLink) || pdfLink.length() < 7 || !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
 				{
-					Loading.close();
+//					Loading.close();
 					JOptionPane.showMessageDialog(null, "Wrong PDF Link", "Wrong PDF Link", JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
@@ -282,7 +282,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 						String sub = comment.substring(0, 7);
 						if(!"http://".equalsIgnoreCase(sub))
 						{
-							Loading.close();
+//							Loading.close();
 							JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 							return null;
 						}
@@ -291,7 +291,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 						rightTax = null;
 					}catch(Exception ex)
 					{
-						Loading.close();
+//						Loading.close();
 						JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 						
 						return null;
@@ -308,7 +308,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					}
 					else
 					{
-						Loading.close();
+//						Loading.close();
 						JOptionPane.showMessageDialog(null, "Comment should be null", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 						
 						return null;
@@ -340,7 +340,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 				}
 
 			}
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 		}

@@ -242,7 +242,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			/**
@@ -307,7 +307,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				int[] selectedPdfs = tablePanel.table.getSelectedRows();
@@ -391,7 +391,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 
@@ -547,7 +547,7 @@ public class TLReviewData extends JPanel implements ActionListener
 
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

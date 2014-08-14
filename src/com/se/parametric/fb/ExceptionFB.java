@@ -253,7 +253,7 @@ public class ExceptionFB extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
@@ -291,7 +291,7 @@ public class ExceptionFB extends JPanel implements ActionListener
 				}
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

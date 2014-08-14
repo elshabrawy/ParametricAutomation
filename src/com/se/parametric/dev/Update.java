@@ -240,7 +240,7 @@ public class Update extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+//			Loading.show();
 
 			String pdfUrl = "";
 			ArrayList<DocumentInfoDTO> docsInfo = null;
@@ -259,7 +259,7 @@ public class Update extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 
@@ -340,7 +340,7 @@ public class Update extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				separation.setEnabled(false);
@@ -379,7 +379,7 @@ public class Update extends JPanel implements ActionListener
 					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				separation.setEnabled(true);
@@ -400,7 +400,7 @@ public class Update extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-					Loading.close();
+//					Loading.close();
 					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!", JOptionPane.ERROR_MESSAGE);
 
 					return null;
@@ -656,7 +656,7 @@ public class Update extends JPanel implements ActionListener
 
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

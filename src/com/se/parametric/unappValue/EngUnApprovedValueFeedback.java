@@ -208,7 +208,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			UnApprovedDTO obj = null;
 			if(event.getSource().equals(filterPanel.filterButton))
 			{
@@ -361,7 +361,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									if(!validated)
 									{
-										Loading.close();
+//										Loading.close();
 										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 
 										return null;
@@ -373,14 +373,14 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							if(newValReq.get(12).equals("Update") && !newValReq.get(19).equals("Wrong Separation"))
 							{
-								Loading.close();
+//								Loading.close();
 								JOptionPane.showMessageDialog(null, " You Can update on Wrong Seperation Feedback only in row :" + (i + 1));
 
 								return null;
 							}
 							if(newValReq.get(12).equals("Accept Wrong Value") && !newValReq.get(19).equals("Wrong Value"))
 							{
-								Loading.close();
+//								Loading.close();
 								JOptionPane.showMessageDialog(null, " You Can Accept on Wrong Value Feedback only in row :" + (i + 1));
 
 								return null;
@@ -389,7 +389,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							{
 								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty() || newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty())
 								{
-									Loading.close();
+//									Loading.close();
 									JOptionPane.showMessageDialog(null, " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :" + (i + 1));
 
 									return null;
@@ -398,7 +398,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17), "DD/MM/YYYY") == false)
 									{
-										Loading.close();
+//										Loading.close();
 										JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
 
 										return null;
@@ -501,7 +501,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Saved Done");
 			}
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

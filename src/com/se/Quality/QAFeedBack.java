@@ -479,7 +479,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 
 			/**
 			 * Show pdfs Action
@@ -514,7 +514,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 
@@ -553,7 +553,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 
@@ -594,7 +594,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

@@ -506,7 +506,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			// String[] statuses=null;
 			boolean isExclamationMark = false;
@@ -535,7 +535,7 @@ public class QAReviewData extends JPanel implements ActionListener
 					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				loadpdf();
@@ -550,7 +550,7 @@ public class QAReviewData extends JPanel implements ActionListener
 
 				if(SummaryPanel.isOpened() && ok == false)
 				{
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				loadsummary();
@@ -615,7 +615,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

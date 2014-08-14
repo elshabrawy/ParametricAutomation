@@ -198,7 +198,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			 Loading.show();
+//			 Loading.show();
 			WorkingSheet ws = null;
 			// Thread thread = new Thread(loading);
 			// thread.start();
@@ -367,13 +367,13 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if(newValReq.get(12).equals("Approved") && newValReq.get(13).isEmpty())
 							{
-								Loading.close();
+//								Loading.close();
 								JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
 								return null;
 							}
 							if(newValReq.get(12).equals("Approved") && (!newValReq.get(13).equals(StatusName.approved) && !newValReq.get(13).equals(StatusName.reject)))
 							{
-								Loading.close();
+//								Loading.close();
 								JOptionPane.showMessageDialog(null, " Comment Must be in (" + StatusName.approved + " and " + StatusName.reject + " ) at Row :" + (i + 1));
 								return null;
 							}
@@ -429,7 +429,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-			Loading.close();
+//			Loading.close();
 			return null;
 			}
 		}

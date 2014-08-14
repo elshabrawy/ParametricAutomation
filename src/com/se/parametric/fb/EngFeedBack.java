@@ -223,7 +223,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 
@@ -277,7 +277,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				if(sheetPanel.isOpened() && ok == false)
 				{
 					
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				int[] selectedPdfs = tablePanel.table.getSelectedRows();
@@ -407,7 +407,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				if(sheetPanel.isOpened() && ok == false)
 				{
 					
-					Loading.close();
+//					Loading.close();
 					return null;
 				}
 				JComboBox[] combos = filterPanel.comboBoxItems;
@@ -601,7 +601,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				}
 			}
 			
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

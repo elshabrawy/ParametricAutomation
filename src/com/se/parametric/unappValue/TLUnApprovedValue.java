@@ -214,7 +214,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			// WorkingSheet ws = null;
 			
 			UnApprovedDTO obj = null;
@@ -360,7 +360,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 								{
 									if(!validated)
 									{
-										Loading.close();
+//										Loading.close();
 										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 										
 										return null;
@@ -419,7 +419,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

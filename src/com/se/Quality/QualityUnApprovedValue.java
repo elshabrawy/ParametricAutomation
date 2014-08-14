@@ -200,7 +200,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+//			Loading.show();
 			WorkingSheet ws = null;
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
@@ -297,7 +297,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(12).equals("Wrong Value")) && newValReq.get(13).trim().isEmpty())
 							{
-								Loading.close();
+//								Loading.close();
 								JOptionPane.showMessageDialog(null, " You Must Write Comment with Status Wrong Separation,Wrong Value Check row : " + (i + 1));
 
 								return null;
@@ -352,7 +352,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-			Loading.close();
+//			Loading.close();
 			return null;
 		}
 	}

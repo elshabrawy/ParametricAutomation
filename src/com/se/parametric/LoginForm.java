@@ -5,10 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,7 +37,7 @@ public class LoginForm extends JFrame
 	private JTextField txtUserName;
 	private JTextField txtPassword;
 	String userName, password;
-	MainWindow mainFrame;
+	static MainWindow mainFrame;
 	static LoginForm loginframe;
 
 	/**
@@ -88,9 +93,39 @@ public class LoginForm extends JFrame
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.addActionListener(new ActionListener() {
 
-	        public void actionPerformed(ActionEvent evt) {	     
+	        public void actionPerformed(ActionEvent evt) {	
+	        	JPanel p = new JPanel() {
+					public void paintComponent(Graphics g)
+
+					{
+						g.setColor(new Color(0, 0, 0, 140));
+						g.fillRect(0, 0, getWidth(), getHeight());
+					}
+				};
+				// Set it non-opaque
+				p.setOpaque(false);
+				// Set layout to JPanel
+				p.setLayout(new GridBagLayout());
+				// Add the jlabel with the image icon
+				p.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
+				// Take glass pane
+				setGlassPane(p);
+				// Add MouseListener
+				p.addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent me)
+					{
+						// Consume the event, now the input is blocked
+						me.consume();
+						// Create beep sound, when mouse is pressed
+						Toolkit.getDefaultToolkit().beep();
+					}
+				});
+				// Make it visible, it isn't by default because
+				// it is set as glass pane
+				p.setVisible(true);
 	                LongRunProcess2 longRunProcess = new LongRunProcess2();
-	                longRunProcess.execute();	            
+	                longRunProcess.execute();
+//	                p.remove(p);
 	        }
 	    } );
 		btnNewButton.setBounds(144, 154, 81, 33);
@@ -170,15 +205,15 @@ public class LoginForm extends JFrame
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading loading = new Loading();
+//			Loading loading = new Loading();
 			
-			loading.show();
+//			loading.show();
 			userName = txtUserName.getText().toString();
 			password = txtPassword.getText().toString();
 			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
 			if(grmUser == null)
 			{
-				loading.close();
+//				loading.close();
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
 			else
@@ -201,7 +236,7 @@ public class LoginForm extends JFrame
 				e.printStackTrace();
 			}
 			finally{
-			loading.close();
+//			loading.close();
 			}
 
 			 return null;
