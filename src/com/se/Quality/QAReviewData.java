@@ -38,14 +38,13 @@ import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
-import com.se.parametric.util.ImagePanel;
 
 public class QAReviewData extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
 	SheetPanel SummaryPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel, Summarytab, flowChart;
+	JPanel tabSheet, selectionPanel, Summarytab/* , flowChart */;
 	JPanel devSheetButtonPanel, summaryButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
@@ -76,17 +75,23 @@ public class QAReviewData extends JPanel implements ActionListener
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAReviewFilterData(userDTO);
-		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
+				+ filterData.size());
 		// PDFURL PL Name Supplier Name No. of Parts per PDF No. of Done Parts per PDF No. of parts per PL No. of Done parts per PL PL_Type
 		// Development Method QA tools checks Task Type DevUserName Date
 
 		selectionPanel = new JPanel();
-		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName", "PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures", "TaskType", "Status", "DevUserName", "Date" };
-		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name", "PDF Status" };
+		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName",
+				"PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures",
+				"TaskType", "Status", "DevUserName", "Date" };
+		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name",
+				"PDF Status" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
+		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), true);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), true);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
@@ -116,7 +121,8 @@ public class QAReviewData extends JPanel implements ActionListener
 		Summarytab = new JPanel();
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
 		devSheetButtonPanel.setLayout(null);
 
@@ -136,7 +142,8 @@ public class QAReviewData extends JPanel implements ActionListener
 
 		summaryButtonPanel = new JPanel();
 		summaryButtonPanel.setBackground(new Color(211, 211, 211));
-		summaryButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		summaryButtonPanel
+				.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		summaryButtonPanel.setBounds(width - 120, 0, 110, height / 3);
 		summaryButtonPanel.setLayout(null);
 
@@ -166,11 +173,11 @@ public class QAReviewData extends JPanel implements ActionListener
 		tabSheet.add(devSheetButtonPanel);
 		tabSheet.add(alertsPanel1);
 
-		flowChart = new ImagePanel("Development-chart.jpg");
+		// flowChart = new ImagePanel("Development-chart.jpg");
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
-		tabbedPane.addTab("Development Flow", null, flowChart, null);
+		// tabbedPane.addTab("Development Flow", null, flowChart, null);
 
 		add(tabbedPane);
 
@@ -220,12 +227,14 @@ public class QAReviewData extends JPanel implements ActionListener
 		}
 
 		wsMap.clear();
-		ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate, userDTO);
+		ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate,
+				userDTO);
 		tabbedPane.setSelectedIndex(2);
 		SummaryPanel.openOfficeDoc();
 
 		ws = new WorkingSheet(SummaryPanel, "Summary");
-		SummaryPanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+		SummaryPanel.saveDoc("C:/Report/Parametric_Auto/" + "Summary" + "@" + userDTO.getFullName()
+				+ "@" + System.currentTimeMillis() + ".xls");
 		wsMap.put("Summary", ws);
 		ws.setSummaryHeader(Arrays.asList("Validation Comment"));
 
@@ -292,7 +301,9 @@ public class QAReviewData extends JPanel implements ActionListener
 							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
 				}
-				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName, supplierName, taskType, null, startDate, endDate, null, "QAReview", null, status, plType, userId);
+				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName,
+						supplierName, taskType, null, startDate, endDate, null, "QAReview", null,
+						status, plType, userId);
 				System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 			}catch(Exception e)
@@ -365,7 +376,9 @@ public class QAReviewData extends JPanel implements ActionListener
 						// System.out.println("Element at " + i + " = " + element);
 					}
 				}
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate, new Long[] { document.getId() }, userDTO.getId(), status, pltype);
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
+						.getQAPDFData(users, plName, supplierName, taskType, startDate, endDate,
+								new Long[] { document.getId() }, userDTO.getId(), status, pltype);
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -374,7 +387,8 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					// wsMap=
 					ws = new WorkingSheet(sheetpanel, pl, k);
-					sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@" + System.currentTimeMillis() + ".xls");
+					sheetpanel.saveDoc("C:/Report/" + pdfUrl.replaceAll(".*/", "") + "@"
+							+ System.currentTimeMillis() + ".xls");
 					wsMap.put(pl, ws);
 					if(docInfoDTO.getTaskType().contains("NPI"))
 						ws.setNPIflag(true);
@@ -383,7 +397,8 @@ public class QAReviewData extends JPanel implements ActionListener
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					if(summarydata)
 					{
-						ws.setQAReviewHeader(Arrays.asList("Old Flag", "Status", "Wrong Feature", "Comment", "Validation Comment"), true);
+						ws.setQAReviewHeader(Arrays.asList("Old Flag", "Status", "Wrong Feature",
+								"Comment", "Validation Comment"), true);
 						sheetHeader = ws.getHeader();
 						statusIndex = sheetHeader.indexOf("Status");
 						int oldflagindex = sheetHeader.indexOf("Old Flag");
@@ -399,17 +414,21 @@ public class QAReviewData extends JPanel implements ActionListener
 							{
 								sheetRecord.add("");
 							}
-							String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord.get(ComidIndex));
+							String qaflag = DataDevQueryUtil.getqaflagbycomid(sheetRecord
+									.get(ComidIndex));
 							sheetRecord.set(oldflagindex, qaflag);
-							String comment = DataDevQueryUtil.getfbcommentbycompartanduser(sheetRecord.get(partIndex).toString(), userDTO.getId());
+							String comment = DataDevQueryUtil.getfbcommentbycompartanduser(
+									sheetRecord.get(partIndex).toString(), userDTO.getId());
 							sheetRecord.set(CommentIndex, comment);
-							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(
+									Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
 							sheetRecord.set(WrongFeatureIndex, wrongfeatures);
 						}
 					}
 					else if(!summarydata)
 					{
-						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment", "Validation Comment"), true);
+						ws.setQAReviewHeader(Arrays.asList("Status", "Wrong Feature", "Comment",
+								"Validation Comment"), true);
 						sheetHeader = ws.getHeader();
 						statusIndex = sheetHeader.indexOf("Status");
 						int CommentIndex = sheetHeader.indexOf("Comment");
@@ -532,7 +551,9 @@ public class QAReviewData extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
 //					Loading.close();
@@ -546,7 +567,9 @@ public class QAReviewData extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(SummaryPanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another Summary is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another Summary is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(SummaryPanel.isOpened() && ok == false)
 				{

@@ -23,8 +23,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
@@ -66,21 +64,21 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		try
-//		{
-//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+		// try
+		// {
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+		// {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width=(int) screenSize.getWidth();
-		int height=(int) screenSize.getHeight();
-		setBounds((width-383)/2, (height-249)/2, 383, 249);
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
+		setBounds((width - 383) / 2, (height - 249) / 2, 383, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -93,41 +91,12 @@ public class LoginForm extends JFrame
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.addActionListener(new ActionListener() {
 
-	        public void actionPerformed(ActionEvent evt) {	
-	        	JPanel p = new JPanel() {
-					public void paintComponent(Graphics g)
-
-					{
-						g.setColor(new Color(0, 0, 0, 140));
-						g.fillRect(0, 0, getWidth(), getHeight());
-					}
-				};
-				// Set it non-opaque
-				p.setOpaque(false);
-				// Set layout to JPanel
-				p.setLayout(new GridBagLayout());
-				// Add the jlabel with the image icon
-				p.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
-				// Take glass pane
-				setGlassPane(p);
-				// Add MouseListener
-				p.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent me)
-					{
-						// Consume the event, now the input is blocked
-						me.consume();
-						// Create beep sound, when mouse is pressed
-						Toolkit.getDefaultToolkit().beep();
-					}
-				});
-				// Make it visible, it isn't by default because
-				// it is set as glass pane
-				p.setVisible(true);
-	                LongRunProcess2 longRunProcess = new LongRunProcess2();
-	                longRunProcess.execute();
-//	                p.remove(p);
-	        }
-	    } );
+			public void actionPerformed(ActionEvent evt)
+			{
+				LongRunProcess2 longRunProcess = new LongRunProcess2();
+				longRunProcess.execute();
+			}
+		});
 		btnNewButton.setBounds(144, 154, 81, 33);
 		panel.add(btnNewButton);
 
@@ -197,7 +166,7 @@ public class LoginForm extends JFrame
 			// return result;
 		}
 	}
-	
+
 	class LongRunProcess2 extends SwingWorker
 	{
 		/**
@@ -205,9 +174,11 @@ public class LoginForm extends JFrame
 		 */
 		protected Object doInBackground() throws Exception
 		{
+
 //			Loading loading = new Loading();
 			
 //			loading.show();
+
 			userName = txtUserName.getText().toString();
 			password = txtPassword.getText().toString();
 			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
@@ -234,12 +205,14 @@ public class LoginForm extends JFrame
 			}catch(Exception e)
 			{
 				e.printStackTrace();
+
 			}
 			finally{
 //			loading.close();
+
 			}
 
-			 return null;
+			return null;
 		}
 	}
 }

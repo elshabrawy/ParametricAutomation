@@ -34,7 +34,6 @@ import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
-import com.se.parametric.util.ImagePanel;
 
 public class QualityUnApprovedValue extends JPanel implements ActionListener
 {
@@ -47,7 +46,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel, flowChart;
+	JPanel tabSheet, selectionPanel/* , flowChart */;
 	JPanel devSheetButtonPanel;
 	JTabbedPane tabbedPane;
 	JButton button = null;
@@ -73,12 +72,16 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		setLayout(null);
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[] { userDTO.getId() }, null, null, "QA");
-		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(
+				new Long[] { userDTO.getId() }, null, null, "QA");
+		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
+				+ filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
+				- (((height - 100) * 3) / 10) - 130);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
@@ -105,7 +108,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		QAAppfeedBack = new QAUnApprovedValueFeedback(userDTO);
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 110, 0, 106, height - 100);
 		QAAppfeedBack.setBounds(width - 110, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
@@ -126,8 +130,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		add(tabbedPane);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
-		flowChart = new ImagePanel("QASeparation.jpg");
-		tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		// flowChart = new ImagePanel("QASeparation.jpg");
+		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
 
 	@Override
@@ -221,12 +225,15 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 				long userId = userDTO.getId();
 
-				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userId }, engName, startDate, endDate, plName, supplierName, StatusName.qaReview, taskType, "QA", "Data", userId);
+				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(new Long[] { userId },
+						engName, startDate, endDate, plName, supplierName, StatusName.qaReview,
+						taskType, "QA", "Data", userId);
 				list = new ArrayList<ArrayList<String>>();
 				row = new ArrayList<String>();
 				sheetPanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
-				sheetPanel.saveDoc("C:/Report/Quality_Auto/" + "QUnapparoved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				sheetPanel.saveDoc("C:/Report/Quality_Auto/" + "QUnapparoved@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				row.add("PL Name");
 				row.add("Part Name");
 				row.add("Pdf Url");
@@ -278,7 +285,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(new Long[] { userDTO.getId() }, startDate, endDate, "QA");
+				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(
+						new Long[] { userDTO.getId() }, startDate, endDate, "QA");
 				filterPanel.refreshFilters();
 			}
 			else if(event.getActionCommand().equals("Save"))
@@ -295,10 +303,12 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 						for(int i = 0; i < result.size(); i++)
 						{
 							ArrayList<String> newValReq = result.get(i);
-							if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(12).equals("Wrong Value")) && newValReq.get(13).trim().isEmpty())
+							if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(12)
+									.equals("Wrong Value")) && newValReq.get(13).trim().isEmpty())
 							{
 //								Loading.close();
 								JOptionPane.showMessageDialog(null, " You Must Write Comment with Status Wrong Separation,Wrong Value Check row : " + (i + 1));
+
 
 								return null;
 							}
@@ -308,7 +318,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 						{
 							ArrayList<String> newValReq = result.get(i);
 							UnApprovedDTO oldValReq = unApproveds.get(i);
-							if(newValReq.get(0).equals(oldValReq.getPlName()) && newValReq.get(3).equals(oldValReq.getFeatureName()) && newValReq.get(4).equals(oldValReq.getFeatureValue()) && newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+							if(newValReq.get(0).equals(oldValReq.getPlName())
+									&& newValReq.get(3).equals(oldValReq.getFeatureName())
+									&& newValReq.get(4).equals(oldValReq.getFeatureValue())
+									&& newValReq.get(5).equals(oldValReq.getFeatureUnit()))
 							{
 								oldValReq.setSign(newValReq.get(6));
 								oldValReq.setValue(newValReq.get(7));
@@ -324,7 +337,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 								oldValReq.setIssueType(newValReq.get(12));
 								if(newValReq.get(12).equals("Approved"))
 								{
-									ApprovedDevUtil.setValueApproved(result.get(i), StatusName.cmTransfere);
+									ApprovedDevUtil.setValueApproved(result.get(i),
+											StatusName.cmTransfere);
 								}
 
 								// else if(newValReq.get(12).equals("Wrong Value"))
@@ -336,14 +350,17 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 								// ApprovedDevUtil.saveWrongSeparation( oldValReq);
 								// }
 
-								else if(newValReq.get(12).equals("Wrong Separation") || newValReq.get(12).equals("Wrong Value"))
+								else if(newValReq.get(12).equals("Wrong Separation")
+										|| newValReq.get(12).equals("Wrong Value"))
 								{
 									ApprovedDevUtil.saveWrongSeparation(oldValReq);
 								}
 							}
 							else
 							{
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
+								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
+										+ newValReq.get(4)
+										+ " Can't Save dueto change in main columns");
 							}
 						}
 

@@ -1,13 +1,8 @@
 package com.se.parametric.util;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -16,17 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.se.grm.client.mapping.GrmGroup;
-import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.dto.GrmUserDTO;
-import com.se.parametric.unappValue.TLUnApprovedValue;
-import com.sun.star.io.IOException;
-
 public class ImagePanel extends JPanel
 {
 
-	private Image img;
-	ImageObserver imageObserver;
+	// private Image img;
+	// ImageObserver imageObserver;
 
 	// public ImagePanel(String img)
 	// {
@@ -66,13 +55,13 @@ public class ImagePanel extends JPanel
 	//
 	// }
 
-	public ImagePanel(String imagePath)
+	public ImagePanel(String title, String imagePath)
 	{
 		BufferedImage image = null;
 
 		try
 		{
-			image = ImageIO.read(new File(imagePath));
+			image = ImageIO.read(this.getClass().getResourceAsStream(imagePath));
 		}catch(java.io.IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -101,9 +90,9 @@ public class ImagePanel extends JPanel
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		frame.setSize(width, height);
 		frame.setTitle("Image");
-		ImagePanel devPanel = new ImagePanel("Development-chart.jpg");
+		ImagePanel devPanel = new ImagePanel("Development-chart", "Development-chart.jpg");
 		frame.getContentPane().add(devPanel);
-		frame.show();
+		frame.setVisible(true);
 
 	}
 }
