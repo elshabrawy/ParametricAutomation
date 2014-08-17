@@ -451,6 +451,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						wsMap.get(wsName).validateParts(true);
 					}
 				}
+				Loading.close();
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 
 			}
@@ -468,6 +469,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
 					}
 				}
+				Loading.close();
 			}
 
 			/**
@@ -519,6 +521,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -542,6 +545,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 						appValues.add(featureFullValue);
 					}
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "Approved Saving Done");
 				}
 

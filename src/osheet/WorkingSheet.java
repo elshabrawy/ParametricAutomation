@@ -36,6 +36,7 @@ import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.automation.db.parametric.RelatedFeature;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
+import com.se.parametric.Loading;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -2793,6 +2794,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2868,6 +2870,7 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						Loading.close();
 						JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
@@ -2906,9 +2909,11 @@ public class WorkingSheet
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
 			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}
@@ -2920,6 +2925,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3018,6 +3024,7 @@ public class WorkingSheet
 				{
 					if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
 					{
+						Loading.close();
 						JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
 						return;
 					}
@@ -3063,7 +3070,7 @@ public class WorkingSheet
 
 			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback, devName);
-
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3077,6 +3084,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3307,7 +3315,7 @@ public class WorkingSheet
 			DataDevQueryUtil.saveTrackingParamtric(qareviewpdfs, selectedPL, null, StatusName.qaReview, teamLeaderName); // // Eng
 			DataDevQueryUtil.saveTrackingParamtric(engfeedbackpfds, selectedPL, null, StatusName.engFeedback, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
-
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3405,6 +3413,7 @@ public class WorkingSheet
 				}
 				if(status.equals(StatusName.UpdateMask) && !(Part.length() == RightValue.length()))
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
@@ -3453,9 +3462,11 @@ public class WorkingSheet
 			DataDevQueryUtil.updateqacheckspart(inputparts);
 			DataDevQueryUtil.updateqacheckspart(affectedparts);
 			DataDevQueryUtil.updateqapartsstatus(allparts);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally
@@ -3497,6 +3508,7 @@ public class WorkingSheet
 				String Comment = partData.get(commentIndex);
 				if(status.equals(StatusName.reject) && Comment.isEmpty())
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "You Must Enter Comment if Rejected");
 					return;
 				}
@@ -3539,9 +3551,11 @@ public class WorkingSheet
 				allparts.add(qachk);
 			}
 			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally

@@ -308,6 +308,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -329,6 +330,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					}
 					ws.writeSheetData(validationResult, 1);
 					// session.close();
+					Loading.close();
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
@@ -417,6 +419,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						System.out.println("size is " + result.size());
 					}
 				}
+				Loading.close();
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
 			Loading.close();
