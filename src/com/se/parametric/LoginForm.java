@@ -5,10 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,7 +35,7 @@ public class LoginForm extends JFrame
 	private JTextField txtUserName;
 	private JTextField txtPassword;
 	String userName, password;
-	MainWindow mainFrame;
+	static MainWindow mainFrame;
 	static LoginForm loginframe;
 
 	/**
@@ -71,9 +76,9 @@ public class LoginForm extends JFrame
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width=(int) screenSize.getWidth();
-		int height=(int) screenSize.getHeight();
-		setBounds((width-383)/2, (height-249)/2, 383, 249);
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
+		setBounds((width - 383) / 2, (height - 249) / 2, 383, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -169,15 +174,43 @@ public class LoginForm extends JFrame
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading loading = new Loading();
 
-			loading.show();
+			// Loading loading = new Loading();
+
+			// loading.show();
+			JPanel glass = new JPanel() {
+				public void paintComponent(Graphics g)
+
+				{
+					g.setColor(new Color(0, 0, 0, 140));
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
+			};
+			// Set it non-opaque
+			glass.setOpaque(false);
+			// Set layout to JPanel
+			glass.setLayout(new GridBagLayout());
+			// Add the jlabel with the image icon
+			glass.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
+			// Take glass pane
+			setGlassPane(glass);
+			// Add MouseListener
+			glass.addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent me)
+				{
+					// Consume the event, now the input is blocked
+					me.consume();
+					// Create beep sound, when mouse is pressed
+					Toolkit.getDefaultToolkit().beep();
+				}
+			});
+			glass.setVisible(true);
 			userName = txtUserName.getText().toString();
 			password = txtPassword.getText().toString();
 			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
 			if(grmUser == null)
 			{
-				loading.close();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
 			else
@@ -198,9 +231,11 @@ public class LoginForm extends JFrame
 			}catch(Exception e)
 			{
 				e.printStackTrace();
+
 			}finally
 			{
-				loading.close();
+				MainWindow.glass.setVisible(false);
+
 			}
 
 			return null;

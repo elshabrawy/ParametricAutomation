@@ -25,6 +25,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -204,7 +205,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			WorkingSheet ws = null;
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
@@ -293,7 +294,6 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 			{
 				if(!wsMap.get("Unapproved Values").saved)
 				{
-
 					String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 					for(String wsName : wsMap.keySet())
 					{
@@ -310,14 +310,11 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 								if((newValReq.get(12).equals("Wrong Separation") || newValReq.get(
 										12).equals("Wrong Value"))
 										&& newValReq.get(13).trim().isEmpty())
-								{
-									Loading.close();
-									JOptionPane.showMessageDialog(null,
-											" You Must Write Comment with Status Wrong Separation,Wrong Value Check row : "
-													+ (i + 1));
-
-									return null;
-								}
+									MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null,
+										" You Must Write Comment with Status Wrong Separation,Wrong Value Check row : "
+												+ (i + 1));
+								return null;
 							}
 							/** Team Leader approved and send to QA */
 							for(int i = 0; i < result.size(); i++)
@@ -374,17 +371,18 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 						}
 					}
 					wsMap.get("Unapproved Values").saved = true;
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Save Done");
 				}
 				else
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 					return null;
 				}
-			}
 
-			Loading.close();
+			}
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

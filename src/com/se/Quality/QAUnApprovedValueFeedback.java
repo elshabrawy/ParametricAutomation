@@ -26,6 +26,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -203,7 +204,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			WorkingSheet ws = null;
 			// Thread thread = new Thread(loading);
 			// thread.start();
@@ -382,7 +383,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 								if(newValReq.get(12).equals("Approved")
 										&& newValReq.get(13).isEmpty())
 								{
-									Loading.close();
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, " Comment Must be in ("
 											+ StatusName.approved + " and " + StatusName.reject
 											+ " ) at Row :" + (i + 1));
@@ -392,7 +393,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 										&& (!newValReq.get(13).equals(StatusName.approved) && !newValReq
 												.get(13).equals(StatusName.reject)))
 								{
-									Loading.close();
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, " Comment Must be in ("
 											+ StatusName.approved + " and " + StatusName.reject
 											+ " ) at Row :" + (i + 1));
@@ -445,6 +446,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(4)
 											+ " Can't Save dueto change in main columns");
@@ -454,17 +456,19 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 							System.out.println("size is " + result.size());
 						}
 					}
+					MainWindow.glass.setVisible(false);
 					wsMap.get("Unapproved Values").saved = true;
 					JOptionPane.showMessageDialog(null, "Save Done");
 				}
 				else
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 					return null;
 				}
+
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

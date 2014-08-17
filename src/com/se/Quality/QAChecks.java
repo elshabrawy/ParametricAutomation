@@ -29,13 +29,13 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
@@ -313,7 +313,7 @@ public class QAChecks extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
@@ -342,7 +342,7 @@ public class QAChecks extends JPanel implements ActionListener
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				if(!filterstatus.equals(StatusName.Open))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "You can save Open checks only");
 
 					return null;
@@ -359,7 +359,7 @@ public class QAChecks extends JPanel implements ActionListener
 						}
 						else
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 							return null;
 						}
@@ -409,6 +409,7 @@ public class QAChecks extends JPanel implements ActionListener
 			else if(event.getActionCommand().equals(" validate "))
 			{
 				validated = ws.validateSeparation();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, " Validation Done");
 
 			}
@@ -419,16 +420,17 @@ public class QAChecks extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 				}
 				else
 				{
 					if(!validated)
 					{
-						Loading.close();
+
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								" Validate First due to some errors in your data");
-
 						return null;
 					}
 
@@ -472,13 +474,13 @@ public class QAChecks extends JPanel implements ActionListener
 					}
 					else
 					{
-						Loading.close();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 						return null;
 					}
 				}
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

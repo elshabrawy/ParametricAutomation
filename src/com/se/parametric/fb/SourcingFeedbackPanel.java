@@ -21,6 +21,7 @@ import javax.swing.SwingWorker;
 import javax.swing.text.JTextComponent;
 
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 
@@ -241,7 +242,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 
 			if(event.getSource() == statusCombo)
 			{
@@ -269,7 +270,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 				pdfLink = pdfLink.trim();
 				if("".equals(pdfLink) || pdfLink.length() < 7 || !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Wrong PDF Link", "Wrong PDF Link", JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
@@ -282,7 +283,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 						String sub = comment.substring(0, 7);
 						if(!"http://".equalsIgnoreCase(sub))
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 							return null;
 						}
@@ -291,7 +292,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 						rightTax = null;
 					}catch(Exception ex)
 					{
-						Loading.close();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 						
 						return null;
@@ -308,7 +309,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					}
 					else
 					{
-						Loading.close();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null, "Comment should be null", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
 						
 						return null;
@@ -332,15 +333,17 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 				String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
 				if("Done".equals(status))
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Feedback Sent", "Feedback Sent", JOptionPane.INFORMATION_MESSAGE);
 				}
 				else
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Feedback Not Sent", "Feedback Not Sent>>>" + status, JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 		}

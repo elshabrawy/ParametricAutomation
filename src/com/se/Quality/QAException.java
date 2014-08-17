@@ -26,6 +26,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -258,7 +259,7 @@ public class QAException extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
@@ -298,7 +299,7 @@ public class QAException extends JPanel implements ActionListener
 						}
 						else
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 							return null;
 						}
@@ -306,7 +307,7 @@ public class QAException extends JPanel implements ActionListener
 				}
 			}
 
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}
