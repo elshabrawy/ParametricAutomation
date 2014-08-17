@@ -610,6 +610,7 @@ public class Developement extends JPanel implements ActionListener
 							JOptionPane.OK_OPTION);
 					if(reply == JOptionPane.OK_OPTION)
 					{
+						Loading.show();
 						save.doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
@@ -742,13 +743,22 @@ public class Developement extends JPanel implements ActionListener
 						}
 						else
 						{
-							wsMap.get(wsName).saveParts(false);
-							Loading.close();
-							JOptionPane.showMessageDialog(null, "Saving Data Finished");
+							if(!wsMap.get(wsName).saved)
+							{
+								wsMap.get(wsName).saved = true;
+								wsMap.get(wsName).saveParts(false);
+								Loading.close();
+								JOptionPane.showMessageDialog(null, "Saving Data Finished");
+							}
+							else
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+								return null;
+							}
 						}
 					}
 				}
-
 			}
 
 			else if(event.getSource() == srcFeedbackBtn)

@@ -358,179 +358,192 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				{
 					if(wsName == "Unapproved Values")
 					{
-						Session session = SessionUtil.getSession();
-						ArrayList<ArrayList<String>> result = wsMap.get(wsName).readSpreadsheet(1);
-						int updateFlag = 2;
-						/** Team Leader approved and send to QA */
-						for(int i = 0; i < result.size(); i++)
+						if(!wsMap.get(wsName).saved)
 						{
-							ArrayList<String> newValReq = result.get(i);
-							if(newValReq.get(12).equals("Update"))
+
+							Session session = SessionUtil.getSession();
+							ArrayList<ArrayList<String>> result = wsMap.get(wsName)
+									.readSpreadsheet(1);
+							int updateFlag = 2;
+							/** Team Leader approved and send to QA */
+							for(int i = 0; i < result.size(); i++)
 							{
-								try
+								ArrayList<String> newValReq = result.get(i);
+								if(newValReq.get(12).equals("Update"))
 								{
-									if(!validated)
+									try
 									{
-										Loading.close();
-										JOptionPane.showMessageDialog(null,
-												" Validate First due to some errors in your data");
+										if(!validated)
+										{
+											Loading.close();
+											JOptionPane
+													.showMessageDialog(null,
+															" Validate First due to some errors in your data");
 
-										return null;
+											return null;
+										}
+									}catch(Exception e)
+									{
+										continue;
 									}
-								}catch(Exception e)
-								{
-									continue;
 								}
-							}
-							if(newValReq.get(12).equals("Update")
-									&& !newValReq.get(19).equals("Wrong Separation"))
-							{
-								Loading.close();
-								JOptionPane.showMessageDialog(null,
-										" You Can update on Wrong Seperation Feedback only in row :"
-												+ (i + 1));
-
-								return null;
-							}
-							if(newValReq.get(12).equals("Accept Wrong Value")
-									&& !newValReq.get(19).equals("Wrong Value"))
-							{
-								Loading.close();
-								JOptionPane.showMessageDialog(null,
-										" You Can Accept on Wrong Value Feedback only in row :"
-												+ (i + 1));
-
-								return null;
-							}
-							if((newValReq.get(12).equals("Update") || newValReq.get(12).equals(
-									"Accept Wrong Value"))
-									&& newValReq.get(18).equals("QA"))
-							{
-								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty()
-										|| newValReq.get(16).isEmpty()
-										|| newValReq.get(17).isEmpty())
+								if(newValReq.get(12).equals("Update")
+										&& !newValReq.get(19).equals("Wrong Separation"))
 								{
 									Loading.close();
 									JOptionPane.showMessageDialog(null,
-											" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :"
+											" You Can update on Wrong Seperation Feedback only in row :"
 													+ (i + 1));
 
 									return null;
 								}
-								if(!newValReq.get(17).isEmpty())
+								if(newValReq.get(12).equals("Accept Wrong Value")
+										&& !newValReq.get(19).equals("Wrong Value"))
 								{
-									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
-											"DD/MM/YYYY") == false)
+									Loading.close();
+									JOptionPane.showMessageDialog(null,
+											" You Can Accept on Wrong Value Feedback only in row :"
+													+ (i + 1));
+
+									return null;
+								}
+								if((newValReq.get(12).equals("Update") || newValReq.get(12).equals(
+										"Accept Wrong Value"))
+										&& newValReq.get(18).equals("QA"))
+								{
+									if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty()
+											|| newValReq.get(16).isEmpty()
+											|| newValReq.get(17).isEmpty())
 									{
 										Loading.close();
 										JOptionPane.showMessageDialog(null,
-												" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+												" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :"
 														+ (i + 1));
 
 										return null;
 									}
-								}
-							}
-						}
-						for(int i = 0; i < result.size(); i++)
-						{
-							ArrayList<String> newValReq = result.get(i);
-							UnApprovedDTO oldValReq = unApproveds.get(i);
-							if(newValReq.get(0).equals(oldValReq.getPlName())
-									&& newValReq.get(3).equals(oldValReq.getFeatureName())
-									&& newValReq.get(4).equals(oldValReq.getFeatureValue())
-									&& newValReq.get(5).equals(oldValReq.getFeatureUnit()))
-							{
-								oldValReq.setSign(newValReq.get(6));
-								oldValReq.setValue(newValReq.get(7));
-								oldValReq.setType(newValReq.get(8));
-								oldValReq.setCondition(newValReq.get(9));
-								oldValReq.setMultiplier(newValReq.get(10));
-								oldValReq.setUnit(newValReq.get(11));
-								oldValReq.setComment(newValReq.get(13));
-								long issuedto = oldValReq.getIssuedby();
-								long issuedby = oldValReq.getIssueTo();
-
-								if(result.get(i).get(12).equals("Reject"))
-								{
-									oldValReq.setFbType(StatusName.internal);
-									// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
-									oldValReq.setIssuedby(issuedby);
-									oldValReq.setIssueTo(issuedto);
-									oldValReq.setFbStatus(StatusName.reject);
-									oldValReq.setGruopSatus(StatusName.tlFeedback);
-									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-								}
-								else if(result.get(i).get(12).equals("Update"))
-								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
-
-									oldValReq.setFbType(StatusName.internal);
-									oldValReq.setIssuedby(issuedby);
-									oldValReq.setIssueTo(issuedto);
-									oldValReq.setFbStatus(StatusName.accept);
-									oldValReq.setGruopSatus(StatusName.tlFeedback);
-									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
-									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-								}
-								else if(result.get(i).get(12).equals("Accept Wrong Value"))
-								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
-									// close old Feedback
-
-									oldValReq.setIssuedby(issuedby);
-									oldValReq.setIssueTo(issuedto);
-									oldValReq.setFbStatus(StatusName.accept);
-									oldValReq.setGruopSatus(StatusName.tlFeedback);
-									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-									// initiate new FB from QA to Eng
-									oldValReq.setGruopSatus(StatusName.engFeedback);
-									oldValReq.setIssueType(StatusName.wrongValue);
-									oldValReq.setFbStatus(StatusName.reject);
-									oldValReq.setIssueTo(issuedby);
-
-									if(oldValReq.getFbType().equals(StatusName.internal))
+									if(!newValReq.get(17).isEmpty())
 									{
-										oldValReq.setIssuedby(issuedto);
-										oldValReq.setComment(newValReq.get(21));
-									}
-									else
-									{
-										Long qaUserId = 0L;
-										try
+										if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
+												"DD/MM/YYYY") == false)
 										{
-											qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
-													.getPlByPlName(session, oldValReq.getPlName()),
-													ParaQueryUtil.getTrackingTaskTypeByName(
-															"Approved Values", session));
-										}catch(Exception e)
-										{
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+											Loading.close();
+											JOptionPane.showMessageDialog(null,
+													" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+															+ (i + 1));
+
+											return null;
 										}
-										oldValReq.setComment(newValReq.get(23));
-										oldValReq.setIssuedby(qaUserId);
 									}
-									// oldValReq.setFbType(oldValReq.getFbType());
-									ApprovedDevUtil.saveAppWrongValue(oldValReq);
-
 								}
 							}
-							else
+							for(int i = 0; i < result.size(); i++)
 							{
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
-										+ newValReq.get(4)
-										+ " Can't Save dueto change in main columns");
-							}
-						}
+								ArrayList<String> newValReq = result.get(i);
+								UnApprovedDTO oldValReq = unApproveds.get(i);
+								if(newValReq.get(0).equals(oldValReq.getPlName())
+										&& newValReq.get(3).equals(oldValReq.getFeatureName())
+										&& newValReq.get(4).equals(oldValReq.getFeatureValue())
+										&& newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+								{
+									oldValReq.setSign(newValReq.get(6));
+									oldValReq.setValue(newValReq.get(7));
+									oldValReq.setType(newValReq.get(8));
+									oldValReq.setCondition(newValReq.get(9));
+									oldValReq.setMultiplier(newValReq.get(10));
+									oldValReq.setUnit(newValReq.get(11));
+									oldValReq.setComment(newValReq.get(13));
+									long issuedto = oldValReq.getIssuedby();
+									long issuedby = oldValReq.getIssueTo();
 
-						System.out.println("size is " + result.size());
+									if(result.get(i).get(12).equals("Reject"))
+									{
+										oldValReq.setFbType(StatusName.internal);
+										// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
+										oldValReq.setIssuedby(issuedby);
+										oldValReq.setIssueTo(issuedto);
+										oldValReq.setFbStatus(StatusName.reject);
+										oldValReq.setGruopSatus(StatusName.tlFeedback);
+										ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+									}
+									else if(result.get(i).get(12).equals("Update"))
+									{
+										oldValReq.setCAction(newValReq.get(14));
+										oldValReq.setPAction(newValReq.get(15));
+										oldValReq.setRootCause(newValReq.get(16));
+										oldValReq.setActionDueDate(newValReq.get(17));
+
+										oldValReq.setFbType(StatusName.internal);
+										oldValReq.setIssuedby(issuedby);
+										oldValReq.setIssueTo(issuedto);
+										oldValReq.setFbStatus(StatusName.accept);
+										oldValReq.setGruopSatus(StatusName.tlFeedback);
+										ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+										ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+									}
+									else if(result.get(i).get(12).equals("Accept Wrong Value"))
+									{
+										oldValReq.setCAction(newValReq.get(14));
+										oldValReq.setPAction(newValReq.get(15));
+										oldValReq.setRootCause(newValReq.get(16));
+										oldValReq.setActionDueDate(newValReq.get(17));
+										// close old Feedback
+
+										oldValReq.setIssuedby(issuedby);
+										oldValReq.setIssueTo(issuedto);
+										oldValReq.setFbStatus(StatusName.accept);
+										oldValReq.setGruopSatus(StatusName.tlFeedback);
+										ApprovedDevUtil.replyApprovedValueFB(oldValReq);
+										// initiate new FB from QA to Eng
+										oldValReq.setGruopSatus(StatusName.engFeedback);
+										oldValReq.setIssueType(StatusName.wrongValue);
+										oldValReq.setFbStatus(StatusName.reject);
+										oldValReq.setIssueTo(issuedby);
+
+										if(oldValReq.getFbType().equals(StatusName.internal))
+										{
+											oldValReq.setIssuedby(issuedto);
+											oldValReq.setComment(newValReq.get(21));
+										}
+										else
+										{
+											Long qaUserId = 0L;
+											try
+											{
+												qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
+														.getPlByPlName(session,
+																oldValReq.getPlName()),
+														ParaQueryUtil.getTrackingTaskTypeByName(
+																"Approved Values", session));
+											}catch(Exception e)
+											{
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											oldValReq.setComment(newValReq.get(23));
+											oldValReq.setIssuedby(qaUserId);
+										}
+										// oldValReq.setFbType(oldValReq.getFbType());
+										ApprovedDevUtil.saveAppWrongValue(oldValReq);
+
+									}
+								}
+								else
+								{
+									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
+											+ newValReq.get(4)
+											+ " Can't Save dueto change in main columns");
+								}
+							}
+							wsMap.get(wsName).saved = true;
+							System.out.println("size is " + result.size());
+						}
+						else
+						{
+							Loading.close();
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
 					}
 				}
 				JOptionPane.showMessageDialog(null, "Saved Done");

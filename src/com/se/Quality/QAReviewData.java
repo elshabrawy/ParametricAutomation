@@ -603,7 +603,17 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
 					{
-						wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+						}
+						else
+						{
+							Loading.close();
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
 					}
 				}
 			}

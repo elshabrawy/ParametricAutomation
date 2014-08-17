@@ -176,9 +176,9 @@ public class TLFeedBack extends JPanel implements ActionListener
 		separationTab.add(alertsPanel2);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
-//		tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
+		// tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
-//		tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
+		// tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
 		add(tabbedPane);
 
 		filterPanel.refreshButton.addActionListener(this);
@@ -683,7 +683,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
-						wsMap.get(wsName).saveTLFeedbackAction(userName);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveTLFeedbackAction(userName);
+						}
+						else
+						{
+							Loading.close();
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
+
 					}
 				}
 			}

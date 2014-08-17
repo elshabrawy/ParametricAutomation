@@ -529,7 +529,17 @@ public class TLReviewData extends JPanel implements ActionListener
 						}
 						else
 						{
-							wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+							if(!wsMap.get(wsName).saved)
+							{
+								wsMap.get(wsName).saved = true;
+								wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+							}
+							else
+							{
+								Loading.close();
+								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+								return null;
+							}
 							Loading.close();
 							JOptionPane.showMessageDialog(null, "Saving Data Finished");
 						}
@@ -589,6 +599,7 @@ public class TLReviewData extends JPanel implements ActionListener
 							JOptionPane.OK_OPTION);
 					if(reply == JOptionPane.OK_OPTION)
 					{
+						Loading.show();
 						save.doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
