@@ -1,10 +1,15 @@
 package com.se.parametric;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -18,8 +23,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -39,8 +42,36 @@ public class MainWindow extends JFrame
 	/**
 	 * Create the frame.
 	 */
+	public static JPanel glass;
 	public MainWindow()
 	{
+	 glass = new JPanel() {
+			public void paintComponent(Graphics g)
+
+			{
+				g.setColor(new Color(0, 0, 0, 140));
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
+		// Set it non-opaque
+		glass.setOpaque(false);
+		// Set layout to JPanel
+		glass.setLayout(new GridBagLayout());
+		// Add the jlabel with the image icon
+		glass.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
+		// Take glass pane
+		setGlassPane(glass);
+		// Add MouseListener
+		glass.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent me)
+			{
+				// Consume the event, now the input is blocked
+				me.consume();
+				// Create beep sound, when mouse is pressed
+				Toolkit.getDefaultToolkit().beep();
+			}
+		});
+		
 		container = getContentPane();
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

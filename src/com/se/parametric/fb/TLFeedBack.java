@@ -33,6 +33,7 @@ import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.ButtonTabComponent;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -40,7 +41,6 @@ import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -200,6 +200,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		if(separationValues.isEmpty())
 		{
 			tabbedPane.setSelectedIndex(1);
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 		}
@@ -227,6 +228,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 				appValues.add(featureFullValue);
 			}
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Approved Saving Done");
 		}
 	}
@@ -384,10 +386,12 @@ public class TLFeedBack extends JPanel implements ActionListener
 		int selectedPdfsCount = selectedPdfs.length;
 		if(selectedPdfsCount == 0)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select PDF First");
 		}
 		else if(selectedPdfsCount > 1)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select One PDF");
 		}
 		else
@@ -573,7 +577,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			if(event.getSource() == filterPanel.filterButton)
@@ -632,7 +636,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadpdf();
@@ -651,7 +655,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadallpdf();
@@ -670,6 +674,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						wsMap.get(wsName).validateTLFBParts(true);
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**
@@ -690,7 +695,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						}
 						else
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 							return null;
 						}
@@ -713,7 +718,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				saveseparation();
 			}
 
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

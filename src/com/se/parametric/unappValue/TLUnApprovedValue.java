@@ -31,13 +31,13 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
-
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
@@ -219,9 +219,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
-			// WorkingSheet ws = null;
-
+			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
 			if(event.getSource().equals(filterPanel.filterButton))
@@ -294,6 +292,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				// session.close();
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -308,6 +307,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers,
 						startDate, endDate, "parametric");
 				filterPanel.refreshFilters();
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals(" validate "))
@@ -317,6 +317,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						.readSpreadsheet(1);
 				if(wsheet.isEmpty())
 				{
+					MainWindow.glass.setVisible(false);
 					tabbedPane.setSelectedIndex(1);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
@@ -338,22 +339,13 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						}
 					}
 					ws.writeSheetData(validationResult, 1);
-					// session.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
 
 			else if(event.getActionCommand().equals("Save"))
 			{
-				// String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
-				// if(!status.equals(StatusName.tlReview))
-				// {
-				// JOptionPane.showMessageDialog(null, "You Can Only Save TL Review Status");
-				// thread.stop();
-				// loading.frame.dispose();
-				// return;
-				// }
-
 				for(String wsName : wsMap.keySet())
 				{
 					if(wsName == "Unapproved Values")
@@ -374,7 +366,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										if(!validated)
 										{
-											Loading.close();
+											MainWindow.glass.setVisible(false);
 											JOptionPane
 													.showMessageDialog(null,
 															" Validate First due to some errors in your data");
@@ -385,7 +377,6 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										continue;
 									}
-
 								}
 							}
 							for(int i = 0; i < result.size(); i++)
@@ -430,6 +421,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(4)
 											+ " Can't Save dueto change in main columns");
@@ -440,7 +432,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						}
 						else
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 							return null;
 						}
@@ -448,9 +440,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					wsMap.get(wsName).saved = true;
 				}
 
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

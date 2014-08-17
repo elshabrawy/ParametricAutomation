@@ -30,6 +30,7 @@ import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -212,7 +213,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			if(event.getSource().equals(filterPanel.filterButton))
 			{
@@ -327,6 +328,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -347,7 +349,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						}
 					}
 					ws.writeSheetData(validationResult, 1);
-					// session.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
@@ -360,7 +362,6 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 					{
 						if(!wsMap.get(wsName).saved)
 						{
-
 							Session session = SessionUtil.getSession();
 							ArrayList<ArrayList<String>> result = wsMap.get(wsName)
 									.readSpreadsheet(1);
@@ -375,7 +376,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									{
 										if(!validated)
 										{
-											Loading.close();
+											MainWindow.glass.setVisible(false);
 											JOptionPane
 													.showMessageDialog(null,
 															" Validate First due to some errors in your data");
@@ -390,7 +391,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								if(newValReq.get(12).equals("Update")
 										&& !newValReq.get(19).equals("Wrong Separation"))
 								{
-									Loading.close();
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null,
 											" You Can update on Wrong Seperation Feedback only in row :"
 													+ (i + 1));
@@ -400,7 +401,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								if(newValReq.get(12).equals("Accept Wrong Value")
 										&& !newValReq.get(19).equals("Wrong Value"))
 								{
-									Loading.close();
+
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null,
 											" You Can Accept on Wrong Value Feedback only in row :"
 													+ (i + 1));
@@ -415,24 +417,41 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 											|| newValReq.get(16).isEmpty()
 											|| newValReq.get(17).isEmpty())
 									{
-										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null,
-												" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :"
+												" You Can update on Wrong Seperation Feedback only in row :"
 														+ (i + 1));
-
 										return null;
 									}
-									if(!newValReq.get(17).isEmpty())
+									if((newValReq.get(12).equals("Update") || newValReq.get(12)
+											.equals("Accept Wrong Value"))
+											&& newValReq.get(18).equals("QA"))
 									{
-										if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
-												"DD/MM/YYYY") == false)
+										if(newValReq.get(14).isEmpty()
+												|| newValReq.get(15).isEmpty()
+												|| newValReq.get(16).isEmpty()
+												|| newValReq.get(17).isEmpty())
 										{
-											Loading.close();
+
+											MainWindow.glass.setVisible(false);
 											JOptionPane.showMessageDialog(null,
-													" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+													" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :"
 															+ (i + 1));
 
 											return null;
+										}
+										if(!newValReq.get(17).isEmpty())
+										{
+											if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
+													"DD/MM/YYYY") == false)
+											{
+												MainWindow.glass.setVisible(false);
+												JOptionPane.showMessageDialog(null,
+														" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+																+ (i + 1));
+
+												return null;
+											}
 										}
 									}
 								}
@@ -530,6 +549,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(4)
 											+ " Can't Save dueto change in main columns");
@@ -540,7 +560,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						}
 						else
 						{
-							Loading.close();
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 							return null;
 						}
@@ -548,7 +568,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Saved Done");
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

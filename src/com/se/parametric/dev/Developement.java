@@ -2,18 +2,24 @@ package com.se.parametric.dev;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -33,6 +39,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.LoginForm;
 import com.se.parametric.MainWindow;
 import com.se.parametric.autoFill.AutoFill;
 import com.se.parametric.commonPanel.AlertsPanel;
@@ -47,9 +54,6 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
-import com.se.parametric.util.ImagePanel;
-import com.sun.star.ucb.Priority;
-import com.se.parametric.autoFill.AutoFill;
 
 public class Developement extends JPanel implements ActionListener
 {
@@ -240,6 +244,8 @@ public class Developement extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
+		System.out.println("start here");
+
 		LongRunProcess longRunProcess = new LongRunProcess(event);
 		longRunProcess.execute();
 	}
@@ -303,7 +309,8 @@ public class Developement extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+			// Loading.show();
+			MainWindow.glass.setVisible(true);
 			String pdfUrl = "";
 			ArrayList<DocumentInfoDTO> docsInfo = null;
 			ArrayList<String> row = null;
@@ -316,7 +323,7 @@ public class Developement extends JPanel implements ActionListener
 				boolean ok = false;
 				if(sheetpanel.isOpened())
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					ok = ParaQueryUtil.getDialogMessage(
 							"another PDF is opend are you need to replace this",
 							"Confermation Dailog");
@@ -324,13 +331,13 @@ public class Developement extends JPanel implements ActionListener
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
+					MainWindow.glass.setVisible(false);
 
-					Loading.close();
 					return null;
 				}
 				else if(sheetpanel.isOpened() && ok == true)
 				{
-					Loading.show();
+
 				}
 
 				separation.setEnabled(true);
@@ -352,11 +359,15 @@ public class Developement extends JPanel implements ActionListener
 				System.out.println(selectedPdfs.length);
 				if(selectedPdfs.length == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfs.length > 1)
 				{
+					MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
+
 				}
 				else
 				{
@@ -409,7 +420,9 @@ public class Developement extends JPanel implements ActionListener
 							suppName);
 					autoFillProcess.getRules();
 				}
-				Loading.close();
+
+				MainWindow.glass.setVisible(false);
+
 			}
 			/**
 			 * Show all PDFs Sheet Action*
@@ -423,8 +436,7 @@ public class Developement extends JPanel implements ActionListener
 							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				separation.setEnabled(false);
@@ -454,6 +466,7 @@ public class Developement extends JPanel implements ActionListener
 						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.getShowAllData(tableRecs);
 				wsMap.put("LoadAllData", ws);
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Load all PDFs for certain pl and supplier*
@@ -467,8 +480,8 @@ public class Developement extends JPanel implements ActionListener
 							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
+					MainWindow.glass.setVisible(false);
 
-					Loading.close();
 					return null;
 				}
 				separation.setEnabled(true);
@@ -489,19 +502,13 @@ public class Developement extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!",
 							JOptionPane.ERROR_MESSAGE);
 
 					return null;
 				}
-				// if("All".equals(supplierName))
-				// {
-				// JOptionPane.showMessageDialog(null, "Please, Select a Supplier.", "Error!", JOptionPane.ERROR_MESSAGE);
-				// thread.stop();
-				// loading.frame.dispose();
-				// return;
-				// }
 				int count = filterPanel.comboBoxItems[2].getItemCount();
 				StringBuilder typeBuilder = new StringBuilder();
 				for(int i = 0; i < count; i++)
@@ -566,7 +573,7 @@ public class Developement extends JPanel implements ActionListener
 				}
 
 				wsMap.put(plName, ws);
-
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals("AutoFill"))
@@ -576,6 +583,7 @@ public class Developement extends JPanel implements ActionListener
 				System.err.println("start Check" + new Date());
 				autoFillProcess.getAutoFillProcess();
 				wsMap.put("Separation", ws);
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Load Separation Sheet Action
@@ -594,47 +602,34 @@ public class Developement extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
-					Loading.close();
+					MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 				}
 				else
 				{
+
 					// validation of separation
 					validateseparation();
 					// save Separation
 					saveseparation();
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					int reply = JOptionPane.showConfirmDialog(null,
 							"Approved Saving Done , Press OK to save Parts", "Development",
 							JOptionPane.OK_OPTION);
 					if(reply == JOptionPane.OK_OPTION)
 					{
-						Loading.show();
+						MainWindow.glass.setVisible(true);
 						save.doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
-				}
 
+				}
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getActionCommand().equals(" validate "))
 			{
-				// tabbedPane.setSelectedIndex(2);
-				// separationValues = wsMap.get("Separation").readSpreadsheet(1);
-				// if(separationValues.isEmpty())
-				// {
-				// tabbedPane.setSelectedIndex(1);
-				// Loading.close();
-				// JOptionPane.showMessageDialog(null, "All Values are Approved");
-				//
-				// }
-				// else
-				// {
-				//
-				// // session.close();
-				// Loading.close();
-				// JOptionPane.showMessageDialog(null, " Validation Done");
-				// }
 			}
 
 			/**
@@ -663,7 +658,8 @@ public class Developement extends JPanel implements ActionListener
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				tablePanel.setCurrentPage(1);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
-				Loading.close();
+				MainWindow.glass.setVisible(false);
+
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -678,7 +674,8 @@ public class Developement extends JPanel implements ActionListener
 				filterPanel.filterList = DataDevQueryUtil.getUserData(userDTO, startDate, endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
-				Loading.close();
+				MainWindow.glass.setVisible(false);
+
 			}
 			/**
 			 * Validate Parts Action
@@ -686,17 +683,6 @@ public class Developement extends JPanel implements ActionListener
 
 			else if(event.getSource() == validate)
 			{
-				// System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-				// wsMap.keySet();
-				// for(String wsName : wsMap.keySet())
-				// {
-				// if(wsName != "LoadAllData" && wsName != "Separation")
-				// {
-				// wsMap.get(wsName).validateParts(false);
-				// }
-				// }
-				// Loading.close();
-				// JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**
 			 * Save Parts Action
@@ -717,7 +703,6 @@ public class Developement extends JPanel implements ActionListener
 							input = wsMap.get(wsName).getUnApprovedValues(input);
 							if(input.size() > 0)
 							{
-								Loading.close();
 								int reply = JOptionPane
 										.showConfirmDialog(
 												null,
@@ -725,18 +710,18 @@ public class Developement extends JPanel implements ActionListener
 												"Seperation", JOptionPane.YES_NO_OPTION);
 								if(reply == JOptionPane.YES_OPTION)
 								{
-									Loading.show();
+
 									openseperation();
 								}
 								else
 								{
-									Loading.close();
+									MainWindow.glass.setVisible(false);
 									return null;
 								}
 							}
 							else
 							{
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										"can't save sheet duto some errors in your data");
 							}
@@ -747,18 +732,21 @@ public class Developement extends JPanel implements ActionListener
 							{
 								wsMap.get(wsName).saved = true;
 								wsMap.get(wsName).saveParts(false);
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, "Saving Data Finished");
 							}
 							else
 							{
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
 								return null;
 							}
 						}
 					}
 				}
+
+				MainWindow.glass.setVisible(false);
+				// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}
 
 			else if(event.getSource() == srcFeedbackBtn)
@@ -783,10 +771,10 @@ public class Developement extends JPanel implements ActionListener
 					srcFeedbackFrame.setResizable(false);
 					srcFeedbackFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				}
-				Loading.close();
-			}
+				MainWindow.glass.setVisible(false);
 
-			Loading.close();
+			}
+			MainWindow.glass.setVisible(false);
 
 			return null;
 		}
@@ -796,7 +784,7 @@ public class Developement extends JPanel implements ActionListener
 			ArrayList<String> row;
 			if(!validated)
 			{
-				Loading.close();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null,
 						" Validate First due to some errors in your data");
 
@@ -899,7 +887,7 @@ public class Developement extends JPanel implements ActionListener
 			ws.setSeparationHeader(row);
 			ws.writeSheetData(input, 1);
 			wsMap.put("Separation", ws);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 		}
 	}
 

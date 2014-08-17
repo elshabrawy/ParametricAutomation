@@ -311,45 +311,40 @@ public class TestMain extends JPanel implements ActionListener
 		@Override
 		protected Object doInBackground() throws Exception
 		{
+			MainWindow.glass.setVisible(true);
 			if(event.getSource() == tlfeedBackBu)
 			{
 				if(tabbedPane.indexOfComponent(tlfeedBack) == -1)
 				{
-					Loading.show();
 					tlfeedBack = new TLFeedBack(userDTO);
 					tabbedPane.addTab("TL Feedback", null, tlfeedBack, null);
 					int index = tabbedPane.indexOfComponent(tlfeedBack);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-					Loading.close();
 				}
 			}
 			if(event.getSource() == tlreviewDataBu)
 			{
 				if(tabbedPane.indexOfComponent(reviewData) == -1)
 				{
-					Loading.show();
 					reviewData = new TLReviewData(userDTO);
 					tabbedPane.addTab("TL Review", null, reviewData, null);
 					int index = tabbedPane.indexOfComponent(reviewData);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
 					tabbedPane.setSelectedIndex(index);
-					Loading.close();
 				}
 			}
 			if(event.getSource() == tlunApprovedBu)
 			{
 				if(tabbedPane.indexOfComponent(tlunApprovedPanel) == -1)
 				{
-					Loading.show();
 					tlunApprovedPanel = new TLUnApprovedValue(userDTO);
 					tabbedPane.addTab("TL UnApproved Value", null, tlunApprovedPanel, null);
 					int index = tabbedPane.indexOfComponent(tlunApprovedPanel);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
-					tabbedPane.setSelectedIndex(index);
-					Loading.close();
 				}
 			}
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

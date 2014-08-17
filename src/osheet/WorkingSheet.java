@@ -2990,7 +2990,7 @@ public class WorkingSheet
 					StatusName.qaReview, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
 					StatusName.engFeedback, teamLeaderName);
-			JOptionPane.showMessageDialog(null, "Saving Data Finished");
+			// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
