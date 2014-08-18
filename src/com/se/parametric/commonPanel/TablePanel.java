@@ -218,7 +218,8 @@ public class TablePanel extends JPanel implements ActionListener
 			System.out.println("current is " + this.getCurrentPage());
 			paggingLabel.setText("" + (current + 1));
 			setTableData1(1, getRows1(this.getCurrentPage()));
-			System.out.println("current is " + this.getCurrentPage() + " and pageNumber is " + this.getPageNumber());
+			System.out.println("current is " + this.getCurrentPage() + " and pageNumber is "
+					+ this.getPageNumber());
 			if(this.getCurrentPage() == this.getPageNumber())
 			{
 				next.setEnabled(false);
@@ -328,7 +329,8 @@ public class TablePanel extends JPanel implements ActionListener
 				this.setPageNumber((result.size() / recordsPerPage) + 1);
 			}
 			this.setRecordNumber(result.size());
-			recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages " + this.getPageNumber());
+			recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages "
+					+ this.getPageNumber());
 			first.setEnabled(false);
 			previous.setEnabled(false);
 		}
@@ -375,11 +377,21 @@ public class TablePanel extends JPanel implements ActionListener
 			{
 				for(Method method : m)
 				{
-					// System.out.println("Method Name:" + method.getName());
-					if(method.getName().equals("get" + header[i]))
+					if(header[i].contains("date"))
 					{
-						mapMethods[i] = method;
-						break;
+						if(method.getName().equals("getDate"))
+						{
+							mapMethods[i] = method;
+							break;
+						}
+					}
+					else
+					{
+						if(method.getName().equals("get" + header[i]))
+						{
+							mapMethods[i] = method;
+							break;
+						}
 					}
 				}
 			}
@@ -395,7 +407,8 @@ public class TablePanel extends JPanel implements ActionListener
 					this.setPageNumber((result.size() / recordsPerPage) + 1);
 				}
 				this.setRecordNumber(result.size());
-				recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages " + this.getPageNumber());
+				recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages "
+						+ this.getPageNumber());
 				paggingLabel.setText("1");
 				// setCurrentPage(1);
 				first.setEnabled(false);
@@ -447,7 +460,8 @@ public class TablePanel extends JPanel implements ActionListener
 					{
 						if(loadedPdfs.contains(cellValue))
 						{
-							cellValue = "<html><a href=\"" + cellValue + "\"><font color=\"#AD3333\">" + cellValue + "</font></a>";
+							cellValue = "<html><a href=\"" + cellValue
+									+ "\"><font color=\"#AD3333\">" + cellValue + "</font></a>";
 						}
 						else
 						{

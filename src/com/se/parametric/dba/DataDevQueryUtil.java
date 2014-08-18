@@ -698,6 +698,14 @@ public class DataDevQueryUtil
 				{
 					date = obj.getAssignedDate();
 				}
+				else if(inputType.equals("finished"))
+				{
+					date = obj.getFinishedDate();
+				}
+				else if(inputType.equals("QAReview"))
+				{
+					date = obj.getQaReviewDate();
+				}
 				if(date != null)
 				{
 					docInfo.setDate(date.toString().split(" ")[0]);
@@ -2810,15 +2818,14 @@ public class DataDevQueryUtil
 			MapGeneric gen = null;
 			String partNumber = partInfo.getPN();
 			String vendorName = partInfo.getSupplierName();
-			PartComponent com = getComponentByPartNumberAndSupplierName(partNumber, vendorName, session);
-			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
-					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(),
+			PartComponent com = getComponentByPartNumberAndSupplierName(partNumber, vendorName,
 					session);
+			TrackingParametric track = getTrackingParametricByPdfUrlAndSupName(
+					partInfo.getPdfUrl(), partInfo.getPlName(), partInfo.getSupplierName(), session);
 			if(com == null)
 			{
 				com = new PartComponent();
 
-				
 				com.setDocument(track.getDocument());
 				com.setSupplierPl(track.getSupplierPl());
 				com.setSupplierId(track.getSupplier());
@@ -2954,12 +2961,19 @@ public class DataDevQueryUtil
 				}
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
-				track.setQaReviewDate(new Date());
+
 				TrackingTaskType taskType = track.getTrackingTaskType();
 				Pl pl = track.getPl();
 				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
 				track.setQaUserId(qaUserId);
-				track.setFinishedDate(ParaQueryUtil.getDate());
+				if(status.equals(StatusName.doneFLagEngine))
+				{
+					track.setFinishedDate(ParaQueryUtil.getDate());
+				}
+				else if(status.equals(StatusName.qaReview))
+				{
+					track.setQaReviewDate(ParaQueryUtil.getDate());
+				}
 				// // if document has opened feedbacks
 				// don't transfere to QA Team
 				GrmUser issuedByUser = null;

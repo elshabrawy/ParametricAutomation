@@ -81,7 +81,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Status", "DevUserName", "Date" };
+				"Status", "DevUserName", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);

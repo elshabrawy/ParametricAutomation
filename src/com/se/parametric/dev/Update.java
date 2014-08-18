@@ -90,7 +90,7 @@ public class Update extends JPanel implements ActionListener
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserNPIData(userDTO, null, null);
 		JPanel selectionPanel = new JPanel();
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Extracted", "Priority", "Date" };
+				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
 		// tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);

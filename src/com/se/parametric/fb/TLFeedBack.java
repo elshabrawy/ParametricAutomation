@@ -87,7 +87,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
-				"InfectedTaxonomies", "Date" };
+				"InfectedTaxonomies", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Feedback Source", "Feedback Type" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);

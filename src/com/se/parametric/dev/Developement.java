@@ -103,7 +103,7 @@ public class Developement extends JPanel implements ActionListener
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserData(userDTO, null, null);
 		selectionPanel = new JPanel();
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Extracted", "Priority", "Date" };
+				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
