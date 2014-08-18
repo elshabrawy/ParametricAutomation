@@ -31,7 +31,9 @@ import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
+import com.se.parametric.ButtonTabComponent;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -39,7 +41,6 @@ import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
@@ -80,20 +81,24 @@ public class TLFeedBack extends JPanel implements ActionListener
 		userName = userDTO.getFullName();
 		setLayout(null);
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, null, null);
+		height = Toolkit.getDefaultToolkit().getScreenSize().height - 30;
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, null,
+				null);
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 		selectionPanel = new JPanel();
-		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts", "InfectedTaxonomies", "Date" };
+		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
+				"InfectedTaxonomies", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Feedback Source", "Feedback Type" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
+		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		// filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
@@ -126,7 +131,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		separationTab = new JPanel();
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 120, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
 		save = new JButton("Save");
@@ -149,7 +155,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		devSheetButtonPanel.add(save);
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		separationButtonPanel = new JPanel();
-		separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		separationButtonPanel.setBounds(width - 120, 0, 106, height - 100);
 		separationButtonPanel.setLayout(null);
 		separationSave = new JButton(" Save ");
@@ -167,10 +174,11 @@ public class TLFeedBack extends JPanel implements ActionListener
 		separationTab.add(separationPanel);
 		separationTab.add(separationButtonPanel);
 		separationTab.add(alertsPanel2);
-
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
+		// tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
+		// tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
 		add(tabbedPane);
 
 		filterPanel.refreshButton.addActionListener(this);
@@ -192,6 +200,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		if(separationValues.isEmpty())
 		{
 			tabbedPane.setSelectedIndex(1);
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 		}
@@ -204,10 +213,13 @@ public class TLFeedBack extends JPanel implements ActionListener
 				String plName = row.get(0);
 				String featureName = row.get(3);
 				String featureFullValue = row.get(4);
-				List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+				List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(
+						featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7),
+						row.get(10), row.get(11), row.get(9), row.get(8));
 				try
 				{
-					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
+							featureFullValue, row.get(2), userId);
 				}catch(Exception ex)
 				{
 					ex.printStackTrace();
@@ -216,6 +228,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 				appValues.add(featureFullValue);
 			}
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Approved Saving Done");
 		}
 	}
@@ -252,7 +265,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		}
 		separationPanel.openOfficeDoc();
 		ws = new WorkingSheet(separationPanel, "Separation");
-		separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+		separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+				+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 		ws.setSeparationHeader(row);
 		ws.writeSheetData(input, 1);
 		wsMap.put("Separation", ws);
@@ -277,7 +291,10 @@ public class TLFeedBack extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
-			Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackTypeStr, issuerName, startDate, endDate, null, userDTO.getId());
+			Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
+					.getFeedbackParametricValueReview(teamMembers, plName, supplierName,
+							documentStatus, feedbackTypeStr, issuerName, startDate, endDate, null,
+							userDTO.getId());
 			// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(teamMembers,
 			// plName,
 			// supplierName, null, documentStatus, startDate, endDate, docsIds);
@@ -287,11 +304,14 @@ public class TLFeedBack extends JPanel implements ActionListener
 			for(String pl : reviewData.keySet())
 			{
 				ws = new WorkingSheet(sheetpanel, pl, k);
-				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pl + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pl + "@" + userDTO.getFullName()
+						+ "@" + System.currentTimeMillis() + ".xls");
 				wsMap.put(pl, ws);
-				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null, StatusName.tlFeedback, startDate, endDate, null))
+				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null,
+						StatusName.tlFeedback, startDate, endDate, null))
 					ws.setNPIflag(true);
-				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."), false);
+				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."),
+						false);
 				ArrayList<String> sheetHeader = ws.getHeader();
 				int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 				int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -313,18 +333,24 @@ public class TLFeedBack extends JPanel implements ActionListener
 						String partNumber = sheetRecord.get(15);
 						supplierName = sheetRecord.get(13);
 
-						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-						String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-						GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+						ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(
+								partNumber, supplierName);
+						String lstTlComment = DataDevQueryUtil.getlastengComment(
+								new Long(feedCom.get(3)), userDTO.getId());
+						GrmUserDTO feedbackIssuer = DataDevQueryUtil
+								.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+						String wrongfeatures = DataDevQueryUtil.getfbwrongfets(
+								new Long(feedCom.get(3)), feedbackIssuer.getId());
 						ParaFeedbackAction action = null;
-						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+						action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)),
+								userDTO.getId());
 						if(action != null)
 						{
 							sheetRecord.set(Cactionindex, action.getCAction());
 							sheetRecord.set(Pactionindex, action.getPAction());
 							sheetRecord.set(RootcauseIndex, action.getRootCause());
-							sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
+							sheetRecord.set(Actionduedateindex, action.getActionDueDate()
+									.toString());
 						}
 						for(int l = 0; l < 8; l++)
 						{
@@ -360,10 +386,12 @@ public class TLFeedBack extends JPanel implements ActionListener
 		int selectedPdfsCount = selectedPdfs.length;
 		if(selectedPdfsCount == 0)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select PDF First");
 		}
 		else if(selectedPdfsCount > 1)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select One PDF");
 		}
 		else
@@ -388,8 +416,10 @@ public class TLFeedBack extends JPanel implements ActionListener
 				}
 				System.out.println(pdfUrl);
 
-				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(teamMembers, plName, supplierName, documentStatus, feedbackType, issuerName, startDate, endDate,
-						new Long[] { document.getId() }, userDTO.getId());
+				Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
+						.getFeedbackParametricValueReview(teamMembers, plName, supplierName,
+								documentStatus, feedbackType, issuerName, startDate, endDate,
+								new Long[] { document.getId() }, userDTO.getId());
 				int k = 0;
 				tabbedPane.setSelectedIndex(1);
 				sheetpanel.openOfficeDoc();
@@ -397,11 +427,15 @@ public class TLFeedBack extends JPanel implements ActionListener
 				for(String pl : reviewData.keySet())
 				{
 					ws = new WorkingSheet(sheetpanel, pl, k);
-					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+					sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "")
+							+ "@" + userDTO.getFullName() + "@" + System.currentTimeMillis()
+							+ ".xls");
 					wsMap.put(pl, ws);
 					if(docInfoDTO.getTaskType().contains("NPI"))
 						ws.setNPIflag(true);
-					ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."), false);
+					ws.setTLFBHeader(
+							Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."),
+							false);
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 					int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -423,13 +457,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 							String partNumber = sheetRecord.get(15);
 							supplierName = sheetRecord.get(13);
 
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplierName);
-							String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(
+									partNumber, supplierName);
+							String lstTlComment = DataDevQueryUtil.getlastengComment(new Long(
+									feedCom.get(3)), userDTO.getId());
+							GrmUserDTO feedbackIssuer = DataDevQueryUtil
+									.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(
+									new Long(feedCom.get(3)), feedbackIssuer.getId());
 
 							ParaFeedbackAction action = null;
-							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+							action = DataDevQueryUtil.getfeedBackActionByItem(
+									new Long(feedCom.get(3)), userDTO.getId());
 							if(action != null)
 							{
 								sheetRecord.set(Cactionindex, action.getCAction());
@@ -437,7 +476,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 								sheetRecord.set(RootcauseIndex, action.getRootCause());
 								Date date = action.getActionDueDate();
 								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-								sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
+								sheetRecord.set(Actionduedateindex,
+										date == null ? "" : sdf.format(date).toString());
 								// sheetRecord.set(Actionduedateindex, action.getActionDueDate().toString());
 							}
 							for(int l = 0; l < 9; l++)
@@ -537,7 +577,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			if(event.getSource() == filterPanel.filterButton)
@@ -556,7 +596,9 @@ public class TLFeedBack extends JPanel implements ActionListener
 					String issuer = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 					String feedbackType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 					String documentStatus = StatusName.tlFeedback;
-					tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers, plName, supplierName, documentStatus, startDate, endDate, feedbackType, userId, issuer);
+					tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers,
+							plName, supplierName, documentStatus, startDate, endDate, feedbackType,
+							userId, issuer);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
@@ -574,7 +616,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, startDate, endDate);
+				filterPanel.filterList = DataDevQueryUtil.getTLFeedbackFilterData(userDTO,
+						startDate, endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
 
@@ -586,12 +629,14 @@ public class TLFeedBack extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadpdf();
@@ -603,12 +648,14 @@ public class TLFeedBack extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadallpdf();
@@ -627,6 +674,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						wsMap.get(wsName).validateTLFBParts(true);
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**
@@ -640,7 +688,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
-						wsMap.get(wsName).saveTLFeedbackAction(userName);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveTLFeedbackAction(userName);
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
+
 					}
 				}
 			}
@@ -659,7 +718,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				saveseparation();
 			}
 
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

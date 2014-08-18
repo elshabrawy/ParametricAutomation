@@ -2,18 +2,24 @@ package com.se.parametric.dev;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -33,6 +39,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.LoginForm;
 import com.se.parametric.MainWindow;
 import com.se.parametric.autoFill.AutoFill;
 import com.se.parametric.commonPanel.AlertsPanel;
@@ -47,9 +54,6 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
-import com.se.parametric.util.ImagePanel;
-import com.sun.star.ucb.Priority;
-import com.se.parametric.autoFill.AutoFill;
 
 public class Developement extends JPanel implements ActionListener
 {
@@ -68,7 +72,8 @@ public class Developement extends JPanel implements ActionListener
 	JTabbedPane tabbedPane;
 	JButton button = null;// new JButton("LoadSheet");
 	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation, separationSave, srcFeedbackBtn, AutoFill;
+	JButton save, separationSave, srcFeedbackBtn, AutoFill;
+	JButton validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
@@ -98,7 +103,7 @@ public class Developement extends JPanel implements ActionListener
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserData(userDTO, null, null);
 		selectionPanel = new JPanel();
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Extracted", "Priority", "Date" };
+				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
@@ -159,14 +164,14 @@ public class Developement extends JPanel implements ActionListener
 		AutoFill.setForeground(new Color(25, 25, 112));
 		AutoFill.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-		validate.addActionListener(this);
+		// validate.addActionListener(this);
 		save.addActionListener(this);
-		separation.addActionListener(this);
+		// separation.addActionListener(this);
 		srcFeedbackBtn.addActionListener(this);
 		AutoFill.addActionListener(this);
 
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
+		// devSheetButtonPanel.add(separation);
+		// devSheetButtonPanel.add(validate);
 		devSheetButtonPanel.add(save);
 		devSheetButtonPanel.add(srcFeedbackBtn);
 		devSheetButtonPanel.add(AutoFill);
@@ -183,7 +188,7 @@ public class Developement extends JPanel implements ActionListener
 		sheetpanel.setBounds(0, 0, width - 120, height - 125);
 		separationPanel.setBounds(0, 0, width - 120, height - 125);
 		ArrayList<String> separationButtonLabels = new ArrayList<String>();
-		separationButtonLabels.add(" validate ");
+		// separationButtonLabels.add(" validate ");
 		separationButtonLabels.add(" Save ");
 		separationButtonsPanel = new ButtonsPanel(separationButtonLabels);
 		JButton separationButtons[] = separationButtonsPanel.getButtons();
@@ -239,6 +244,8 @@ public class Developement extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
+		System.out.println("start here");
+
 		LongRunProcess longRunProcess = new LongRunProcess(event);
 		longRunProcess.execute();
 	}
@@ -302,7 +309,8 @@ public class Developement extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading.show();
+			// Loading.show();
+			MainWindow.glass.setVisible(true);
 			String pdfUrl = "";
 			ArrayList<DocumentInfoDTO> docsInfo = null;
 			ArrayList<String> row = null;
@@ -314,15 +322,22 @@ public class Developement extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
+				{
+					MainWindow.glass.setVisible(false);
 					ok = ParaQueryUtil.getDialogMessage(
 							"another PDF is opend are you need to replace this",
 							"Confermation Dailog");
+				}
 
 				if(sheetpanel.isOpened() && ok == false)
 				{
+					MainWindow.glass.setVisible(false);
 
-					Loading.close();
 					return null;
+				}
+				else if(sheetpanel.isOpened() && ok == true)
+				{
+
 				}
 
 				separation.setEnabled(true);
@@ -344,11 +359,15 @@ public class Developement extends JPanel implements ActionListener
 				System.out.println(selectedPdfs.length);
 				if(selectedPdfs.length == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfs.length > 1)
 				{
+					MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
+
 				}
 				else
 				{
@@ -402,6 +421,8 @@ public class Developement extends JPanel implements ActionListener
 					autoFillProcess.getRules();
 				}
 
+				MainWindow.glass.setVisible(false);
+
 			}
 			/**
 			 * Show all PDFs Sheet Action*
@@ -415,8 +436,7 @@ public class Developement extends JPanel implements ActionListener
 							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
-
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				separation.setEnabled(false);
@@ -446,6 +466,7 @@ public class Developement extends JPanel implements ActionListener
 						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.getShowAllData(tableRecs);
 				wsMap.put("LoadAllData", ws);
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Load all PDFs for certain pl and supplier*
@@ -459,8 +480,8 @@ public class Developement extends JPanel implements ActionListener
 							"Confermation Dailog");
 				if(sheetpanel.isOpened() && ok == false)
 				{
+					MainWindow.glass.setVisible(false);
 
-					Loading.close();
 					return null;
 				}
 				separation.setEnabled(true);
@@ -481,19 +502,13 @@ public class Developement extends JPanel implements ActionListener
 				}
 				if("All".equals(plName))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "Please, Select a PL.", "Error!",
 							JOptionPane.ERROR_MESSAGE);
 
 					return null;
 				}
-				// if("All".equals(supplierName))
-				// {
-				// JOptionPane.showMessageDialog(null, "Please, Select a Supplier.", "Error!", JOptionPane.ERROR_MESSAGE);
-				// thread.stop();
-				// loading.frame.dispose();
-				// return;
-				// }
 				int count = filterPanel.comboBoxItems[2].getItemCount();
 				StringBuilder typeBuilder = new StringBuilder();
 				for(int i = 0; i < count; i++)
@@ -558,7 +573,7 @@ public class Developement extends JPanel implements ActionListener
 				}
 
 				wsMap.put(plName, ws);
-
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals("AutoFill"))
@@ -568,48 +583,14 @@ public class Developement extends JPanel implements ActionListener
 				System.err.println("start Check" + new Date());
 				autoFillProcess.getAutoFillProcess();
 				wsMap.put("Separation", ws);
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Load Separation Sheet Action
 			 * **/
 			else if(event.getActionCommand().equals("Separation"))
 			{
-				input = new ArrayList<ArrayList<String>>();
-				tabbedPane.setSelectedIndex(2);
-				row = new ArrayList<String>();
-				row.add("PL_Name");// 0
-				row.add("Part");// 1
-				row.add("Datasheet");// 2
-				row.add("Feature Name");// 3
-				row.add("Feature Value");// 4
-				row.add("Feature Unit");// 5
-				row.add("Sign");// 6
-				row.add("Value");// 7
-				row.add("Type");// 8
-				row.add("Condition");// 9
-				row.add("Multiplier");// 10
-				row.add("Unit");// 11
-				row.add("Validation result");// 12
 
-				if(wsMap.get("Separation") != null)
-				{
-					wsMap.remove("Separation");
-				}
-				for(String wsName : wsMap.keySet())
-				{
-					if(wsName != "LoadAllData" && wsName != "Separation")
-					{
-						System.out.println("Sheet Name:" + wsName);
-						input = wsMap.get(wsName).getUnApprovedValues(input);
-					}
-				}
-				separationPanel.openOfficeDoc();
-				ws = new WorkingSheet(separationPanel, "Separation");
-				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
-						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-				ws.setSeparationHeader(row);
-				ws.writeSheetData(input, 1);
-				wsMap.put("Separation", ws);
 			}
 			/**
 			 * Save Separation Action
@@ -621,94 +602,34 @@ public class Developement extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
-					JOptionPane.showMessageDialog(null, "All Values are Approved");
+					MainWindow.glass.setVisible(false);
 
+					JOptionPane.showMessageDialog(null, "All Values are Approved");
 				}
 				else
 				{
-					if(!validated)
+
+					// validation of separation
+					validateseparation();
+					// save Separation
+					saveseparation();
+
+					MainWindow.glass.setVisible(false);
+					int reply = JOptionPane.showConfirmDialog(null,
+							"Approved Saving Done , Press OK to save Parts", "Development",
+							JOptionPane.OK_OPTION);
+					if(reply == JOptionPane.OK_OPTION)
 					{
-						Loading.close();
-						JOptionPane.showMessageDialog(null,
-								" Validate First due to some errors in your data");
-
-						return null;
+						MainWindow.glass.setVisible(true);
+						save.doClick();
+						tabbedPane.setSelectedIndex(1);
 					}
-
-					for(int i = 0; i < separationValues.size(); i++)
-					{
-						row = separationValues.get(i);
-
-						String plName = row.get(0);
-						String featureName = row.get(3);
-						String featureFullValue = row.get(4);
-
-						try
-						{
-							List<ApprovedParametricDTO> approved = ApprovedDevUtil
-									.createApprovedValuesList(featureFullValue, plName,
-											featureName, row.get(5), row.get(6), row.get(7),
-											row.get(10), row.get(11), row.get(9), row.get(8));
-
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
-									featureName, featureFullValue, row.get(2), userId);
-						}catch(ArrayIndexOutOfBoundsException ex)
-						{
-							try
-							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-								cell.setText(ex.getMessage());
-							}catch(Exception e)
-							{
-								e.printStackTrace();
-							}
-							ex.printStackTrace();
-						}catch(Exception ex)
-						{
-							ex.printStackTrace();
-						}
-						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
-								.get(featureName);
-						appValues.add(featureFullValue);
-					}
-					Loading.close();
-					JOptionPane.showMessageDialog(null, "Approved Saving Done");
 
 				}
-
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getActionCommand().equals(" validate "))
 			{
-				tabbedPane.setSelectedIndex(2);
-				separationValues = wsMap.get("Separation").readSpreadsheet(1);
-				if(separationValues.isEmpty())
-				{
-					tabbedPane.setSelectedIndex(1);
-					Loading.close();
-					JOptionPane.showMessageDialog(null, "All Values are Approved");
-
-				}
-				else
-				{
-					ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
-					validated = true;
-					// Session session = SessionUtil.getSession();
-					for(int i = 0; i < separationValues.size(); i++)
-					{
-						row = separationValues.get(i);
-						List<String> result = ApprovedDevUtil.validateSeparation(row);
-						row.set(12, result.get(0));
-						validationResult.add(row);
-						if(result.get(0) != "" && result.get(1).equals("false"))
-						{
-							validated = false;
-						}
-					}
-					ws.writeSheetData(validationResult, 1);
-					// session.close();
-					Loading.close();
-					JOptionPane.showMessageDialog(null, " Validation Done");
-				}
 			}
 
 			/**
@@ -737,7 +658,8 @@ public class Developement extends JPanel implements ActionListener
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				tablePanel.setCurrentPage(1);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
-				Loading.close();
+				MainWindow.glass.setVisible(false);
+
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -752,7 +674,8 @@ public class Developement extends JPanel implements ActionListener
 				filterPanel.filterList = DataDevQueryUtil.getUserData(userDTO, startDate, endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
-				Loading.close();
+				MainWindow.glass.setVisible(false);
+
 			}
 			/**
 			 * Validate Parts Action
@@ -760,17 +683,6 @@ public class Developement extends JPanel implements ActionListener
 
 			else if(event.getSource() == validate)
 			{
-				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-				wsMap.keySet();
-				for(String wsName : wsMap.keySet())
-				{
-					if(wsName != "LoadAllData" && wsName != "Separation")
-					{
-						wsMap.get(wsName).validateParts(false);
-					}
-				}
-				Loading.close();
-				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**
 			 * Save Parts Action
@@ -784,14 +696,57 @@ public class Developement extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
-						wsMap.get(wsName).saveParts(false);
-						// wsMap.get(wsName).readSpreadsheet();
-						// wsMap.get(wsName).updateApprovedValues();
+						wsMap.get(wsName).validateParts(false);
+						if(!ws.canSave)
+						{
+							input = new ArrayList<ArrayList<String>>();
+							input = wsMap.get(wsName).getUnApprovedValues(input);
+							if(input.size() > 0)
+							{
+								int reply = JOptionPane
+										.showConfirmDialog(
+												null,
+												"There are Unapproved Values , Are you want to open Seperation Screen?",
+												"Seperation", JOptionPane.YES_NO_OPTION);
+								if(reply == JOptionPane.YES_OPTION)
+								{
+
+									openseperation();
+								}
+								else
+								{
+									MainWindow.glass.setVisible(false);
+									return null;
+								}
+							}
+							else
+							{
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null,
+										"can't save sheet duto some errors in your data");
+							}
+						}
+						else
+						{
+							if(!wsMap.get(wsName).saved)
+							{
+								wsMap.get(wsName).saved = true;
+								wsMap.get(wsName).saveParts(false);
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null, "Saving Data Finished");
+							}
+							else
+							{
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+								return null;
+							}
+						}
 					}
 				}
-				Loading.close();
-				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 
+				MainWindow.glass.setVisible(false);
+				// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}
 
 			else if(event.getSource() == srcFeedbackBtn)
@@ -816,12 +771,123 @@ public class Developement extends JPanel implements ActionListener
 					srcFeedbackFrame.setResizable(false);
 					srcFeedbackFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				}
-				Loading.close();
-			}
+				MainWindow.glass.setVisible(false);
 
-			Loading.close();
+			}
+			MainWindow.glass.setVisible(false);
 
 			return null;
+		}
+
+		private void saveseparation()
+		{
+			ArrayList<String> row;
+			if(!validated)
+			{
+				MainWindow.glass.setVisible(false);
+				JOptionPane.showMessageDialog(null,
+						" Validate First due to some errors in your data");
+
+				return;
+			}
+
+			for(int i = 0; i < separationValues.size(); i++)
+			{
+				row = separationValues.get(i);
+
+				String plName = row.get(0);
+				String featureName = row.get(3);
+				String featureFullValue = row.get(4);
+
+				try
+				{
+					List<ApprovedParametricDTO> approved = ApprovedDevUtil
+							.createApprovedValuesList(featureFullValue, plName, featureName,
+									row.get(5), row.get(6), row.get(7), row.get(10), row.get(11),
+									row.get(9), row.get(8));
+
+					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
+							featureFullValue, row.get(2), userId);
+				}catch(ArrayIndexOutOfBoundsException ex)
+				{
+					try
+					{
+						Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+						cell.setText(ex.getMessage());
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					ex.printStackTrace();
+				}catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+				appValues.add(featureFullValue);
+			}
+		}
+
+		private void validateseparation()
+		{
+			ArrayList<String> row;
+			ArrayList<ArrayList<String>> validationResult = new ArrayList<>();
+			validated = true;
+			// Session session = SessionUtil.getSession();
+			for(int i = 0; i < separationValues.size(); i++)
+			{
+				row = separationValues.get(i);
+				List<String> result = ApprovedDevUtil.validateSeparation(row);
+				row.set(12, result.get(0));
+				validationResult.add(row);
+				if(result.get(0) != "" && result.get(1).equals("false"))
+				{
+					validated = false;
+				}
+			}
+			ws.writeSheetData(validationResult, 1);
+		}
+
+		private void openseperation()
+		{
+			ArrayList<String> row = null;
+			input = new ArrayList<ArrayList<String>>();
+			tabbedPane.setSelectedIndex(2);
+			row = new ArrayList<String>();
+			row.add("PL_Name");// 0
+			row.add("Part");// 1
+			row.add("Datasheet");// 2
+			row.add("Feature Name");// 3
+			row.add("Feature Value");// 4
+			row.add("Feature Unit");// 5
+			row.add("Sign");// 6
+			row.add("Value");// 7
+			row.add("Type");// 8
+			row.add("Condition");// 9
+			row.add("Multiplier");// 10
+			row.add("Unit");// 11
+			row.add("Validation result");// 12
+
+			if(wsMap.get("Separation") != null)
+			{
+				wsMap.remove("Separation");
+			}
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					System.out.println("Sheet Name:" + wsName);
+					input = wsMap.get(wsName).getUnApprovedValues(input);
+				}
+			}
+			separationPanel.openOfficeDoc();
+			ws = new WorkingSheet(separationPanel, "Separation");
+			separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+					+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			ws.setSeparationHeader(row);
+			ws.writeSheetData(input, 1);
+			wsMap.put("Separation", ws);
+			MainWindow.glass.setVisible(false);
 		}
 	}
 

@@ -29,13 +29,13 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
-
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
@@ -76,11 +76,13 @@ public class QAChecks extends JPanel implements ActionListener
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAchecksFilterData(userDTO);
-		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
+				+ filterData.size());
 		selectionPanel = new JPanel();
 
 		String[] filterLabels = { "PL Name", "Supplier", "Checker Type", "Status" };
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
@@ -96,7 +98,8 @@ public class QAChecks extends JPanel implements ActionListener
 		alertsPanel1 = new AlertsPanel(userDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
 		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		sheetpanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
+		sheetpanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
+				- (((height - 100) * 3) / 10) - 130);
 		selectionPanel.setLayout(null);
 		selectionPanel.add(filterPanel);
 		selectionPanel.add(buttonsPanel);
@@ -176,10 +179,13 @@ public class QAChecks extends JPanel implements ActionListener
 			filterstatus = status;
 			tabbedPane.setSelectedIndex(0);
 			sheetpanel.openOfficeDoc();
-			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAchecksData(plName, supplierName, checkerType, status, startDate, endDate, userDTO.getId(), session);
+			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil
+					.getQAchecksData(plName, supplierName, checkerType, status, startDate, endDate,
+							userDTO.getId(), session);
 			wsMap.clear();
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
-			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@"
+					+ System.currentTimeMillis() + ".xls");
 			wsMap.put("QAChecks", ws);
 			ws.setqaChecksheader(checkerType);
 			ArrayList<String> sheetHeader = ws.getHeader();
@@ -188,7 +194,8 @@ public class QAChecks extends JPanel implements ActionListener
 			ArrayList<ArrayList<String>> data = new ArrayList<>();
 			for(int i = 0; i < reviewData.size(); i++)
 			{
-				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(), reviewData.get(i).getCheckpartid(), session);
+				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(),
+						reviewData.get(i).getCheckpartid(), session);
 				String flag = "AffectedPart";
 				if(exist)
 				{
@@ -204,19 +211,28 @@ public class QAChecks extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getVendor().getName());
 				row.add(reviewData.get(i).getDatasheet().getPdf().getSeUrl());
 				row.add(reviewData.get(i).getDatasheetTitle());
-				row.add(reviewData.get(i).getProductLine() == null ? "" : reviewData.get(i).getProductLine().getName());
-				row.add(reviewData.get(i).getMask() == null ? "" : reviewData.get(i).getMask().getMstrPart());
-				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
-				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
+				row.add(reviewData.get(i).getProductLine() == null ? "" : reviewData.get(i)
+						.getProductLine().getName());
+				row.add(reviewData.get(i).getMask() == null ? "" : reviewData.get(i).getMask()
+						.getMstrPart());
+				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily()
+						.getName());
+				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData)
+						|| reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
 				{
-					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
-					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i)
+							.getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i)
+							.getFeatureValue());
 				}
 				else if(reviewData.get(i).getChecker().equals(StatusName.generic_part))
 				{
-					row.add(reviewData.get(i).getGeneric() == null ? "" : reviewData.get(i).getGeneric());
-					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
-					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+					row.add(reviewData.get(i).getGeneric() == null ? "" : reviewData.get(i)
+							.getGeneric());
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i)
+							.getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i)
+							.getFeatureValue());
 				}
 				row.add("");
 				row.add("");
@@ -297,7 +313,7 @@ public class QAChecks extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
@@ -326,7 +342,7 @@ public class QAChecks extends JPanel implements ActionListener
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				if(!filterstatus.equals(StatusName.Open))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "You can save Open checks only");
 
 					return null;
@@ -336,7 +352,17 @@ public class QAChecks extends JPanel implements ActionListener
 				{
 					if(wsName == "QAChecks")
 					{
-						wsMap.get(wsName).saveQAChecksAction(checker, engName);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveQAChecksAction(checker, engName);
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
 					}
 				}
 			}
@@ -374,7 +400,8 @@ public class QAChecks extends JPanel implements ActionListener
 				}
 				separationPanel.openOfficeDoc();
 				ws = new WorkingSheet(separationPanel, "Separation");
-				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.setSeparationHeader(row);
 				ws.writeSheetData(input, 1);
 				wsMap.put("Separation", ws);
@@ -382,6 +409,7 @@ public class QAChecks extends JPanel implements ActionListener
 			else if(event.getActionCommand().equals(" validate "))
 			{
 				validated = ws.validateSeparation();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, " Validation Done");
 
 			}
@@ -392,52 +420,67 @@ public class QAChecks extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 				}
 				else
 				{
 					if(!validated)
 					{
-						Loading.close();
-						JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
 
+						MainWindow.glass.setVisible(false);
+						JOptionPane.showMessageDialog(null,
+								" Validate First due to some errors in your data");
 						return null;
 					}
 
-					for(int i = 0; i < separationValues.size(); i++)
+					if(!wsMap.get("Separation").saved)
 					{
-						row = separationValues.get(i);
-
-						String plName = row.get(0);
-						String featureName = row.get(3);
-						String featureFullValue = row.get(4);
-
-						try
+						wsMap.get("Separation").saved = true;
+						for(int i = 0; i < separationValues.size(); i++)
 						{
-							List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+							row = separationValues.get(i);
+							String plName = row.get(0);
+							String featureName = row.get(3);
+							String featureFullValue = row.get(4);
 
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
-						}catch(ArrayIndexOutOfBoundsException ex)
-						{
 							try
 							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
-								cell.setText(ex.getMessage());
-							}catch(Exception e)
+								List<ApprovedParametricDTO> approved = ApprovedDevUtil
+										.createApprovedValuesList(featureFullValue, plName,
+												featureName, row.get(5), row.get(6), row.get(7),
+												row.get(10), row.get(11), row.get(9), row.get(8));
+
+								ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
+										featureName, featureFullValue, row.get(2), userId);
+							}catch(ArrayIndexOutOfBoundsException ex)
 							{
-								e.printStackTrace();
+								try
+								{
+									Cell cell = wsMap.get("Separation").getCellByPosission(12,
+											i + 1);
+									cell.setText(ex.getMessage());
+								}catch(Exception e)
+								{
+									e.printStackTrace();
+								}
+								ex.printStackTrace();
+							}catch(Exception ex)
+							{
+								ex.printStackTrace();
 							}
-							ex.printStackTrace();
-						}catch(Exception ex)
-						{
-							ex.printStackTrace();
 						}
+						JOptionPane.showMessageDialog(null, "Approved Saving Done");
 					}
-					JOptionPane.showMessageDialog(null, "Approved Saving Done");
+					else
+					{
+						MainWindow.glass.setVisible(false);
+						JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+						return null;
+					}
 				}
 			}
-
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

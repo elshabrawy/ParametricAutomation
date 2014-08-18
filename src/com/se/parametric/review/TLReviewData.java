@@ -29,6 +29,7 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
@@ -72,7 +73,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamLeaderName = userDTO.getFullName();
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		height = Toolkit.getDefaultToolkit().getScreenSize().height;
+		height = Toolkit.getDefaultToolkit().getScreenSize().height - 10;
 		ArrayList<Object[]> filterData = DataDevQueryUtil
 				.getTLReviewFilterData(userDTO, null, null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
@@ -80,7 +81,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Status", "DevUserName", "Date" };
+				"Status", "DevUserName", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
@@ -138,11 +139,11 @@ public class TLReviewData extends JPanel implements ActionListener
 		separation.setBounds(3, 11, 95, 29);
 		separation.setForeground(new Color(25, 25, 112));
 		separation.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate.addActionListener(this);
+		// validate.addActionListener(this);
 		save.addActionListener(this);
-		separation.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
+		// separation.addActionListener(this);
+		// devSheetButtonPanel.add(separation);
+		// devSheetButtonPanel.add(validate);
 		devSheetButtonPanel.add(save);
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
 		separationButtonPanel = new JPanel();
@@ -249,7 +250,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			/**
@@ -288,6 +289,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -312,24 +314,32 @@ public class TLReviewData extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetpanel.isOpened())
+
+				{
+
 					ok = ParaQueryUtil.getDialogMessage(
 							"another PDF is opend are you need to replace this",
 							"Confermation Dailog");
-
+				}
 				if(sheetpanel.isOpened() && ok == false)
 				{
-
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
+				}
+				else if(sheetpanel.isOpened() && ok == true)
+				{
+
 				}
 				int[] selectedPdfs = tablePanel.table.getSelectedRows();
 				int selectedPdfsCount = selectedPdfs.length;
 				if(selectedPdfsCount == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfsCount > 1)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 				}
 				else
@@ -391,6 +401,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					}
 
 				}
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Load All PDFs review and development Sheet
@@ -409,7 +420,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 
@@ -460,23 +471,13 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Validate Parts Action
 			 */
 			else if(event.getSource() == validate)
 			{
-				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-				wsMap.keySet();
-				for(String wsName : wsMap.keySet())
-				{
-					if(wsName != "LoadAllData" && wsName != "Separation")
-					{
-						wsMap.get(wsName).validateParts(true);
-					}
-				}
-				JOptionPane.showMessageDialog(null, "Validation Finished");
-
 			}
 			/**
 			 * Save Parts Action
@@ -489,7 +490,53 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
-						wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+						wsMap.get(wsName).validateParts(true);
+						if(!ws.canSave)
+						{
+							input = new ArrayList<ArrayList<String>>();
+							input = wsMap.get(wsName).getUnApprovedValues(input);
+							if(input.size() > 0)
+							{
+								MainWindow.glass.setVisible(false);
+
+								int reply = JOptionPane
+										.showConfirmDialog(
+												null,
+												"There are Unapproved Values , Are you want to open Seperation Screen?",
+												"Seperation", JOptionPane.YES_NO_OPTION);
+								if(reply == JOptionPane.YES_OPTION)
+								{
+									openseperation();
+								}
+								else
+								{
+									MainWindow.glass.setVisible(false);
+									return null;
+								}
+							}
+							else
+							{
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null,
+										"can't save sheet duto some errors in your data");
+							}
+						}
+						else
+						{
+							if(!wsMap.get(wsName).saved)
+							{
+								wsMap.get(wsName).saved = true;
+								wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+							}
+							else
+							{
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+								return null;
+							}
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "Saving Data Finished");
+						}
 					}
 				}
 			}
@@ -499,40 +546,7 @@ public class TLReviewData extends JPanel implements ActionListener
 			 * **/
 			else if(event.getActionCommand().equals("Separation"))
 			{
-				input = new ArrayList<ArrayList<String>>();
-				tabbedPane.setSelectedIndex(2);
-				row = new ArrayList<String>();
-				row.add("PL_Name");
-				row.add("Part");
-				row.add("Datasheet");
-				row.add("Feature Name");
-				row.add("Feature Value");
-				row.add("Feature Unit");
-				row.add("Sign");
-				row.add("Value");
-				row.add("Type");
-				row.add("Condition");
-				row.add("Multiplier");
-				row.add("Unit");
-				if(wsMap.get("Separation") != null)
-				{
-					wsMap.remove("Separation");
-				}
-				for(String wsName : wsMap.keySet())
-				{
-					if(wsName != "LoadAllData" && wsName != "Separation")
-					{
-						System.out.println("Sheet Name:" + wsName);
-						input = wsMap.get(wsName).getUnApprovedValues(input);
-					}
-				}
-				separationPanel.openOfficeDoc();
-				ws = new WorkingSheet(separationPanel, "Separation");
-				sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
-						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
-				ws.setSeparationHeader(row);
-				ws.writeSheetData(input, 1);
-				wsMap.put("Separation", ws);
+
 			}
 			/**
 			 * Save Separation Action
@@ -544,6 +558,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -572,13 +587,62 @@ public class TLReviewData extends JPanel implements ActionListener
 								.get(featureName);
 						appValues.add(featureFullValue);
 					}
-					JOptionPane.showMessageDialog(null, "Approved Saving Done");
+					MainWindow.glass.setVisible(false);
+					int reply = JOptionPane.showConfirmDialog(null,
+							"Approved Saving Done , Press OK to Save Parts Status", "TL Review",
+							JOptionPane.OK_OPTION);
+					if(reply == JOptionPane.OK_OPTION)
+					{
+						MainWindow.glass.setVisible(true);
+						save.doClick();
+						tabbedPane.setSelectedIndex(1);
+					}
 				}
 
 			}
 
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
+		}
+
+		private void openseperation()
+		{
+			ArrayList<String> row = null;
+			input = new ArrayList<ArrayList<String>>();
+			tabbedPane.setSelectedIndex(2);
+			row = new ArrayList<String>();
+			row.add("PL_Name");
+			row.add("Part");
+			row.add("Datasheet");
+			row.add("Feature Name");
+			row.add("Feature Value");
+			row.add("Feature Unit");
+			row.add("Sign");
+			row.add("Value");
+			row.add("Type");
+			row.add("Condition");
+			row.add("Multiplier");
+			row.add("Unit");
+			if(wsMap.get("Separation") != null)
+			{
+				wsMap.remove("Separation");
+			}
+			for(String wsName : wsMap.keySet())
+			{
+				if(wsName != "LoadAllData" && wsName != "Separation")
+				{
+					System.out.println("Sheet Name:" + wsName);
+					input = wsMap.get(wsName).getUnApprovedValues(input);
+				}
+			}
+			separationPanel.openOfficeDoc();
+			ws = new WorkingSheet(separationPanel, "Separation");
+			sheetpanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName()
+					+ "@" + System.currentTimeMillis() + ".xls");
+			ws.setSeparationHeader(row);
+			ws.writeSheetData(input, 1);
+			wsMap.put("Separation", ws);
+			MainWindow.glass.setVisible(false);
 		}
 	}
 }
