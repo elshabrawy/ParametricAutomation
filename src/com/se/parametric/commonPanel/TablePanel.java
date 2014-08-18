@@ -377,7 +377,7 @@ public class TablePanel extends JPanel implements ActionListener
 			{
 				for(Method method : m)
 				{
-					if(header[i].contains("date"))
+					if(header[i].contains("Date"))
 					{
 						if(method.getName().equals("getDate"))
 						{
