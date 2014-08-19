@@ -332,6 +332,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -353,6 +354,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 					}
 					ws.writeSheetData(validationResult, 1);
 					// session.close();
+					Loading.close();
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
@@ -529,15 +531,16 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else
 							{
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
-										+ newValReq.get(4)
-										+ " Can't Save dueto change in main columns");
+								Loading.close();
+								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
+
 							}
 						}
 
 						System.out.println("size is " + result.size());
 					}
 				}
+				Loading.close();
 				JOptionPane.showMessageDialog(null, "Saved Done");
 			}
 			Loading.close();

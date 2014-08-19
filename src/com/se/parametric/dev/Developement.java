@@ -344,10 +344,12 @@ public class Developement extends JPanel implements ActionListener
 				System.out.println(selectedPdfs.length);
 				if(selectedPdfs.length == 0)
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfs.length > 1)
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 				}
 				else

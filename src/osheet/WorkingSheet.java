@@ -2928,9 +2928,9 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
-						JOptionPane.showMessageDialog(null,
-								"Comment can not be empty for rejected parts", "Saving Not Done",
-								JOptionPane.ERROR_MESSAGE);
+						Loading.close();
+						JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
+
 						return;
 					}
 					else
