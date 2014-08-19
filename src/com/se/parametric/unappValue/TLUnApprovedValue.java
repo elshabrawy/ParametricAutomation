@@ -23,6 +23,7 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.hibernate.Session;
 
+import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
@@ -85,16 +86,20 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
-		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, null, null, "parametric");
-		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers,
+				null, null, "parametric");
+		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
+				+ filterData.size());
 		selectionPanel = new JPanel();
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
 
 		// sheetPanel.setSize(width - 110, (((height - 100) * 7) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
+		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
+				- (((height - 100) * 3) / 10) - 130);
 		// filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add(" validate ");
@@ -121,7 +126,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		TLfeedBack = new TLUnApprovedValueFeedback(userDTO);
 		devSheetButtonPanel = new JPanel();
 		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		devSheetButtonPanel.setBounds(width - 110, 0, 106, height - 100);
 		TLfeedBack.setBounds(width - 110, 0, 106, height - 100);
 		devSheetButtonPanel.setLayout(null);
@@ -216,7 +222,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 
 			Loading.show();
 			// WorkingSheet ws = null;
-			
+
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
 			if(event.getSource().equals(filterPanel.filterButton))
@@ -234,16 +240,21 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String taskType = filterPanel.comboBoxItems[4].getSelectedItem().toString();
 
-				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName, startDate, endDate, plName, supplierName, StatusName.tlReview, taskType, "Parametric", "Data", 0l);
+				unApproveds = ApprovedDevUtil.getUnapprovedReviewData(teamMembers, engName,
+						startDate, endDate, plName, supplierName, StatusName.tlReview, taskType,
+						"Parametric", "Data", 0l);
 				// unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
 				list = new ArrayList<ArrayList<String>>();
 				row = new ArrayList<String>();
 				sheetPanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
-				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapparoved@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapparoved@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				row.add("PL Name");
 				row.add("Part Name");
 				row.add("Pdf Url");
+				row.add("Supplier");
+				row.add("ReceivedDate");
 				row.add("Feature Name");
 				row.add("Feature Value");
 				row.add("Feature Unit");
@@ -265,6 +276,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					row.add(obj.getPlName());
 					row.add(obj.getPartNumber());
 					row.add(obj.getPdfUrl());
+					row.add(obj.getSupplier());
+					row.add(obj.getReceivedDate());
 					row.add(obj.getFeatureName());
 					row.add(obj.getFeatureValue());
 					row.add(obj.getFeatureUnit());
@@ -282,7 +295,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				statusValues.add("Wrong Value");
 				statusValues.add("Wrong Separation");
 				ws.statusValues = statusValues;
-				ws.writeReviewData(list, 1, 13);
+				ws.writeReviewData(list, 1, 15);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				// session.close();
@@ -297,14 +310,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers, startDate, endDate, "parametric");
+				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(teamMembers,
+						startDate, endDate, "parametric");
 				filterPanel.refreshFilters();
 			}
 
 			else if(event.getActionCommand().equals(" validate "))
 			{
 				// tabbedPane.setSelectedIndex(0);
-				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values").readSpreadsheet(1);
+				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values")
+						.readSpreadsheet(1);
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
@@ -321,7 +336,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 					{
 						row = wsheet.get(i);
 						List<String> result = ApprovedDevUtil.validateSeparation(row);
-						row.set(14, result.get(0));
+						row.set(16, result.get(0));
 						validationResult.add(row);
 						if(result.get(0) != "" && result.get(1).equals("false"))
 						{
@@ -356,15 +371,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						for(int i = 0; i < result.size(); i++)
 						{
 							ArrayList<String> newValReq = result.get(i);
-							if(newValReq.get(12).equals("Update"))
+							if(newValReq.get(14).equals("Update"))
 							{
 								try
 								{
 									if(!validated)
 									{
 										Loading.close();
-										JOptionPane.showMessageDialog(null, " Validate First due to some errors in your data");
-										
+										JOptionPane.showMessageDialog(null,
+												" Validate First due to some errors in your data");
+
 										return null;
 									}
 								}catch(Exception e)
@@ -376,46 +392,67 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						}
 						for(int i = 0; i < result.size(); i++)
 						{
-							ArrayList<String> newValReq = result.get(i);
-							UnApprovedDTO oldValReq = unApproveds.get(i);
-							// long devUser = unApproveds.get(i).getUserId();
-							if(newValReq.get(0).equals(oldValReq.getPlName()) && newValReq.get(3).equals(oldValReq.getFeatureName()) && newValReq.get(4).equals(oldValReq.getFeatureValue()) && newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+							try
 							{
-								oldValReq.setSign(newValReq.get(6));
-								oldValReq.setValue(newValReq.get(7));
-								oldValReq.setType(newValReq.get(8));
-								oldValReq.setCondition(newValReq.get(9));
-								oldValReq.setMultiplier(newValReq.get(10));
-								oldValReq.setUnit(newValReq.get(11));
-								oldValReq.setFbStatus(StatusName.reject);
-								oldValReq.setGruopSatus(StatusName.engFeedback);
-								oldValReq.setComment(newValReq.get(13));
-								oldValReq.setIssuedby(userDTO.getId());
-								oldValReq.setFbType(StatusName.internal);
-								oldValReq.setIssueType(newValReq.get(12));
-								if(newValReq.get(12).equals("Approved"))
+
+								ArrayList<String> newValReq = result.get(i);
+								UnApprovedDTO oldValReq = unApproveds.get(i);
+								// long devUser = unApproveds.get(i).getUserId();
+								if(newValReq.get(0).equals(oldValReq.getPlName())
+										&& newValReq.get(5).equals(oldValReq.getFeatureName())
+										&& newValReq.get(6).equals(oldValReq.getFeatureValue())
+										&& newValReq.get(7).equals(oldValReq.getFeatureUnit()))
 								{
-									ApprovedDevUtil.setValueApproved(result.get(i), StatusName.qaReview);
+									oldValReq.setSign(newValReq.get(8));
+									oldValReq.setValue(newValReq.get(9));
+									oldValReq.setType(newValReq.get(10));
+									oldValReq.setCondition(newValReq.get(11));
+									oldValReq.setMultiplier(newValReq.get(12));
+									oldValReq.setUnit(newValReq.get(13));
+									oldValReq.setFbStatus(StatusName.reject);
+									oldValReq.setGruopSatus(StatusName.engFeedback);
+									oldValReq.setComment(newValReq.get(15));
+									oldValReq.setIssuedby(userDTO.getId());
+									oldValReq.setFbType(StatusName.internal);
+									oldValReq.setIssueType(newValReq.get(14));
+									if(newValReq.get(14).equals("Approved"))
+									{
+										ApprovedDevUtil.setValueApproved(result.get(i),
+												StatusName.qaReview);
+									}
+									else if(newValReq.get(14).equals("Update"))
+									{
+										ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+									}
+									else if(newValReq.get(14).equals("Wrong Value"))
+									{
+										ApprovedDevUtil.saveWrongSeparation(oldValReq);
+									}
+									else if(newValReq.get(14).equals("Wrong Separation"))
+									{
+										ApprovedDevUtil.saveWrongSeparation(oldValReq);
+									}
 								}
-								else if(newValReq.get(12).equals("Update"))
+								else
 								{
-									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
+											+ newValReq.get(6)
+											+ " Can't Save dueto change in main columns");
 								}
-								else if(newValReq.get(12).equals("Wrong Value"))
-								{
-									ApprovedDevUtil.saveWrongSeparation(oldValReq);
-								}
-								else if(newValReq.get(12).equals("Wrong Separation"))
-								{
-									ApprovedDevUtil.saveWrongSeparation(oldValReq);
-								}
-							}
-							else
+							}catch(Exception e)
 							{
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
+								try
+								{
+									Cell cell = wsMap.get("Separation").getCellByPosission(16,
+											i + 1);
+									cell.setText(e.getMessage());
+								}catch(Exception ex)
+								{
+									ex.printStackTrace();
+								}
+								continue;
 							}
 						}
-
 						System.out.println("size is " + result.size());
 					}
 				}
