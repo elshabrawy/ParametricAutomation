@@ -2422,6 +2422,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2527,6 +2528,7 @@ public class WorkingSheet
 			if(!canSave)
 			{
 				System.out.println("Can Save: " + canSave);
+				Loading.close();
 				JOptionPane.showMessageDialog(null,
 						"can't save sheet duto some errors in your data");
 				return;
@@ -2603,6 +2605,7 @@ public class WorkingSheet
 					pdfSet.add(pdfUrl);
 				else
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
 							+ pdfUrl);
 					return;
@@ -2928,9 +2931,11 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						Loading.close();
 						JOptionPane.showMessageDialog(null,
 								"Comment can not be empty for rejected parts", "Saving Not Done",
 								JOptionPane.ERROR_MESSAGE);
+
 						return;
 					}
 					else
@@ -2966,8 +2971,10 @@ public class WorkingSheet
 				}
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
-			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview, teamLeaderName);
-			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
+					StatusName.qaReview, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+					StatusName.engFeedback, teamLeaderName);
 			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 
@@ -3132,7 +3139,7 @@ public class WorkingSheet
 
 			}
 
-			DataDevQueryUtil.savePartsFeedback(feedBackParts);		
+			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback,
 					devName);
 			Loading.close();
