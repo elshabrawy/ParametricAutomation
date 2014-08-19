@@ -1,9 +1,11 @@
 package com.se.parametric.unappValue;
 
 import java.awt.Color;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -243,6 +245,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				// unApproveds = ParaQueryUtil.getTLUnapprovedData(startDate, endDate, teamMembers, engName, plName, supplierName, status, taskType);
 				list = new ArrayList<ArrayList<String>>();
 				row = new ArrayList<String>();
+				sheetPanel.setFocusable(true);
 				sheetPanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
 				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapparoved@"
@@ -293,6 +296,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				// session.close();
 				MainWindow.glass.setVisible(false);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{

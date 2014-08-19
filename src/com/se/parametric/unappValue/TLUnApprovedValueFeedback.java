@@ -2,9 +2,11 @@ package com.se.parametric.unappValue;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,12 +21,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
 import org.hibernate.Session;
-
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
@@ -221,6 +220,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 
 				list = new ArrayList<ArrayList<String>>();
 				row = new ArrayList<String>();
+				sheetPanel.setFocusable(true);
 				sheetPanel.openOfficeDoc();
 				ws = new WorkingSheet(sheetPanel, "Unapproved Values");
 				sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + "Unapproved@"
@@ -297,6 +297,10 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Accept QA & Forward");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 13);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			}

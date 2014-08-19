@@ -2,9 +2,11 @@ package com.se.Quality;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -308,6 +310,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				commentValues.add(StatusName.reject);
 				ws.commentValues = commentValues;
 				ws.writeReviewData(list, 1, 13);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 

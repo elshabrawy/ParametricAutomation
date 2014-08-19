@@ -1,9 +1,11 @@
 package com.se.parametric.unappValue;
 
 import java.awt.Color;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -140,7 +142,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		tabSheet.add(alertsPanel1);
 		add(tabbedPane);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		tabbedPane.addTab("Sheet", null, tabSheet, null);
+		// tabbedPane.addTab("Sheet", null, tabSheet, null);
 		// flowChart = new ImagePanel("QASeparation.jpg");
 		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
 	}
@@ -309,6 +311,10 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Accept Wrong Value");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 13);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 			}
