@@ -123,14 +123,14 @@ public class SheetPanel extends Panel
 	private void inits()
 	{
 		laodprops();
-		try
-		{
-			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-
-		}
+//		try
+//		{
+//			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+//		}catch(Exception ex)
+//		{
+//			ex.printStackTrace();
+//
+//		}
 		aBean = new OOoBean();
 
 		FlowLayout flout = new FlowLayout();

@@ -85,12 +85,11 @@ public class QAFeedBack extends JPanel implements ActionListener
 				"PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures",
 				"TaskType", "Status", "DevUserName", "QAReviewDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name", "PL Type" };
-		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
+		tablePanel = new TablePanel(tableHeader);
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
 				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
