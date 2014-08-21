@@ -97,8 +97,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				- (((height - 100) * 3) / 10) - 130);
 		// filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add(" validate ");

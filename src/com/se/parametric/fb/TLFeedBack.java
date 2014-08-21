@@ -1,7 +1,6 @@
 package com.se.parametric.fb;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,15 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
@@ -31,13 +27,10 @@ import com.se.automation.db.client.mapping.ParaFeedbackAction;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.ButtonTabComponent;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -48,141 +41,64 @@ import com.se.parametric.dto.TableInfoDTO;
 public class TLFeedBack extends JPanel implements ActionListener
 {
 
-	SheetPanel sheetpanel = new SheetPanel();
-	SheetPanel separationPanel = new SheetPanel();
-	JPanel tabSheet, separationTab, selectionPanel;
-	JPanel devSheetButtonPanel, separationButtonPanel;
+	SheetPanel sheetpanel, separationPanel;
+	WorkingAreaPanel inputSelectionPanel, devSheetPanel, separationSheetPanel;
+	TablePanel tablePanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
-	JButton save, validate, separation, separationSave;
-	TablePanel tablePanel = null;
-	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
+	FilterPanel filterPanel;
 	Long[] teamMembers = null;
 	WorkingSheet ws = null;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
-	long userId;
-	String userName;
-	int width, height;
 	GrmUserDTO userDTO;
-	static AlertsPanel alertsPanel, alertsPanel1, alertsPanel2;
 
-	/**
-	 * Create the panel.
-	 * 
-	 * @param result
-	 * @param userDTO
-	 */
 	public TLFeedBack(GrmUserDTO userDTO)
 	{
-		userId = userDTO.getId();
 		this.userDTO = userDTO;
-		userName = userDTO.getFullName();
-		setLayout(null);
-		width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		height = Toolkit.getDefaultToolkit().getScreenSize().height - 30;
+		this.setLayout(new BorderLayout());
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getTLFeedbackFilterData(userDTO, null,
 				null);
-		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
-		selectionPanel = new JPanel();
+		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
+		tabbedPane = new JTabbedPane();
+
+		inputSelectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
 				"InfectedTaxonomies", "FinishedDate" };
+		tablePanel = inputSelectionPanel.getTablePanel(tableHeader);
+
 		String[] filterLabels = { "PL Name", "Supplier", "Feedback Source", "Feedback Type" };
-		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
-		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
-		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
-		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 4) / 10));
-		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+
+		filterPanel = inputSelectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
 		buttonLabels.add("Load All");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
+		inputSelectionPanel.addButtonsPanel(buttonLabels, this);
 
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel1 = new AlertsPanel(userDTO);
-		alertsPanel2 = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel2.setBounds(width - 120, height / 3, 110, height * 3 / 4);
+		devSheetPanel = new WorkingAreaPanel(userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add("Save");
+		buttonLabels.add("Validate");
+		buttonLabels.add("Separation");
+		devSheetPanel.addButtonsPanel(buttonLabels, this);
+		sheetpanel = devSheetPanel.getSheet();
 
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(tablePanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-		filterPanel.filterButton.addActionListener(this);
+		separationSheetPanel = new WorkingAreaPanel(userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" Save ");
+		separationSheetPanel.addButtonsPanel(buttonLabels, this);
+		separationPanel = separationSheetPanel.getSheet();
 
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		tabSheet = new JPanel();
-		separationTab = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 106, height - 100);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		save.setBounds(3, 80, 95, 29);
-		save.setForeground(new Color(25, 25, 112));
-		save.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 95, 29);
-		validate.setForeground(new Color(25, 25, 112));
-		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 95, 29);
-		separation.setForeground(new Color(25, 25, 112));
-		separation.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate.addActionListener(this);
-		save.addActionListener(this);
-		separation.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		separationButtonPanel = new JPanel();
-		separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		separationButtonPanel.setBounds(width - 120, 0, 106, height - 100);
-		separationButtonPanel.setLayout(null);
-		separationSave = new JButton(" Save ");
-		separationSave.setBounds(3, 11, 85, 29);
-		separationSave.addActionListener(this);
-		separationButtonPanel.add(separationSave);
-		separationTab.setLayout(null);
-		tabSheet.setLayout(null);
-		sheetpanel.setBounds(0, 0, width - 120, height - 125);
-		tabSheet.add(sheetpanel);
-		tabSheet.add(devSheetButtonPanel);
-		tabSheet.add(alertsPanel1);
+		inputSelectionPanel.addComponentsToPanel();
+		devSheetPanel.addComponentsToPanel();
+		separationSheetPanel.addComponentsToPanel();
 
-		separationPanel.setBounds(0, 0, width - 120, height - 125);
-		separationTab.add(separationPanel);
-		separationTab.add(separationButtonPanel);
-		separationTab.add(alertsPanel2);
-		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
-		// tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
-		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
-		// tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
-		add(tabbedPane);
+		tabbedPane.addTab("Input Selection", inputSelectionPanel);
+		tabbedPane.addTab("Data Sheet", devSheetPanel);
+		tabbedPane.addTab("Separation Sheet", separationSheetPanel);
 
-		filterPanel.refreshButton.addActionListener(this);
-
+		this.add(tabbedPane);
 	}
 
 	@Override
@@ -219,7 +135,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				try
 				{
 					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
-							featureFullValue, row.get(2), userId);
+							featureFullValue, row.get(2), userDTO.getId());
 				}catch(Exception ex)
 				{
 					ex.printStackTrace();
@@ -556,10 +472,9 @@ public class TLFeedBack extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
-		alertsPanel1.updateFlags(flags);
-		alertsPanel2.updateFlags(flags);
-
+		inputSelectionPanel.updateFlags(flags);
+		devSheetPanel.updateFlags(flags);
+		separationSheetPanel.updateFlags(flags);
 	}
 
 	class LongRunProcess extends SwingWorker
@@ -598,7 +513,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					String documentStatus = StatusName.tlFeedback;
 					tablePanel.selectedData = DataDevQueryUtil.getTlReviewFeedbackPDFs(teamMembers,
 							plName, supplierName, documentStatus, startDate, endDate, feedbackType,
-							userId, issuer);
+							userDTO.getId(), issuer);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
@@ -663,7 +578,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 			/**
 			 * Validate Parts Action
 			 */
-			else if(event.getSource() == validate)
+			else if(event.getActionCommand().equals("Validate"))
 			{
 				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
 				wsMap.keySet();
@@ -680,7 +595,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 			/**
 			 * Save Parts Action
 			 */
-			else if(event.getSource() == save)
+			else if(event.getActionCommand().equals("Save"))
 			{
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				wsMap.keySet();
@@ -691,7 +606,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						if(!wsMap.get(wsName).saved)
 						{
 							wsMap.get(wsName).saved = true;
-							wsMap.get(wsName).saveTLFeedbackAction(userName);
+							wsMap.get(wsName).saveTLFeedbackAction(userDTO.getFullName());
 						}
 						else
 						{

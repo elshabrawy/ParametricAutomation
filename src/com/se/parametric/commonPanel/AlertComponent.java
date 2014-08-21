@@ -1,4 +1,4 @@
-package com.se.parametric.util;
+package com.se.parametric.commonPanel;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -13,58 +13,45 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 public class AlertComponent extends JPanel
 {
 	private JLabel txtLbl;
 	private CircleLable countLbl;
-	private JLabel emptySpaceLbl;
 
-	public AlertComponent(String txt, String count)
+	public AlertComponent(String txt)
 	{
 		super();
 		this.txtLbl = new JLabel(txt);
-		this.countLbl = new CircleLable(count);
-		this.emptySpaceLbl = new JLabel();
+		this.countLbl = new CircleLable();
 		init();
 	}
 
 	private void init()
 	{
-		setBackground(Color.LIGHT_GRAY);
-		setOpaque(true);
-
 		txtLbl.setForeground(Color.BLACK);
-		txtLbl.setFont(new Font("Arial Black", Font.BOLD, 12));
-		txtLbl.setHorizontalTextPosition(SwingConstants.LEFT);
+		txtLbl.setFont(new Font("Arial", Font.PLAIN, 12));
 
 		countLbl.setFont(new Font("Arial Black", Font.BOLD, 12));
 		countLbl.setForeground(Color.WHITE);
 
-		this.setBorder(javax.swing.BorderFactory
-				.createLineBorder(new java.awt.Color(51, 51, 51), 2));
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints bc = new GridBagConstraints();
-		int x = txtLbl.getText().length() * 4;
-		bc.ipadx = x;
 		bc.gridx = 0;
-		bc.gridy = 0;
-		this.add(emptySpaceLbl, bc);
-
-		bc = new GridBagConstraints();
-		bc.gridx = 1;
 		bc.gridy = 0;
 		this.add(countLbl, bc);
 
 		bc = new GridBagConstraints();
 		bc.gridx = 0;
 		bc.gridy = 1;
-		bc.gridwidth = 2;
-		bc.anchor = GridBagConstraints.LINE_START;
 		this.add(txtLbl, bc);
+	}
+
+	public void setCount(String count)
+	{
+		countLbl.setText(count);
 	}
 
 	public static void main(String[] args)
@@ -72,7 +59,7 @@ public class AlertComponent extends JPanel
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new FlowLayout());
-		frame.getContentPane().add(new AlertComponent("ppxxtt", "123"));
+		frame.getContentPane().add(new AlertComponent("ppxxtt"));
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -84,6 +71,11 @@ class CircleLable extends JLabel
 	public CircleLable(String text)
 	{
 		super(text);
+		init();
+	}
+
+	public CircleLable()
+	{
 		init();
 	}
 

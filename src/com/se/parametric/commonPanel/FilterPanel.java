@@ -50,7 +50,7 @@ public class FilterPanel extends JPanel implements ActionListener
 
 	// JLabel counts = new JLabel();
 
-	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height, boolean isQA)
+	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, boolean isQA)
 	{
 		for(int i = 0; i < list.size(); i++)
 		{
@@ -85,7 +85,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		datePanel = new JPanel();
 		datePanel.setBackground(new Color(255, 240, 245));
 		datePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		datePanel.setBounds(0, 0, width, 60);
+//		datePanel.setBounds(0, 0, width, 60);
 		add(datePanel);
 		jDateChooser1.setBounds(232, 21, 91, 20);
 		jDateChooser1.setDate(new java.util.Date());
@@ -112,33 +112,33 @@ public class FilterPanel extends JPanel implements ActionListener
 		JPanel comboPanel = new JPanel();
 		comboPanel.setBackground(new Color(102, 204, 204));
 		comboPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		comboPanel.setBounds(0, 60, width, height - 60);
+//		comboPanel.setBounds(0, 60, width, height - 60);
 		comboPanel.setLayout(null);
 		int comboRows = (int) Math.ceil(titleOfCombobox.length * 1.0 / 2);
-		int initX = (width - (2 * (260))) / 3;
-		int initY = ((height - 100) - (comboRows * 25)) / (comboRows + 1);
+//		int initX = (width - (2 * (260))) / 3;
+//		int initY = ((height - 100) - (comboRows * 25)) / (comboRows + 1);
 		int xPlus = 0, yPlus = 0;
 		for(int i = 0; i < titleOfCombobox.length; i++)
 		{
 			filterLabels[i] = new JLabel(titleOfCombobox[i]);
 			filterLabels[i].setFont(new Font("Tahoma", Font.BOLD, 11));
-			int xPos = initX + xPlus;
-			int yPos = initY + yPlus;
-			filterLabels[i].setBounds(xPos, yPos, 105, 25);
+//			int xPos = initX + xPlus;
+//			int yPos = initY + yPlus;
+//			filterLabels[i].setBounds(xPos, yPos, 105, 25);
 			comboPanel.add(filterLabels[i]);
 			comboBoxItems[i] = new JComboBox(result.get(i));
-			xPos = initX + xPlus + 130;
-			yPos = initY + yPlus;
-			comboBoxItems[i].setBounds(xPos, yPos, 130, 25);
+//			xPos = initX + xPlus + 130;
+//			yPos = initY + yPlus;
+//			comboBoxItems[i].setBounds(xPos, yPos, 130, 25);
 			comboBoxItems[i].setSelectedItem("All");
 			comboPanel.add(comboBoxItems[i]);
 			if((i % 2) == 0)
 			{
-				xPlus += (260 + initX);
+//				xPlus += (260 + initX);
 			}
 			else
 			{
-				yPlus += (25 + initY);
+//				yPlus += (25 + initY);
 				xPlus = 0;
 			}
 		}
@@ -147,15 +147,15 @@ public class FilterPanel extends JPanel implements ActionListener
 			comboBoxItems[i].addActionListener(this);
 		}
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		filterButton.setBounds(width / 2 - 120, height - 100, 110, 30);
+//		filterButton.setBounds(width / 2 - 120, height - 100, 110, 30);
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
+//		refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
 		comboPanel.add(refreshButton);
 		comboPanel.add(filterButton);
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
-			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
+//			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
 			comboPanel.add(addsummary);
 		}
 		// counts.setBounds(width - 100, height - 100, 100, 30);

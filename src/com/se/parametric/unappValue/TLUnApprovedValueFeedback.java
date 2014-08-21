@@ -85,8 +85,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110,
 				(((height - 100) * 7) / 10));
 		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110,
-				(((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, false);
 		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
 		alertsPanel = new AlertsPanel(TLDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
