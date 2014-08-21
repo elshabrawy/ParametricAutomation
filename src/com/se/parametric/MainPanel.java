@@ -2,18 +2,25 @@ package com.se.parametric;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -31,7 +38,7 @@ import com.se.parametric.dev.Update;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.fb.EngFeedBack;
 import com.se.parametric.fb.ExceptionFB;
-import com.se.parametric.fb.TLFeedBack1;
+import com.se.parametric.fb.TLFeedBack;
 import com.se.parametric.review.TLReviewData;
 import com.se.parametric.unappValue.EngUnApprovedValueFeedback;
 import com.se.parametric.unappValue.TLUnApprovedValue;
@@ -43,7 +50,7 @@ public class MainPanel extends JPanel implements ActionListener
 	 * Create the panel.
 	 */
 	EngFeedBack engfeedBack;
-	TLFeedBack1 tlfeedBack;
+	TLFeedBack tlfeedBack;
 	TLUnApprovedValue tlunApprovedPanel = null;
 	EngUnApprovedValueFeedback engunApprovedPanel = null;
 	TLReviewData reviewData;
@@ -75,10 +82,11 @@ public class MainPanel extends JPanel implements ActionListener
 	static int height;
 	// JPanel mainpnl;
 	// JPanel tabspanel;
-	JTabbedPane tabbedPane;
+	static JTabbedPane tabbedPane;
 	List<JButton> buttonlist;
 	List<String> iconsurl;
 	JToolBar toolBar;
+	static JPopupMenu menu;
 
 	public MainPanel(GrmUserDTO userDTO, int width, int height)
 	{
@@ -102,7 +110,10 @@ public class MainPanel extends JPanel implements ActionListener
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, height - 980, width - 10, height - 30);
 		tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+
 		// tabspanel.add(tabbedPane);
+		tabbedPane.addMouseListener(new PopupListener());
+		createMenu();
 
 		toolBar = new JToolBar("");
 		toolBar.setFloatable(false);
@@ -410,7 +421,7 @@ public class MainPanel extends JPanel implements ActionListener
 				if(tabbedPane.indexOfComponent(tlfeedBack) == -1)
 				{
 
-					tlfeedBack = new TLFeedBack1(userDTO);
+					tlfeedBack = new TLFeedBack(userDTO);
 					tabbedPane.addTab("TL Feedback", tlfeedBack);
 					int index = tabbedPane.indexOfComponent(tlfeedBack);
 					tabbedPane.setTabComponentAt(index, new ButtonTabComponent(tabbedPane));
@@ -579,4 +590,90 @@ public class MainPanel extends JPanel implements ActionListener
 		}
 	}
 
+	private static JMenuItem createMenuItem(String s)
+	{
+		JMenuItem item = new JMenuItem(s);
+		item.setActionCommand(s);
+		item.addActionListener(listener);
+		return item;
+	}
+
+	private static void createMenu()
+	{
+		menu = new JPopupMenu();
+		menu.add(createMenuItem("Close"));
+		menu.add(createMenuItem("CloseAll"));
+		menu.add(createMenuItem("CloseOther"));
+	}
+
+	private static Action listener = new AbstractAction() {
+
+		public void actionPerformed(ActionEvent e)
+		{
+			JMenuItem item = (JMenuItem) e.getSource();
+			String ac = item.getActionCommand();
+			int remIndex = tabbedPane.getSelectedIndex();
+			if(ac.equals("Close"))
+			{
+				if(remIndex < 0)
+				{
+					// JOptionPane.showMessageDialog(rootPane, "No tab available to close");
+					System.err.println("there is no tab to close");
+				}
+				else
+				{
+					System.err.println("close tab no :" + remIndex);
+					tabbedPane.remove(remIndex);
+					tabbedPane.revalidate();
+				}
+			}
+			if(ac.equals("CloseAll"))
+			{
+				System.err.println("close All");
+				tabbedPane.removeAll();
+				tabbedPane.revalidate();
+			}
+			if(ac.equals("CloseOther"))
+			{
+				System.err.println("close all unless tab no :" + remIndex);
+				int count = tabbedPane.getComponentCount();
+				for(int i = 0; i < count - 1; i++)
+				{
+					if(tabbedPane.getComponentAt(i) != tabbedPane.getComponentAt(remIndex))
+					{
+						tabbedPane.remove(i);
+					}
+				}
+				tabbedPane.revalidate();
+			}
+
+		}
+	};
+
+	private static class PopupListener extends MouseAdapter
+	{
+		public void mousePressed(MouseEvent e)
+		{
+			checkForPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e)
+		{
+			checkForPopup(e);
+		}
+
+		public void mouseClicked(MouseEvent e)
+		{
+			checkForPopup(e);
+		}
+
+		private void checkForPopup(MouseEvent e)
+		{
+			if(e.isPopupTrigger())
+			{
+				Component c = e.getComponent();
+				menu.show(c, e.getX(), e.getY());
+			}
+		}
+	}
 }

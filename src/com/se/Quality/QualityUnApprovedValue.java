@@ -1,9 +1,11 @@
 package com.se.Quality;
 
 import java.awt.Color;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -274,6 +276,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				statusValues.add("Wrong Value");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 13);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
