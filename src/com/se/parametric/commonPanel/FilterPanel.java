@@ -1,7 +1,10 @@
 package com.se.parametric.commonPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.LinkedHashSet;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -17,11 +21,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
+import com.jtattoo.demo.app.JXTrayIcon;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
 //import com.se.automation.db.client.mapping.CheckFeature;
@@ -35,7 +43,7 @@ import com.toedter.calendar.JDateChooser;
 
 public class FilterPanel extends JPanel implements ActionListener
 {
-
+	private static final int GAP = 7; // Default gap btwn components.
 	JCheckBox checkDate = null;
 	public JComboBox[] comboBoxItems = null;
 	public JDateChooser jDateChooser1 = new JDateChooser();
@@ -47,24 +55,25 @@ public class FilterPanel extends JPanel implements ActionListener
 	public JButton refreshButton = new JButton("Refresh Filter");
 	public JButton addsummary = new JButton("Add to Summary");
 	public ArrayList<Object[]> filterList;
+	JPanel allFilter = new JPanel();
+	JXTaskPane taskpane = new JXTaskPane();
+	JXTaskPaneContainer taskpanecontainer = new JXTaskPaneContainer();
 
-	// JLabel counts = new JLabel();
-
-	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height, boolean isQA)
+	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height,
+			boolean isQA)
 	{
 		for(int i = 0; i < list.size(); i++)
 		{
 			for(int j = 0; j < list.get(i).length; j++)
 			{
-				if(list.get(i)[j].toString().equals("NPI Transferred") || list.get(i)[j].toString().equals("NPI Update"))
+				if(list.get(i)[j].toString().equals("NPI Transferred")
+						|| list.get(i)[j].toString().equals("NPI Update"))
 				{
 					list.get(i)[j] = "NPI";
 				}
 			}
 		}
 		this.filterList = list;
-		this.setLayout(null);
-		// counts.setText("count is " + list.size());
 		ArrayList<Object[]> result;
 		if(list.isEmpty())
 		{
@@ -86,7 +95,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		datePanel.setBackground(new Color(255, 240, 245));
 		datePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		datePanel.setBounds(0, 0, width, 60);
-		add(datePanel);
+
 		jDateChooser1.setBounds(232, 21, 91, 20);
 		jDateChooser1.setDate(new java.util.Date());
 		jDateChooser2.setBounds(473, 21, 91, 20);
@@ -96,71 +105,111 @@ public class FilterPanel extends JPanel implements ActionListener
 		jDateChooser2.setEnabled(false);
 		datePanel.add(jDateChooser1);
 		datePanel.add(jDateChooser2);
-		JLabel lblNewLabel = new JLabel("Date From");
+		JLabel lblNewLabel = new JLabel("From:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel.setBounds(118, 27, 73, 14);
 		datePanel.add(lblNewLabel);
-		JLabel lblNewLabel_1 = new JLabel("Date To");
+		JLabel lblNewLabel_1 = new JLabel("To:");
+		
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel_1.setBounds(379, 27, 46, 14);
 		datePanel.add(lblNewLabel_1);
-		checkDate = new JCheckBox("Select Period");
+		checkDate = new JCheckBox("Select Date");
+		checkDate.setBorder(new EmptyBorder(2, 0, 2, 18));
 		checkDate.setFont(new Font("Tahoma", Font.BOLD, 11));
 		checkDate.setBounds(678, 18, 117, 23);
 		checkDate.addActionListener(this);
 		datePanel.add(checkDate);
+
 		JPanel comboPanel = new JPanel();
 		comboPanel.setBackground(new Color(102, 204, 204));
 		comboPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		comboPanel.setBounds(0, 60, width, height - 60);
-		comboPanel.setLayout(null);
+		int x = 0;
+		if(titleOfCombobox.length % 4 == 0)
+		{
+			x = titleOfCombobox.length / 2;
+		}
+		else
+		{
+			x = (titleOfCombobox.length / 2) + 1;
+		}
+		System.out.println("x is " + x);
+		comboPanel.setLayout(new GridLayout(x, 4));
 		int comboRows = (int) Math.ceil(titleOfCombobox.length * 1.0 / 2);
 		int initX = (width - (2 * (260))) / 3;
 		int initY = ((height - 100) - (comboRows * 25)) / (comboRows + 1);
 		int xPlus = 0, yPlus = 0;
-		for(int i = 0; i < titleOfCombobox.length; i++)
-		{
-			filterLabels[i] = new JLabel(titleOfCombobox[i]);
-			filterLabels[i].setFont(new Font("Tahoma", Font.BOLD, 11));
-			int xPos = initX + xPlus;
-			int yPos = initY + yPlus;
-			filterLabels[i].setBounds(xPos, yPos, 105, 25);
-			comboPanel.add(filterLabels[i]);
-			comboBoxItems[i] = new JComboBox(result.get(i));
-			xPos = initX + xPlus + 130;
-			yPos = initY + yPlus;
-			comboBoxItems[i].setBounds(xPos, yPos, 130, 25);
-			comboBoxItems[i].setSelectedItem("All");
-			comboPanel.add(comboBoxItems[i]);
-			if((i % 2) == 0)
-			{
-				xPlus += (260 + initX);
-			}
-			else
-			{
-				yPlus += (25 + initY);
-				xPlus = 0;
-			}
-		}
-		for(int i = 0; i < titleOfCombobox.length; i++)
-		{
-			comboBoxItems[i].addActionListener(this);
-		}
+
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		Color color=new Color(88, 130, 250);
+		
 		filterButton.setBounds(width / 2 - 120, height - 100, 110, 30);
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
-		comboPanel.add(refreshButton);
-		comboPanel.add(filterButton);
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
 			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
 			comboPanel.add(addsummary);
 		}
-		// counts.setBounds(width - 100, height - 100, 100, 30);
-		// comboPanel.add(counts);
-		this.add(comboPanel);
+	JPanel panel = new JPanel();
+		panel.setLayout(null);
+		panel.setOpaque(false);
+		JButton b = new JButton("Done");
+		b.setBounds(100, 100, 50, 30);
+		panel.add(b);
+
+		panel.setBounds(0, 0, width, 300);
+
+		allFilter.setLayout(new GridBagLayout());
+
+		GBHelper pos = new GBHelper(); 
+
+		allFilter.add(checkDate, pos.nextCol());
+		allFilter.add(new Gap(GAP), pos.nextCol());
+		allFilter.add(lblNewLabel, pos);
+		allFilter.add(new Gap(GAP), pos.nextCol());
+		allFilter.add(jDateChooser1, pos.nextCol().expandW());
+		allFilter.add(new Gap(GAP), pos.nextCol());
+		allFilter.add(lblNewLabel_1, pos.nextCol());
+		allFilter.add(new Gap(GAP), pos.nextCol());
+		allFilter.add(jDateChooser2, pos.nextCol().expandW());
+		
+		
+
+		for(int i = 0; i < titleOfCombobox.length; i++)
+		{
+
+			filterLabels[i] = new JLabel(titleOfCombobox[i]);
+			filterLabels[i].setFont(new Font("Tahoma", Font.BOLD, 11));
+			comboBoxItems[i] = new JComboBox(result.get(i));
+			if((i % 2) == 0)
+			{
+				allFilter.add(new Gap(2*GAP), pos.nextRow());
+				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol());
+				allFilter.add(new Gap(GAP), pos.nextCol());
+			}
+			else
+			{
+				allFilter.add(filterLabels[i], pos.nextCol());
+
+				allFilter.add(new Gap(GAP), pos.nextCol());
+
+			}
+			comboBoxItems[i].setSelectedItem("All");
+			allFilter.add(comboBoxItems[i], pos.nextCol().height(1));
+			allFilter.add(new Gap(GAP), pos.nextCol());
+
+		}
+
+		allFilter.add(new Gap(10), pos.nextRow().expandW());
+		taskpane.add(allFilter);
+		taskpane.setBounds(0, 0, width, height);
+		taskpane.setTitle("Filter Panel");
+		taskpane.setIcon(new ImageIcon("Resources/filter.png"));
+		this.add(taskpane);
+
 	}
 
 	public ArrayList<Object[]> getDistinct(ArrayList<Object[]> list)
@@ -188,7 +237,7 @@ public class FilterPanel extends JPanel implements ActionListener
 
 	public ArrayList<Object[]> getFilteredData(ArrayList<Object[]> list)
 	{
-		
+
 		ArrayList<Object[]> result = new ArrayList<Object[]>();
 		String[] data = new String[list.get(0).length];
 		boolean flag = false;
@@ -224,7 +273,7 @@ public class FilterPanel extends JPanel implements ActionListener
 
 	public void refreshFilters()
 	{
-		
+
 		if((filterList == null) || (filterList.size() < 1))
 		{
 			for(int i = 0; i < comboBoxItems.length; i++)
