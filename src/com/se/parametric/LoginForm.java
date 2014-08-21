@@ -212,6 +212,7 @@ public class LoginForm extends JFrame
 			if(grmUser == null)
 			{
 				MainWindow.glass.setVisible(false);
+				glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
 			else
@@ -222,7 +223,7 @@ public class LoginForm extends JFrame
 				loginframe.setVisible(false);
 				mainFrame.setVisible(true);
 				// primaryStage.hide();
-				Runtime.getRuntime().gc();				
+				Runtime.getRuntime().gc();
 			}
 			// thread.stop();
 			LongRunProcess process = new LongRunProcess();
