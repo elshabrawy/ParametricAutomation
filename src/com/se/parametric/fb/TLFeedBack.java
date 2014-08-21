@@ -87,7 +87,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userId);
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
-				"InfectedTaxonomies", "Date" };
+				"InfectedTaxonomies", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Feedback Source", "Feedback Type" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
@@ -176,9 +176,9 @@ public class TLFeedBack extends JPanel implements ActionListener
 		separationTab.add(alertsPanel2);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
-//		tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
+		// tabbedPane.setTabComponentAt(1, new ButtonTabComponent(tabbedPane));
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
-//		tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
+		// tabbedPane.setTabComponentAt(2, new ButtonTabComponent(tabbedPane));
 		add(tabbedPane);
 
 		filterPanel.refreshButton.addActionListener(this);
@@ -200,6 +200,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		if(separationValues.isEmpty())
 		{
 			tabbedPane.setSelectedIndex(1);
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 		}
@@ -227,6 +228,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 				appValues.add(featureFullValue);
 			}
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Approved Saving Done");
 		}
 	}
@@ -384,10 +386,12 @@ public class TLFeedBack extends JPanel implements ActionListener
 		int selectedPdfsCount = selectedPdfs.length;
 		if(selectedPdfsCount == 0)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select PDF First");
 		}
 		else if(selectedPdfsCount > 1)
 		{
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Please Select One PDF");
 		}
 		else
@@ -573,7 +577,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			 MainWindow.glass.setVisible(true);
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			if(event.getSource() == filterPanel.filterButton)
@@ -632,7 +636,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					 MainWindow.glass.setVisible(false);
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadpdf();
@@ -651,7 +655,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					 MainWindow.glass.setVisible(false);
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				loadallpdf();
@@ -670,6 +674,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						wsMap.get(wsName).validateTLFBParts(true);
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**
@@ -683,7 +688,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
-						wsMap.get(wsName).saveTLFeedbackAction(userName);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveTLFeedbackAction(userName);
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
+
 					}
 				}
 			}
@@ -702,7 +718,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				saveseparation();
 			}
 
-			 MainWindow.glass.setVisible(false);
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 	}

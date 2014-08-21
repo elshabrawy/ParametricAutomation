@@ -90,7 +90,7 @@ public class Update extends JPanel implements ActionListener
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserNPIData(userDTO, null, null);
 		JPanel selectionPanel = new JPanel();
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Extracted", "Priority", "Date" };
+				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
 		// tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
@@ -287,10 +287,12 @@ public class Update extends JPanel implements ActionListener
 				System.out.println(selectedPdfs.length);
 				if(selectedPdfs.length == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfs.length > 1)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 				}
 				else
@@ -423,13 +425,6 @@ public class Update extends JPanel implements ActionListener
 
 					return null;
 				}
-				// if("All".equals(supplierName))
-				// {
-				// JOptionPane.showMessageDialog(null, "Please, Select a Supplier.", "Error!", JOptionPane.ERROR_MESSAGE);
-				// thread.stop();
-				// loading.frame.dispose();
-				// return;
-				// }
 				int count = filterPanel.comboBoxItems[2].getItemCount();
 				StringBuilder typeBuilder = new StringBuilder();
 				for(int i = 0; i < count; i++)
@@ -545,6 +540,7 @@ public class Update extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -589,6 +585,7 @@ public class Update extends JPanel implements ActionListener
 								.get(featureName);
 						appValues.add(featureFullValue);
 					}
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Approved Saving Done");
 				}
 
@@ -644,6 +641,7 @@ public class Update extends JPanel implements ActionListener
 						wsMap.get(wsName).validateParts(true);
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 			/**

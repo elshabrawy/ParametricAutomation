@@ -80,12 +80,15 @@ public class EngFeedBack extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserFeedbackData(userDTO, null, null);
 		selectionPanel = new JPanel();
-		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts", "InfectedTaxonomies", "Date" };
+		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
+				"InfectedTaxonomies", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier", "Feedback Type", "Issued By" };
 		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, (((height - 100) * 7) / 10));
+		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterHeader, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
@@ -133,7 +136,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 		sheetTab.add(alertsPanel1);
 
 		separationButtonPanel = new JPanel();
-		separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		separationButtonPanel.setBounds(width - 120, 0, 108, height / 3);
 		separationButtonPanel.setLayout(null);
 		separationButtonPanel.setBackground(new Color(211, 211, 211));
@@ -244,7 +248,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 				String feedbackType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String issuedBy = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 
-				tablePanel.selectedData = DataDevQueryUtil.getDevFeedbackPDF(userId, plName, supplierName, issuedBy, feedbackType, startDate, endDate);
+				tablePanel.selectedData = DataDevQueryUtil.getDevFeedbackPDF(userId, plName,
+						supplierName, issuedBy, feedbackType, startDate, endDate);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 
 			}
@@ -261,7 +266,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = DataDevQueryUtil.getUserFeedbackData(userDTO, startDate, endDate);
+				filterPanel.filterList = DataDevQueryUtil.getUserFeedbackData(userDTO, startDate,
+						endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
 
@@ -273,11 +279,13 @@ public class EngFeedBack extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetPanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(sheetPanel.isOpened() && ok == false)
 				{
-					
+
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
@@ -285,10 +293,12 @@ public class EngFeedBack extends JPanel implements ActionListener
 				int selectedPdfsCount = selectedPdfs.length;
 				if(selectedPdfsCount == 0)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select PDF First");
 				}
 				else if(selectedPdfsCount > 1)
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Please Select One PDF");
 				}
 				else
@@ -315,17 +325,22 @@ public class EngFeedBack extends JPanel implements ActionListener
 						sheetPanel.openOfficeDoc();
 						wsMap.clear();
 						Long[] users = { userId };
-						Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName, StatusName.engFeedback, feedbackType, issuedBy, startDate, endDate,
-								new Long[] { document.getId() }, userDTO.getId());
+						Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
+								.getFeedbackParametricValueReview(users, plName, supplierName,
+										StatusName.engFeedback, feedbackType, issuedBy, startDate,
+										endDate, new Long[] { document.getId() }, userDTO.getId());
 						int k = 0;
 						for(String pl : reviewData.keySet())
 						{
 							ws = new WorkingSheet(sheetPanel, pl, k);
-							sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+							sheetPanel.saveDoc("C:/Report/Parametric_Auto/"
+									+ pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName()
+									+ "@" + System.currentTimeMillis() + ".xls");
 							wsMap.put(pl, ws);
 							if(docInfoDTO.getTaskType().contains("NPI"))
 								ws.setNPIflag(true);
-							ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
+							ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"),
+									false);
 							ws.statusValues.remove(0);
 							ArrayList<String> sheetHeader = ws.getHeader();
 							// int tlCommentIndex = sheetHeader.indexOf("TL Comment");
@@ -348,15 +363,23 @@ public class EngFeedBack extends JPanel implements ActionListener
 									ArrayList<String> sheetRecord = plData.get(j);
 									String partNumber = sheetRecord.get(partnumIndex);
 									String supplier = sheetRecord.get(supIndex);
-									ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplier);
-									String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+									ArrayList<String> feedCom = DataDevQueryUtil
+											.getFeedbackByPartAndSupp(partNumber, supplier);
+									String qaComment = DataDevQueryUtil
+											.getLastFeedbackCommentByComIdAndSenderGroup(new Long(
+													feedCom.get(3)), "QUALITY", null, ParaQueryUtil
+													.getPlByPlName(sheetRecord.get(0)));
 									// String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)),
 									// "Parametric", userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
-									String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-									GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-									String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+									String lastEngcomment = DataDevQueryUtil.getlastengComment(
+											new Long(feedCom.get(3)), userDTO.getId());
+									GrmUserDTO feedbackIssuer = DataDevQueryUtil
+											.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+									String wrongfeatures = DataDevQueryUtil.getfbwrongfets(
+											new Long(feedCom.get(3)), feedbackIssuer.getId());
 									ParaFeedbackAction action = null;
-									action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+									action = DataDevQueryUtil.getfeedBackActionByItem(new Long(
+											feedCom.get(3)), userDTO.getId());
 									if(action != null)
 									{
 										sheetRecord.set(Cactionindex, action.getCAction());
@@ -364,7 +387,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 										sheetRecord.set(RootcauseIndex, action.getRootCause());
 										Date date = action.getActionDueDate();
 										SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-										sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
+										sheetRecord.set(Actionduedateindex, date == null ? "" : sdf
+												.format(date).toString());
 									}
 									for(int l = 0; l < 7; l++)
 									{
@@ -403,11 +427,12 @@ public class EngFeedBack extends JPanel implements ActionListener
 			{
 				boolean ok = false;
 				if(sheetPanel.isOpened())
-					ok = ParaQueryUtil.getDialogMessage("another PDF is opend are you need to replace this", "Confermation Dailog");
+					ok = ParaQueryUtil.getDialogMessage(
+							"another PDF is opend are you need to replace this",
+							"Confermation Dailog");
 
 				if(sheetPanel.isOpened() && ok == false)
 				{
-					
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
@@ -428,7 +453,10 @@ public class EngFeedBack extends JPanel implements ActionListener
 				{
 
 					// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(users, plName,
-					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil.getFeedbackParametricValueReview(users, plName, supplierName, StatusName.engFeedback, feedbackType, issuedBy, startDate, endDate, null, userDTO.getId());
+					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
+							.getFeedbackParametricValueReview(users, plName, supplierName,
+									StatusName.engFeedback, feedbackType, issuedBy, startDate,
+									endDate, null, userDTO.getId());
 					int k = 0;
 					wsMap.clear();
 					tabbedPane.setSelectedIndex(1);
@@ -436,9 +464,13 @@ public class EngFeedBack extends JPanel implements ActionListener
 					for(String pl : reviewData.keySet())
 					{
 						ws = new WorkingSheet(sheetPanel, pl, k);
-						sheetPanel.saveDoc("C:/Report/Parametric_Auto/" + plName + "@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+						sheetPanel
+								.saveDoc("C:/Report/Parametric_Auto/" + plName + "@"
+										+ userDTO.getFullName() + "@" + System.currentTimeMillis()
+										+ ".xls");
 						wsMap.put(pl, ws);
-						if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null, StatusName.engFeedback, startDate, endDate, null))
+						if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null,
+								StatusName.engFeedback, startDate, endDate, null))
 							ws.setNPIflag(true);
 						ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
 						ws.statusValues.remove(0);
@@ -461,15 +493,23 @@ public class EngFeedBack extends JPanel implements ActionListener
 							ArrayList<String> sheetRecord = plData.get(j);
 							String partNumber = sheetRecord.get(partnumIndex);
 							String supplier = sheetRecord.get(supIndex);
-							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(partNumber, supplier);
-							String qaComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "QUALITY", null, ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
+							ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(
+									partNumber, supplier);
+							String qaComment = DataDevQueryUtil
+									.getLastFeedbackCommentByComIdAndSenderGroup(
+											new Long(feedCom.get(3)), "QUALITY", null,
+											ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
 							// String tlComment = DataDevQueryUtil.getLastFeedbackCommentByComIdAndSenderGroup(new Long(feedCom.get(3)), "Parametric",
 							// userDTO.getId(), ParaQueryUtil.getPlByPlName(sheetRecord.get(0)));
-							String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(feedCom.get(3)), userDTO.getId());
-							GrmUserDTO feedbackIssuer = DataDevQueryUtil.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
-							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(new Long(feedCom.get(3)), feedbackIssuer.getId());
+							String lastEngcomment = DataDevQueryUtil.getlastengComment(new Long(
+									feedCom.get(3)), userDTO.getId());
+							GrmUserDTO feedbackIssuer = DataDevQueryUtil
+									.getFeedbackIssuerByComId(new Long(feedCom.get(3)));
+							String wrongfeatures = DataDevQueryUtil.getfbwrongfets(
+									new Long(feedCom.get(3)), feedbackIssuer.getId());
 							ParaFeedbackAction action = null;
-							action = DataDevQueryUtil.getfeedBackActionByItem(new Long(feedCom.get(3)), userDTO.getId());
+							action = DataDevQueryUtil.getfeedBackActionByItem(
+									new Long(feedCom.get(3)), userDTO.getId());
 							if(action != null)
 							{
 								sheetRecord.set(Cactionindex, action.getCAction());
@@ -477,7 +517,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 								sheetRecord.set(RootcauseIndex, action.getRootCause());
 								Date date = action.getActionDueDate();
 								SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-								sheetRecord.set(Actionduedateindex, date == null ? "" : sdf.format(date).toString());
+								sheetRecord.set(Actionduedateindex,
+										date == null ? "" : sdf.format(date).toString());
 							}
 							for(int l = 0; l < 7; l++)
 							{
@@ -507,8 +548,19 @@ public class EngFeedBack extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
+
 						WorkingSheet ws = wsMap.get(wsName);
-						ws.saveEngFeedbackAction(userName);
+						if(!ws.saved)
+						{
+							ws.saved = true;
+							ws.saveEngFeedbackAction(userName);
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
 					}
 				}
 			}
@@ -522,6 +574,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						ws.validateEngFBParts(true);
 					}
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Validation Finished");
 			}
 
@@ -559,7 +612,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 				}
 				separationPanel.openOfficeDoc();
 				ws = new WorkingSheet(separationPanel, "Separation");
-				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@" + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+				separationPanel.saveDoc("C:/Report/Parametric_Auto/" + "Separation@"
+						+ userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
 				ws.setSeparationHeader(row);
 				ws.writeSheetData(input, 1);
 				wsMap.put("Separation", ws);
@@ -574,6 +628,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -586,22 +641,27 @@ public class EngFeedBack extends JPanel implements ActionListener
 						String plName = row.get(0);
 						String featureName = row.get(3);
 						String featureFullValue = row.get(4);
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7), row.get(10), row.get(11), row.get(9), row.get(8));
+						List<ApprovedParametricDTO> approved = ApprovedDevUtil
+								.createApprovedValuesList(featureFullValue, plName, featureName,
+										row.get(5), row.get(6), row.get(7), row.get(10),
+										row.get(11), row.get(9), row.get(8));
 						try
 						{
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName, featureFullValue, row.get(2), userId);
+							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
+									featureName, featureFullValue, row.get(2), userId);
 						}catch(Exception ex)
 						{
 							ex.printStackTrace();
 						}
 
-						List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
+						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
+								.get(featureName);
 						appValues.add(featureFullValue);
 					}
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Approved Saving Done");
 				}
 			}
-			
 			MainWindow.glass.setVisible(false);
 			return null;
 		}

@@ -81,7 +81,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
-				"Status", "DevUserName", "Date" };
+				"Status", "DevUserName", "FinishedDate" };
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "User Name" };
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
@@ -250,7 +250,7 @@ public class TLReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			 MainWindow.glass.setVisible(true);
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			boolean isExclamationMark = false;
 			/**
@@ -316,14 +316,14 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(sheetpanel.isOpened())
 
 				{
-					
+
 					ok = ParaQueryUtil.getDialogMessage(
 							"another PDF is opend are you need to replace this",
 							"Confermation Dailog");
 				}
 				if(sheetpanel.isOpened() && ok == false)
 				{
-					MainWindow.glass.setVisible(false); 
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 				else if(sheetpanel.isOpened() && ok == true)
@@ -399,7 +399,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					{
 						ex.printStackTrace();
 					}
-					
+
 				}
 				MainWindow.glass.setVisible(false);
 			}
@@ -420,7 +420,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(sheetpanel.isOpened() && ok == false)
 				{
 
-					 MainWindow.glass.setVisible(false);
+					MainWindow.glass.setVisible(false);
 					return null;
 				}
 
@@ -478,17 +478,6 @@ public class TLReviewData extends JPanel implements ActionListener
 			 */
 			else if(event.getSource() == validate)
 			{
-				// System.out.println("~~~~~~~ Start Validate ~~~~~~~");
-				// wsMap.keySet();
-				// for(String wsName : wsMap.keySet())
-				// {
-				// if(wsName != "LoadAllData" && wsName != "Separation")
-				// {
-				// wsMap.get(wsName).validateParts(true);
-				// }
-				// }
-				// JOptionPane.showMessageDialog(null, "Validation Finished");
-
 			}
 			/**
 			 * Save Parts Action
@@ -508,7 +497,7 @@ public class TLReviewData extends JPanel implements ActionListener
 							input = wsMap.get(wsName).getUnApprovedValues(input);
 							if(input.size() > 0)
 							{
-								 MainWindow.glass.setVisible(false);
+								MainWindow.glass.setVisible(false);
 
 								int reply = JOptionPane
 										.showConfirmDialog(
@@ -521,21 +510,31 @@ public class TLReviewData extends JPanel implements ActionListener
 								}
 								else
 								{
-									 MainWindow.glass.setVisible(false);
+									MainWindow.glass.setVisible(false);
 									return null;
 								}
 							}
 							else
 							{
-								 MainWindow.glass.setVisible(false);
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										"can't save sheet duto some errors in your data");
 							}
 						}
 						else
 						{
-							wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
-							 MainWindow.glass.setVisible(false);
+							if(!wsMap.get(wsName).saved)
+							{
+								wsMap.get(wsName).saved = true;
+								wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
+							}
+							else
+							{
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+								return null;
+							}
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null, "Saving Data Finished");
 						}
 					}
@@ -559,7 +558,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				if(separationValues.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
-					 MainWindow.glass.setVisible(false);
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -588,12 +587,13 @@ public class TLReviewData extends JPanel implements ActionListener
 								.get(featureName);
 						appValues.add(featureFullValue);
 					}
-					 MainWindow.glass.setVisible(false);
+					MainWindow.glass.setVisible(false);
 					int reply = JOptionPane.showConfirmDialog(null,
 							"Approved Saving Done , Press OK to Save Parts Status", "TL Review",
 							JOptionPane.OK_OPTION);
 					if(reply == JOptionPane.OK_OPTION)
 					{
+						MainWindow.glass.setVisible(true);
 						save.doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
@@ -601,7 +601,7 @@ public class TLReviewData extends JPanel implements ActionListener
 
 			}
 
-			 MainWindow.glass.setVisible(false);
+			MainWindow.glass.setVisible(false);
 			return null;
 		}
 
@@ -642,7 +642,7 @@ public class TLReviewData extends JPanel implements ActionListener
 			ws.setSeparationHeader(row);
 			ws.writeSheetData(input, 1);
 			wsMap.put("Separation", ws);
-			 MainWindow.glass.setVisible(false);
+			MainWindow.glass.setVisible(false);
 		}
 	}
 }

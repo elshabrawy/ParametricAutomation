@@ -84,7 +84,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		selectionPanel = new JPanel();
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName",
 				"PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures",
-				"TaskType", "Status", "DevUserName", "Date" };
+				"TaskType", "Status", "DevUserName", "QAReviewDate" };
 		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name",
 				"PDF Status" };
 		tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 7) / 10));
@@ -605,7 +605,17 @@ public class QAReviewData extends JPanel implements ActionListener
 				{
 					if(wsName != "LoadAllData" && wsName != "Separation" && wsName != "Summary")
 					{
-						wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveQAReviewAction(QAName, "Rev", summarydata);
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
 					}
 				}
 			}

@@ -69,11 +69,13 @@ public class ExceptionFB extends JPanel implements ActionListener
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Eng");
-		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
+		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
+				+ filterData.size());
 		selectionPanel = new JPanel();
 
 		String[] filterLabels = { "PL Name", "Supplier", "Checker Type" };
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
+				(((height - 100) * 3) / 10), false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
@@ -89,7 +91,8 @@ public class ExceptionFB extends JPanel implements ActionListener
 		alertsPanel1 = new AlertsPanel(userDTO);
 		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
 		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		sheetpanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height - (((height - 100) * 3) / 10) - 130);
+		sheetpanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
+				- (((height - 100) * 3) / 10) - 130);
 		selectionPanel.setLayout(null);
 		selectionPanel.add(filterPanel);
 		selectionPanel.add(buttonsPanel);
@@ -132,16 +135,19 @@ public class ExceptionFB extends JPanel implements ActionListener
 			// String status = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 			if(checkerType.equals("All"))
 			{
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "You must select checker type");
 				return;
 			}
 			checker = checkerType;
 			tabbedPane.setSelectedIndex(0);
 			sheetpanel.openOfficeDoc();
-			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAexceptionData(plName, supplierName, checkerType, startDate, endDate, userDTO.getId(), "Eng", session);
+			ArrayList<QAChecksDTO> reviewData = DataDevQueryUtil.getQAexceptionData(plName,
+					supplierName, checkerType, startDate, endDate, userDTO.getId(), "Eng", session);
 			wsMap.clear();
 			ws = new WorkingSheet(sheetpanel, "QAChecks");
-			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@" + System.currentTimeMillis() + ".xls");
+			sheetpanel.saveDoc("C:/Report/" + "QAChecks by " + userDTO.getFullName() + "@"
+					+ System.currentTimeMillis() + ".xls");
 			wsMap.put("QAChecks", ws);
 			ws.setqaexceptionheader(checkerType, "DD");
 			ArrayList<String> sheetHeader = ws.getHeader();
@@ -150,7 +156,8 @@ public class ExceptionFB extends JPanel implements ActionListener
 			ArrayList<ArrayList<String>> data = new ArrayList<>();
 			for(int i = 0; i < reviewData.size(); i++)
 			{
-				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(), reviewData.get(i).getCheckpartid(), session);
+				boolean exist = DataDevQueryUtil.chkpartflagqachks(reviewData.get(i).getPart(),
+						reviewData.get(i).getCheckpartid(), session);
 				String flag = "AffectedPart";
 				if(exist)
 				{
@@ -165,16 +172,23 @@ public class ExceptionFB extends JPanel implements ActionListener
 				row.add(reviewData.get(i).getVendor().getName());
 				row.add(reviewData.get(i).getDatasheet().getPdf().getSeUrl());
 				row.add(reviewData.get(i).getDatasheetTitle());
-				row.add(reviewData.get(i).getProductLine() == null ? "" : reviewData.get(i).getProductLine().getName());
-				row.add(reviewData.get(i).getMask() == null ? "" : reviewData.get(i).getMask().getMstrPart());
-				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily().getName());
+				row.add(reviewData.get(i).getProductLine() == null ? "" : reviewData.get(i)
+						.getProductLine().getName());
+				row.add(reviewData.get(i).getMask() == null ? "" : reviewData.get(i).getMask()
+						.getMstrPart());
+				row.add(reviewData.get(i).getFamily() == null ? "" : reviewData.get(i).getFamily()
+						.getName());
 				row.add("");
 				row.add("");
-				row.add(DataDevQueryUtil.getFeedbackCommentByComId(reviewData.get(i).getPart().getComId()));
-				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData) || reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
+				row.add(DataDevQueryUtil.getFeedbackCommentByComId(reviewData.get(i).getPart()
+						.getComId()));
+				if(reviewData.get(i).getChecker().equals(StatusName.MaskMultiData)
+						|| reviewData.get(i).getChecker().equals(StatusName.RootPartChecker))
 				{
-					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i).getFeatureName());
-					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i).getFeatureValue());
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i)
+							.getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i)
+							.getFeatureValue());
 				}
 				data.add(row);
 
@@ -286,7 +300,18 @@ public class ExceptionFB extends JPanel implements ActionListener
 				{
 					if(wsName == "QAChecks")
 					{
-						wsMap.get(wsName).saveQAexceptionAction(checker, engName, "DD");
+						if(!wsMap.get(wsName).saved)
+						{
+							wsMap.get(wsName).saved = true;
+							wsMap.get(wsName).saveQAexceptionAction(checker, engName, "DD");
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null, "This Sheet Saved Before.");
+							return null;
+						}
+
 					}
 				}
 			}
