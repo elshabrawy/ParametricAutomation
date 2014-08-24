@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -32,6 +33,7 @@ public class WorkingAreaPanel extends JPanel
 
 		this.centerPanel = new JPanel(new BorderLayout());
 		this.sidePanel = new JPanel();
+		sidePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		BoxLayout boxLayout = new BoxLayout(this.sidePanel, BoxLayout.PAGE_AXIS);
 		this.sidePanel.setLayout(boxLayout);
 	}
@@ -69,8 +71,12 @@ public class WorkingAreaPanel extends JPanel
 		{
 			buttons[i].addActionListener(actionListener);
 		}
-		this.sidePanel.add(buttonsPanel);
 		this.sidePanel.add(alertsPanel);
+		this.sidePanel.add(Box.createVerticalGlue());
+		this.sidePanel.add(Box.createVerticalGlue());
+		this.sidePanel.add(Box.createVerticalGlue());
+		this.sidePanel.add(buttonsPanel);
+
 	}
 
 	public void updateFlags(ArrayList<String> flags)

@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -117,6 +119,21 @@ public class MainWindow extends JFrame
 		setJMenuBar(menuBar);
 
 		setGlassPane(glass);
+
+		this.addWindowFocusListener(new WindowFocusListener() {
+
+			@Override
+			public void windowLostFocus(WindowEvent arg0)
+			{
+
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent arg0)
+			{
+				mainPanel.requestFocusInWindow();
+			}
+		});
 		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		// width = screenSize.width;
 		// height = screenSize.height - 30;
@@ -286,4 +303,5 @@ public class MainWindow extends JFrame
 		dialog.pack();
 		dialog.setVisible(true);
 	}
+
 }

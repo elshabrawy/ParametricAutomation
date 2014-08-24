@@ -5,42 +5,23 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Panel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
 
-import com.se.automation.db.client.dto.ComponentDTO;
-import com.se.automation.db.client.dto.PlfeatureValuesDTO;
-import com.sun.star.beans.Property;
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.beans.XPropertySetInfo;
 import com.sun.star.comp.beans.NoConnectionException;
 import com.sun.star.comp.beans.OOoBean;
-import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNamed;
 import com.sun.star.document.XEventBroadcaster;
 import com.sun.star.document.XEventListener;
 import com.sun.star.frame.XModel;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.sheet.CellDeleteMode;
-import com.sun.star.sheet.XCellRangeAddressable;
-import com.sun.star.sheet.XCellRangesQuery;
-import com.sun.star.sheet.XSheetCellRanges;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.sheet.XSpreadsheetView;
-import com.sun.star.sheet.XSpreadsheets;
 import com.sun.star.table.XCell;
-import com.sun.star.table.XCellRange;
 import com.sun.star.text.XText;
 import com.sun.star.uno.Any;
 import com.sun.star.uno.UnoRuntime;
@@ -123,14 +104,14 @@ public class SheetPanel extends Panel
 	private void inits()
 	{
 		laodprops();
-//		try
-//		{
-//			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-//		}catch(Exception ex)
-//		{
-//			ex.printStackTrace();
-//
-//		}
+		// try
+		// {
+		// javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+		// }catch(Exception ex)
+		// {
+		// ex.printStackTrace();
+		//
+		// }
 		aBean = new OOoBean();
 
 		FlowLayout flout = new FlowLayout();
@@ -160,9 +141,12 @@ public class SheetPanel extends Panel
 
 			String st2[] = xRemoteContext.getServiceManager().getAvailableServiceNames();
 
-			Object xGlobalBroadCaster = xRemoteContext.getServiceManager().createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster", xRemoteContext);
+			Object xGlobalBroadCaster = xRemoteContext.getServiceManager()
+					.createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster",
+							xRemoteContext);
 
-			xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(XEventBroadcaster.class, xGlobalBroadCaster);
+			xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(XEventBroadcaster.class,
+					xGlobalBroadCaster);
 
 			// xEventBroad.addEventListener(this);
 		}catch(Exception e)
@@ -250,11 +234,10 @@ public class SheetPanel extends Panel
 	{
 		try
 		{
-			aBean.aquireSystemWindow();
-		}catch(Exception ex)
+			aBean.getFrame().getComponentWindow().setFocus();
+		}catch(NoConnectionException e)
 		{
-			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
+
 		}
 	}
 
@@ -270,7 +253,8 @@ public class SheetPanel extends Panel
 	{
 		try
 		{
-			XSpreadsheetView xSpreadsheetView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class, aBean.getController());
+			XSpreadsheetView xSpreadsheetView = (XSpreadsheetView) UnoRuntime.queryInterface(
+					XSpreadsheetView.class, aBean.getController());
 			return xSpreadsheetView.getActiveSheet();
 		}catch(Exception ex)
 		{
@@ -290,8 +274,10 @@ public class SheetPanel extends Panel
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 400, Short.MAX_VALUE));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
+		layout.setHorizontalGroup(layout.createParallelGroup(
+				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 400, Short.MAX_VALUE));
+		layout.setVerticalGroup(layout.createParallelGroup(
+				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
 	}
 
 	public XSpreadsheetDocument getOpendSheetDoc()
@@ -302,7 +288,8 @@ public class SheetPanel extends Panel
 				attachEventHandler();
 
 			XModel model = aBean.getDocument();
-			XSpreadsheetDocument xCalcDocument = (XSpreadsheetDocument) UnoRuntime.queryInterface(XSpreadsheetDocument.class, model);
+			XSpreadsheetDocument xCalcDocument = (XSpreadsheetDocument) UnoRuntime.queryInterface(
+					XSpreadsheetDocument.class, model);
 			return xCalcDocument;
 		}catch(Exception ex)
 		{
@@ -426,7 +413,8 @@ public class SheetPanel extends Panel
 		}
 		row = SVD.getSelectedCellposesions().y;
 		column = SVD.getSelectedCellposesions().x;
-		System.out.println(SVD.getSelectedCellposesions().y + " and " + SVD.getSelectedCellposesions().x);
+		System.out.println(SVD.getSelectedCellposesions().y + " and "
+				+ SVD.getSelectedCellposesions().x);
 		return this.SVD.getSelectedCellposesions().x;
 	}
 

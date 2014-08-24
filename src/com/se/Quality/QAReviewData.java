@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,7 +31,6 @@ import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
@@ -184,6 +185,22 @@ public class QAReviewData extends JPanel implements ActionListener
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
 		filterPanel.addsummary.addActionListener(this);
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	@Override

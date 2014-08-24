@@ -1,6 +1,7 @@
 package com.se.parametric.commonPanel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -37,6 +38,8 @@ public class AlertComponent extends JPanel
 		countLbl.setForeground(Color.WHITE);
 
 		this.setLayout(new GridBagLayout());
+		this.setMaximumSize(new Dimension(txtLbl.getMaximumSize().width
+				+ countLbl.getMaximumSize().width, txtLbl.getMaximumSize().height * 2 + 10));
 
 		GridBagConstraints bc = new GridBagConstraints();
 		bc.gridx = 0;

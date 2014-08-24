@@ -28,21 +28,21 @@ public class AlertsPanel extends JPanel
 		approvedNpiFb = new AlertComponent("App FB NPI");
 
 		this.add(npiPdf);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(newPdf);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(backlogPdf);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(dataFb);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(approvedNew);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(approvedNpi);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(approvedNpiFb);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 		this.add(approvedNewFb);
-		this.add(Box.createVerticalStrut(2));
+		this.add(Box.createVerticalStrut(15));
 	}
 
 	public void updateFlags(ArrayList<String> flags)

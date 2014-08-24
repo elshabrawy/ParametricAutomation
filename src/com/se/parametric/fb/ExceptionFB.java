@@ -1,13 +1,13 @@
 package com.se.parametric.fb;
 
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -19,7 +19,6 @@ import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
 
-import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
@@ -28,15 +27,11 @@ import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
-import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
-import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
 public class ExceptionFB extends JPanel implements ActionListener
@@ -106,7 +101,22 @@ public class ExceptionFB extends JPanel implements ActionListener
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
+		this.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	@Override

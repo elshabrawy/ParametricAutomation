@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +30,6 @@ import com.se.automation.db.client.mapping.Document;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
@@ -40,7 +41,6 @@ import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
-import com.se.parametric.util.ImagePanel;
 
 public class TLReviewData extends JPanel implements ActionListener
 {
@@ -86,8 +86,8 @@ public class TLReviewData extends JPanel implements ActionListener
 		// tablePanel = new TablePanel(tableHeader, width - 120, (((height - 100) * 6) / 10));
 		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
 		tablePanel = new TablePanel(tableHeader);
-//		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-//				(((height - 100) * 7) / 10));
+		// tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+		// (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		// filterPanel = new FilterPanel(filterLabels, filterData, width - 120, (((height - 100) * 4) / 10));
 		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
@@ -175,7 +175,22 @@ public class TLReviewData extends JPanel implements ActionListener
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
+		this.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	@Override

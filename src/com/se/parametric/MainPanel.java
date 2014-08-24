@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -78,8 +79,8 @@ public class MainPanel extends JPanel implements ActionListener
 	JButton qachecksBu;
 	JButton updateBu;
 	JButton exportPanelBu;
-	static int width;
-	static int height;
+	// static int width;
+	// static int height;
 	// JPanel mainpnl;
 	// JPanel tabspanel;
 	static JTabbedPane tabbedPane;
@@ -88,124 +89,137 @@ public class MainPanel extends JPanel implements ActionListener
 	JToolBar toolBar;
 	static JPopupMenu menu;
 
-	public MainPanel(GrmUserDTO userDTO, int width, int height)
-	{
-		this.userDTO = userDTO;
-		setLayout(null);
-
-		long userRole = userDTO.getGrmRole().getId();
-		long userGroup = userDTO.getGrmGroup().getId();
-		this.setBounds(0, 0, width, height);
-
-		// mainpnl = new JPanel();
-		// mainpnl.setLayout(null);
-		// mainpnl.setBorder(BorderFactory.createEmptyBorder());
-		// mainpnl.setBounds(0, 5, width - 10, height - 930);
-
-		// tabspanel = new JPanel();
-		// tabspanel.setLayout(null);
-		// tabspanel.setBorder(BorderFactory.createEmptyBorder());
-		// tabspanel.setBounds(0, height - 948, width - 10, height - 30);
-
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, height - 980, width - 10, height - 30);
-		tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-
-		// tabspanel.add(tabbedPane);
-		tabbedPane.addMouseListener(new PopupListener());
-		createMenu();
-
-		toolBar = new JToolBar("");
-		toolBar.setFloatable(false);
-		toolBar.setBounds(0, 0, width - 5, height - 935);
-
-		// role 3 eng , role 1 tl
-		if(userRole == 1 && userGroup == 1)
-		{
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-
-			tlreviewDataBu = new JButton("TL Data Review");
-			iconsurl.add("/Resources/reviews.jpg");
-			tlfeedBackBu = new JButton("TL Data FeedBack");
-			iconsurl.add("/Resources/feedback-icon.png");
-			tlunApprovedBu = new JButton("UnApproved Value");
-			iconsurl.add("/Resources/approved.png");
-			buttonlist.add(tlreviewDataBu);
-			buttonlist.add(tlfeedBackBu);
-			buttonlist.add(tlunApprovedBu);
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
-		}
-		else if(userRole == 3 && userGroup == 1)
-		{
-			// parametric eng
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-			developementBu = new JButton("Developement");
-			iconsurl.add("/Resources/development-icon.png");
-			updateBu = new JButton("NPI Update");
-			iconsurl.add("/Resources/update-icon.png");
-			engfeedBackBu = new JButton("Eng Data Feedback");
-			iconsurl.add("/Resources/feedback-icon.png");
-			engunApprovedBu = new JButton("Eng UnApproved Value");
-			iconsurl.add("/Resources/approved.png");
-			qachecksBu = new JButton("QA Checks");
-			iconsurl.add("/Resources/check-icon.png");
-			exceptionfbBu = new JButton("QA ExceptionFeedback");
-			iconsurl.add("/Resources/exception.png");
-			exportPanelBu = new JButton("Export");
-			iconsurl.add("/Resources/export.png");
-
-			buttonlist.add(developementBu);
-			buttonlist.add(updateBu);
-			buttonlist.add(engfeedBackBu);
-			buttonlist.add(engunApprovedBu);
-			buttonlist.add(qachecksBu);
-			buttonlist.add(exceptionfbBu);
-			buttonlist.add(exportPanelBu);
-
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
-		}
-		else if(userRole == 3 && userGroup == 23)
-		{
-			// Q eng
-			// System.out.println("Quality Eng");
-			// tlfeedBack = new TLFeedBack(userDTO);
-			//
-			// qaReviewData = new QAReviewData(userDTO);
-			// qaFeedBack = new QAFeedBack(userDTO);
-			// qUnApproved = new QualityUnApprovedValue(userDTO);
-			// qaexception = new QAException(userDTO);
-			//
-			// tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
-			// tabbedPane.addTab("Quality Feedback", null, qaFeedBack, null);
-			// tabbedPane.addTab("Quality UnApproved", null, qUnApproved, null);
-			// tabbedPane.addTab("Quality Exception", null, qaexception, null);
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-
-			qaReviewDataBu = new JButton("Quality Data Review");
-			iconsurl.add("/Resources/reviews.jpg");
-			qaFeedBackBu = new JButton("Quality Feedback");
-			iconsurl.add("/Resources/feedback-icon.png");
-			qUnApprovedBu = new JButton("Quality UnApproved");
-			iconsurl.add("/Resources/approved.png");
-			qaexceptionBu = new JButton("Quality Exception");
-			iconsurl.add("/Resources/exception.png");
-			buttonlist.add(qaReviewDataBu);
-			buttonlist.add(qaFeedBackBu);
-			buttonlist.add(qUnApprovedBu);
-			buttonlist.add(qaexceptionBu);
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
-		}
-
-	}
+	// public MainPanel(GrmUserDTO userDTO, int width, int height)
+	// {
+	// this.userDTO = userDTO;
+	// setLayout(null);
+	// this.addFocusListener(new FocusListener() {
+	//
+	// @Override
+	// public void focusLost(FocusEvent arg0)
+	// {
+	// }
+	//
+	// @Override
+	// public void focusGained(FocusEvent arg0)
+	// {
+	// System.out.println("Panel: focused");
+	// tabbedPane.getSelectedComponent().requestFocusInWindow();
+	// }
+	// });
+	// long userRole = userDTO.getGrmRole().getId();
+	// long userGroup = userDTO.getGrmGroup().getId();
+	// this.setBounds(0, 0, width, height);
+	//
+	// // mainpnl = new JPanel();
+	// // mainpnl.setLayout(null);
+	// // mainpnl.setBorder(BorderFactory.createEmptyBorder());
+	// // mainpnl.setBounds(0, 5, width - 10, height - 930);
+	//
+	// // tabspanel = new JPanel();
+	// // tabspanel.setLayout(null);
+	// // tabspanel.setBorder(BorderFactory.createEmptyBorder());
+	// // tabspanel.setBounds(0, height - 948, width - 10, height - 30);
+	//
+	// tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	// tabbedPane.setBounds(0, height - 980, width - 10, height - 30);
+	// tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+	//
+	// // tabspanel.add(tabbedPane);
+	// tabbedPane.addMouseListener(new PopupListener());
+	// createMenu();
+	//
+	// toolBar = new JToolBar("");
+	// toolBar.setFloatable(false);
+	// toolBar.setBounds(0, 0, width - 5, height - 935);
+	//
+	// // role 3 eng , role 1 tl
+	// if(userRole == 1 && userGroup == 1)
+	// {
+	// int wstart = 10;
+	// int Bwidth = 170;
+	// buttonlist = new ArrayList<>();
+	// iconsurl = new ArrayList<>();
+	//
+	// tlreviewDataBu = new JButton("TL Data Review");
+	// iconsurl.add("/Resources/reviews.jpg");
+	// tlfeedBackBu = new JButton("TL Data FeedBack");
+	// iconsurl.add("/Resources/feedback-icon.png");
+	// tlunApprovedBu = new JButton("UnApproved Value");
+	// iconsurl.add("/Resources/approved.png");
+	// buttonlist.add(tlreviewDataBu);
+	// buttonlist.add(tlfeedBackBu);
+	// buttonlist.add(tlunApprovedBu);
+	// drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+	// }
+	// else if(userRole == 3 && userGroup == 1)
+	// {
+	// // parametric eng
+	// int wstart = 10;
+	// int Bwidth = 170;
+	// buttonlist = new ArrayList<>();
+	// iconsurl = new ArrayList<>();
+	// developementBu = new JButton("Developement");
+	// iconsurl.add("/Resources/development-icon.png");
+	// updateBu = new JButton("NPI Update");
+	// iconsurl.add("/Resources/update-icon.png");
+	// engfeedBackBu = new JButton("Eng Data Feedback");
+	// iconsurl.add("/Resources/feedback-icon.png");
+	// engunApprovedBu = new JButton("Eng UnApproved Value");
+	// iconsurl.add("/Resources/approved.png");
+	// qachecksBu = new JButton("QA Checks");
+	// iconsurl.add("/Resources/check-icon.png");
+	// exceptionfbBu = new JButton("QA ExceptionFeedback");
+	// iconsurl.add("/Resources/exception.png");
+	// exportPanelBu = new JButton("Export");
+	// iconsurl.add("/Resources/export.png");
+	//
+	// buttonlist.add(developementBu);
+	// buttonlist.add(updateBu);
+	// buttonlist.add(engfeedBackBu);
+	// buttonlist.add(engunApprovedBu);
+	// buttonlist.add(qachecksBu);
+	// buttonlist.add(exceptionfbBu);
+	// buttonlist.add(exportPanelBu);
+	//
+	// drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+	// }
+	// else if(userRole == 3 && userGroup == 23)
+	// {
+	// // Q eng
+	// // System.out.println("Quality Eng");
+	// // tlfeedBack = new TLFeedBack(userDTO);
+	// //
+	// // qaReviewData = new QAReviewData(userDTO);
+	// // qaFeedBack = new QAFeedBack(userDTO);
+	// // qUnApproved = new QualityUnApprovedValue(userDTO);
+	// // qaexception = new QAException(userDTO);
+	// //
+	// // tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
+	// // tabbedPane.addTab("Quality Feedback", null, qaFeedBack, null);
+	// // tabbedPane.addTab("Quality UnApproved", null, qUnApproved, null);
+	// // tabbedPane.addTab("Quality Exception", null, qaexception, null);
+	// int wstart = 10;
+	// int Bwidth = 170;
+	// buttonlist = new ArrayList<>();
+	// iconsurl = new ArrayList<>();
+	//
+	// qaReviewDataBu = new JButton("Quality Data Review");
+	// iconsurl.add("/Resources/reviews.jpg");
+	// qaFeedBackBu = new JButton("Quality Feedback");
+	// iconsurl.add("/Resources/feedback-icon.png");
+	// qUnApprovedBu = new JButton("Quality UnApproved");
+	// iconsurl.add("/Resources/approved.png");
+	// qaexceptionBu = new JButton("Quality Exception");
+	// iconsurl.add("/Resources/exception.png");
+	// buttonlist.add(qaReviewDataBu);
+	// buttonlist.add(qaFeedBackBu);
+	// buttonlist.add(qUnApprovedBu);
+	// buttonlist.add(qaexceptionBu);
+	// drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+	// }
+	//
+	// }
 
 	public MainPanel(GrmUserDTO userDTO)
 	{
@@ -213,7 +227,22 @@ public class MainPanel extends JPanel implements ActionListener
 		// setLayout(null);
 		BorderLayout borderLayout = new BorderLayout();
 		this.setLayout(borderLayout);
+		this.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 		long userRole = userDTO.getGrmRole().getId();
 		long userGroup = userDTO.getGrmGroup().getId();
 		// this.setBounds(0, 0, width, height);
@@ -325,6 +354,7 @@ public class MainPanel extends JPanel implements ActionListener
 		add(toolBar, BorderLayout.PAGE_START);
 		// add(mainpnl);
 		add(tabbedPane, BorderLayout.CENTER);
+
 	}
 
 	private void drawtoolbar(List<JButton> buttons, List<String> iconsurl, int wstart, int Bwidth)

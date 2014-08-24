@@ -5,6 +5,8 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +33,6 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
@@ -144,6 +145,22 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		// tabbedPane.addTab("Sheet", null, tabSheet, null);
 		// flowChart = new ImagePanel("QASeparation.jpg");
 		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	@Override

@@ -144,19 +144,15 @@ public class LoginForm extends JFrame
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Integer result = 0;
-
 			while(true)
 			{
 				if(mainFrame != null)
 				{
-					result += 10;
-					System.out.println("Result = " + result);
-
-					mainFrame.updateFlags();
 					try
 					{
-						TimeUnit.MINUTES.sleep(5);
+						TimeUnit.SECONDS.sleep(3);
+						mainFrame.updateFlags();
+						TimeUnit.MINUTES.sleep(3);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();
