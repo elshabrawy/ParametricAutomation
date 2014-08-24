@@ -1,5 +1,6 @@
 package com.se.parametric.dev;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -36,6 +37,7 @@ import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -57,20 +59,20 @@ public class Update extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, separationTab;
-	JPanel devSheetButtonPanel, separationButtonPanel;
+	WorkingAreaPanel tabSheet, separationTab, selectionPanel;
+	// JPanel devSheetButtonPanel, separationButtonPanel;
 	// Update mainInfo = new Update();
 	JTabbedPane tabbedPane;
-	JButton button = null;// new JButton("LoadSheet");
-	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation, separationSave, srcFeedbackBtn;
+	// JButton button = null;// new JButton("LoadSheet");
+	// JButton showAll = new JButton("Show All");
+	// JButton save, validate, separation, separationSave, srcFeedbackBtn;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
 	long userId = 0;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
+	// ButtonsPanel buttonsPanel;
 	String userName;
 	GrmUserDTO userDTO = null;
 
@@ -80,122 +82,52 @@ public class Update extends JPanel implements ActionListener
 
 	public Update(GrmUserDTO userDTO)
 	{
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		this.userDTO = userDTO;
 		this.userName = userDTO.getFullName();
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		// =======================================================
 		userId = userDTO.getId();
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserNPIData(userDTO, null, null);
-		JPanel selectionPanel = new JPanel();
+
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
 				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
-		// tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 6) / 10));
-		// tablePanel.setBounds(0, (((height - 100) * 4) / 10), width - 120, 700);
-		tablePanel = new TablePanel(labels);
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
-		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// filterPanel = new FilterPanel(filterHeader, filterData, width - 120, (((height - 100) * 4) / 10));
-		// filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterHeader, filterData, false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserNPIData(userDTO, null, null);
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
+		tablePanel = selectionPanel.getTablePanel(labels);
+		filterPanel = selectionPanel.getFilterPanel(filterHeader, filterData, false, this);
+
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
 		buttonLabels.add("Load All");
 		buttonLabels.add("Show All");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 110, height / 3);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(tablePanel);
-		selectionPanel.add(buttonsPanel);
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		tabSheet = new JPanel();
-		separationTab = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 106, height - 100);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		save.setBounds(3, 82, 95, 29);
-		save.setForeground(new Color(25, 25, 112));
-		save.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 95, 29);
-		validate.setForeground(new Color(25, 25, 112));
-		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 95, 29);
-		separation.setForeground(new Color(25, 25, 112));
-		separation.setFont(new Font("Tahoma", Font.BOLD, 11));
-		srcFeedbackBtn = new JButton("SRC Feedback");
-		srcFeedbackBtn.setBounds(3, 118, 95, 29);
-		srcFeedbackBtn.setForeground(new Color(25, 25, 112));
-		srcFeedbackBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate.addActionListener(this);
-		save.addActionListener(this);
-		separation.addActionListener(this);
-		srcFeedbackBtn.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.add(srcFeedbackBtn);
-		// separationButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		// separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// separationButtonPanel.setBounds(width - 120, 0, 106, height - 100);
-		// separationButtonPanel.setLayout(null);
-		separationSave = new JButton("Save");
-		separationSave.setBounds(3, 11, 85, 29);
-		separationSave.addActionListener(this);
-		// separationButtonPanel.add(separationSave);
-		separationTab.setLayout(null);
-		tabSheet.setLayout(null);
-		sheetpanel.setBounds(0, 0, width - 120, height - 125);
-		tabSheet.add(sheetpanel);
-		tabSheet.add(devSheetButtonPanel);
-		add(tabbedPane);
-		separationPanel.setBounds(0, 0, width - 120, height - 125);
-		separationTab.add(separationPanel);
-		ArrayList<String> separationButtonLabels = new ArrayList<String>();
-		separationButtonLabels.add(" Save ");
-		ButtonsPanel separationButtonsPanel = new ButtonsPanel(separationButtonLabels);
-		JButton separationButtons[] = separationButtonsPanel.getButtons();
-		for(int i = 0; i < separationButtons.length; i++)
-		{
-			separationButtons[i].addActionListener(this);
-		}
-		separationButtonsPanel.setBounds(width - 120, 0, 110, height);
-		separationTab.add(separationButtonsPanel);
-		ArrayList<String> sheetButtonLabels = new ArrayList<String>();
-		sheetButtonLabels.add("Separation");
-		sheetButtonLabels.add("Validate");
-		sheetButtonLabels.add("Save");
+		selectionPanel.addButtonsPanel(buttonLabels, this);
 
-		// ButtonsPanel sheetButtonsPanel = new ButtonsPanel(sheetButtonLabels);
-		// JButton sheetButtons[] = separationButtonsPanel.getButtons();
-		// for (int i = 0; i < separationButtons.length; i++) {
-		// sheetButtons[i].addActionListener(this);
-		// }
-		// separationButtonsPanel.setBounds(width - 120, 0, 110, height);
-		// separationTab.add(sheetButtonsPanel);
+		tabSheet = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add("Save");
+		buttonLabels.add("Validate");
+		buttonLabels.add("Separation");
+		buttonLabels.add("SRC Feedback");
+		tabSheet.addButtonsPanel(buttonLabels, this);
+		sheetpanel = tabSheet.getSheet();
+
+		separationTab = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" Save ");
+		separationTab.addButtonsPanel(buttonLabels, this);
+		separationPanel = separationTab.getSheet();
+
+		selectionPanel.addComponentsToPanel();
+		tabSheet.addComponentsToPanel();
+		separationTab.addComponentsToPanel();
+
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
-		// tabbedPane.addTab("Main Info", null, mainInfo, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
+		this.add(tabbedPane);
 	}
 
 	@Override
@@ -267,9 +199,6 @@ public class Update extends JPanel implements ActionListener
 					return null;
 				}
 
-				separation.setEnabled(true);
-				validate.setEnabled(true);
-				save.setEnabled(true);
 				for(String wsName : wsMap.keySet())
 				{
 					System.out.println(wsName);
@@ -357,9 +286,6 @@ public class Update extends JPanel implements ActionListener
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
-				separation.setEnabled(false);
-				validate.setEnabled(false);
-				save.setEnabled(false);
 				JComboBox[] combos = filterPanel.comboBoxItems;
 				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
@@ -400,9 +326,6 @@ public class Update extends JPanel implements ActionListener
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
-				separation.setEnabled(true);
-				validate.setEnabled(true);
-				save.setEnabled(true);
 				wsMap.clear();
 				JComboBox[] combos = filterPanel.comboBoxItems;
 				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
@@ -629,7 +552,7 @@ public class Update extends JPanel implements ActionListener
 			/**
 			 * Validate Parts Action
 			 */
-			else if(event.getSource() == validate)
+			else if(event.getActionCommand().equals("Validate"))
 			{
 				System.out.println("~~~~~~~ Start Validate ~~~~~~~");
 				wsMap.keySet();
@@ -646,7 +569,7 @@ public class Update extends JPanel implements ActionListener
 			/**
 			 * Save Parts Action
 			 */
-			else if(event.getSource() == save)
+			else if(event.getActionCommand().equals("Save"))
 			{
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				wsMap.keySet();
@@ -661,7 +584,7 @@ public class Update extends JPanel implements ActionListener
 				}
 
 			}
-			else if(event.getSource() == srcFeedbackBtn)
+			else if(event.getActionCommand().equals("SRC Feedback"))
 			{
 				System.out.println("Send feedback to sourcing team");
 				if("LoadAllData".equals(sheetpanel.getActiveSheetName()))

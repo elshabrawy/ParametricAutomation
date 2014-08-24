@@ -1,5 +1,6 @@
 package com.se.parametric.dev;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -47,6 +49,7 @@ import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -67,22 +70,14 @@ public class Developement extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel selectionPanel, tabSheet, separationTab, alerts/* , flowChart */;
-	JPanel devSheetButtonPanel, separationButtonPanel;
-	// Update mainInfo = new Update();
+	WorkingAreaPanel selectionPanel, tabSheet, separationTab, alerts/* , flowChart */;
 	JTabbedPane tabbedPane;
-	JButton button = null;// new JButton("LoadSheet");
-	JButton showAll = new JButton("Show All");
-	JButton save, separationSave, srcFeedbackBtn, AutoFill;
-	JButton validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
 	Long userId = 0l;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel, sheetButtonsPanel, separationButtonsPanel;
-	static AlertsPanel alertsPanel, alertsPanel1, alertsPanel2;
 	String userName;
 	GrmUserDTO userDTO = null;
 	AutoFill autoFillProcess;
@@ -94,151 +89,52 @@ public class Developement extends JPanel implements ActionListener
 
 	public Developement(GrmUserDTO userDTO)
 	{
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		this.userDTO = userDTO;
 		this.userName = userDTO.getFullName();
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		// =======================================================
 		userId = userDTO.getId();
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserData(userDTO, null, null);
-		selectionPanel = new JPanel();
+
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
 				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
-		tablePanel = new TablePanel(labels);
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
-		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterHeader, filterData, false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserData(userDTO, null, null);
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
+		tablePanel = selectionPanel.getTablePanel(labels);
+		filterPanel = selectionPanel.getFilterPanel(filterHeader, filterData, false, this);
 
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
 		buttonLabels.add("Load All");
 		buttonLabels.add("Show All");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
+		selectionPanel.addButtonsPanel(buttonLabels, this);
 
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel1 = new AlertsPanel(userDTO);
-		alertsPanel2 = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel2.setBounds(width - 120, height / 3, 110, height * 3 / 4);
+		tabSheet = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add("Save");
+		buttonLabels.add("SRC Feedback");
+		buttonLabels.add("AutoFill");
+		tabSheet.addButtonsPanel(buttonLabels, this);
+		sheetpanel = tabSheet.getSheet();
 
-		tabSheet = new JPanel();
-		separationTab = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		save.setBounds(3, 82, 95, 29);
-		save.setForeground(new Color(25, 25, 112));
-		save.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 95, 29);
-		validate.setForeground(new Color(25, 25, 112));
-		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 95, 29);
-		separation.setForeground(new Color(25, 25, 112));
-		separation.setFont(new Font("Tahoma", Font.BOLD, 11));
-		srcFeedbackBtn = new JButton("SRC Feedback");
-		srcFeedbackBtn.setBounds(3, 118, 95, 29);
-		srcFeedbackBtn.setForeground(new Color(25, 25, 112));
-		srcFeedbackBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
+		separationTab = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" Save ");
+		separationTab.addButtonsPanel(buttonLabels, this);
+		separationPanel = separationTab.getSheet();
 
-		AutoFill = new JButton("AutoFill");
-		AutoFill.setBounds(3, 153, 95, 29);
-		AutoFill.setForeground(new Color(25, 25, 112));
-		AutoFill.setFont(new Font("Tahoma", Font.BOLD, 11));
-
-		// validate.addActionListener(this);
-		save.addActionListener(this);
-		// separation.addActionListener(this);
-		srcFeedbackBtn.addActionListener(this);
-		AutoFill.addActionListener(this);
-
-		// devSheetButtonPanel.add(separation);
-		// devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.add(srcFeedbackBtn);
-		devSheetButtonPanel.add(AutoFill);
-
-		// devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		// separationButtonPanel = new JPanel();
-		// separationButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		// separationButtonPanel.setBounds(width - 120, 0, 106, height - 100);
-		// separationButtonPanel.setLayout(null);
-		// separationSave = new JButton("Save");
-		// separationSave.setBounds(3, 11, 85, 29);
-		// separationSave.addActionListener(this);
-		// separationButtonPanel.add(separationSave);
-		sheetpanel.setBounds(0, 0, width - 120, height - 125);
-		separationPanel.setBounds(0, 0, width - 120, height - 125);
-		ArrayList<String> separationButtonLabels = new ArrayList<String>();
-		// separationButtonLabels.add(" validate ");
-		separationButtonLabels.add(" Save ");
-		separationButtonsPanel = new ButtonsPanel(separationButtonLabels);
-		JButton separationButtons[] = separationButtonsPanel.getButtons();
-		for(int i = 0; i < separationButtons.length; i++)
-		{
-			separationButtons[i].addActionListener(this);
-		}
-		separationButtonsPanel.setBounds(width - 120, 0, 108, height / 3);
-
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(tablePanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-
-		tabSheet.setLayout(null);
-		tabSheet.add(sheetpanel);
-		tabSheet.add(devSheetButtonPanel);
-		tabSheet.add(alertsPanel1);
-
-		separationTab.setLayout(null);
-		separationTab.add(separationPanel);
-		separationTab.add(separationButtonsPanel);
-		separationTab.add(alertsPanel2);
+		selectionPanel.addComponentsToPanel();
+		tabSheet.addComponentsToPanel();
+		separationTab.addComponentsToPanel();
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-
-		add(tabbedPane);
-
-		// ArrayList<String> sheetButtonLabels = new ArrayList<String>();
-		// sheetButtonLabels.add("Separation");
-		// sheetButtonLabels.add("Validate");
-		// sheetButtonLabels.add("Save");
-		// sheetButtonLabels.add("SRC Feedback");
-		// sheetButtonLabels.add("AutoFill");
-		// sheetButtonsPanel = new ButtonsPanel(sheetButtonLabels);
-		// JButton sheetButtons[] = separationButtonsPanel.getButtons();
-		// for(int i = 0; i < separationButtons.length; i++)
-		// {
-		// sheetButtons[i].addActionListener(this);
-		// }
-		// sheetButtonsPanel.setBounds(width - 120, 0, 110, height / 3);
-		// tabSheet.add(sheetButtonsPanel);
-
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
-		// flowChart = new ImagePanel("Development-chart.jpg");
-		// tabbedPane.addTab("Development Flow", null, flowChart, null);
+		add(tabbedPane);
+
 	}
 
 	@Override
@@ -289,9 +185,9 @@ public class Developement extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
-		alertsPanel1.updateFlags(flags);
-		alertsPanel2.updateFlags(flags);
+		selectionPanel.updateFlags(flags);
+		tabSheet.updateFlags(flags);
+		separationTab.updateFlags(flags);
 
 	}
 
@@ -340,9 +236,6 @@ public class Developement extends JPanel implements ActionListener
 
 				}
 
-				separation.setEnabled(true);
-				validate.setEnabled(true);
-				save.setEnabled(true);
 				for(String wsName : wsMap.keySet())
 				{
 					System.out.println(wsName);
@@ -439,9 +332,6 @@ public class Developement extends JPanel implements ActionListener
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
-				separation.setEnabled(false);
-				validate.setEnabled(false);
-				save.setEnabled(false);
 				JComboBox[] combos = filterPanel.comboBoxItems;
 				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
 				String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
@@ -484,9 +374,6 @@ public class Developement extends JPanel implements ActionListener
 
 					return null;
 				}
-				separation.setEnabled(true);
-				validate.setEnabled(true);
-				save.setEnabled(true);
 				wsMap.clear();
 				JComboBox[] combos = filterPanel.comboBoxItems;
 				String plName = filterPanel.comboBoxItems[0].getSelectedItem().toString();
@@ -588,13 +475,6 @@ public class Developement extends JPanel implements ActionListener
 			/**
 			 * Load Separation Sheet Action
 			 * **/
-			else if(event.getActionCommand().equals("Separation"))
-			{
-
-			}
-			/**
-			 * Save Separation Action
-			 */
 			else if(event.getActionCommand().equals(" Save "))
 			{
 				tabbedPane.setSelectedIndex(2);
@@ -621,17 +501,13 @@ public class Developement extends JPanel implements ActionListener
 					if(reply == JOptionPane.OK_OPTION)
 					{
 						MainWindow.glass.setVisible(true);
-						save.doClick();
+						((AbstractButton) event.getSource()).doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
 
 				}
 				MainWindow.glass.setVisible(false);
 			}
-			else if(event.getActionCommand().equals(" validate "))
-			{
-			}
-
 			/**
 			 * Show pdfs Action
 			 * **/
@@ -681,14 +557,7 @@ public class Developement extends JPanel implements ActionListener
 			 * Validate Parts Action
 			 */
 
-			else if(event.getSource() == validate)
-			{
-			}
-			/**
-			 * Save Parts Action
-			 */
-
-			else if(event.getSource() == save)
+			else if(event.getActionCommand().equals("Save"))
 			{
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				wsMap.keySet();
@@ -749,7 +618,7 @@ public class Developement extends JPanel implements ActionListener
 				// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}
 
-			else if(event.getSource() == srcFeedbackBtn)
+			else if(event.getActionCommand().equals("SRC Feedback"))
 			{
 				System.out.println("Send feedback to sourcing team");
 				if("LoadAllData".equals(sheetpanel.getActiveSheetName()))
