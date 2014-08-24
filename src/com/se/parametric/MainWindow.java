@@ -2,6 +2,7 @@ package com.se.parametric;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -92,7 +93,28 @@ public class MainWindow extends JFrame
 			}
 		});
 		optionsMenu.add(changePassMenuItem);
+		JMenuItem logoutMenuItem = new JMenuItem("Logout");
+		logoutMenuItem.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure to logout?",
+						"Paremtric Automation", JOptionPane.YES_NO_OPTION);
+				if(reply == JOptionPane.YES_OPTION)
+				{
+					hideMainWindow();
+
+				}
+				else
+				{
+					return;
+				}
+
+			}
+
+		});
+		optionsMenu.add(logoutMenuItem);
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem devFlowMenuItem = new JMenuItem("Development Flow");
 		devFlowMenuItem.addActionListener(new ActionListener() {
@@ -122,11 +144,9 @@ public class MainWindow extends JFrame
 		setGlassPane(glass);
 
 		this.addWindowFocusListener(new WindowFocusListener() {
-
 			@Override
 			public void windowLostFocus(WindowEvent arg0)
 			{
-
 			}
 
 			@Override
@@ -135,6 +155,27 @@ public class MainWindow extends JFrame
 				mainPanel.requestFocusInWindow();
 			}
 		});
+
+	}
+
+	public void hideMainWindow()
+	{
+		final LoginForm log = new LoginForm();
+		log.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run()
+			{
+				try
+				{
+					log.setTitle("Parametric Automation");
+					log.setVisible(true);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		this.dispose();
 	}
 
 	public void init(GrmUserDTO grmUser)

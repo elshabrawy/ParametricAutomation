@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
@@ -50,7 +51,7 @@ public class TablePanel extends JPanel implements ActionListener
 	JButton last = new JButton("");
 	JLabel paggingLabel;
 	public String[] header;
-	int recordsPerPage = 15;
+	int recordsPerPage = 27;
 
 	private ArrayList<ArrayList<String>> filteredData;
 	public ArrayList<TableInfoDTO> selectedData;
@@ -72,6 +73,7 @@ public class TablePanel extends JPanel implements ActionListener
 
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportView(table);
+		scrollPane.setVerticalScrollBar(new JScrollBar());
 
 		paggingButtonPanel = new JPanel();
 		paggingButtonPanel.setLayout(new BoxLayout(paggingButtonPanel, BoxLayout.LINE_AXIS));
