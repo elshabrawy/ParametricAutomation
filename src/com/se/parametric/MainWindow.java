@@ -24,8 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -137,44 +135,6 @@ public class MainWindow extends JFrame
 				mainPanel.requestFocusInWindow();
 			}
 		});
-		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		// width = screenSize.width;
-		// height = screenSize.height - 30;
-		//
-		// System.out.println((width - 350) / 2 + " and " + (height - 150) / 2);
-		// setBounds(0, 0, width, height);
-		//
-		// contentPane = new JPanel();
-		// contentPane.setLayout(null);
-		// container.add(contentPane);
-
-//		 com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		 try
-//		 {
-//		 UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		 }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		 {
-//		 // TODO Auto-generated catch block
-//		 e.printStackTrace();
-//		 }
-		 try
-		 {
-		 // Set cross-platform Java L&F (also called "Metal")
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 }catch(UnsupportedLookAndFeelException e)
-		 {
-		
-		 }catch(ClassNotFoundException e)
-		 {
-		
-		 }catch(InstantiationException e)
-		 {
-		
-		 }catch(IllegalAccessException e)
-		 {
-		
-		 }
-
 	}
 
 	public void init(GrmUserDTO grmUser)

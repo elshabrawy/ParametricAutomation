@@ -1,5 +1,6 @@
 package com.se.parametric.unappValue;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Robot;
@@ -33,6 +34,7 @@ import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
@@ -48,82 +50,41 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel;
-	JPanel devSheetButtonPanel;
+	WorkingAreaPanel selectionPanel;
 	JTabbedPane tabbedPane;
-	JButton button = null;
-	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
-	JPanel unapprovedPanel = null;
 	FilterPanel filterPanel = null;
 	public ArrayList<ArrayList<String>> list;
 	Long[] teamMembers = null;
 	ArrayList<String> row = null;
 	GrmUserDTO TLDTO;
 	ArrayList<UnApprovedDTO> unApproveds = new ArrayList<UnApprovedDTO>();;
-	public static AlertsPanel alertsPanel;
 	boolean validated;
 
 	public TLUnApprovedValueFeedback(GrmUserDTO TLDTO)
 	{
 		this.TLDTO = TLDTO;
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,
 				"TL");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
-		selectionPanel = new JPanel();
+		selectionPanel = new WorkingAreaPanel(this.TLDTO);
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
-		sheetPanel = new SheetPanel();
-		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 110,
-				(((height - 100) * 7) / 10));
-		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, false);
-		filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 3) / 10));
-		alertsPanel = new AlertsPanel(TLDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(sheetPanel);
-		selectionPanel.add(alertsPanel);
-		selectionPanel.setBounds(0, 0, width - 120, height - 100);
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		// tabSheet = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		validate = new JButton("validate");
 
-		save.setBounds(3, 39, 95, 29);
-		save.setForeground(new Color(25, 25, 112));
-		save.setFont(new Font("Tahoma", Font.BOLD, 11));
-		save.setForeground(new Color(25, 25, 112));
-
-		validate.setBounds(3, 5, 95, 29);
-		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate.addActionListener(this);
-		save.addActionListener(this);
-
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		add(devSheetButtonPanel);
+		
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+		ArrayList<String> buttonLabels = new ArrayList<String>();
+		buttonLabels.add("validate");
+		buttonLabels.add("Save");
+		selectionPanel.addButtonsPanel(buttonLabels, this);
+		sheetPanel = selectionPanel.getSheet();
+		selectionPanel.addComponentsToPanel();
 		add(selectionPanel);
-		add(alertsPanel);
 	}
 
 	@Override
@@ -135,7 +96,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
+		selectionPanel.updateFlags(flags);
 
 	}
 
@@ -317,7 +278,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.refreshFilters();
 			}
 
-			else if(event.getSource().equals(validate))
+			else if(event.getActionCommand().equals("validate"))
 			{
 				// tabbedPane.setSelectedIndex(0);
 				ArrayList<ArrayList<String>> wsheet = wsMap.get("Unapproved Values")
@@ -352,7 +313,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				}
 			}
 
-			else if(event.getSource().equals(save))
+			else if(event.getActionCommand().equals("Save"))
 			{
 				for(String wsName : wsMap.keySet())
 				{

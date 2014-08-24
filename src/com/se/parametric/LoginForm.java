@@ -65,16 +65,6 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-		// try
-		// {
-		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		// {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();

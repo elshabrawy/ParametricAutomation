@@ -1,7 +1,6 @@
 package com.se.Quality;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,15 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
@@ -32,10 +28,9 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.TablePanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -46,18 +41,12 @@ public class QAReviewData extends JPanel implements ActionListener
 
 	SheetPanel sheetpanel = new SheetPanel();
 	SheetPanel SummaryPanel = new SheetPanel();
-	JPanel tabSheet, selectionPanel, Summarytab/* , flowChart */;
-	JPanel devSheetButtonPanel, summaryButtonPanel;
+	WorkingAreaPanel tabSheet, selectionPanel, Summarytab/* , flowChart */;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
-	JButton save;
-	JButton validate;
-	JButton summarysave;
-	JButton summaryvalidate;
 	TablePanel tablePanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
 	Long[] users = null;
 	WorkingSheet ws = null;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
@@ -66,11 +55,10 @@ public class QAReviewData extends JPanel implements ActionListener
 	int width, height;
 	GrmUserDTO userDTO;
 	boolean summarydata = false;
-	static AlertsPanel alertsPanel, alertsPanel1, alertsPanel2;
 
 	public QAReviewData(GrmUserDTO userDTO)
 	{
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		this.userDTO = userDTO;
 		QAName = userDTO.getFullName();
 		userId = userDTO.getId();
@@ -82,109 +70,43 @@ public class QAReviewData extends JPanel implements ActionListener
 		// PDFURL PL Name Supplier Name No. of Parts per PDF No. of Done Parts per PDF No. of parts per PL No. of Done parts per PL PL_Type
 		// Development Method QA tools checks Task Type DevUserName Date
 
-		selectionPanel = new JPanel();
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] tableHeader = new String[] { "PdfUrl", "PlName", "PlType", "SupplierName",
 				"PDFParts", "Taskparts", "PDFDoneParts", "PLParts", "PLDoneParts", "PLFeatures",
 				"TaskType", "Status", "DevUserName", "QAReviewDate" };
 		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name",
 				"PDF Status" };
-		tablePanel = new TablePanel(tableHeader);
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
-		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterLabels, filterData, true);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		tablePanel = selectionPanel.getTablePanel(tableHeader);
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
 		buttonLabels.add("Summary");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel1 = new AlertsPanel(userDTO);
-		alertsPanel2 = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel2.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(tablePanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
+		selectionPanel.addButtonsPanel(buttonLabels, this);
+
+		tabSheet = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add("Validate");
+		buttonLabels.add("Save");
+		tabSheet.addButtonsPanel(buttonLabels, this);
+		sheetpanel = tabSheet.getSheet();
+
+		Summarytab = new WorkingAreaPanel(this.userDTO);
+		buttonLabels = new ArrayList<String>();
+		buttonLabels.add(" Save ");
+		buttonLabels.add(" Validate ");
+		Summarytab.addButtonsPanel(buttonLabels, this);
+		SummaryPanel = Summarytab.getSheet();
+
+		selectionPanel.addComponentsToPanel();
+		tabSheet.addComponentsToPanel();
+		Summarytab.addComponentsToPanel();
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		tabSheet = new JPanel();
-		Summarytab = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 110, height / 3);
-		devSheetButtonPanel.setLayout(null);
-
-		validate = new JButton("Validate");
-		validate.setBounds(3, 40, 95, 29);
-		validate.setForeground(new Color(25, 25, 112));
-		validate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		validate.addActionListener(this);
-		devSheetButtonPanel.add(validate);
-
-		save = new JButton("Save");
-		save.setBounds(3, 80, 95, 29);
-		save.setForeground(new Color(25, 25, 112));
-		save.setFont(new Font("Tahoma", Font.BOLD, 11));
-		save.addActionListener(this);
-		devSheetButtonPanel.add(save);
-
-		summaryButtonPanel = new JPanel();
-		summaryButtonPanel.setBackground(new Color(211, 211, 211));
-		summaryButtonPanel
-				.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		summaryButtonPanel.setBounds(width - 120, 0, 110, height / 3);
-		summaryButtonPanel.setLayout(null);
-
-		summarysave = new JButton("Save");
-		summarysave.setBounds(3, 80, 95, 29);
-		summarysave.setForeground(new Color(25, 25, 112));
-		summarysave.setFont(new Font("Tahoma", Font.BOLD, 11));
-		summarysave.addActionListener(this);
-		summaryButtonPanel.add(summarysave);
-
-		summaryvalidate = new JButton("Validate");
-		summaryvalidate.setBounds(3, 40, 95, 29);
-		summaryvalidate.setForeground(new Color(25, 25, 112));
-		summaryvalidate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		summaryvalidate.addActionListener(this);
-		summaryButtonPanel.add(summaryvalidate);
-
-		Summarytab.setLayout(null);
-		SummaryPanel.setBounds(0, 0, width - 120, height - 125);
-		Summarytab.add(SummaryPanel);
-		Summarytab.add(summaryButtonPanel);
-		Summarytab.add(alertsPanel2);
-		// filterPanel.comboBoxItems[1].setSelectedIndex(1);
-		tabSheet.setLayout(null);
-		sheetpanel.setBounds(0, 0, width - 120, height - 125);
-		tabSheet.add(sheetpanel);
-		tabSheet.add(devSheetButtonPanel);
-		tabSheet.add(alertsPanel1);
-
-		// flowChart = new ImagePanel("Development-chart.jpg");
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
-		// tabbedPane.addTab("Development Flow", null, flowChart, null);
 
-		add(tabbedPane);
-
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
-		filterPanel.addsummary.addActionListener(this);
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -201,6 +123,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 		});
+		this.add(tabbedPane);
 	}
 
 	@Override
@@ -521,9 +444,9 @@ public class QAReviewData extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
-		alertsPanel1.updateFlags(flags);
-		alertsPanel2.updateFlags(flags);
+		selectionPanel.updateFlags(flags);
+		tabSheet.updateFlags(flags);
+		Summarytab.updateFlags(flags);
 
 	}
 
@@ -597,7 +520,7 @@ public class QAReviewData extends JPanel implements ActionListener
 			}
 
 			// validate sample
-			else if(event.getSource() == validate)
+			else if(event.getActionCommand().equals("Validate"))
 			{
 				System.out.println("~~~~~~~ Start Validation Data ~~~~~~~");
 				wsMap.keySet();
@@ -613,7 +536,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 			// save sample
-			else if(event.getSource() == save)
+			else if(event.getActionCommand().equals("Save"))
 			{
 				System.out.println("~~~~~~~ Start saving Data ~~~~~~~");
 				wsMap.keySet();
@@ -636,7 +559,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 			// validate summary
-			else if(event.getSource() == summaryvalidate)
+			else if(event.getActionCommand().equals(" Validate "))
 			{
 				System.out.println("~~~~~~~ Start validate Data ~~~~~~~");
 				wsMap.keySet();
@@ -652,7 +575,7 @@ public class QAReviewData extends JPanel implements ActionListener
 				}
 			}
 			// save summary
-			else if(event.getSource() == summarysave)
+			else if(event.getActionCommand().equals(" Save "))
 			{
 				System.out.println("~~~~~~~ Start saving summary ~~~~~~~");
 				wsMap.keySet();
