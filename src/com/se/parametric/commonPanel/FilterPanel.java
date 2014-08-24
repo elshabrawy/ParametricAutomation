@@ -29,7 +29,7 @@ import com.toedter.calendar.JDateChooser;
 
 //import com.se.automation.db.client.mapping.CheckFeature;
 
-public class FilterPanel extends JPanel implements ActionListener
+public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 {
 
 	private static final int GAP = 7; // Default gap btwn components.
