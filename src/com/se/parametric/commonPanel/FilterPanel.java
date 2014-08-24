@@ -239,7 +239,9 @@ JPanel buttonPanel=new JPanel();
 		// taskpane.setBounds(0, 0, width, height);
 		taskpane.setTitle("Filter Panel");
 		taskpane.setIcon(new ImageIcon("Resources/filter.png"));
-		this.add(taskpane);
+		JPanel p=new JPanel();
+		p.add(taskpane);
+		this.add(p);
 
 	}
 
