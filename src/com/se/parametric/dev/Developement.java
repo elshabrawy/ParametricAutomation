@@ -45,7 +45,7 @@ import com.se.parametric.autoFill.AutoFill;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
-import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.commonPanel.FilterPanel1;
 import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
@@ -87,7 +87,7 @@ public class Developement extends JPanel implements ActionListener
 	GrmUserDTO userDTO = null;
 	AutoFill autoFillProcess;
 	boolean validated;
-
+	
 	/**
 	 * Create the panel.
 	 */
@@ -110,7 +110,9 @@ public class Developement extends JPanel implements ActionListener
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
 				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+
 		filterPanel = new FilterPanel(filterHeader, filterData, false);
+
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);

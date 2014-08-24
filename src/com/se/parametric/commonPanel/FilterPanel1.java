@@ -1,7 +1,7 @@
 package com.se.parametric.commonPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -11,27 +11,38 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
+import com.jtattoo.demo.app.JXTrayIcon;
+import com.se.automation.db.QueryUtil;
+import com.se.automation.db.SessionUtil;
+//import com.se.automation.db.client.mapping.CheckFeature;
+import com.se.automation.db.client.mapping.PlFeature;
+import com.se.automation.db.parametric.ParametricQueryUtil;
+import com.se.parametric.Loading;
+import com.se.parametric.dba.ParaQueryUtil;
+import com.se.parametric.dev.PdfLinks;
+import com.se.parametric.dto.DocumentInfoDTO;
 import com.toedter.calendar.JDateChooser;
 
-//import com.se.automation.db.client.mapping.CheckFeature;
-
-public class FilterPanel extends JPanel implements ActionListener
+public class FilterPanel1 extends JPanel implements ActionListener
 {
-
 	private static final int GAP = 7; // Default gap btwn components.
 	JCheckBox checkDate = null;
 	public JComboBox[] comboBoxItems = null;
@@ -44,32 +55,25 @@ public class FilterPanel extends JPanel implements ActionListener
 	public JButton refreshButton = new JButton("Refresh Filter");
 	public JButton addsummary = new JButton("Add to Summary");
 	public ArrayList<Object[]> filterList;
-
-	// JLabel counts = new JLabel();
 	JPanel allFilter = new JPanel();
 	JXTaskPane taskpane = new JXTaskPane();
 	JXTaskPaneContainer taskpanecontainer = new JXTaskPaneContainer();
 
-	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, boolean isQA)
-
+	public FilterPanel1(String[] titleOfCombobox, ArrayList<Object[]> list, int width, int height,
+			boolean isQA)
 	{
-		Dimension labelDim=new Dimension(100, 20);
-		Dimension comboDim=new Dimension(150, 20);
 		for(int i = 0; i < list.size(); i++)
 		{
 			for(int j = 0; j < list.get(i).length; j++)
 			{
 				if(list.get(i)[j].toString().equals("NPI Transferred")
 						|| list.get(i)[j].toString().equals("NPI Update"))
-
 				{
 					list.get(i)[j] = "NPI";
 				}
 			}
 		}
 		this.filterList = list;
-		// this.setLayout(null);
-		// counts.setText("count is " + list.size());
 		ArrayList<Object[]> result;
 		if(list.isEmpty())
 		{
@@ -90,8 +94,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		datePanel = new JPanel();
 		datePanel.setBackground(new Color(255, 240, 245));
 		datePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		// datePanel.setBounds(0, 0, width, 60);
-		// add(datePanel);
+		datePanel.setBounds(0, 0, width, 60);
 
 		jDateChooser1.setBounds(232, 21, 91, 20);
 		jDateChooser1.setDate(new java.util.Date());
@@ -104,14 +107,14 @@ public class FilterPanel extends JPanel implements ActionListener
 		datePanel.add(jDateChooser2);
 		JLabel lblNewLabel = new JLabel("From:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		// lblNewLabel.setBounds(118, 27, 73, 14);
+		lblNewLabel.setBounds(118, 27, 73, 14);
 		datePanel.add(lblNewLabel);
 		JLabel lblNewLabel_1 = new JLabel("To:");
-
+		
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel_1.setBounds(379, 27, 46, 14);
 		datePanel.add(lblNewLabel_1);
-		checkDate = new JCheckBox("Select Period");
+		checkDate = new JCheckBox("Select Date");
 		checkDate.setBorder(new EmptyBorder(2, 0, 2, 18));
 		checkDate.setFont(new Font("Tahoma", Font.BOLD, 11));
 		checkDate.setBounds(678, 18, 117, 23);
@@ -121,7 +124,7 @@ public class FilterPanel extends JPanel implements ActionListener
 		JPanel comboPanel = new JPanel();
 		comboPanel.setBackground(new Color(102, 204, 204));
 		comboPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		// comboPanel.setBounds(0, 60, width, height - 60);
+		comboPanel.setBounds(0, 60, width, height - 60);
 		int x = 0;
 		if(titleOfCombobox.length % 4 == 0)
 		{
@@ -131,46 +134,29 @@ public class FilterPanel extends JPanel implements ActionListener
 		{
 			x = (titleOfCombobox.length / 2) + 1;
 		}
-
 		System.out.println("x is " + x);
 		comboPanel.setLayout(new GridLayout(1, 2));
 		int comboRows = (int) Math.ceil(titleOfCombobox.length * 1.0 / 2);
-		// int initX = (width - (2 * (260))) / 3;
-		// int initY = ((height - 100) - (comboRows * 25)) / (comboRows + 1);
-		// int xPlus = 0, yPlus = 0;
+		int initX = (width - (2 * (260))) / 3;
+		int initY = ((height - 100) - (comboRows * 25)) / (comboRows + 1);
+		int xPlus = 0, yPlus = 0;
 
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		Color color = new Color(88, 130, 250);
-
-
-		// filterButton.setBounds(width / 2 - 120, height - 100, 110, 30);
-		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		// refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
-		if(isQA)
-		{
-			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
-			// addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
-			comboPanel.add(addsummary);
-		}
-
-		JPanel panel = new JPanel();
+		Color color=new Color(88, 130, 250);
+		
+	
+	JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setOpaque(false);
 		JButton b = new JButton("Done");
 		b.setBounds(100, 100, 50, 30);
 		panel.add(b);
 
-		// panel.setBounds(0, 0, width, 300);
+		panel.setBounds(0, 0, width, 300);
 
 		allFilter.setLayout(new GridBagLayout());
 
-		GBHelper pos = new GBHelper();
-
-		checkDate.setPreferredSize(labelDim);
-		lblNewLabel.setPreferredSize(labelDim);
-		jDateChooser1.setPreferredSize(comboDim);
-		lblNewLabel_1.setPreferredSize(labelDim);
-		jDateChooser2.setPreferredSize(comboDim);
+		GBHelper pos = new GBHelper(); 
 
 		allFilter.add(checkDate, pos.nextCol());
 		allFilter.add(new Gap(GAP), pos.nextCol());
@@ -181,62 +167,66 @@ public class FilterPanel extends JPanel implements ActionListener
 		allFilter.add(lblNewLabel_1, pos.nextCol());
 		allFilter.add(new Gap(GAP), pos.nextCol());
 		allFilter.add(jDateChooser2, pos.nextCol().expandW());
+		
+		
 
 		for(int i = 0; i < titleOfCombobox.length; i++)
 		{
 
 			filterLabels[i] = new JLabel(titleOfCombobox[i]);
 			filterLabels[i].setFont(new Font("Tahoma", Font.BOLD, 11));
-			// int xPos = initX + xPlus;
-			// int yPos = initY + yPlus;
-			// filterLabels[i].setBounds(xPos, yPos, 105, 25);
-			// comboPanel.add(filterLabels[i]);
 			comboBoxItems[i] = new JComboBox(result.get(i));
-			filterLabels[i].setPreferredSize(labelDim);
+			
 			if((i % 2) == 0)
 			{
-				allFilter.add(new Gap(2 * GAP), pos.nextRow());	
-				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol().width(1));			
-
-				allFilter.add(new Gap(GAP), pos.nextCol());
+				allFilter.add(new Gap(2*GAP), pos.nextRow());
 				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol());
+				allFilter.add(new Gap(GAP), pos.nextCol());
 			}
 			else
 			{
-				allFilter.add(filterLabels[i], pos.nextCol().width(1));	
-			}
-			allFilter.add(new Gap(GAP), pos.nextCol());
-			comboBoxItems[i].setSelectedItem("All");		
+				allFilter.add(filterLabels[i], pos.nextCol());
 
-			comboBoxItems[i].setPreferredSize(comboDim);
-			comboBoxItems[i].setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXX");
-			allFilter.add(comboBoxItems[i], pos.nextCol().width(2));
+				allFilter.add(new Gap(GAP), pos.nextCol());
+
+			}
+			
+			
+			comboBoxItems[i].setSelectedItem("All");
+			comboBoxItems[i].setSize(50, 20);
+			allFilter.add(comboBoxItems[i], pos.nextCol().height(1));
 			allFilter.add(new Gap(GAP), pos.nextCol());
 			comboBoxItems[i].addActionListener(this);
-		}
-JPanel buttonPanel=new JPanel();
-//buttonPanel
+
+		}	
+		
+
 		allFilter.add(new Gap(10), pos.nextRow().expandW());
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		filterButton.setBounds(width / 2 - 120, height - 100, 110, 30);
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		
-		buttonPanel.add(refreshButton);
-		buttonPanel.add(filterButton);
+		refreshButton.setBounds(width / 2 + 10, height - 100, 110, 30);
+		comboPanel.add(refreshButton);
+		comboPanel.add(filterButton);
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
-			buttonPanel.add(addsummary);
+			addsummary.setBounds(width / 2 + 140, height - 100, 130, 30);
+			comboPanel.add(addsummary);
 		}
-
-		// allFilter.add(new Gap(GAP), pos.nextRow());
-		// allFilter.add(comboPanel, pos.nextRow().expandW());
-		// allFilter.add(new Gap(GAP), pos.nextCol());
-		// allFilter.add(refreshButton, pos.nextCol());
-		// allFilter.add(new Gap(GAP), pos.nextRow().nextCol().expandW());
-//		allFilter.add(new Gap(2 * GAP), pos.nextRow());	
-		allFilter.add(buttonPanel, pos.nextRow().width(9));	
+		
+//		allFilter.add(new Gap(GAP), pos.nextRow());
+//		allFilter.add(comboPanel, pos.nextRow().expandW());
+//		allFilter.add(new Gap(GAP), pos.nextCol());
+//		allFilter.add(refreshButton, pos.nextCol());
+//		allFilter.add(new Gap(GAP), pos.nextRow().nextCol().expandW());
+//       taskpane.getContentPane().setLayout(null);
+//       allFilter.setBounds(0, 0, width, height);
+		allFilter=new JPanel();
+		allFilter.setLayout(null);
+		allFilter.add(new JLabel("Ok"));
 		taskpane.add(allFilter);
-		// taskpane.setBounds(0, 0, width, height);
+		taskpane.setBounds(0, 0, width, height);
 		taskpane.setTitle("Filter Panel");
 		taskpane.setIcon(new ImageIcon("Resources/filter.png"));
 		this.add(taskpane);
@@ -339,7 +329,7 @@ JPanel buttonPanel=new JPanel();
 				combo.addActionListener(this);
 			}
 		}
-
+		
 	}
 
 	public void actionPerformed(ActionEvent event)
