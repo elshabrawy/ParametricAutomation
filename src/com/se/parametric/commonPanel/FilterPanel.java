@@ -234,7 +234,7 @@ JPanel buttonPanel=new JPanel();
 		// allFilter.add(refreshButton, pos.nextCol());
 		// allFilter.add(new Gap(GAP), pos.nextRow().nextCol().expandW());
 //		allFilter.add(new Gap(2 * GAP), pos.nextRow());	
-		allFilter.add(buttonPanel, pos.nextRow().width(7));	
+		allFilter.add(buttonPanel, pos.nextRow().width(9));	
 		taskpane.add(allFilter);
 		// taskpane.setBounds(0, 0, width, height);
 		taskpane.setTitle("Filter Panel");
