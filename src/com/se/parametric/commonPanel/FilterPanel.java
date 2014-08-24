@@ -29,7 +29,7 @@ import com.toedter.calendar.JDateChooser;
 
 //import com.se.automation.db.client.mapping.CheckFeature;
 
-public class FilterPanel extends JXTaskPaneContainer implements ActionListener
+public class FilterPanel extends JPanel implements ActionListener
 {
 
 	private static final int GAP = 7; // Default gap btwn components.
@@ -195,22 +195,15 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 			filterLabels[i].setPreferredSize(labelDim);
 			if((i % 2) == 0)
 			{
-
 				allFilter.add(new Gap(2 * GAP), pos.nextRow());	
-				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol().width(1));				
+				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol().width(1));			
 
-				// xPlus += (260 + initX);
-				allFilter.add(new Gap(2 * GAP), pos.nextRow());
-				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol());
 				allFilter.add(new Gap(GAP), pos.nextCol());
-
+				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol());
 			}
 			else
 			{
-
-				allFilter.add(filterLabels[i], pos.nextCol().width(1));			
-
-
+				allFilter.add(filterLabels[i], pos.nextCol().width(1));	
 			}
 			allFilter.add(new Gap(GAP), pos.nextCol());
 			comboBoxItems[i].setSelectedItem("All");		
@@ -220,18 +213,19 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 			allFilter.add(comboBoxItems[i], pos.nextCol().width(2));
 			allFilter.add(new Gap(GAP), pos.nextCol());
 			comboBoxItems[i].addActionListener(this);
-
 		}
-
+JPanel buttonPanel=new JPanel();
+//buttonPanel
 		allFilter.add(new Gap(10), pos.nextRow().expandW());
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		comboPanel.add(refreshButton);
-		comboPanel.add(filterButton);
+		
+		buttonPanel.add(refreshButton);
+		buttonPanel.add(filterButton);
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
-			comboPanel.add(addsummary);
+			buttonPanel.add(addsummary);
 		}
 
 		// allFilter.add(new Gap(GAP), pos.nextRow());
@@ -239,7 +233,8 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 		// allFilter.add(new Gap(GAP), pos.nextCol());
 		// allFilter.add(refreshButton, pos.nextCol());
 		// allFilter.add(new Gap(GAP), pos.nextRow().nextCol().expandW());
-
+//		allFilter.add(new Gap(2 * GAP), pos.nextRow());	
+		allFilter.add(buttonPanel, pos.nextRow().width(7));	
 		taskpane.add(allFilter);
 		// taskpane.setBounds(0, 0, width, height);
 		taskpane.setTitle("Filter Panel");

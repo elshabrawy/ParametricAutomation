@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import java.awt.FlowLayout;
 
 public class ButtonsPanel extends JPanel
 {
@@ -27,9 +28,15 @@ public class ButtonsPanel extends JPanel
 	public ButtonsPanel(ArrayList<String> buttonLabels)
 	{
 		buttons = new JButton[buttonLabels.size()];
-		this.setLayout(new GridLayout(buttonLabels.size(), 1, 0, 5));
 		setBackground(new Color(211, 211, 211));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		JButton btnNewButton = new JButton("New button");
+		add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("New button");
+		add(btnNewButton_1);
 		for(int i = 0; i < buttonLabels.size(); i++)
 		{
 			buttons[i] = new JButton(buttonLabels.get(i));
