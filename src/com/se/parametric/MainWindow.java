@@ -2,6 +2,7 @@ package com.se.parametric;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -92,7 +93,28 @@ public class MainWindow extends JFrame
 			}
 		});
 		optionsMenu.add(changePassMenuItem);
+		JMenuItem logoutMenuItem = new JMenuItem("Logout");
+		logoutMenuItem.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure to logout?",
+						"Paremtric Automation", JOptionPane.YES_NO_OPTION);
+				if(reply == JOptionPane.YES_OPTION)
+				{
+					hidemainwindow();
+
+				}
+				else
+				{
+					return;
+				}
+
+			}
+
+		});
+		optionsMenu.add(logoutMenuItem);
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem devFlowMenuItem = new JMenuItem("Development Flow");
 		devFlowMenuItem.addActionListener(new ActionListener() {
@@ -131,32 +153,53 @@ public class MainWindow extends JFrame
 		// contentPane.setLayout(null);
 		// container.add(contentPane);
 
-//		 com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		 try
-//		 {
-//		 UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		 }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		 {
-//		 // TODO Auto-generated catch block
-//		 e.printStackTrace();
-//		 }
-		 try
-		 {
-		 // Set cross-platform Java L&F (also called "Metal")
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 }catch(UnsupportedLookAndFeelException e)
-		 {
-		
-		 }catch(ClassNotFoundException e)
-		 {
-		
-		 }catch(InstantiationException e)
-		 {
-		
-		 }catch(IllegalAccessException e)
-		 {
-		
-		 }
+		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+		// try
+		// {
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+		// {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		try
+		{
+			// Set cross-platform Java L&F (also called "Metal")
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(UnsupportedLookAndFeelException e)
+		{
+
+		}catch(ClassNotFoundException e)
+		{
+
+		}catch(InstantiationException e)
+		{
+
+		}catch(IllegalAccessException e)
+		{
+
+		}
+
+	}
+
+	public void hidemainwindow()
+	{
+		final LoginForm log = new LoginForm();
+		log.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run()
+			{
+				try
+				{
+					log.setTitle("Parametric Automation");
+					log.setVisible(true);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		this.dispose();
 
 	}
 
