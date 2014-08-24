@@ -81,8 +81,7 @@ public class QAChecks extends JPanel implements ActionListener
 		selectionPanel = new JPanel();
 
 		String[] filterLabels = { "PL Name", "Supplier", "Checker Type", "Status" };
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
+		filterPanel = new FilterPanel(filterLabels, filterData, false);
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");

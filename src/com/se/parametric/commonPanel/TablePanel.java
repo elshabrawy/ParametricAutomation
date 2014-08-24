@@ -1,7 +1,9 @@
 package com.se.parametric.commonPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -12,25 +14,20 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.DefaultRowSorter;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter;
 import javax.swing.border.BevelBorder;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import com.se.parametric.dto.TableInfoDTO;
 
@@ -42,6 +39,7 @@ public class TablePanel extends JPanel implements ActionListener
 	JPanel paggingButtonPanel;
 	JPanel scrollPanel;
 	JPanel recordsPanel;
+	JPanel downPanel;
 	private int numberOfRows;
 	public int currentPage, pageNumber;
 	private int recordNumber;
@@ -59,62 +57,69 @@ public class TablePanel extends JPanel implements ActionListener
 
 	public HashSet<String> loadedPdfs = new HashSet<String>();
 
-	public TablePanel(String[] header, int width, int height)
+	public TablePanel(String[] header)
 	{
 		this.header = header;
-		setLayout(null);
-		setSize(width, height);
-		// setBounds(0, (((height - 100) * 4) / 10), width - 110,525 );
-		paggingButtonPanel = new JPanel();
-		paggingButtonPanel.setLayout(null);
+		this.setLayout(new BorderLayout());
 		scrollPanel = new JPanel();
-		paggingButtonPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		paggingButtonPanel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		paggingButtonPanel.setBounds(width - 300, height - 60, 300, 40);
-		// paggingButtonPanel.setLayout(null);
-		recordsPerPage = (int) ((height - 60) * 1.0 / 25);
+
 		String[][] tableData = new String[recordsPerPage][header.length];
-		// String[][] tableData = new String[20][header.length];
 		table = new JTable();
 		table.setRowHeight(25);
 		table.setModel(new DefaultTableModel(tableData, header));
 		table.setAutoCreateColumnsFromModel(false);
 		table.getTableHeader().setReorderingAllowed(true);
-		// table.setBounds(0, 524, width , height);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, width, (height - 60));
 		scrollPane.setViewportView(table);
+
+		paggingButtonPanel = new JPanel();
+		paggingButtonPanel.setLayout(new BoxLayout(paggingButtonPanel, BoxLayout.LINE_AXIS));
+		paggingButtonPanel.setFont(new Font("Tahoma", Font.BOLD, 11));
+
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		
 		first.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/first.png")));
-		int start = 40;
-		first.setBounds(0 + start, 5, 50, 25);
 		paggingButtonPanel.add(first);
+		paggingButtonPanel.add(Box.createHorizontalStrut(2));
+
 		previous.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/priv.png")));
-		previous.setBounds(50 + start + 5, 5, 50, 25);
 		paggingButtonPanel.add(previous);
+		paggingButtonPanel.add(Box.createHorizontalStrut(10));
+
 		paggingLabel = new JLabel();
-		// paggingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		paggingLabel.setBounds(100 + start + 10, 5, 20, 25);
 		paggingButtonPanel.add(paggingLabel);
+		paggingButtonPanel.add(Box.createHorizontalStrut(10));
+		
 		next.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/next.png")));
-		next.setBounds(110 + start + 15, 5, 50, 25);
 		paggingButtonPanel.add(next);
+		paggingButtonPanel.add(Box.createHorizontalStrut(2));
+
 		last.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/last.png")));
-		last.setBounds(160 + start + 20, 5, 50, 25);
 		paggingButtonPanel.add(last);
 
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		paggingButtonPanel.add(Box.createHorizontalGlue());
+		
 		first.addActionListener(this);
 		next.addActionListener(this);
 		previous.addActionListener(this);
 		last.addActionListener(this);
+
 		recordsPanel = new JPanel();
 		recordsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		recordsPanel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		recordsPanel.setBounds(0, height - 60, 300, 40);
 		recordsPanel.add(recordsLabel);
-		this.add(scrollPane);
-		add(paggingButtonPanel);
-		add(recordsPanel);
+
+		downPanel = new JPanel(new GridLayout(1, 2));
+		downPanel.add(recordsPanel);
+		downPanel.add(paggingButtonPanel);
+
+		this.add(scrollPane, BorderLayout.CENTER);
+		this.add(downPanel, BorderLayout.PAGE_END);
 
 		table.addMouseListener(new MouseListener() {
 			@Override

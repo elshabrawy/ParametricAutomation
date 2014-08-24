@@ -83,13 +83,12 @@ public class EngFeedBack extends JPanel implements ActionListener
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
 				"InfectedTaxonomies", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier", "Feedback Type", "Issued By" };
-		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
-		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
+		tablePanel = new TablePanel(labels);
+		// tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
+		// (((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel(filterHeader, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = new FilterPanel(filterHeader, filterData, false);
+//		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("LoadSheet");
 		buttonLabels.add("Load All");

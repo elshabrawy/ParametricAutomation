@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -136,7 +137,7 @@ public class LoginForm extends JFrame
 		panel.add(lblver);
 	}
 
-	class LongRunProcess extends SwingWorker
+	class LongRunProcess extends SwingWorker<Object, Object>
 	{
 		/**
 		 * @throws Exception
@@ -155,7 +156,7 @@ public class LoginForm extends JFrame
 					mainFrame.updateFlags();
 					try
 					{
-						Thread.sleep(50000);
+						TimeUnit.MINUTES.sleep(5);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();
@@ -167,7 +168,7 @@ public class LoginForm extends JFrame
 		}
 	}
 
-	class LongRunProcess2 extends SwingWorker
+	class LongRunProcess2 extends SwingWorker<Object, Object>
 	{
 		/**
 		 * @throws Exception
@@ -211,17 +212,18 @@ public class LoginForm extends JFrame
 			if(grmUser == null)
 			{
 				MainWindow.glass.setVisible(false);
+				glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
 			else
 			{
 
 				mainFrame = new MainWindow();
+				mainFrame.init(grmUser);
+				loginframe.setVisible(false);
 				mainFrame.setVisible(true);
 				// primaryStage.hide();
 				Runtime.getRuntime().gc();
-				mainFrame.init(grmUser);
-				loginframe.setVisible(false);
 			}
 			// thread.stop();
 			LongRunProcess process = new LongRunProcess();

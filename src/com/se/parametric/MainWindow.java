@@ -1,7 +1,6 @@
 package com.se.parametric;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
@@ -31,21 +30,18 @@ import com.se.parametric.util.ImagePanel;
 public class MainWindow extends JFrame
 {
 
-	private JPanel contentPane;
-	JPanel panel, panel2;
-	int width, height;
-	Container container;
-	MainPanel p;
+	// private JPanel contentPane;
+	// JPanel panel, panel2;
+	// int width, height;
+	// Container container;
+	private MainPanel mainPanel;
 	private JMenuBar menuBar;
 	private GrmUserDTO loggedInUser;
-
-	/**
-	 * Create the frame.
-	 */
 	public static JPanel glass;
-	public MainWindow()
+
+	static
 	{
-	 glass = new JPanel() {
+		glass = new JPanel() {
 			public void paintComponent(Graphics g)
 
 			{
@@ -58,9 +54,9 @@ public class MainWindow extends JFrame
 		// Set layout to JPanel
 		glass.setLayout(new GridBagLayout());
 		// Add the jlabel with the image icon
-		glass.add(new JLabel(new ImageIcon("Resources/0b.gif")));
-		// Take glass pane
-		setGlassPane(glass);
+
+		glass.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
+
 		// Add MouseListener
 		glass.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me)
@@ -71,8 +67,12 @@ public class MainWindow extends JFrame
 				Toolkit.getDefaultToolkit().beep();
 			}
 		});
-		
-		container = getContentPane();
+	}
+
+	public MainWindow()
+	{
+
+		// container = getContentPane();
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -115,60 +115,64 @@ public class MainWindow extends JFrame
 
 		menuBar.add(optionsMenu);
 		menuBar.add(helpMenu);
-		this.setJMenuBar(menuBar);
+		setJMenuBar(menuBar);
 
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		width = screenSize.width;
-		height = screenSize.height - 30;
+		setGlassPane(glass);
+		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		// width = screenSize.width;
+		// height = screenSize.height - 30;
 		//
 		// System.out.println((width - 350) / 2 + " and " + (height - 150) / 2);
 		// setBounds(0, 0, width, height);
 		//
-		contentPane = new JPanel();
-		contentPane.setLayout(null);
-		container.add(contentPane);
-//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		try
-//		{
-//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try
-//		{
-//			// Set cross-platform Java L&F (also called "Metal")
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		}catch(UnsupportedLookAndFeelException e)
-//		{
-//
-//		}catch(ClassNotFoundException e)
-//		{
-//
-//		}catch(InstantiationException e)
-//		{
-//
-//		}catch(IllegalAccessException e)
-//		{
-//
-//		}
+		// contentPane = new JPanel();
+		// contentPane.setLayout(null);
+		// container.add(contentPane);
+
+		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+		// try
+		// {
+		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+		// {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// try
+		// {
+		// // Set cross-platform Java L&F (also called "Metal")
+		// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		// }catch(UnsupportedLookAndFeelException e)
+		// {
+		//
+		// }catch(ClassNotFoundException e)
+		// {
+		//
+		// }catch(InstantiationException e)
+		// {
+		//
+		// }catch(IllegalAccessException e)
+		// {
+		//
+		// }
 
 	}
 
 	public void init(GrmUserDTO grmUser)
 	{
 		loggedInUser = grmUser;
-		contentPane.removeAll();
-		contentPane.getWidth();
-		contentPane.getHeight();
-		p = new MainPanel(grmUser, width, height);
-		System.out.println("Main Frame Dimession " + width + " " + height);
-		p.repaint();
-		System.out.println("Main Panel Dimession " + p.getWidth() + " " + p.getHeight());
-		contentPane.add(p);
-		contentPane.revalidate();
-		contentPane.repaint();
+		mainPanel = new MainPanel(grmUser);
+		getContentPane().add(mainPanel);
+
+		// contentPane.removeAll();
+		// contentPane.getWidth();
+		// contentPane.getHeight();
+		// System.out.println("Main Frame Dimession " + width + " " + height);
+		// p.repaint();
+		// System.out.println("Main Panel Dimession " + p.getWidth() + " " + p.getHeight());
+		// contentPane.add(p);
+		// contentPane.revalidate();
+		// contentPane.repaint();
 		// while(true)
 		// {
 		// updateFlags();
@@ -190,7 +194,7 @@ public class MainWindow extends JFrame
 
 	public void updateFlags()
 	{
-		p.updateFlags();
+		mainPanel.updateFlags();
 	}
 
 	public void showImagePanel(String title, String imgName)

@@ -45,7 +45,6 @@ import com.se.parametric.autoFill.AutoFill;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
-import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.FilterPanel1;
 import com.se.parametric.commonPanel.TablePanel;
 import com.se.parametric.dba.ApprovedDevUtil;
@@ -81,14 +80,14 @@ public class Developement extends JPanel implements ActionListener
 	boolean foundPdf = false;
 	Long userId = 0l;
 	TablePanel tablePanel = null;
-	FilterPanel1 filterPanel = null;
+	FilterPanel filterPanel = null;
 	ButtonsPanel buttonsPanel, sheetButtonsPanel, separationButtonsPanel;
 	static AlertsPanel alertsPanel, alertsPanel1, alertsPanel2;
 	String userName;
 	GrmUserDTO userDTO = null;
 	AutoFill autoFillProcess;
 	boolean validated;
-
+	
 	/**
 	 * Create the panel.
 	 */
@@ -107,12 +106,13 @@ public class Developement extends JPanel implements ActionListener
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "TaskType",
 				"Extracted", "Priority", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier Name", "Task Type", "Extracted", "Priority" };
-		tablePanel = new TablePanel(labels, width - 120, (((height - 100) * 7) / 10));
+		tablePanel = new TablePanel(labels);
 		tablePanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
 				(((height - 100) * 7) / 10));
 		tablePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		filterPanel = new FilterPanel1(filterHeader, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
+
+		filterPanel = new FilterPanel(filterHeader, filterData, false);
+
 		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
