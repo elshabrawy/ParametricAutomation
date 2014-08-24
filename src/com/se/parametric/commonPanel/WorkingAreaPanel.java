@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -72,12 +71,8 @@ public class WorkingAreaPanel extends JPanel
 		{
 			buttons[i].addActionListener(actionListener);
 		}
-		this.sidePanel.add(alertsPanel);
-		this.sidePanel.add(Box.createVerticalGlue());
-		this.sidePanel.add(Box.createVerticalGlue());
-		this.sidePanel.add(Box.createVerticalGlue());
 		this.sidePanel.add(buttonsPanel);
-
+		this.sidePanel.add(alertsPanel);
 	}
 
 	public void updateFlags(ArrayList<String> flags)

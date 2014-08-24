@@ -24,6 +24,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
@@ -49,6 +50,7 @@ public class LoginForm extends JFrame
 			{
 				try
 				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					loginframe = new LoginForm();
 					loginframe.setTitle("Parametric Automation");
 					loginframe.setVisible(true);
@@ -78,7 +80,7 @@ public class LoginForm extends JFrame
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
- 
+
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.addActionListener(new ActionListener() {
 
@@ -140,7 +142,7 @@ public class LoginForm extends JFrame
 				{
 					try
 					{
-						TimeUnit.SECONDS.sleep(3);
+						TimeUnit.SECONDS.sleep(7);
 						mainFrame.updateFlags();
 						TimeUnit.MINUTES.sleep(3);
 					}catch(InterruptedException e)

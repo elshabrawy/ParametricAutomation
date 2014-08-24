@@ -42,8 +42,6 @@ import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.fb.SourcingFeedbackPanel;
 
-//ahmed_eldalatony@gitblit:8000/r/Automation/Parametric/ParametricAutomationDTV2.git
-
 public class Developement extends JPanel implements ActionListener
 {
 	/**
@@ -77,8 +75,8 @@ public class Developement extends JPanel implements ActionListener
 		this.setLayout(new BorderLayout());
 		this.userDTO = userDTO;
 		this.userName = userDTO.getFullName();
-		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+		// int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+		// int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		// =======================================================
 		userId = userDTO.getId();
 
@@ -114,10 +112,10 @@ public class Developement extends JPanel implements ActionListener
 		tabSheet.addComponentsToPanel();
 		separationTab.addComponentsToPanel();
 
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		tabbedPane.addTab("Sheet", null, tabSheet, null);
-		tabbedPane.addTab("Separation", null, separationTab, null);
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addTab("Input Selection", selectionPanel);
+		tabbedPane.addTab("Sheet", tabSheet);
+		tabbedPane.addTab("Separation", separationTab);
 		add(tabbedPane);
 		this.addFocusListener(new FocusListener() {
 
@@ -141,8 +139,6 @@ public class Developement extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		System.out.println("start here");
-
 		LongRunProcess longRunProcess = new LongRunProcess(event);
 		longRunProcess.execute();
 	}

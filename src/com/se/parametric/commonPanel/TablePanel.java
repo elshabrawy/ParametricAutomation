@@ -50,7 +50,7 @@ public class TablePanel extends JPanel implements ActionListener
 	JButton last = new JButton("");
 	JLabel paggingLabel;
 	public String[] header;
-	int recordsPerPage;
+	int recordsPerPage = 15;
 
 	private ArrayList<ArrayList<String>> filteredData;
 	public ArrayList<TableInfoDTO> selectedData;
@@ -80,7 +80,7 @@ public class TablePanel extends JPanel implements ActionListener
 		paggingButtonPanel.add(Box.createHorizontalGlue());
 		paggingButtonPanel.add(Box.createHorizontalGlue());
 		paggingButtonPanel.add(Box.createHorizontalGlue());
-		
+
 		first.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/first.png")));
 		paggingButtonPanel.add(first);
 		paggingButtonPanel.add(Box.createHorizontalStrut(2));
@@ -92,7 +92,7 @@ public class TablePanel extends JPanel implements ActionListener
 		paggingLabel = new JLabel();
 		paggingButtonPanel.add(paggingLabel);
 		paggingButtonPanel.add(Box.createHorizontalStrut(10));
-		
+
 		next.setIcon(new ImageIcon(TablePanel.class.getResource("/Resources/next.png")));
 		paggingButtonPanel.add(next);
 		paggingButtonPanel.add(Box.createHorizontalStrut(2));
@@ -103,7 +103,7 @@ public class TablePanel extends JPanel implements ActionListener
 		paggingButtonPanel.add(Box.createHorizontalGlue());
 		paggingButtonPanel.add(Box.createHorizontalGlue());
 		paggingButtonPanel.add(Box.createHorizontalGlue());
-		
+
 		first.addActionListener(this);
 		next.addActionListener(this);
 		previous.addActionListener(this);
