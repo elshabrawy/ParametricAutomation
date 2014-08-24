@@ -36,7 +36,7 @@ public class ButtonsPanel extends JPanel
 		bagConstraints.gridx = 0;
 		bagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		bagConstraints.insets = new Insets(0, 0, 10, 0);
-		bagConstraints.anchor=GridBagConstraints.FIRST_LINE_START;
+		bagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		for(int i = 0; i < buttonLabels.size(); i++)
 		{
 			buttons[i] = new JButton(buttonLabels.get(i));

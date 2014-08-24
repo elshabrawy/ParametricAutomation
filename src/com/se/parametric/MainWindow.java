@@ -24,6 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -56,6 +58,7 @@ public class MainWindow extends JFrame
 		// Set layout to JPanel
 		glass.setLayout(new GridBagLayout());
 		// Add the jlabel with the image icon
+
 		glass.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
 
 		// Add MouseListener
@@ -145,32 +148,32 @@ public class MainWindow extends JFrame
 		// contentPane.setLayout(null);
 		// container.add(contentPane);
 
-		// com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-		// try
-		// {
-		// UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-		// }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		// {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// try
-		// {
-		// // Set cross-platform Java L&F (also called "Metal")
-		// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		// }catch(UnsupportedLookAndFeelException e)
-		// {
-		//
-		// }catch(ClassNotFoundException e)
-		// {
-		//
-		// }catch(InstantiationException e)
-		// {
-		//
-		// }catch(IllegalAccessException e)
-		// {
-		//
-		// }
+//		 com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
+//		 try
+//		 {
+//		 UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+//		 }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+//		 {
+//		 // TODO Auto-generated catch block
+//		 e.printStackTrace();
+//		 }
+		 try
+		 {
+		 // Set cross-platform Java L&F (also called "Metal")
+		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		 }catch(UnsupportedLookAndFeelException e)
+		 {
+		
+		 }catch(ClassNotFoundException e)
+		 {
+		
+		 }catch(InstantiationException e)
+		 {
+		
+		 }catch(IllegalAccessException e)
+		 {
+		
+		 }
 
 	}
 
