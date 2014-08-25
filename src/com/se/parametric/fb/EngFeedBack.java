@@ -644,4 +644,16 @@ public class EngFeedBack extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetPanel != null)
+		{
+			sheetPanel.closeApplication();
+		}
+		if(separationPanel != null)
+		{
+			separationPanel.closeApplication();
+		}
+	}
+
 }

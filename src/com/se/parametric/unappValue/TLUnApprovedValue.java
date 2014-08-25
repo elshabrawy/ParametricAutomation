@@ -415,4 +415,12 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetPanel != null)
+		{
+			sheetPanel.closeApplication();
+		}
+	}
+
 }

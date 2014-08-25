@@ -757,4 +757,16 @@ public class Developement extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+		if(separationPanel != null)
+		{
+			separationPanel.closeApplication();
+		}
+	}
+
 }

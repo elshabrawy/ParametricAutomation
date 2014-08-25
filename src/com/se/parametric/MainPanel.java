@@ -95,22 +95,6 @@ public class MainPanel extends JPanel implements ActionListener
 		// setLayout(null);
 		BorderLayout borderLayout = new BorderLayout();
 		this.setLayout(borderLayout);
-		this.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent arg0)
-			{
-			}
-
-			@Override
-			public void focusGained(FocusEvent arg0)
-			{
-				if(null != tabbedPane.getSelectedComponent())
-				{
-					tabbedPane.getSelectedComponent().requestFocusInWindow();
-				}
-			}
-		});
 		long userRole = userDTO.getGrmRole().getId();
 		long userGroup = userDTO.getGrmGroup().getId();
 		// this.setBounds(0, 0, width, height);
@@ -224,7 +208,22 @@ public class MainPanel extends JPanel implements ActionListener
 		add(toolBar, BorderLayout.PAGE_START);
 		// add(mainpnl);
 		add(tabbedPane, BorderLayout.CENTER);
+		this.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	private void drawtoolbar(List<JButton> buttons, List<String> iconsurl, int wstart, int Bwidth)
@@ -294,6 +293,37 @@ public class MainPanel extends JPanel implements ActionListener
 		if(qaexception != null)
 			qaexception.updateFlags(flags);
 
+	}
+
+	public void clearOfficeResources()
+	{
+		// TL Screens
+		if(tlfeedBack != null)
+			tlfeedBack.clearOfficeResources();
+		if(reviewData != null)
+			reviewData.clearOfficeResources();
+		if(tlunApprovedPanel != null)
+			tlunApprovedPanel.clearOfficeResources();
+		// Eng Screens
+		if(engfeedBack != null)
+			engfeedBack.clearOfficeResources();
+		if(engunApprovedPanel != null)
+			engunApprovedPanel.clearOfficeResources();
+		if(developement != null)
+			developement.clearOfficeResources();
+		if(qachecks != null)
+			qachecks.clearOfficeResources();
+		if(exceptionfb != null)
+			exceptionfb.clearOfficeResources();
+		// QA Screens
+		if(qaReviewData != null)
+			qaReviewData.clearOfficeResources();
+		if(qaFeedBack != null)
+			qaFeedBack.clearOfficeResources();
+		if(qUnApproved != null)
+			qUnApproved.clearOfficeResources();
+		if(qaexception != null)
+			qaexception.clearOfficeResources();
 	}
 
 	@Override

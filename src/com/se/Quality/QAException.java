@@ -327,4 +327,12 @@ public class QAException extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+	}
+
 }

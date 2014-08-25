@@ -576,4 +576,18 @@ public class TLReviewData extends JPanel implements ActionListener
 			MainWindow.glass.setVisible(false);
 		}
 	}
+
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeDoc();
+			sheetpanel.closeApplication();
+		}
+		if(separationPanel != null)
+		{
+			separationPanel.closeDoc();
+			separationPanel.closeApplication();
+		}
+	}
 }

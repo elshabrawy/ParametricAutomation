@@ -1,9 +1,8 @@
 package osheet;
 
 import java.awt.BorderLayout;
+import java.awt.Panel;
 import java.util.Properties;
-
-import javax.swing.JPanel;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.comp.beans.NoConnectionException;
@@ -25,17 +24,17 @@ import com.sun.star.uno.XComponentContext;
  * 
  * @author ahmed_nehad
  */
-public class SheetPanel extends JPanel
+public class SheetPanel extends Panel
 {
-
 	protected OOoBean aBean;
 	protected SheetViewData SVD = new SheetViewData();
 	private boolean documentOpened = false;
-	private XEventBroadcaster xEventBroad;
+	// private XEventBroadcaster xEventBroad;
 	private Properties culmns;
+
 	// protected JButton butSeparation, save;
 	// private Frame frame;
-	public static int row, column;
+	// public static int row, column;
 
 	// protected JButton btuSaveParts;
 
@@ -117,7 +116,7 @@ public class SheetPanel extends JPanel
 		// butSeparation = new JButton("Separate");
 		// butSeparation.setSize(dimension);
 
-//		add(aBean, BorderLayout.CENTER);
+		// add(aBean, BorderLayout.CENTER);
 
 		// prepare sheet
 		attachEventHandler();
@@ -139,8 +138,8 @@ public class SheetPanel extends JPanel
 					.createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster",
 							xRemoteContext);
 
-			xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(XEventBroadcaster.class,
-					xGlobalBroadCaster);
+			XEventBroadcaster xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(
+					XEventBroadcaster.class, xGlobalBroadCaster);
 
 			// xEventBroad.addEventListener(this);
 		}catch(Exception e)
@@ -240,7 +239,13 @@ public class SheetPanel extends JPanel
 	 */
 	public void closeApplication()
 	{
-		aBean.stopOOoConnection();
+		// aBean.stopOOoConnection();
+		try
+		{
+			aBean.getOOoDesktop().terminate();
+		}catch(NoConnectionException e)
+		{
+		}
 	}
 
 	public XSpreadsheet getActivSheet()
@@ -405,10 +410,10 @@ public class SheetPanel extends JPanel
 		{
 			ex.printStackTrace();
 		}
-		row = SVD.getSelectedCellposesions().y;
-		column = SVD.getSelectedCellposesions().x;
-		System.out.println(SVD.getSelectedCellposesions().y + " and "
-				+ SVD.getSelectedCellposesions().x);
+		// row = SVD.getSelectedCellposesions().y;
+		// column = SVD.getSelectedCellposesions().x;
+		// System.out.println(SVD.getSelectedCellposesions().y + " and "
+		// + SVD.getSelectedCellposesions().x);
 		return this.SVD.getSelectedCellposesions().x;
 	}
 

@@ -613,4 +613,12 @@ public class QAFeedBack extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+	}
+
 }

@@ -495,6 +495,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 		separationSheetPanel.updateFlags(flags);
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+		if(separationPanel != null)
+		{
+			separationPanel.closeApplication();
+		}
+	}
+
 	class LongRunProcess extends SwingWorker
 	{
 		ActionEvent event = null;
@@ -655,4 +667,5 @@ public class TLFeedBack extends JPanel implements ActionListener
 			return null;
 		}
 	}
+
 }

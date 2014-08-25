@@ -142,9 +142,8 @@ public class LoginForm extends JFrame
 				{
 					try
 					{
-						TimeUnit.SECONDS.sleep(7);
 						mainFrame.updateFlags();
-						TimeUnit.MINUTES.sleep(3);
+						TimeUnit.MINUTES.sleep(5);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();
@@ -205,29 +204,24 @@ public class LoginForm extends JFrame
 			}
 			else
 			{
-
+				LongRunProcess process = new LongRunProcess();
 				mainFrame = new MainWindow();
-				mainFrame.init(grmUser);
-				loginframe.setVisible(false);
-				mainFrame.setVisible(true);
-				// primaryStage.hide();
-				Runtime.getRuntime().gc();
+				try
+				{					
+					mainFrame.init(grmUser);
+					process.execute();
+					loginframe.setVisible(false);
+					mainFrame.setVisible(true);
+
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+
+				}finally
+				{
+					MainWindow.glass.setVisible(false);
+				}
 			}
-			// thread.stop();
-			LongRunProcess process = new LongRunProcess();
-			try
-			{
-				process.execute();
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-
-			}finally
-			{
-				MainWindow.glass.setVisible(false);
-
-			}
-
 			return null;
 		}
 	}

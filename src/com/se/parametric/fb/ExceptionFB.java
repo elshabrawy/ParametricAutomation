@@ -306,4 +306,12 @@ public class ExceptionFB extends JPanel implements ActionListener
 			return null;
 		}
 	}
+
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+	}
 }

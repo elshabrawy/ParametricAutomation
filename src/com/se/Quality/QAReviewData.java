@@ -595,4 +595,16 @@ public class QAReviewData extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetpanel != null)
+		{
+			sheetpanel.closeApplication();
+		}
+		if(SummaryPanel != null)
+		{
+			SummaryPanel.closeApplication();
+		}
+	}
+
 }

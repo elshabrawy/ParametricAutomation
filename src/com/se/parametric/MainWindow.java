@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -74,8 +75,6 @@ public class MainWindow extends JFrame
 
 	public MainWindow()
 	{
-
-		// container = getContentPane();
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -142,20 +141,6 @@ public class MainWindow extends JFrame
 		setJMenuBar(menuBar);
 
 		setGlassPane(glass);
-
-		this.addWindowFocusListener(new WindowFocusListener() {
-			@Override
-			public void windowLostFocus(WindowEvent arg0)
-			{
-			}
-
-			@Override
-			public void windowGainedFocus(WindowEvent arg0)
-			{
-				mainPanel.requestFocusInWindow();
-			}
-		});
-
 	}
 
 	public void hideMainWindow()
@@ -184,27 +169,56 @@ public class MainWindow extends JFrame
 		mainPanel = new MainPanel(grmUser);
 		getContentPane().add(mainPanel);
 
-		// contentPane.removeAll();
-		// contentPane.getWidth();
-		// contentPane.getHeight();
-		// System.out.println("Main Frame Dimession " + width + " " + height);
-		// p.repaint();
-		// System.out.println("Main Panel Dimession " + p.getWidth() + " " + p.getHeight());
-		// contentPane.add(p);
-		// contentPane.revalidate();
-		// contentPane.repaint();
-		// while(true)
-		// {
-		// updateFlags();
-		// try
-		// {
-		// Thread.sleep(50000);
-		// }catch(InterruptedException e)
-		// {
-		// e.printStackTrace();
-		// }
-		//
-		// }
+		this.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent arg0)
+			{
+				mainPanel.requestFocusInWindow();
+			}
+		});
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent arg0)
+			{
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent arg0)
+			{
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent arg0)
+			{
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent arg0)
+			{
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent arg0)
+			{
+				mainPanel.clearOfficeResources();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0)
+			{
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent arg0)
+			{
+			}
+		});
 	}
 
 	public long getUserID(String userName, String pass)

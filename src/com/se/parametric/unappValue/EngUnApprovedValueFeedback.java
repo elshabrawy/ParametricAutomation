@@ -538,4 +538,12 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		}
 	}
 
+	public void clearOfficeResources()
+	{
+		if(sheetPanel != null)
+		{
+			sheetPanel.closeApplication();
+		}
+	}
+
 }
