@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -26,12 +27,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-
-import javax.swing.UIManager;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -81,13 +78,7 @@ public class MainWindow extends JFrame
 
 	public MainWindow()
 	{
-		try{
-			com.jtattoo.plaf.mcwin.McWinLookAndFeel.setTheme("Green", "INSERT YOUR LICENSE KEY HERE", "my company");
-	        
-	        // select the Look and Feel
-	        UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
-		}catch(Exception e){}
-		// container = getContentPane();
+	
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -169,20 +160,6 @@ public class MainWindow extends JFrame
 		setJMenuBar(menuBar);
 
 		setGlassPane(glass);
-
-		this.addWindowFocusListener(new WindowFocusListener() {
-			@Override
-			public void windowLostFocus(WindowEvent arg0)
-			{
-			}
-
-			@Override
-			public void windowGainedFocus(WindowEvent arg0)
-			{
-				mainPanel.requestFocusInWindow();
-			}
-		});
-
 	}
 
 	private void showupdatespanel()
@@ -243,6 +220,57 @@ public class MainWindow extends JFrame
 		loggedInUser = grmUser;
 		mainPanel = new MainPanel(grmUser);
 		getContentPane().add(mainPanel);
+
+		this.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent arg0)
+			{
+				mainPanel.requestFocusInWindow();
+			}
+		});
+		this.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowIconified(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowClosing(WindowEvent arg0)
+			{
+				mainPanel.clearOfficeResources();
+			}
+
+			@Override
+			public void windowClosed(WindowEvent arg0)
+			{
+			}
+
+			@Override
+			public void windowActivated(WindowEvent arg0)
+			{
+			}
+		});
 
 	}
 
