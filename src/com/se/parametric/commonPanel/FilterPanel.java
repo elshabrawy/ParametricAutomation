@@ -54,9 +54,12 @@ public class FilterPanel extends JXTaskPane implements ActionListener
 
 	public FilterPanel(String[] titleOfCombobox, ArrayList<Object[]> list, boolean isQA)
 
-	{
-		Dimension labelDim = new Dimension(100, 20);
-		Dimension comboDim = new Dimension(150, 20);
+	{		
+		Dimension labelDim = new Dimension(90, 20);
+		Dimension comboDim = new Dimension(170, 23);
+		Dimension btnDim = new Dimension(110, 32);
+		Dimension checkDim = new Dimension(120, 20);
+		Color bkColor=Color.LIGHT_GRAY;
 		for(int i = 0; i < list.size(); i++)
 		{
 			for(int j = 0; j < list.get(i).length; j++)
@@ -87,118 +90,126 @@ public class FilterPanel extends JXTaskPane implements ActionListener
 		}
 		JLabel filterLabels[] = new JLabel[titleOfCombobox.length];
 		comboBoxItems = new JComboBox[titleOfCombobox.length];
-		datePanel = new JPanel();
-		datePanel.setBackground(new Color(255, 240, 245));
-		datePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		jDateChooser1.setBounds(232, 21, 91, 20);
+//		datePanel = new JPanel();
+//		datePanel.setBackground(new Color(255, 240, 245));
+//		datePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+//		jDateChooser1.setBounds(232, 21, 91, 20);
 		jDateChooser1.setDate(new java.util.Date());
-		jDateChooser2.setBounds(473, 21, 91, 20);
+//		jDateChooser2.setBounds(473, 21, 91, 20);
 		jDateChooser2.setDate(new java.util.Date());
-		datePanel.setLayout(null);
+//		datePanel.setLayout(null);
 		jDateChooser1.setEnabled(false);
 		jDateChooser2.setEnabled(false);
-		datePanel.add(jDateChooser1);
-		datePanel.add(jDateChooser2);
-		JLabel lblNewLabel = new JLabel("From:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
-		datePanel.add(lblNewLabel);
-		JLabel lblNewLabel_1 = new JLabel("To:");
+//		datePanel.add(jDateChooser1);
+//		datePanel.add(jDateChooser2);
+		JLabel lblFromDate = new JLabel("From:");
+		lblFromDate.setFont(new Font("Tahoma", Font.BOLD, 11));
+//		datePanel.add(lblFromDate);
+		JLabel lblToDate = new JLabel("To:");
 
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblNewLabel_1.setBounds(379, 27, 46, 14);
-		datePanel.add(lblNewLabel_1);
+		lblToDate.setFont(new Font("Tahoma", Font.BOLD, 11));
+//		lblToDate.setBounds(379, 27, 46, 14);
+//		datePanel.add(lblToDate);
 		checkDate = new JCheckBox("Select Period");
-		checkDate.setBorder(new EmptyBorder(2, 0, 2, 18));
+//		checkDate.setBorder(new EmptyBorder(2, 0, 2, 18));
 		checkDate.setFont(new Font("Tahoma", Font.BOLD, 11));
-		checkDate.setBounds(678, 18, 117, 23);
+		checkDate.setBackground(bkColor);
+//		checkDate.setBounds(678, 18, 117, 23);
 		checkDate.addActionListener(this);
-		datePanel.add(checkDate);
-		JPanel comboPanel = new JPanel();
-		comboPanel.setBackground(new Color(102, 204, 204));
-		comboPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		int x = 0;
-		if(titleOfCombobox.length % 4 == 0)
-		{
-			x = titleOfCombobox.length / 2;
-		}
-		else
-		{
-			x = (titleOfCombobox.length / 2) + 1;
-		}
-		System.out.println("x is " + x);
-		comboPanel.setLayout(new GridLayout(1, 2));
-		int comboRows = (int) Math.ceil(titleOfCombobox.length * 1.0 / 2);
-		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		Color color = new Color(88, 130, 250);
-		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		if(isQA)
-		{
-			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
-			comboPanel.add(addsummary);
-		}
+//		datePanel.add(checkDate);
+//		JPanel comboPanel = new JPanel();
+//		comboPanel.setBackground(new Color(102, 204, 204));
+//		comboPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+//		int x = 0;
+//		if(titleOfCombobox.length % 4 == 0)
+//		{
+//			x = titleOfCombobox.length / 2;
+//		}
+//		else
+//		{
+//			x = (titleOfCombobox.length / 2) + 1;
+//		}
+//		System.out.println("x is " + x);
+//		comboPanel.setLayout(new GridLayout(1, 2));
+//		int comboRows = (int) Math.ceil(titleOfCombobox.length * 1.0 / 2);
+//		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+//		Color color = new Color(88, 130, 250);
+//		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+//		if(isQA)
+//		{
+//			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
+//			comboPanel.add(addsummary);
+//		}
 
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setOpaque(false);
-		JButton b = new JButton("Done");
-		b.setBounds(100, 100, 50, 30);
-		panel.add(b);
+//		JPanel panel = new JPanel();
+//		panel.setLayout(null);
+//		panel.setOpaque(false);
+//		JButton b = new JButton("Done");
+//		b.setBounds(100, 100, 50, 30);
+//		panel.add(b);
 		allFilter.setLayout(new GridBagLayout());
 		GBHelper pos = new GBHelper();
-		checkDate.setPreferredSize(comboDim);
-		lblNewLabel.setPreferredSize(labelDim);
+		checkDate.setPreferredSize(checkDim);
+		lblFromDate.setPreferredSize(labelDim);
 		jDateChooser1.setPreferredSize(comboDim);
-		lblNewLabel_1.setPreferredSize(labelDim);
+		lblToDate.setPreferredSize(labelDim);
 		jDateChooser2.setPreferredSize(comboDim);
-		allFilter.add(checkDate, pos.nextCol());
-		allFilter.add(new Gap(GAP), pos.nextCol());
-		allFilter.add(lblNewLabel, pos);
-		allFilter.add(new Gap(GAP), pos.nextCol());
-		allFilter.add(jDateChooser1, pos.nextCol().expandW());
-		allFilter.add(new Gap(GAP), pos.nextCol());
-		allFilter.add(lblNewLabel_1, pos.nextCol());
-		allFilter.add(new Gap(GAP), pos.nextCol());
+//		allFilter.add(new JLabel(""), pos.nextRow());
+		allFilter.add(new Gap(15), pos.nextRow());
+		allFilter.add(checkDate, pos.nextRow().nextCol());
+//		allFilter.add(new Gap(2), pos.nextCol());
+		allFilter.add(lblFromDate,  pos.nextCol());
+//		allFilter.add(new Gap(GAP), pos.nextCol());
+		allFilter.add(jDateChooser1, pos.nextCol());
+		allFilter.add(new Gap(4*GAP), pos.nextCol());
+		allFilter.add(lblToDate, pos.nextCol());
+//		allFilter.add(new Gap(GAP), pos.nextCol());
 		allFilter.add(jDateChooser2, pos.nextCol().expandW());
 		for(int i = 0; i < titleOfCombobox.length; i++)
 		{
-			filterLabels[i] = new JLabel(titleOfCombobox[i]);
+			filterLabels[i] = new JLabel(titleOfCombobox[i]+":");
 			filterLabels[i].setFont(new Font("Tahoma", Font.BOLD, 11));
 			comboBoxItems[i] = new JComboBox(result.get(i));
 			filterLabels[i].setPreferredSize(labelDim);
 			if((i % 2) == 0)
 			{
-				allFilter.add(new Gap(2 * GAP), pos.nextRow());
+				allFilter.add(new Gap(GAP), pos.nextRow());
 				allFilter.add(filterLabels[i], pos.nextRow().nextCol().nextCol());
 			}
 			else
 			{
-				// allFilter.add(new Gap(GAP), pos.nextCol());
+//				allFilter.add(new Gap(GAP), pos.nextCol());
 				allFilter.add(filterLabels[i], pos.nextCol().width(1));
 			}
-			allFilter.add(new Gap(GAP), pos.nextCol());
+//			allFilter.add(new Gap(2), pos.nextCol());
 			comboBoxItems[i].setSelectedItem("All");
 
 			comboBoxItems[i].setPreferredSize(comboDim);
-			comboBoxItems[i].setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXX");
-			allFilter.add(comboBoxItems[i], pos.nextCol().width(2));
-			allFilter.add(new Gap(GAP), pos.nextCol());
+//			comboBoxItems[i].setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXX");
+			allFilter.add(comboBoxItems[i], pos.nextCol());
+			allFilter.add(new Gap(2*GAP), pos.nextCol());
 			comboBoxItems[i].addActionListener(this);
 		}
 		JPanel buttonPanel = new JPanel();
 		allFilter.add(new Gap(10), pos.nextRow().expandW());
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		filterButton.setPreferredSize(btnDim);
+		refreshButton.setPreferredSize(btnDim);
 		buttonPanel.add(filterButton);
 		buttonPanel.add(refreshButton);
 
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
+			addsummary.setPreferredSize(btnDim);
 			buttonPanel.add(addsummary);
 		}
+		buttonPanel.setBackground(bkColor);
 		allFilter.add(buttonPanel, pos.nextRow().width(9));
 		Border blackline = BorderFactory.createLineBorder(Color.black);
 		allFilter.setBorder(blackline);
+		allFilter.setBackground(bkColor);
 		// taskpane.add(allFilter);
 		this.setTitle("Filter Panel");
 		this.setIcon(new ImageIcon("Resources/filter.png"));

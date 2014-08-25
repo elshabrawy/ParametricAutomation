@@ -58,7 +58,6 @@ public class WorkingAreaPanel extends JPanel
 		filterPanel.filterButton.addActionListener(actionListener);
 		filterPanel.refreshButton.addActionListener(actionListener);
 		filterPanel.addsummary.addActionListener(actionListener);
-
 		this.centerPanel.add(filterPanel, BorderLayout.PAGE_START);
 		return filterPanel;
 	}

@@ -186,7 +186,7 @@ public class SheetPanel extends JPanel
 			repaint();
 			attachEventHandler();
 
-			PropertyValue[] args = new PropertyValue[3];
+			PropertyValue[] args = new PropertyValue[2];
 			args[0] = new PropertyValue();
 			args[0].Name = "read-only";
 			args[0].Value = new Boolean(false);
@@ -194,9 +194,9 @@ public class SheetPanel extends JPanel
 			args[1].Name = "NoRestore";
 			args[1].Value = new Boolean(Boolean.TRUE);
 
-			args[2] = new PropertyValue();
-			args[2].Name = "Password";
-			args[2].Value = "123";
+			// args[2] = new PropertyValue();
+			// args[2].Name = "Password";
+			// args[2].Value = "123";
 
 			// remove(aBean);
 			// aBean = new OOoBean();
