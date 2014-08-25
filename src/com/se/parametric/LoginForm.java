@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
@@ -53,6 +54,7 @@ public class LoginForm extends JFrame
 			{
 				try
 				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					loginframe = new LoginForm();
 					loginframe.setTitle("Parametric Automation");
 					loginframe.setVisible(true);
@@ -69,6 +71,7 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
+
 		
 		 try
 		 {
@@ -100,7 +103,7 @@ public class LoginForm extends JFrame
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
- 
+
 		JButton btnNewButton = new JButton("OK");
 		btnNewButton.setFocusable(true); // How do I get focus on button on App launch?
 		btnNewButton.requestFocus(true);
@@ -161,19 +164,15 @@ public class LoginForm extends JFrame
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Integer result = 0;
-
 			while(true)
 			{
 				if(mainFrame != null)
 				{
-					result += 10;
-					System.out.println("Result = " + result);
-
-					mainFrame.updateFlags();
 					try
 					{
-						TimeUnit.MINUTES.sleep(5);
+						TimeUnit.SECONDS.sleep(7);
+						mainFrame.updateFlags();
+						TimeUnit.MINUTES.sleep(3);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();

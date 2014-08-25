@@ -32,6 +32,7 @@ public class WorkingAreaPanel extends JPanel
 
 		this.centerPanel = new JPanel(new BorderLayout());
 		this.sidePanel = new JPanel();
+		sidePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		BoxLayout boxLayout = new BoxLayout(this.sidePanel, BoxLayout.PAGE_AXIS);
 		this.sidePanel.setLayout(boxLayout);
 	}
@@ -56,6 +57,7 @@ public class WorkingAreaPanel extends JPanel
 		FilterPanel filterPanel = new FilterPanel(titleOfCombobox, filterData, isQA);
 		filterPanel.filterButton.addActionListener(actionListener);
 		filterPanel.refreshButton.addActionListener(actionListener);
+		filterPanel.addsummary.addActionListener(actionListener);
 
 		this.centerPanel.add(filterPanel, BorderLayout.PAGE_START);
 		return filterPanel;

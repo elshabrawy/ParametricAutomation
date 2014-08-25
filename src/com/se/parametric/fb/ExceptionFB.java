@@ -1,16 +1,16 @@
 package com.se.parametric.fb;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,7 +19,6 @@ import javax.swing.SwingWorker;
 
 import org.hibernate.Session;
 
-import osheet.Cell;
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
@@ -28,27 +27,22 @@ import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
-import com.se.parametric.dba.ApprovedDevUtil;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.DataDevQueryUtil;
-import com.se.parametric.dba.ParaQueryUtil;
-import com.se.parametric.dto.ApprovedParametricDTO;
 import com.se.parametric.dto.GrmUserDTO;
 
 public class ExceptionFB extends JPanel implements ActionListener
 {
 
 	SheetPanel sheetpanel = new SheetPanel();
-	JPanel selectionPanel;
-	JPanel devSheetButtonPanel, separationButtonPanel;
+	WorkingAreaPanel selectionPanel;
+	// JPanel devSheetButtonPanel, separationButtonPanel;
 	JTabbedPane tabbedPane;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
+	// ButtonsPanel buttonsPanel;
 	Long[] users = null;
 	WorkingSheet ws = null;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
@@ -56,13 +50,13 @@ public class ExceptionFB extends JPanel implements ActionListener
 	long userId;
 	int width, height;
 	GrmUserDTO userDTO;
-	static AlertsPanel alertsPanel, alertsPanel1;
+	// static AlertsPanel alertsPanel, alertsPanel1;
 	String checker;
 	boolean validated;
 
 	public ExceptionFB(GrmUserDTO userDTO)
 	{
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		this.userDTO = userDTO;
 		engName = userDTO.getFullName();
 		userId = userDTO.getId();
@@ -71,42 +65,38 @@ public class ExceptionFB extends JPanel implements ActionListener
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Eng");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
-		selectionPanel = new JPanel();
-
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] filterLabels = { "PL Name", "Supplier", "Checker Type" };
-		filterPanel = new FilterPanel(filterLabels, filterData, false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
-		// buttonLabels.add("Seperation");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 110, height / 3);
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel1 = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		sheetpanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
-				- (((height - 100) * 3) / 10) - 130);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-		selectionPanel.add(sheetpanel);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
+		selectionPanel.addButtonsPanel(buttonLabels, this);
 
+		selectionPanel.addComponentsToPanel();
+
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		// tabbedPane.addTab("Seperation", null, tabSheet, null);
 		add(tabbedPane);
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
+		this.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -245,10 +235,7 @@ public class ExceptionFB extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
-		alertsPanel1.updateFlags(flags);
-		// alertsPanel2.updateFlags(flags);
-
+		selectionPanel.updateFlags(flags);
 	}
 
 	class LongRunProcess extends SwingWorker

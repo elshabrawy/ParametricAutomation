@@ -139,7 +139,7 @@ public class DemoGridBag extends JFrame {
     public static void main(String[] args) {
         //... Set Look and Feel.
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception unused) {
             // Nothing can be done, so just ignore it.
         }

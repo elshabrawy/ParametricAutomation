@@ -1,10 +1,12 @@
 package com.se.parametric.unappValue;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,38 +14,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
-
-import org.hibernate.Session;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
 
-import com.se.automation.db.SessionUtil;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
-import com.se.parametric.util.ImagePanel;
 
 /**
  * created by Ahmed Makram
@@ -59,31 +50,24 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel/* , flowChart */;
-	JPanel devSheetButtonPanel;
+	WorkingAreaPanel selectionPanel/* , flowChart */;
 	JTabbedPane tabbedPane;
-	JButton button = null;
-	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
-	JPanel unapprovedPanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
 	public ArrayList<ArrayList<String>> list;
 	Long[] teamMembers = null;
 	ArrayList<String> row = null;
 	GrmUserDTO userDTO;
 	ArrayList<UnApprovedDTO> unApproveds;
 	TLUnApprovedValueFeedback TLfeedBack = null;
-	static AlertsPanel alertsPanel;
 	boolean validated;
 
 	public TLUnApprovedValue(GrmUserDTO userDTO)
 	{
 		this.userDTO = userDTO;
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDTO.getId());
@@ -91,65 +75,42 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				null, null, "parametric");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
-		selectionPanel = new JPanel();
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
 
-		// sheetPanel.setSize(width - 110, (((height - 100) * 7) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
-				- (((height - 100) * 3) / 10) - 130);
-		// filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 4) / 10));
-		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add(" validate ");
 		buttonLabels.add("Save");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(sheetPanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-		selectionPanel.setBounds(0, 0, width - 110, height - 100);
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		TLfeedBack = new TLUnApprovedValueFeedback(userDTO);
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 110, 0, 106, height - 100);
-		TLfeedBack.setBounds(width - 110, 0, 106, height - 100);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		save.setBounds(3, 80, 85, 29);
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 85, 29);
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 85, 29);
-		validate.addActionListener(this);
-		save.addActionListener(this);
-		separation.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
+		selectionPanel.addButtonsPanel(buttonLabels, this);
+		sheetPanel = selectionPanel.getSheet();
 
-		add(tabbedPane);
+		selectionPanel.addComponentsToPanel();
+
+		TLfeedBack = new TLUnApprovedValueFeedback(userDTO);
+
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("TL UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("TL UnApproved FeedBack", null, TLfeedBack, null);
-		// flowChart = new ImagePanel("QASeparation.jpg");
-		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
+
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
+		this.add(tabbedPane);
 	}
 
 	@Override
@@ -161,8 +122,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 
 	public void updateFlags(ArrayList<String> flags)
 	{
-		alertsPanel.updateFlags(flags);
-		TLUnApprovedValueFeedback.alertsPanel.updateFlags(flags);
+		selectionPanel.updateFlags(flags);
+		TLfeedBack.selectionPanel.updateFlags(flags);
 
 	}
 

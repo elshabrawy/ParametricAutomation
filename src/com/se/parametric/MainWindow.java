@@ -2,6 +2,7 @@ package com.se.parametric;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -9,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -22,8 +25,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -92,7 +93,28 @@ public class MainWindow extends JFrame
 			}
 		});
 		optionsMenu.add(changePassMenuItem);
+		JMenuItem logoutMenuItem = new JMenuItem("Logout");
+		logoutMenuItem.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure to logout?",
+						"Paremtric Automation", JOptionPane.YES_NO_OPTION);
+				if(reply == JOptionPane.YES_OPTION)
+				{
+					hideMainWindow();
+
+				}
+				else
+				{
+					return;
+				}
+
+			}
+
+		});
+		optionsMenu.add(logoutMenuItem);
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem devFlowMenuItem = new JMenuItem("Development Flow");
 		devFlowMenuItem.addActionListener(new ActionListener() {
@@ -120,44 +142,40 @@ public class MainWindow extends JFrame
 		setJMenuBar(menuBar);
 
 		setGlassPane(glass);
-		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		// width = screenSize.width;
-		// height = screenSize.height - 30;
-		//
-		// System.out.println((width - 350) / 2 + " and " + (height - 150) / 2);
-		// setBounds(0, 0, width, height);
-		//
-		// contentPane = new JPanel();
-		// contentPane.setLayout(null);
-		// container.add(contentPane);
 
-//		 com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		 try
-//		 {
-//		 UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		 }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		 {
-//		 // TODO Auto-generated catch block
-//		 e.printStackTrace();
-//		 }
-		 try
-		 {
-		 // Set cross-platform Java L&F (also called "Metal")
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 }catch(UnsupportedLookAndFeelException e)
-		 {
-		
-		 }catch(ClassNotFoundException e)
-		 {
-		
-		 }catch(InstantiationException e)
-		 {
-		
-		 }catch(IllegalAccessException e)
-		 {
-		
-		 }
+		this.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent arg0)
+			{
+			}
 
+			@Override
+			public void windowGainedFocus(WindowEvent arg0)
+			{
+				mainPanel.requestFocusInWindow();
+			}
+		});
+
+	}
+
+	public void hideMainWindow()
+	{
+		final LoginForm log = new LoginForm();
+		log.setVisible(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run()
+			{
+				try
+				{
+					log.setTitle("Parametric Automation");
+					log.setVisible(true);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		this.dispose();
 	}
 
 	public void init(GrmUserDTO grmUser)
@@ -289,4 +307,5 @@ public class MainWindow extends JFrame
 		dialog.pack();
 		dialog.setVisible(true);
 	}
+
 }
