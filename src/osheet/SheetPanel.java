@@ -37,7 +37,7 @@ public class SheetPanel extends JPanel
 	// private Frame frame;
 	public static int row, column;
 
-	//	protected JButton btuSaveParts;
+	// protected JButton btuSaveParts;
 
 	/** Creates new form panle */
 	public SheetPanel()
@@ -117,7 +117,7 @@ public class SheetPanel extends JPanel
 		// butSeparation = new JButton("Separate");
 		// butSeparation.setSize(dimension);
 
-		add(aBean, BorderLayout.CENTER);
+//		add(aBean, BorderLayout.CENTER);
 
 		// prepare sheet
 		attachEventHandler();
@@ -175,14 +175,14 @@ public class SheetPanel extends JPanel
 			{
 				remove(aBean);
 				aBean = new OOoBean();
-				add(aBean, java.awt.BorderLayout.CENTER);
+				add(aBean, BorderLayout.CENTER);
 				repaint();
 				attachEventHandler();
 
 			}
 			remove(aBean);
 			aBean = new OOoBean();
-			add(aBean, java.awt.BorderLayout.CENTER);
+			add(aBean, BorderLayout.CENTER);
 			repaint();
 			attachEventHandler();
 
