@@ -10,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +36,11 @@ public class LoginForm extends JFrame
 {
 
 	private JPanel contentPane;
-	private JTextField txtUserName;
-	private JTextField txtPassword;
+	public JTextField txtUserName;
+	public JTextField txtPassword;
 	String userName, password;
 	static MainWindow mainFrame;
-	static LoginForm loginframe;
+	public static LoginForm loginframe;
 
 	/**
 	 * Launch the application.
@@ -50,7 +52,9 @@ public class LoginForm extends JFrame
 			{
 				try
 				{
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					// select the Look and Feel
+					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+					// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					loginframe = new LoginForm();
 					loginframe.setTitle("Parametric Automation");
 					loginframe.setVisible(true);
@@ -67,6 +71,17 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
+		try
+		{
+			com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green",
+					"INSERT YOUR LICENSE KEY HERE", "my company");
+
+			// select the Look and Feel
+			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+		}catch(Exception e)
+		{
+		}
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();
@@ -81,7 +96,11 @@ public class LoginForm extends JFrame
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 
-		JButton btnNewButton = new JButton("OK");
+		final JButton btnNewButton = new JButton("OK");
+
+		btnNewButton.setFocusable(true); // How do I get focus on button on App launch?
+		btnNewButton.requestFocus(true);
+
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent evt)
@@ -90,7 +109,9 @@ public class LoginForm extends JFrame
 				longRunProcess.execute();
 			}
 		});
+
 		btnNewButton.setBounds(144, 154, 81, 33);
+
 		panel.add(btnNewButton);
 
 		txtUserName = new JTextField();
@@ -127,6 +148,71 @@ public class LoginForm extends JFrame
 		lblver.setForeground(new Color(160, 82, 45));
 		lblver.setBounds(220, 170, 150, 60);
 		panel.add(lblver);
+		txtUserName.setFocusable(true);
+		txtUserName.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if(txtPassword.getText().trim().equals("")
+							|| txtUserName.getText().trim().equals(""))
+					{
+						JOptionPane.showMessageDialog(null, "UserName or Password Can't be empty");
+					}
+					else
+					{
+						btnNewButton.doClick();
+					}
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+
+			}
+		});
+		txtPassword.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if(txtPassword.getText().trim().equals("")
+							|| txtUserName.getText().trim().equals(""))
+					{
+						JOptionPane.showMessageDialog(null, "UserName or Password Can't be empty");
+					}
+					else
+					{
+						btnNewButton.doClick();
+					}
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	class LongRunProcess extends SwingWorker<Object, Object>
@@ -207,7 +293,7 @@ public class LoginForm extends JFrame
 				LongRunProcess process = new LongRunProcess();
 				mainFrame = new MainWindow();
 				try
-				{					
+				{
 					mainFrame.init(grmUser);
 					process.execute();
 					loginframe.setVisible(false);
