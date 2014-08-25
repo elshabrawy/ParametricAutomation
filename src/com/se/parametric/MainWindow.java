@@ -82,10 +82,10 @@ public class MainWindow extends JFrame
 	public MainWindow()
 	{
 		try{
-			com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "INSERT YOUR LICENSE KEY HERE", "my company");
+			com.jtattoo.plaf.mcwin.McWinLookAndFeel.setTheme("Green", "INSERT YOUR LICENSE KEY HERE", "my company");
 	        
 	        // select the Look and Feel
-	        UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+	        UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
 		}catch(Exception e){}
 		// container = getContentPane();
 		setTitle("Parametric Automation");
