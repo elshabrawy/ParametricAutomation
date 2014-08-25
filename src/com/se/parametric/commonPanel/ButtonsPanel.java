@@ -31,12 +31,6 @@ public class ButtonsPanel extends JPanel
 		setBackground(new Color(211, 211, 211));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		JButton btnNewButton = new JButton("New button");
-		add(btnNewButton);
-		
-		JButton btnNewButton_1 = new JButton("New button");
-		add(btnNewButton_1);
 		for(int i = 0; i < buttonLabels.size(); i++)
 		{
 			buttons[i] = new JButton(buttonLabels.get(i));

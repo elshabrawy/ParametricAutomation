@@ -31,7 +31,7 @@ public class Loading
 	{		
 		glass.setOpaque(false);	   
 		ImageIcon icon=new ImageIcon("Resources/loading2.gif");
-		panel=new ImagePanel(icon.getImage());;
+		panel=new ImagePanel(icon.getImage());
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		width = screenSize.width;
 		height = screenSize.height;
@@ -99,10 +99,8 @@ public class Loading
 			repaint();
 		}
 	}
-	public static void main(String args[]){
-		Loading loading = new Loading();		
-		loading.show();
-	}
+	
+	
 
 
 }
