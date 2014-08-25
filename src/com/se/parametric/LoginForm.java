@@ -71,17 +71,6 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-		try
-		{
-			com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green",
-					"INSERT YOUR LICENSE KEY HERE", "my company");
-
-			// select the Look and Feel
-			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-		}catch(Exception e)
-		{
-		}
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();
