@@ -78,7 +78,6 @@ public class MainWindow extends JFrame
 
 	public MainWindow()
 	{
-
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
