@@ -24,7 +24,6 @@ import com.se.parametric.Loading;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 
-
 public class SourcingFeedbackPanel extends JPanel implements ActionListener, KeyListener
 {
 
@@ -57,7 +56,8 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		plTF.setEditable(false);
 		commentCombo = new JComboBox<String>();
 		commentCombo.setEditable(true);
-		String[] statusComboItems = { "Wrong Revision", "Wrong Taxonomy", "Reject", "Not Available Data" };
+		String[] statusComboItems = { "Wrong Revision", "Wrong Taxonomy", "Reject",
+				"Not Available Data" };
 		statusCombo = new JComboBox<String>(statusComboItems);
 		sendFeedbackBtn = new JButton("Send Feedback");
 
@@ -139,7 +139,8 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		}
 		else if("Reject".equals(type))
 		{
-			String[] rejectCommentOptions = { "Documentation", "Broken Link", "No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor" };
+			String[] rejectCommentOptions = { "Documentation", "Broken Link",
+					"No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor" };
 			for(int i = 0; i < rejectCommentOptions.length; i++)
 			{
 				model.addElement(rejectCommentOptions[i]);
@@ -160,8 +161,9 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 
 	@Override
 	public void actionPerformed(ActionEvent event)
-	{LongRunProcess longRunProcess = new LongRunProcess(event);
-    longRunProcess.execute();
+	{
+		LongRunProcess longRunProcess = new LongRunProcess(event);
+		longRunProcess.execute();
 
 	}
 
@@ -185,7 +187,8 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 			return;
 		}
 		int keyCode = e.getKeyCode();
-		if((keyCode == KeyEvent.VK_UP) || (keyCode == KeyEvent.VK_DOWN) || (keyCode == KeyEvent.VK_RIGHT) || (keyCode == KeyEvent.VK_LEFT))
+		if((keyCode == KeyEvent.VK_UP) || (keyCode == KeyEvent.VK_DOWN)
+				|| (keyCode == KeyEvent.VK_RIGHT) || (keyCode == KeyEvent.VK_LEFT))
 		{
 			return;
 		}
@@ -226,7 +229,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		// commentCombo.setModel(commentComboModel);
 
 	}
-	
+
 	class LongRunProcess extends SwingWorker
 	{
 		ActionEvent event = null;
@@ -267,10 +270,12 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 				String revUrl = null, docFeedbackComment = null, rightTax = null;
 				String pdfLink = dsUrlTF.getText();
 				pdfLink = pdfLink.trim();
-				if("".equals(pdfLink) || pdfLink.length() < 7 || !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
+				if("".equals(pdfLink) || pdfLink.length() < 7
+						|| !"http://".equalsIgnoreCase(pdfLink.substring(0, 7)))
 				{
 					Loading.close();
-					JOptionPane.showMessageDialog(null, "Wrong PDF Link", "Wrong PDF Link", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Wrong PDF Link", "Wrong PDF Link",
+							JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
 				if("Wrong Revision".equals(statusCombo.getSelectedItem().toString()))
@@ -283,7 +288,9 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 						if(!"http://".equalsIgnoreCase(sub))
 						{
 							Loading.close();
-							JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,
+									"Comment should start with http://", "Wrong Comment",
+									JOptionPane.ERROR_MESSAGE);
 							return null;
 						}
 						revUrl = comment;
@@ -292,15 +299,17 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					}catch(Exception ex)
 					{
 						Loading.close();
-						JOptionPane.showMessageDialog(null, "Comment should start with http://", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
-						
+						JOptionPane.showMessageDialog(null, "Comment should start with http://",
+								"Wrong Comment", JOptionPane.ERROR_MESSAGE);
+
 						return null;
 					}
 				}
 				else if("Not Available Data".equals(statusCombo.getSelectedItem().toString()))
 				{
 
-					if((commentCombo.getSelectedItem() == null) || "".equals(commentCombo.getSelectedItem().toString()))
+					if((commentCombo.getSelectedItem() == null)
+							|| "".equals(commentCombo.getSelectedItem().toString()))
 					{
 						docFeedbackComment = "Not Available Data";
 						revUrl = null;
@@ -309,8 +318,9 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					else
 					{
 						Loading.close();
-						JOptionPane.showMessageDialog(null, "Comment should be null", "Wrong Comment", JOptionPane.ERROR_MESSAGE);
-						
+						JOptionPane.showMessageDialog(null, "Comment should be null",
+								"Wrong Comment", JOptionPane.ERROR_MESSAGE);
+
 						return null;
 					}
 				}
@@ -329,20 +339,25 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 
 				String pdfUrl = dsUrlTF.getText().trim();
 				String plName = plTF.getText().trim();
-				String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
+				String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl,
+						plName, docFeedbackComment, revUrl, rightTax);
 				if("Done".equals(status))
 				{
-					JOptionPane.showMessageDialog(null, "Feedback Sent", "Feedback Sent", JOptionPane.INFORMATION_MESSAGE);
+					Loading.close();
+					JOptionPane.showMessageDialog(null, "Feedback Sent", "Feedback Sent",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(null, "Feedback Not Sent", "Feedback Not Sent>>>" + status, JOptionPane.ERROR_MESSAGE);
+					Loading.close();
+					JOptionPane.showMessageDialog(null, "Feedback Not Sent", "Feedback Not Sent>>>"
+							+ status, JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
 			Loading.close();
 			return null;
 		}
-		}
+	}
 
 }
