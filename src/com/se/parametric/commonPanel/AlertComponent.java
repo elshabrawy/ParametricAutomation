@@ -16,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import sun.awt.image.PixelConverter.Bgrx;
+
 public class AlertComponent extends JPanel
 {
 	private JLabel txtLbl;
@@ -31,7 +33,7 @@ public class AlertComponent extends JPanel
 
 	private void init()
 	{
-		txtLbl.setForeground(Color.BLACK);
+		txtLbl.setForeground(Color.BLACK);		
 		txtLbl.setFont(new Font("Arial", Font.PLAIN, 12));
 		countLbl.setFont(new Font("Arial Black", Font.BOLD, 12));
 		countLbl.setForeground(Color.WHITE);

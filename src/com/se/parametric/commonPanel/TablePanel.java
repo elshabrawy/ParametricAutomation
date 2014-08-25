@@ -110,7 +110,13 @@ public class TablePanel extends JPanel implements ActionListener
 		next.addActionListener(this);
 		previous.addActionListener(this);
 		last.addActionListener(this);
-
+		if(selectedData == null)
+		{
+			first.setEnabled(false);
+			next.setEnabled(false);
+			previous.setEnabled(false);
+			last.setEnabled(false);
+		}
 		recordsPanel = new JPanel();
 		recordsPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		recordsPanel.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -262,10 +268,6 @@ public class TablePanel extends JPanel implements ActionListener
 			this.setCurrentPage(this.getPageNumber());
 			paggingLabel.setText("" + this.getPageNumber());
 			setTableData1(1, getRows1(this.getPageNumber()));
-			next.setEnabled(false);
-			last.setEnabled(false);
-			previous.setEnabled(true);
-			first.setEnabled(true);
 		}
 
 	}
