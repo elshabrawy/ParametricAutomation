@@ -27,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
@@ -70,6 +72,25 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
+
+		try
+		{
+			// Set cross-platform Java L&F (also called "Metal")
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(UnsupportedLookAndFeelException e)
+		{
+
+		}catch(ClassNotFoundException e)
+		{
+
+		}catch(InstantiationException e)
+		{
+
+		}catch(IllegalAccessException e)
+		{
+
+		}
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();
@@ -85,6 +106,10 @@ public class LoginForm extends JFrame
 		panel.setLayout(null);
 
 		final JButton btnNewButton = new JButton("OK");
+
+		btnNewButton.setFocusable(true); // How do I get focus on button on App launch?
+		btnNewButton.requestFocus(true);
+
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent evt)
@@ -93,7 +118,9 @@ public class LoginForm extends JFrame
 				longRunProcess.execute();
 			}
 		});
+
 		btnNewButton.setBounds(144, 154, 81, 33);
+
 		panel.add(btnNewButton);
 
 		txtUserName = new JTextField();
@@ -167,13 +194,13 @@ public class LoginForm extends JFrame
 			@Override
 			public void keyTyped(KeyEvent e)
 			{
+				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e)
 			{
-
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					if(txtPassword.getText().trim().equals("")
@@ -191,6 +218,7 @@ public class LoginForm extends JFrame
 			@Override
 			public void keyPressed(KeyEvent e)
 			{
+				// TODO Auto-generated method stub
 
 			}
 		});

@@ -32,11 +32,13 @@ public class ButtonsPanel extends JPanel
 		this.setLayout(new GridBagLayout());
 		setBackground(new Color(211, 211, 211));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+
 		GridBagConstraints bagConstraints = new GridBagConstraints();
 		bagConstraints.gridx = 0;
 		bagConstraints.fill = GridBagConstraints.HORIZONTAL;
 		bagConstraints.insets = new Insets(0, 0, 10, 0);
 		bagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+
 		for(int i = 0; i < buttonLabels.size(); i++)
 		{
 			buttons[i] = new JButton(buttonLabels.get(i));
