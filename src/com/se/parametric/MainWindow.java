@@ -3,6 +3,7 @@ package com.se.parametric;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -25,6 +26,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -114,7 +117,20 @@ public class MainWindow extends JFrame
 			}
 
 		});
+		optionsMenu.addSeparator();
 		optionsMenu.add(logoutMenuItem);
+		JMenuItem aboutMenuItem = new JMenuItem("About");
+		aboutMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				showupdatespanel();
+
+			}
+
+		});
+
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem devFlowMenuItem = new JMenuItem("Development Flow");
 		devFlowMenuItem.addActionListener(new ActionListener() {
@@ -135,8 +151,10 @@ public class MainWindow extends JFrame
 			}
 		});
 		helpMenu.add(devFlowMenuItem);
-		helpMenu.add(separationFlowMenuItem);
 
+		helpMenu.add(separationFlowMenuItem);
+		helpMenu.addSeparator();
+		helpMenu.add(aboutMenuItem);
 		menuBar.add(optionsMenu);
 		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
@@ -158,16 +176,49 @@ public class MainWindow extends JFrame
 
 	}
 
+	private void showupdatespanel()
+	{
+		JDialog dialog = new JDialog(this);
+		dialog.setModal(true);
+		JTextArea txtarea = new JTextArea();
+		txtarea.setWrapStyleWord(true);
+		txtarea.setLineWrap(true);
+		txtarea.setForeground(new Color(80, 80, 80));
+		txtarea.setFont(new Font("Arial", Font.BOLD, 16));
+		String txt = "~Last updates :- \n";
+		txt += "" + "\n";
+		txt += "1- Change the Automaion Colors" + "\n";
+		txt += "2- Change the display of Tabs" + "\n";
+		txt += "3- Enhance the Problem of Loading Screen" + "\n";
+		txt += "4- Enhance the dispaly Filter Area" + "\n";
+		txt += "5- Enhance the dispaly counts Area" + "\n";
+		txt += "6- Change the Date Title in Table of Filter result" + "\n";
+		txt += "7- Add Menus for Cycles and new Options (Logout,ChangePassword)" + "\n";
+		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)" + "\n";
+		txt += "" + "\n";
+		txtarea.setText(txt);
+		// txtarea.setEnabled(false);
+		txtarea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(txtarea);
+		dialog.add(scrollPane);
+		dialog.setLocationRelativeTo(this);
+		dialog.setBounds(880, 25, 400, 700);
+		dialog.setVisible(true);
+
+	}
+
 	public void hideMainWindow()
 	{
-		final LoginForm log = new LoginForm();
-		log.setVisible(true);
+		final LoginForm log = LoginForm.loginframe;
 		EventQueue.invokeLater(new Runnable() {
 			public void run()
 			{
 				try
 				{
 					log.setTitle("Parametric Automation");
+					MainWindow.glass.setVisible(false);
+					log.txtPassword.setText("");
+					log.txtUserName.setText("");
 					log.setVisible(true);
 				}catch(Exception e)
 				{
