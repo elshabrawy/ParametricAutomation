@@ -1,5 +1,6 @@
 package com.se.parametric.commonPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -31,7 +32,7 @@ import com.toedter.calendar.JDateChooser;
 
 //import com.se.automation.db.client.mapping.CheckFeature;
 
-public class FilterPanel extends JXTaskPaneContainer implements ActionListener
+public class FilterPanel extends JXTaskPane implements ActionListener
 {
 
 	private static final int GAP = 7; // Default gap btwn components.
@@ -171,7 +172,7 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 			}
 			else
 			{
-//				allFilter.add(new Gap(GAP), pos.nextCol());
+				// allFilter.add(new Gap(GAP), pos.nextCol());
 				allFilter.add(filterLabels[i], pos.nextCol().width(1));
 			}
 			allFilter.add(new Gap(GAP), pos.nextCol());
@@ -187,9 +188,9 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 		allFilter.add(new Gap(10), pos.nextRow().expandW());
 		filterButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		refreshButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-
-		buttonPanel.add(refreshButton);
 		buttonPanel.add(filterButton);
+		buttonPanel.add(refreshButton);
+
 		if(isQA)
 		{
 			addsummary.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -198,15 +199,17 @@ public class FilterPanel extends JXTaskPaneContainer implements ActionListener
 		allFilter.add(buttonPanel, pos.nextRow().width(9));
 		Border blackline = BorderFactory.createLineBorder(Color.black);
 		allFilter.setBorder(blackline);
-		taskpane.add(allFilter);
-		taskpane.setTitle("Filter Panel");
-		taskpane.setIcon(new ImageIcon("Resources/filter.png"));
+		// taskpane.add(allFilter);
+		this.setTitle("Filter Panel");
+		this.setIcon(new ImageIcon("Resources/filter.png"));
 		JPanel mainPanel = new JPanel();
+
 		mainPanel.add(new RightPanel("Resources/filter.png"));
 		mainPanel.add(allFilter);
 		mainPanel.add(new RightPanel("Resources/filter.png"));
 		taskpane.add(mainPanel);
-		this.add(taskpane);
+		// this.setLayout(new BorderLayout());
+		this.add(mainPanel);
 
 	}
 

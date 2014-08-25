@@ -72,24 +72,24 @@ public class LoginForm extends JFrame
 	public LoginForm()
 	{
 
-		
-		 try
-		 {
-		 // Set cross-platform Java L&F (also called "Metal")
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 }catch(UnsupportedLookAndFeelException e)
-		 {
-		
-		 }catch(ClassNotFoundException e)
-		 {
-		
-		 }catch(InstantiationException e)
-		 {
-		
-		 }catch(IllegalAccessException e)
-		 {
-		
-		 }
+		try
+		{
+			// Set cross-platform Java L&F (also called "Metal")
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(UnsupportedLookAndFeelException e)
+		{
+
+		}catch(ClassNotFoundException e)
+		{
+
+		}catch(InstantiationException e)
+		{
+
+		}catch(IllegalAccessException e)
+		{
+
+		}
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();
@@ -115,11 +115,10 @@ public class LoginForm extends JFrame
 				longRunProcess.execute();
 			}
 		});
-	
+
 		btnNewButton.setBounds(144, 154, 81, 33);
 
 		panel.add(btnNewButton);
-		
 
 		txtUserName = new JTextField();
 		txtUserName.setBounds(125, 72, 161, 20);
@@ -148,13 +147,65 @@ public class LoginForm extends JFrame
 		titleLab.setForeground(new Color(160, 82, 45));
 		titleLab.setFont(new Font("Old English Text MT", Font.PLAIN, 26));
 		titleLab.setBounds(10, 11, 345, 34);
-		panel.add(titleLab);	
-      
+		panel.add(titleLab);
+
 		JLabel lblver = new JLabel("Ver 1.0 : 20-7-2014 ");
 		lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		lblver.setForeground(new Color(160, 82, 45));
 		lblver.setBounds(220, 170, 150, 60);
 		panel.add(lblver);
+		txtPassword.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					LongRunProcess2 longRunProcess = new LongRunProcess2();
+					longRunProcess.execute();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
+		txtUserName.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					LongRunProcess2 longRunProcess = new LongRunProcess2();
+					longRunProcess.execute();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	class LongRunProcess extends SwingWorker<Object, Object>
