@@ -25,6 +25,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.UIManager;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -74,7 +75,12 @@ public class MainWindow extends JFrame
 
 	public MainWindow()
 	{
-
+		try{
+			com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "INSERT YOUR LICENSE KEY HERE", "my company");
+	        
+	        // select the Look and Feel
+	        UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+		}catch(Exception e){}
 		// container = getContentPane();
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -184,27 +190,6 @@ public class MainWindow extends JFrame
 		mainPanel = new MainPanel(grmUser);
 		getContentPane().add(mainPanel);
 
-		// contentPane.removeAll();
-		// contentPane.getWidth();
-		// contentPane.getHeight();
-		// System.out.println("Main Frame Dimession " + width + " " + height);
-		// p.repaint();
-		// System.out.println("Main Panel Dimession " + p.getWidth() + " " + p.getHeight());
-		// contentPane.add(p);
-		// contentPane.revalidate();
-		// contentPane.repaint();
-		// while(true)
-		// {
-		// updateFlags();
-		// try
-		// {
-		// Thread.sleep(50000);
-		// }catch(InterruptedException e)
-		// {
-		// e.printStackTrace();
-		// }
-		//
-		// }
 	}
 
 	public long getUserID(String userName, String pass)
