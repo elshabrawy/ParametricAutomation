@@ -1,10 +1,13 @@
 package com.se.parametric.commonPanel;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
 
 import com.se.parametric.dto.GrmUserDTO;
 
@@ -17,7 +20,8 @@ public class AlertsPanel extends JPanel
 	{
 		BoxLayout boxLayout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		this.setLayout(boxLayout);
-
+		this.setBackground(new Color(211, 211, 211));
+		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		npiPdf = new AlertComponent("NPI PDFs");
 		newPdf = new AlertComponent("New PDFs");
 		backlogPdf = new AlertComponent("Backlog PDFs");

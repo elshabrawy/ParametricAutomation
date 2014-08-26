@@ -1,13 +1,11 @@
 package com.se.parametric.unappValue;
 
 import java.awt.BorderLayout;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -162,7 +160,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-
 			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			if(event.getSource().equals(filterPanel.filterButton))
@@ -264,12 +261,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Accept QA & Forward");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 13);
-//				Robot bot = new Robot();
-//				bot.mouseMove(1165, 345);
-//				bot.mousePress(InputEvent.BUTTON1_MASK);
-//				bot.mouseRelease(InputEvent.BUTTON1_MASK);
-				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -283,6 +276,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate,
 						endDate, "TL");
 				filterPanel.refreshFilters();
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals("validate"))
@@ -582,6 +576,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(4)
 											+ " Can't Save dueto change in main columns");
