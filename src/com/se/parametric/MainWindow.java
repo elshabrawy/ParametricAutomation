@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -280,6 +281,8 @@ public class MainWindow extends JFrame
 
 	public void updateFlags()
 	{
+//		ArrayList<String> flags = new ArrayList<String>();
+//		flags = ParaQueryUtil.getAlerts(grmUser.getId(), userGroup, userRole);
 		mainPanel.updateFlags();
 	}
 
@@ -373,5 +376,6 @@ public class MainWindow extends JFrame
 		dialog.pack();
 		dialog.setVisible(true);
 	}
+	
 
 }
