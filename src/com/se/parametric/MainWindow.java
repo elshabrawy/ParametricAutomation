@@ -168,9 +168,9 @@ public class MainWindow extends JFrame
 		JTextArea txtarea = new JTextArea();
 		txtarea.setWrapStyleWord(true);
 		txtarea.setLineWrap(true);
-		txtarea.setForeground(new Color(80, 80, 80));
-		txtarea.setFont(new Font("Arial", Font.BOLD, 16));
-		String txt = "~Last updates :- \n";
+		txtarea.setForeground(new Color(100, 80, 80));
+		txtarea.setFont(new Font("Simpson", Font.BOLD, 16));
+		String txt = "Last updates :- \n";
 		txt += "" + "\n";
 		txt += "1- Change the Automaion Colors" + "\n";
 		txt += "2- Change the display of Tabs" + "\n";
