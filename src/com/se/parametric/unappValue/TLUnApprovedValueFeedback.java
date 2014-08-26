@@ -1,38 +1,30 @@
 package com.se.parametric.unappValue;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
-import org.hibernate.Session;
+
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
-import com.se.automation.db.SessionUtil;
+
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
@@ -67,8 +59,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 	{
 		this.TLDTO = TLDTO;
 		this.setLayout(new BorderLayout());
-		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+		// int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+		// int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,
 				"TL");
@@ -76,7 +68,6 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		selectionPanel = new WorkingAreaPanel(this.TLDTO);
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type", "FeedBack Type" };
 
-		
 		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("validate");
@@ -85,6 +76,20 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		sheetPanel = selectionPanel.getSheet();
 		selectionPanel.addComponentsToPanel();
 		add(selectionPanel);
+
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				selectionPanel.requestFocusInWindow();
+			}
+		});
 	}
 
 	@Override
@@ -155,8 +160,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		 */
 		protected Object doInBackground() throws Exception
 		{
-
-			// Loading.show();
+			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			if(event.getSource().equals(filterPanel.filterButton))
 			{
@@ -257,12 +261,8 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Accept QA & Forward");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 13);
-				Robot bot = new Robot();
-				bot.mouseMove(1165, 345);
-				bot.mousePress(InputEvent.BUTTON1_MASK);
-				bot.mouseRelease(InputEvent.BUTTON1_MASK);
-				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+
+				MainWindow.glass.setVisible(false);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -276,6 +276,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(TLDTO, startDate,
 						endDate, "TL");
 				filterPanel.refreshFilters();
+				MainWindow.glass.setVisible(false);
 			}
 
 			else if(event.getActionCommand().equals("validate"))
@@ -575,6 +576,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(4)
 											+ " Can't Save dueto change in main columns");

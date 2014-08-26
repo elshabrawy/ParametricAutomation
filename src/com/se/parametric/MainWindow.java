@@ -14,7 +14,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
+
 import java.util.ArrayList;
+
+import java.util.Date;
+
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -30,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dto.GrmUserDTO;
@@ -164,15 +169,34 @@ public class MainWindow extends JFrame
 
 	private void showupdatespanel()
 	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
+		dialog.setLayout(null);
+		JLabel lbl = new JLabel("Version No 2.0");
+		lbl.setFont(new Font("Simpson", Font.BOLD, 18));
+		lbl.setForeground(new Color(160, 82, 45));
+		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
+
+		JLabel lbl2 = new JLabel("Last updates on 26/8/2014 :- ");
+		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
+		lbl2.setForeground(new Color(189, 67, 67));
+		lbl2.setBounds(0, 55, 250, 20);
+
+		JLabel lbl3 = new JLabel("Copyright Banha Sofware 2013-2014.  All rights reserved.");
+		lbl3.setFont(new Font("Simpson", Font.BOLD, 10));
+		lbl3.setForeground(new Color(160, 82, 45));
+		lbl3.setBounds(5, 270, 300, 20);
+
 		JTextArea txtarea = new JTextArea();
 		txtarea.setWrapStyleWord(true);
 		txtarea.setLineWrap(true);
-		txtarea.setForeground(new Color(100, 80, 80));
-		txtarea.setFont(new Font("Simpson", Font.BOLD, 16));
-		String txt = "Last updates :- \n";
-		txt += "" + "\n";
+		txtarea.setForeground(new Color(0, 0, 0));
+		txtarea.setFont(new Font("Simpson", Font.BOLD, 12));
+		txtarea.setBounds(0, 80, 383, 180);
+		String txt = "";
 		txt += "1- Change the Automaion Colors" + "\n";
 		txt += "2- Change the display of Tabs" + "\n";
 		txt += "3- Enhance the Problem of Loading Screen" + "\n";
@@ -183,12 +207,17 @@ public class MainWindow extends JFrame
 		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)" + "\n";
 		txt += "" + "\n";
 		txtarea.setText(txt);
-		// txtarea.setEnabled(false);
 		txtarea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(txtarea);
+		scrollPane.setBounds(0, 80, 383, 180);
+		scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+		dialog.add(lbl);
+		dialog.add(lbl2);
 		dialog.add(scrollPane);
+		dialog.add(lbl3);
 		dialog.setLocationRelativeTo(this);
-		dialog.setBounds(880, 25, 400, 700);
+		dialog.setTitle("Parametric Automation");
+		dialog.setBounds((width - 383) / 2, (height - 249) / 2, 383, 330);
 		dialog.setVisible(true);
 
 	}
