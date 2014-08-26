@@ -138,7 +138,7 @@ public class LoginForm extends JFrame
 		// lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		// lblver.setForeground(new Color(160, 82, 45));
 		// lblver.setBounds(220, 170, 150, 60);
-		//panel.add(lblver);
+		// panel.add(lblver);
 		txtUserName.setFocusable(true);
 		txtUserName.addKeyListener(new KeyListener() {
 
@@ -296,7 +296,7 @@ public class LoginForm extends JFrame
 
 				}finally
 				{
-					MainWindow.glass.setVisible(false);
+					glass.setVisible(false);
 				}
 			}
 			return null;

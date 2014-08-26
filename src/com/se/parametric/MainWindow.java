@@ -262,6 +262,7 @@ public class MainWindow extends JFrame
 					MainWindow.glass.setVisible(false);
 					log.txtPassword.setText("");
 					log.txtUserName.setText("");
+					log.txtUserName.setFocusable(true);
 					log.setVisible(true);
 				}catch(Exception e)
 				{
