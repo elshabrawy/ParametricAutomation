@@ -38,6 +38,7 @@ public class AlertComponent extends JPanel
 		countLbl.setFont(new Font("Arial Black", Font.BOLD, 12));
 		countLbl.setForeground(Color.WHITE);
 
+		this.setOpaque(false);
 		this.setLayout(new GridBagLayout());
 		this.setMaximumSize(new Dimension(txtLbl.getMaximumSize().width
 				+ countLbl.getMaximumSize().width, txtLbl.getMaximumSize().height * 2 + 10));
