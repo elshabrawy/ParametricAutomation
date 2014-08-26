@@ -51,7 +51,7 @@ public class TablePanel extends JPanel implements ActionListener
 	JButton last = new JButton("");
 	JLabel paggingLabel;
 	public String[] header;
-	int recordsPerPage = 27;
+	int recordsPerPage = 28;
 
 	private ArrayList<ArrayList<String>> filteredData;
 	public ArrayList<TableInfoDTO> selectedData;
