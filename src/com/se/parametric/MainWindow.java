@@ -62,7 +62,7 @@ public class MainWindow extends JFrame
 		glass.setLayout(new GridBagLayout());
 		// Add the jlabel with the image icon
 
-		glass.add(new JLabel(new ImageIcon("Resources/loading2.gif")));
+		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
 
 		// Add MouseListener
 		glass.addMouseListener(new MouseAdapter() {
