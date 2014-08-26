@@ -42,7 +42,7 @@ import com.se.parametric.util.ImagePanel;
 
 public class MainWindow extends JFrame
 {
-
+	static ArrayList<String> flags=new ArrayList<String>();
 	// private JPanel contentPane;
 	// JPanel panel, panel2;
 	// int width, height;
@@ -246,6 +246,7 @@ public class MainWindow extends JFrame
 
 	public void init(GrmUserDTO grmUser)
 	{
+		updateFlags(grmUser);
 		loggedInUser = grmUser;
 		mainPanel = new MainPanel(grmUser);
 		getContentPane().add(mainPanel);
@@ -308,11 +309,13 @@ public class MainWindow extends JFrame
 		return 1l;
 	}
 
-	public void updateFlags()
+	public void updateFlags(GrmUserDTO grmUser)
 	{
-//		ArrayList<String> flags = new ArrayList<String>();
-//		flags = ParaQueryUtil.getAlerts(grmUser.getId(), userGroup, userRole);
-		mainPanel.updateFlags();
+		
+		long userRole = grmUser.getGrmRole().getId();
+		long userGroup = grmUser.getGrmGroup().getId();		
+		flags = ParaQueryUtil.getAlerts(grmUser.getId(), userGroup, userRole);
+//		mainPanel.updateFlags();
 	}
 
 	public void showImagePanel(String title, String imgName)

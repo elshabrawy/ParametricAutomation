@@ -206,6 +206,10 @@ public class LoginForm extends JFrame
 
 	class LongRunProcess extends SwingWorker<Object, Object>
 	{
+		GrmUserDTO grmUser;
+		public LongRunProcess(GrmUserDTO grmUser){
+			this.grmUser=grmUser;
+		}
 		/**
 		 * @throws Exception
 		 */
@@ -217,7 +221,7 @@ public class LoginForm extends JFrame
 				{
 					try
 					{
-						mainFrame.updateFlags();
+						mainFrame.updateFlags(grmUser);
 						TimeUnit.MINUTES.sleep(5);
 					}catch(InterruptedException e)
 					{
@@ -279,7 +283,8 @@ public class LoginForm extends JFrame
 			}
 			else
 			{
-				LongRunProcess process = new LongRunProcess();
+				
+				LongRunProcess process = new LongRunProcess(grmUser);
 				mainFrame = new MainWindow();
 				try
 				{
