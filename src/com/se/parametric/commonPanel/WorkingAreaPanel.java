@@ -1,6 +1,7 @@
 package com.se.parametric.commonPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -35,6 +36,7 @@ public class WorkingAreaPanel extends JPanel
 		this.centerPanel = new JPanel(new BorderLayout());
 		this.sidePanel = new JPanel();
 		sidePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		sidePanel.setBackground(new Color(211, 211, 211));
 		BoxLayout boxLayout = new BoxLayout(this.sidePanel, BoxLayout.PAGE_AXIS);
 		this.sidePanel.setLayout(boxLayout);
 	}
