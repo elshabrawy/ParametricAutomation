@@ -52,35 +52,35 @@ public class MainWindow extends JFrame
 	private GrmUserDTO loggedInUser;
 	public static JPanel glass;
 
-	static
-	{
-		glass = new JPanel() {
-			public void paintComponent(Graphics g)
-
-			{
-				g.setColor(new Color(0, 0, 0, 140));
-				g.fillRect(0, 0, getWidth(), getHeight());
-			}
-		};
-		// Set it non-opaque
-		glass.setOpaque(false);
-		// Set layout to JPanel
-		glass.setLayout(new GridBagLayout());
-		// Add the jlabel with the image icon
-
-		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
-
-		// Add MouseListener
-		glass.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent me)
-			{
-				// Consume the event, now the input is blocked
-				me.consume();
-				// Create beep sound, when mouse is pressed
-				Toolkit.getDefaultToolkit().beep();
-			}
-		});
-	}
+//	static
+//	{
+//		glass = new JPanel() {
+//			public void paintComponent(Graphics g)
+//
+//			{
+//				g.setColor(new Color(0, 0, 0, 140));
+//				g.fillRect(0, 0, getWidth(), getHeight());
+//			}
+//		};
+//		// Set it non-opaque
+//		glass.setOpaque(false);
+//		// Set layout to JPanel
+//		glass.setLayout(new GridBagLayout());
+//		// Add the jlabel with the image icon
+//
+//		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
+//
+//		// Add MouseListener
+//		glass.addMouseListener(new MouseAdapter() {
+//			public void mousePressed(MouseEvent me)
+//			{
+//				// Consume the event, now the input is blocked
+//				me.consume();
+//				// Create beep sound, when mouse is pressed
+//				Toolkit.getDefaultToolkit().beep();
+//			}
+//		});
+//	}
 
 	public MainWindow()
 	{
@@ -163,8 +163,40 @@ public class MainWindow extends JFrame
 		menuBar.add(optionsMenu);
 		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
-
+		createLoading();
 		setGlassPane(glass);
+		
+	}
+
+	private void createLoading()
+	{
+		glass = new JPanel() {
+			public void paintComponent(Graphics g)
+
+			{
+				g.setColor(new Color(0, 0, 0, 140));
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
+		// Set it non-opaque
+		glass.setOpaque(false);
+		// Set layout to JPanel
+		glass.setLayout(new GridBagLayout());
+		// Add the jlabel with the image icon
+
+		glass.add(new JLabel(new ImageIcon(getClass().getResource("/Resources/loading.gif"))));
+
+		// Add MouseListener
+		glass.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent me)
+			{
+				// Consume the event, now the input is blocked
+				me.consume();
+				// Create beep sound, when mouse is pressed
+				Toolkit.getDefaultToolkit().beep();
+			}
+		});
+		
 	}
 
 	private void showupdatespanel()
@@ -234,6 +266,7 @@ public class MainWindow extends JFrame
 					MainWindow.glass.setVisible(false);
 					log.txtPassword.setText("");
 					log.txtUserName.setText("");
+					log.txtUserName.setFocusable(true);
 					log.setVisible(true);
 				}catch(Exception e)
 				{
