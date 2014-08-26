@@ -165,6 +165,7 @@ public class SheetPanel extends JPanel
 			// aBean.aquireSystemWindow();
 			// repaint();
 			documentOpened = true;
+			this.validate();
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
