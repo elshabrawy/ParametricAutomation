@@ -91,9 +91,9 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
 
 	}
 
@@ -125,8 +125,8 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			devPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+			devPanel.updateFlags();
 
 			try
 			{

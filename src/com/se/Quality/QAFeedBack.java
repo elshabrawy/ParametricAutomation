@@ -454,10 +454,10 @@ public class QAFeedBack extends JPanel implements ActionListener
 		}
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		tabSheet.updateFlags(flags);
+		selectionPanel.updateFlags();
+		tabSheet.updateFlags();
 		// alertsPanel2.updateFlags(flags);
 
 	}

@@ -78,9 +78,9 @@ public class WorkingAreaPanel extends JPanel
 		this.sidePanel.add(alertsPanel);
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		this.alertsPanel.updateFlags(flags);
+		this.alertsPanel.updateFlags();
 	}
 
 	public static void main(String[] args)

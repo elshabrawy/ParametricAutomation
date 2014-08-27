@@ -136,11 +136,11 @@ public class TLReviewData extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		tabSheet.updateFlags(flags);
-		separationTab.updateFlags(flags);
-		selectionPanel.updateFlags(flags);
+		tabSheet.updateFlags();
+		separationTab.updateFlags();
+		selectionPanel.updateFlags();
 
 	}
 
@@ -172,8 +172,8 @@ public class TLReviewData extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			devPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+			devPanel.updateFlags();
 
 			try
 			{

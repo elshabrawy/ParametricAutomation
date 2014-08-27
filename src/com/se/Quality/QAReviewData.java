@@ -442,11 +442,11 @@ public class QAReviewData extends JPanel implements ActionListener
 		// }
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		tabSheet.updateFlags(flags);
-		Summarytab.updateFlags(flags);
+		selectionPanel.updateFlags();
+		tabSheet.updateFlags();
+		Summarytab.updateFlags();
 
 	}
 

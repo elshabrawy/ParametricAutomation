@@ -42,7 +42,7 @@ import com.se.parametric.util.ImagePanel;
 
 public class MainWindow extends JFrame
 {
-	static ArrayList<String> flags=new ArrayList<String>();
+	public static ArrayList<String> flags=new ArrayList<String>();
 	// private JPanel contentPane;
 	// JPanel panel, panel2;
 	// int width, height;

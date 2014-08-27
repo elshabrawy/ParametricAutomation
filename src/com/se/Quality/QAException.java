@@ -237,9 +237,9 @@ public class QAException extends JPanel implements ActionListener
 		// }
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
 		// alertsPanel1.updateFlags(flags);
 		// alertsPanel2.updateFlags(flags);
 

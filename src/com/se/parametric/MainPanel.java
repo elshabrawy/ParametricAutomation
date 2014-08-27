@@ -261,32 +261,33 @@ public class MainPanel extends JPanel implements ActionListener
 	public void updateFlags()
 	{
 			// TL Screens
+		System.out.println("here");
 		if(tlfeedBack != null)
-			tlfeedBack.updateFlags(MainWindow.flags);
+			tlfeedBack.updateFlags();
 		if(reviewData != null)
-			reviewData.updateFlags(MainWindow.flags);
+			reviewData.updateFlags();
 		if(tlunApprovedPanel != null)
-			tlunApprovedPanel.updateFlags(MainWindow.flags);
+			tlunApprovedPanel.updateFlags();
 		// Eng Screens
 		if(engfeedBack != null)
-			engfeedBack.updateFlags(MainWindow.flags);
+			engfeedBack.updateFlags();
 		if(engunApprovedPanel != null)
-			engunApprovedPanel.updateFlags(MainWindow.flags);
+			engunApprovedPanel.updateFlags();
 		if(developement != null)
-			developement.updateFlags(MainWindow.flags);
+			developement.updateFlags();
 		if(qachecks != null)
-			qachecks.updateFlags(MainWindow.flags);
+			qachecks.updateFlags();
 		if(exceptionfb != null)
-			exceptionfb.updateFlags(MainWindow.flags);
+			exceptionfb.updateFlags();
 		// QA Screens
 		if(qaReviewData != null)
-			qaReviewData.updateFlags(MainWindow.flags);
+			qaReviewData.updateFlags();
 		if(qaFeedBack != null)
-			qaFeedBack.updateFlags(MainWindow.flags);
+			qaFeedBack.updateFlags();
 		if(qUnApproved != null)
-			qUnApproved.updateFlags(MainWindow.flags);
+			qUnApproved.updateFlags();
 		if(qaexception != null)
-			qaexception.updateFlags(MainWindow.flags);
+			qaexception.updateFlags();
 
 	}
 
