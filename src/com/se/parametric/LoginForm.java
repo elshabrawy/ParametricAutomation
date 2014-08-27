@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -136,7 +138,7 @@ public class LoginForm extends JFrame
 		// lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
 		// lblver.setForeground(new Color(160, 82, 45));
 		// lblver.setBounds(220, 170, 150, 60);
-		//panel.add(lblver);
+		// panel.add(lblver);
 		txtUserName.setFocusable(true);
 		txtUserName.addKeyListener(new KeyListener() {
 
@@ -206,6 +208,10 @@ public class LoginForm extends JFrame
 
 	class LongRunProcess extends SwingWorker<Object, Object>
 	{
+		GrmUserDTO grmUser;
+		public LongRunProcess(GrmUserDTO grmUser){
+			this.grmUser=grmUser;
+		}
 		/**
 		 * @throws Exception
 		 */
@@ -217,7 +223,7 @@ public class LoginForm extends JFrame
 				{
 					try
 					{
-						mainFrame.updateFlags();
+						mainFrame.updateFlags(grmUser);
 						TimeUnit.MINUTES.sleep(5);
 					}catch(InterruptedException e)
 					{
@@ -254,7 +260,7 @@ public class LoginForm extends JFrame
 			// Set layout to JPanel
 			glass.setLayout(new GridBagLayout());
 			// Add the jlabel with the image icon
-			glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
+			glass.add(new JLabel(new ImageIcon(getClass().getResource("/Resources/loading.gif"))));
 			// Take glass pane
 			setGlassPane(glass);
 			// Add MouseListener
@@ -279,7 +285,8 @@ public class LoginForm extends JFrame
 			}
 			else
 			{
-				LongRunProcess process = new LongRunProcess();
+				
+				LongRunProcess process = new LongRunProcess(grmUser);
 				mainFrame = new MainWindow();
 				try
 				{
@@ -294,7 +301,7 @@ public class LoginForm extends JFrame
 
 				}finally
 				{
-					MainWindow.glass.setVisible(false);
+					glass.setVisible(false);
 				}
 			}
 			return null;

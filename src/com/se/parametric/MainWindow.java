@@ -14,7 +14,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
+
+import java.util.ArrayList;
+
 import java.util.Date;
+
 
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -38,7 +42,7 @@ import com.se.parametric.util.ImagePanel;
 
 public class MainWindow extends JFrame
 {
-
+	public static ArrayList<String> flags=new ArrayList<String>();
 	// private JPanel contentPane;
 	// JPanel panel, panel2;
 	// int width, height;
@@ -48,35 +52,35 @@ public class MainWindow extends JFrame
 	private GrmUserDTO loggedInUser;
 	public static JPanel glass;
 
-	static
-	{
-		glass = new JPanel() {
-			public void paintComponent(Graphics g)
-
-			{
-				g.setColor(new Color(0, 0, 0, 140));
-				g.fillRect(0, 0, getWidth(), getHeight());
-			}
-		};
-		// Set it non-opaque
-		glass.setOpaque(false);
-		// Set layout to JPanel
-		glass.setLayout(new GridBagLayout());
-		// Add the jlabel with the image icon
-
-		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
-
-		// Add MouseListener
-		glass.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent me)
-			{
-				// Consume the event, now the input is blocked
-				me.consume();
-				// Create beep sound, when mouse is pressed
-				Toolkit.getDefaultToolkit().beep();
-			}
-		});
-	}
+//	static
+//	{
+//		glass = new JPanel() {
+//			public void paintComponent(Graphics g)
+//
+//			{
+//				g.setColor(new Color(0, 0, 0, 140));
+//				g.fillRect(0, 0, getWidth(), getHeight());
+//			}
+//		};
+//		// Set it non-opaque
+//		glass.setOpaque(false);
+//		// Set layout to JPanel
+//		glass.setLayout(new GridBagLayout());
+//		// Add the jlabel with the image icon
+//
+//		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
+//
+//		// Add MouseListener
+//		glass.addMouseListener(new MouseAdapter() {
+//			public void mousePressed(MouseEvent me)
+//			{
+//				// Consume the event, now the input is blocked
+//				me.consume();
+//				// Create beep sound, when mouse is pressed
+//				Toolkit.getDefaultToolkit().beep();
+//			}
+//		});
+//	}
 
 	public MainWindow()
 	{
@@ -159,8 +163,40 @@ public class MainWindow extends JFrame
 		menuBar.add(optionsMenu);
 		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
-
+		createLoading();
 		setGlassPane(glass);
+		
+	}
+
+	private void createLoading()
+	{
+		glass = new JPanel() {
+			public void paintComponent(Graphics g)
+
+			{
+				g.setColor(new Color(0, 0, 0, 140));
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		};
+		// Set it non-opaque
+		glass.setOpaque(false);
+		// Set layout to JPanel
+		glass.setLayout(new GridBagLayout());
+		// Add the jlabel with the image icon
+
+		glass.add(new JLabel(new ImageIcon(getClass().getResource("/Resources/loading.gif"))));
+
+		// Add MouseListener
+		glass.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent me)
+			{
+				// Consume the event, now the input is blocked
+				me.consume();
+				// Create beep sound, when mouse is pressed
+				Toolkit.getDefaultToolkit().beep();
+			}
+		});
+		
 	}
 
 	private void showupdatespanel()
@@ -230,6 +266,7 @@ public class MainWindow extends JFrame
 					MainWindow.glass.setVisible(false);
 					log.txtPassword.setText("");
 					log.txtUserName.setText("");
+					log.txtUserName.setFocusable(true);
 					log.setVisible(true);
 				}catch(Exception e)
 				{
@@ -242,6 +279,7 @@ public class MainWindow extends JFrame
 
 	public void init(GrmUserDTO grmUser)
 	{
+		updateFlags(grmUser);
 		loggedInUser = grmUser;
 		mainPanel = new MainPanel(grmUser);
 		getContentPane().add(mainPanel);
@@ -304,9 +342,13 @@ public class MainWindow extends JFrame
 		return 1l;
 	}
 
-	public void updateFlags()
+	public void updateFlags(GrmUserDTO grmUser)
 	{
-		mainPanel.updateFlags();
+		
+		long userRole = grmUser.getGrmRole().getId();
+		long userGroup = grmUser.getGrmGroup().getId();		
+		flags = ParaQueryUtil.getAlerts(grmUser.getId(), userGroup, userRole);
+//		mainPanel.updateFlags();
 	}
 
 	public void showImagePanel(String title, String imgName)
@@ -399,5 +441,6 @@ public class MainWindow extends JFrame
 		dialog.pack();
 		dialog.setVisible(true);
 	}
+	
 
 }

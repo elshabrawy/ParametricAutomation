@@ -81,13 +81,14 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
 		selectionPanel.addButtonsPanel(buttonLabels, this);
-
+		selectionPanel.addComponentsToPanel();
 		QAAppfeedBack = new QAUnApprovedValueFeedback(userDTO);
-
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
 		// flowChart = new ImagePanel("QASeparation.jpg");
 		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		this.add(tabbedPane);
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -104,7 +105,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				}
 			}
 		});
-		this.add(tabbedPane);
+
 	}
 
 	@Override
@@ -114,10 +115,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		QAAppfeedBack.selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
+		QAAppfeedBack.selectionPanel.updateFlags();
 
 	}
 
@@ -149,8 +150,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
-			devPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
+			devPanel.updateFlags();
 
 			try
 			{

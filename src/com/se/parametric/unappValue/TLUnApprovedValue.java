@@ -120,10 +120,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		TLfeedBack.selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
+		TLfeedBack.selectionPanel.updateFlags();
 
 	}
 

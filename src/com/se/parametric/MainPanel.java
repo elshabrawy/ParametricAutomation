@@ -260,38 +260,34 @@ public class MainPanel extends JPanel implements ActionListener
 
 	public void updateFlags()
 	{
-		long userRole = userDTO.getGrmRole().getId();
-		long userGroup = userDTO.getGrmGroup().getId();
-		ArrayList<String> flags = new ArrayList<String>();
-		flags = ParaQueryUtil.getAlerts(userDTO.getId(), userGroup, userRole);
-
-		// TL Screens
+			// TL Screens
+		System.out.println("here");
 		if(tlfeedBack != null)
-			tlfeedBack.updateFlags(flags);
+			tlfeedBack.updateFlags();
 		if(reviewData != null)
-			reviewData.updateFlags(flags);
+			reviewData.updateFlags();
 		if(tlunApprovedPanel != null)
-			tlunApprovedPanel.updateFlags(flags);
+			tlunApprovedPanel.updateFlags();
 		// Eng Screens
 		if(engfeedBack != null)
-			engfeedBack.updateFlags(flags);
+			engfeedBack.updateFlags();
 		if(engunApprovedPanel != null)
-			engunApprovedPanel.updateFlags(flags);
+			engunApprovedPanel.updateFlags();
 		if(developement != null)
-			developement.updateFlags(flags);
+			developement.updateFlags();
 		if(qachecks != null)
-			qachecks.updateFlags(flags);
+			qachecks.updateFlags();
 		if(exceptionfb != null)
-			exceptionfb.updateFlags(flags);
+			exceptionfb.updateFlags();
 		// QA Screens
 		if(qaReviewData != null)
-			qaReviewData.updateFlags(flags);
+			qaReviewData.updateFlags();
 		if(qaFeedBack != null)
-			qaFeedBack.updateFlags(flags);
+			qaFeedBack.updateFlags();
 		if(qUnApproved != null)
-			qUnApproved.updateFlags(flags);
+			qUnApproved.updateFlags();
 		if(qaexception != null)
-			qaexception.updateFlags(flags);
+			qaexception.updateFlags();
 
 	}
 

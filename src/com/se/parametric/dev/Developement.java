@@ -167,8 +167,8 @@ public class Developement extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
-			devPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
+			devPanel.updateFlags();
 
 			try
 			{
@@ -180,11 +180,11 @@ public class Developement extends JPanel implements ActionListener
 		}
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		tabSheet.updateFlags(flags);
-		separationTab.updateFlags(flags);
+		selectionPanel.updateFlags();
+		tabSheet.updateFlags();
+		separationTab.updateFlags();
 
 	}
 
