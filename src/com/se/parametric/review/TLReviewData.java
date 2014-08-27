@@ -325,7 +325,7 @@ public class TLReviewData extends JPanel implements ActionListener
 								.getParametricValueReview1(teamMembers, plName, supplierName,
 										taskType, StatusName.tlReview, startDate, endDate,
 										new Long[] { document.getId() });
-						int k = 0;
+						int k = 0;						
 						tabbedPane.setSelectedIndex(1);
 						sheetpanel.openOfficeDoc();
 

@@ -131,14 +131,14 @@ public class SheetPanel extends JPanel
 	{
 		try
 		{
-			if(!aBean.isOOoConnected())
-			{
-				// remove(aBean);
-				// aBean = new OOoBean();
-				// add(aBean, BorderLayout.CENTER);
-				// repaint();
-				// attachEventHandler();
-			}
+			// if(!aBean.isOOoConnected())
+			// {
+			// remove(aBean);
+			// aBean = new OOoBean();
+			// add(aBean, BorderLayout.CENTER);
+			// repaint();
+			// attachEventHandler();
+			// }
 			closeDoc();
 			// remove(aBean);
 			// aBean = new OOoBean();
@@ -162,10 +162,12 @@ public class SheetPanel extends JPanel
 			// aBean = new OOoBean();
 			// add(aBean, java.awt.BorderLayout.CENTER);
 			aBean.loadFromURL(url, args);
-			// aBean.aquireSystemWindow();
+//			aBean.aquireSystemWindow();
 			// repaint();
 			documentOpened = true;
-			this.validate();
+			// this.getTopLevelAncestor().validate();
+			// MainWindow.glass.setVisible(false);
+			// MainWindow.glass.setVisible(true);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
