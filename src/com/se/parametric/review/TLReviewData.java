@@ -61,6 +61,7 @@ public class TLReviewData extends JPanel implements ActionListener
 	int width, height;
 	GrmUserDTO userDTO;
 	String[] statuses;
+	ActionEvent saveevent = null;
 
 	public TLReviewData(GrmUserDTO userDTO)
 	{
@@ -434,6 +435,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						wsMap.get(wsName).validateParts(true);
 						if(!ws.canSave)
 						{
+							saveevent = event;
 							input = new ArrayList<ArrayList<String>>();
 							input = wsMap.get(wsName).getUnApprovedValues(input);
 							if(input.size() > 0)
@@ -525,7 +527,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					if(reply == JOptionPane.OK_OPTION)
 					{
 						MainWindow.glass.setVisible(true);
-						((AbstractButton) event.getSource()).doClick();
+						((AbstractButton) saveevent.getSource()).doClick();
 						tabbedPane.setSelectedIndex(1);
 					}
 				}

@@ -1,6 +1,7 @@
 package com.se.parametric.dev;
 
 import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +66,7 @@ public class Developement extends JPanel implements ActionListener
 	GrmUserDTO userDTO = null;
 	AutoFill autoFillProcess;
 	boolean validated;
+	ActionEvent saveevent = null;
 
 	/**
 	 * Create the panel.
@@ -489,17 +491,19 @@ public class Developement extends JPanel implements ActionListener
 					// validation of separation
 					validateseparation();
 					// save Separation
-					saveseparation();
-
-					MainWindow.glass.setVisible(false);
-					int reply = JOptionPane.showConfirmDialog(null,
-							"Approved Saving Done , Press OK to save Parts", "Development",
-							JOptionPane.OK_OPTION);
-					if(reply == JOptionPane.OK_OPTION)
+					if(validated)
 					{
-						MainWindow.glass.setVisible(true);
-						((AbstractButton) event.getSource()).doClick();
-						tabbedPane.setSelectedIndex(1);
+						MainWindow.glass.setVisible(false);
+						saveseparation();
+						int reply = JOptionPane.showConfirmDialog(null,
+								"Approved Saving Done , Press OK to save Parts", "Development",
+								JOptionPane.OK_OPTION);
+						if(reply == JOptionPane.OK_OPTION)
+						{
+							MainWindow.glass.setVisible(true);
+							((AbstractButton) saveevent.getSource()).doClick();
+							tabbedPane.setSelectedIndex(1);
+						}
 					}
 
 				}
@@ -565,6 +569,7 @@ public class Developement extends JPanel implements ActionListener
 						wsMap.get(wsName).validateParts(false);
 						if(!ws.canSave)
 						{
+							saveevent = event;
 							input = new ArrayList<ArrayList<String>>();
 							input = wsMap.get(wsName).getUnApprovedValues(input);
 							if(input.size() > 0)
@@ -674,6 +679,10 @@ public class Developement extends JPanel implements ActionListener
 
 					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
 							featureFullValue, row.get(2), userId);
+					List<String> pdfs = new ArrayList<>();
+					pdfs.add(row.get(2));
+					DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
+							StatusName.inprogress, "");
 				}catch(ArrayIndexOutOfBoundsException ex)
 				{
 					try

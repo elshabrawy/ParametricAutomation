@@ -493,6 +493,10 @@ public class Update extends JPanel implements ActionListener
 
 							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
 									featureName, featureFullValue, row.get(2), userId);
+							List<String> pdfs = new ArrayList<>();
+							pdfs.add(row.get(2));
+							DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
+									StatusName.inprogress, "");
 						}catch(ArrayIndexOutOfBoundsException ex)
 						{
 							try
