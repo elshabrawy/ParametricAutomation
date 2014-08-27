@@ -233,9 +233,9 @@ public class ExceptionFB extends JPanel implements ActionListener
 		// }
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
 	}
 
 	class LongRunProcess extends SwingWorker

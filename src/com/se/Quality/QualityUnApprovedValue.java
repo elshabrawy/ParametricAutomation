@@ -115,10 +115,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		QAAppfeedBack.selectionPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
+		QAAppfeedBack.selectionPanel.updateFlags();
 
 	}
 
@@ -150,8 +150,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
-			devPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
+			devPanel.updateFlags();
 
 			try
 			{

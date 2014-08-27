@@ -145,11 +145,11 @@ public class EngFeedBack extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		selectionPanel.updateFlags(flags);
-		sheetTab.updateFlags(flags);
-		separationTab.updateFlags(flags);
+		selectionPanel.updateFlags();
+		sheetTab.updateFlags();
+		separationTab.updateFlags();
 
 	}
 
@@ -177,8 +177,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
-			fbPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
+			fbPanel.updateFlags();
 
 			try
 			{

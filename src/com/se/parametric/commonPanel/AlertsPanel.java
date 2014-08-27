@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
+import com.se.parametric.MainWindow;
 import com.se.parametric.dto.GrmUserDTO;
 
 public class AlertsPanel extends JPanel
@@ -18,10 +17,11 @@ public class AlertsPanel extends JPanel
 
 	public AlertsPanel(GrmUserDTO userDTO)
 	{
+//		updateFlags(MainWindow.flags);
 		BoxLayout boxLayout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		this.setLayout(boxLayout);
 		this.setBackground(new Color(211, 211, 211));
-		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+		
 		npiPdf = new AlertComponent("NPI PDFs");
 		newPdf = new AlertComponent("New PDFs");
 		backlogPdf = new AlertComponent("Backlog PDFs");
@@ -30,7 +30,7 @@ public class AlertsPanel extends JPanel
 		approvedNpi = new AlertComponent("App NPI");
 		approvedNewFb = new AlertComponent("App FB New");
 		approvedNpiFb = new AlertComponent("App FB NPI");
-
+		updateFlags();
 		this.add(npiPdf);
 		this.add(Box.createVerticalStrut(15));
 		this.add(newPdf);
@@ -49,16 +49,16 @@ public class AlertsPanel extends JPanel
 		this.add(Box.createVerticalStrut(15));
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		npiPdf.setCount(flags.get(0));
-		newPdf.setCount(flags.get(1));
-		backlogPdf.setCount(flags.get(2));
-		dataFb.setCount(flags.get(3));
-		approvedNew.setCount(flags.get(4));
-		approvedNpi.setCount(flags.get(5));
-		approvedNewFb.setCount(flags.get(6));
-		approvedNpiFb.setCount(flags.get(7));
+		npiPdf.setCount(MainWindow.flags.get(0));
+		newPdf.setCount(MainWindow.flags.get(1));
+		backlogPdf.setCount(MainWindow.flags.get(2));
+		dataFb.setCount(MainWindow.flags.get(3));
+		approvedNew.setCount(MainWindow.flags.get(4));
+		approvedNpi.setCount(MainWindow.flags.get(5));
+		approvedNewFb.setCount(MainWindow.flags.get(6));
+		approvedNpiFb.setCount(MainWindow.flags.get(7));
 	}
 
 }

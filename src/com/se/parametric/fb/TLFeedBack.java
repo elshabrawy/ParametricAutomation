@@ -474,8 +474,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			fbPanel.updateFlags(flags);
+//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+			fbPanel.updateFlags();
 
 			try
 			{
@@ -488,11 +488,11 @@ public class TLFeedBack extends JPanel implements ActionListener
 
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		inputSelectionPanel.updateFlags(flags);
-		devSheetPanel.updateFlags(flags);
-		separationSheetPanel.updateFlags(flags);
+		inputSelectionPanel.updateFlags();
+		devSheetPanel.updateFlags();
+		separationSheetPanel.updateFlags();
 	}
 
 	public void clearOfficeResources()
