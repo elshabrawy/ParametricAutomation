@@ -34,7 +34,7 @@ public class AlertComponent extends JPanel
 	private void init()
 	{
 		txtLbl.setForeground(Color.BLACK);		
-		txtLbl.setFont(new Font("Arial", Font.PLAIN, 12));
+		txtLbl.setFont(new Font("Arial", Font.BOLD, 12));
 		countLbl.setFont(new Font("Arial Black", Font.BOLD, 12));
 		countLbl.setForeground(Color.WHITE);
 
