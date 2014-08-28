@@ -4647,7 +4647,8 @@ public class ParaQueryUtil
 		{
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("document", getDocumentBySeUrl(pdfUrl, session)));
-			criteria.createCriteria("trackingTaskStatus").add(Restrictions.eq("id", 6l));
+			criteria.createCriteria("trackingTaskStatus").add(
+					Restrictions.in("id", new Object[] { 6L, 42L }));
 			if(userId != null)
 				criteria.add(Restrictions.eq("parametricUserId", userId));
 			// criteria.setProjection(Projections.distinct(Projections.property("pl")));
