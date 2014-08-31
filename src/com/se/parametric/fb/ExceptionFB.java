@@ -269,12 +269,14 @@ public class ExceptionFB extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
 				filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Eng");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 
 			}
 			else if(event.getActionCommand().equals("Save"))

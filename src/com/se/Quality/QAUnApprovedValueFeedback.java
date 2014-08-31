@@ -262,7 +262,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
-
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getActionCommand().equals("Feedback History"))
 			{
@@ -314,6 +314,7 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, startDate,
 						endDate, "QA");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getActionCommand().equals("Save"))
 			{

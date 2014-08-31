@@ -492,12 +492,14 @@ public class QAFeedBack extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
 				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 
 			}
 			/**

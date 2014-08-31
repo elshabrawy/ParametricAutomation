@@ -252,6 +252,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				bot.mouseMove(1165, 345);
 				bot.mousePress(InputEvent.BUTTON1_MASK);
 				bot.mouseRelease(InputEvent.BUTTON1_MASK);
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -266,6 +267,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(
 						new Long[] { userDTO.getId() }, startDate, endDate, "QA");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getActionCommand().equals("Save"))
 			{

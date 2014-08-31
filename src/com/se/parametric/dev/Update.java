@@ -548,7 +548,7 @@ public class Update extends JPanel implements ActionListener
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
 				tablePanel.setCurrentPage(1);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
-
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -557,6 +557,7 @@ public class Update extends JPanel implements ActionListener
 						filterPanel.startDate, filterPanel.endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 
 			}
 			/**
