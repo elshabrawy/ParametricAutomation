@@ -169,7 +169,7 @@ public class Developement extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
 			devPanel.updateFlags();
 
 			try
@@ -493,8 +493,8 @@ public class Developement extends JPanel implements ActionListener
 					// save Separation
 					if(validated)
 					{
-						MainWindow.glass.setVisible(false);
 						saveseparation();
+						MainWindow.glass.setVisible(false);
 						int reply = JOptionPane.showConfirmDialog(null,
 								"Approved Saving Done , Press OK to save Parts", "Development",
 								JOptionPane.OK_OPTION);
