@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.util.Properties;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import com.se.parametric.MainWindow;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.comp.beans.NoConnectionException;
 import com.sun.star.comp.beans.OOoBean;
@@ -161,13 +163,16 @@ public class SheetPanel extends JPanel
 			// remove(aBean);
 			// aBean = new OOoBean();
 			// add(aBean, java.awt.BorderLayout.CENTER);
+			MainWindow.glass.validate();
 			aBean.loadFromURL(url, args);
-//			aBean.aquireSystemWindow();
+			// aBean.aquireSystemWindow();
 			// repaint();
 			documentOpened = true;
-			// this.getTopLevelAncestor().validate();
+			aBean.invalidate();
+			SwingUtilities.getWindowAncestor(aBean).revalidate();
 			// MainWindow.glass.setVisible(false);
-			// MainWindow.glass.setVisible(true);
+			MainWindow.glass.setVisible(true);
+			MainWindow.glass.invalidate();
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();

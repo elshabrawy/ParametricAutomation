@@ -1,7 +1,6 @@
 package com.se.parametric.dev;
 
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -169,7 +168,7 @@ public class Developement extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
 			devPanel.updateFlags();
 
 			try

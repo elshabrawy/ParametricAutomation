@@ -7,7 +7,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +16,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -209,9 +207,12 @@ public class LoginForm extends JFrame
 	class LongRunProcess extends SwingWorker<Object, Object>
 	{
 		GrmUserDTO grmUser;
-		public LongRunProcess(GrmUserDTO grmUser){
-			this.grmUser=grmUser;
+
+		public LongRunProcess(GrmUserDTO grmUser)
+		{
+			this.grmUser = grmUser;
 		}
+
 		/**
 		 * @throws Exception
 		 */
@@ -285,7 +286,7 @@ public class LoginForm extends JFrame
 			}
 			else
 			{
-				
+
 				LongRunProcess process = new LongRunProcess(grmUser);
 				mainFrame = new MainWindow();
 				try
