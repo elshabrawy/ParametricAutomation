@@ -19,7 +19,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
-
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
@@ -36,6 +35,7 @@ import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.automation.db.parametric.RelatedFeature;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
+import com.se.parametric.Loading;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -242,9 +242,11 @@ public class WorkingSheet
 					cell.setText(list.get(i).get(j));
 				}
 				cell = getCellByPosission(column - 1, i + start);
-				cell.SetApprovedValues(statusValues, sheet.getCellRangeByPosition(column - 1, i + start, column - 1, i + start));
+				cell.SetApprovedValues(statusValues,
+						sheet.getCellRangeByPosition(column - 1, i + start, column - 1, i + start));
 				if(!commentValues.isEmpty())
-					cell.SetApprovedValues(commentValues, sheet.getCellRangeByPosition(column, i + start, column, i + start));
+					cell.SetApprovedValues(commentValues,
+							sheet.getCellRangeByPosition(column, i + start, column, i + start));
 				// if(!npivalues.isEmpty())
 
 			}
@@ -258,7 +260,8 @@ public class WorkingSheet
 	{
 		if(threadDrowData != null)
 		{
-			if(threadDrowData.getState() == Thread.State.RUNNABLE || threadDrowData.getState() == Thread.State.WAITING)
+			if(threadDrowData.getState() == Thread.State.RUNNABLE
+					|| threadDrowData.getState() == Thread.State.WAITING)
 			{
 				try
 				{
@@ -294,7 +297,8 @@ public class WorkingSheet
 		}
 		else
 		{
-			if(ShowAllThread.getState() == Thread.State.RUNNABLE || ShowAllThread.getState() == Thread.State.WAITING)
+			if(ShowAllThread.getState() == Thread.State.RUNNABLE
+					|| ShowAllThread.getState() == Thread.State.WAITING)
 			{
 				try
 				{
@@ -472,7 +476,8 @@ public class WorkingSheet
 				npivalues = new ArrayList<>();
 				npivalues.add("Yes");
 				npivalues.add("No");
-				cell.SetApprovedValues(npivalues, sheet.getCellRangeByPosition(npiCellNo, StatrtRecord + 1, npiCellNo, StatrtRecord + 1));
+				cell.SetApprovedValues(npivalues, sheet.getCellRangeByPosition(npiCellNo,
+						StatrtRecord + 1, npiCellNo, StatrtRecord + 1));
 				HeaderList.add(cell);
 				newsCellNo = HeaderList.size();
 				cell = getCellByPosission(HeaderList.size(), StatrtRecord);
@@ -569,7 +574,8 @@ public class WorkingSheet
 				approvedFeatuer.put(featureDTO.getFeatureName(), appValues);
 				// System.out.println(featureDTO.getFeatureName() + " AppValues size=" + appValues.size());
 				if(!isQA)
-					cell.SetApprovedValues(appValues, getCellRangByPosission(startCol, RowSelectedRange));
+					cell.SetApprovedValues(appValues,
+							getCellRangByPosission(startCol, RowSelectedRange));
 				// else
 				// cell.SetApprovedValues(null, getCellRangByPosission(startCol, RowSelectedRange));
 
@@ -1061,7 +1067,8 @@ public class WorkingSheet
 
 	}
 
-	public void setPdfInfo(String url, String supplierName, String desc, List<String> newsData, String taxonomies, int rowNum)
+	public void setPdfInfo(String url, String supplierName, String desc, List<String> newsData,
+			String taxonomies, int rowNum)
 	{
 		Cell cell;
 		try
@@ -1102,9 +1109,11 @@ public class WorkingSheet
 			// System.out.println("selected are"+sheetPanel.aBean.getController().getViewData()+"  ,  "+ccc);
 			int rowSelected = SVD.getSelectedCellposesions().y;
 			System.out.println(SVD.getSelectedCellposesions());
-			Cell cell = getCellByPosission(SVD.getSelectedCellposesions().x, SVD.getSelectedCellposesions().y);
+			Cell cell = getCellByPosission(SVD.getSelectedCellposesions().x,
+					SVD.getSelectedCellposesions().y);
 			String txt = cell.getText().trim();
-			System.out.println("" + SVD.getSelectedCellposesions().x + " : " + SVD.getSelectedCellposesions().y + " : " + txt);
+			System.out.println("" + SVD.getSelectedCellposesions().x + " : "
+					+ SVD.getSelectedCellposesions().y + " : " + txt);
 			return txt;
 		}catch(Exception ex)
 		{
@@ -1146,7 +1155,8 @@ public class WorkingSheet
 	{
 		try
 		{
-			com.sun.star.beans.XPropertySet xCellrangPropSet = (com.sun.star.beans.XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xcellrange);
+			com.sun.star.beans.XPropertySet xCellrangPropSet = (com.sun.star.beans.XPropertySet) UnoRuntime
+					.queryInterface(com.sun.star.beans.XPropertySet.class, xcellrange);
 			// 0x99CCCC
 			xCellrangPropSet.setPropertyValue("CellBackColor", color);
 		}catch(Exception ex)
@@ -1161,7 +1171,8 @@ public class WorkingSheet
 	{
 		try
 		{
-			XPropertySet xCellProps = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, cell);
+			XPropertySet xCellProps = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
+					cell);
 			XPropertySetInfo prpset = xCellProps.getPropertySetInfo();
 			xCellProps.setPropertyValue("CellBackColor", colore);
 			// for (Property prop : prpset.getProperties()) {
@@ -1178,7 +1189,8 @@ public class WorkingSheet
 	{
 		try
 		{
-			com.sun.star.beans.XPropertySet xCellrangPropSet = (com.sun.star.beans.XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xcellrange);
+			com.sun.star.beans.XPropertySet xCellrangPropSet = (com.sun.star.beans.XPropertySet) UnoRuntime
+					.queryInterface(com.sun.star.beans.XPropertySet.class, xcellrange);
 			XPropertySetInfo prpset = xCellrangPropSet.getPropertySetInfo();
 			// for (Property prop : prpset.getProperties()) {
 			// System.out.println(prop.Name);
@@ -1299,6 +1311,7 @@ public class WorkingSheet
 		String partColumn = getColumnName(PartCell + 1);
 		boolean flag = true;
 		String part = "";
+		String supplier = "";
 		LinkedHashSet fetValue = null;
 		try
 		{
@@ -1346,6 +1359,11 @@ public class WorkingSheet
 								part = partCell.getText().toString();
 							}
 
+							Cell supplierCell = (Cell) getCellByPosission(supCell, j + 1);
+							if(supplierCell.getText() != null)
+							{
+								supplier = supplierCell.getText().toString();
+							}
 							Cell pdfCell = (Cell) getCellByPosission(pdfCellNo, j + 1);
 							if(pdfCell.getText() != null)
 							{
@@ -1357,7 +1375,8 @@ public class WorkingSheet
 							{
 								DD: for(int k = 0; k < approved.size(); k++)
 								{
-									if(celldata.equals(approved.get(k).trim()) && !celldata.equals(""))
+									if(celldata.equals(approved.get(k).trim())
+											&& !celldata.equals(""))
 									{
 										flag = false;
 										break DD;
@@ -1379,9 +1398,12 @@ public class WorkingSheet
 											row.add(selectedPL);
 											row.add(part);
 											row.add(pdfUrl);
+											row.add(supplier);
+											row.add("");
 											row.add(fetName);
 											row.add(celldata);
-											XCell fetUnitCell = xHdrUnitrange.getCellByPosition(i, 0);
+											XCell fetUnitCell = xHdrUnitrange.getCellByPosition(i,
+													0);
 											String unit = getCellText(fetUnitCell).getString();
 											row.add(unit);
 											result.add(row);
@@ -1466,7 +1488,8 @@ public class WorkingSheet
 		try
 		{
 			int lastRow = getLastRow();
-			System.out.println(" Last Cell " + lastColumn + lastRow + " header " + HeaderList.size());
+			System.out.println(" Last Cell " + lastColumn + lastRow + " header "
+					+ HeaderList.size());
 			xcellrange = sheet.getCellRangeByName("A1:" + lastColumn + lastRow);
 			System.out.println(" Data Range@ A" + startRow + ":" + lastColumn + lastRow);
 			// return sheet.getCellRangeByPosition(x, StatrtRecord + 1, x, y);
@@ -1574,7 +1597,9 @@ public class WorkingSheet
 					{
 						setCellColore(pnCell, 0xD2254D);
 						writeValidtionStatus(xcellrange, false);
-						if(partvalidation.getStatus().equals("Reject, contains unaccepted character In Part Number") || partvalidation.getStatus().equals("Reject, Found Before"))
+						if(partvalidation.getStatus().equals(
+								"Reject, contains unaccepted character In Part Number")
+								|| partvalidation.getStatus().equals("Reject, Found Before"))
 							canSave = false;
 						continue part;
 					}
@@ -1690,7 +1715,7 @@ public class WorkingSheet
 					writeValidtionStatus(xcellrange, true);
 
 				}
-				if(!update||(update&&!status.equals("Rejected")))
+				if(!update || (update && !status.equals("Rejected")))
 				{
 					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
 					if(!appFlag)
@@ -1831,7 +1856,9 @@ public class WorkingSheet
 					{
 						setCellColore(pnCell, 0xD2254D);
 						writeValidtionStatus(xcellrange, false);
-						if(partvalidation.getStatus().equals("Reject, contains unaccepted character In Part Number") || partvalidation.getStatus().equals("Reject, Found Before"))
+						if(partvalidation.getStatus().equals(
+								"Reject, contains unaccepted character In Part Number")
+								|| partvalidation.getStatus().equals("Reject, Found Before"))
 							canSave = false;
 						continue part;
 					}
@@ -1862,7 +1889,8 @@ public class WorkingSheet
 					if(status.equals("Wrong Data") && !fbtype.equals("Internal"))
 					{
 						// JOptionPane.showMessageDialog(null, " You Can set Wrong Separation on Internal Feedback only in row :" + (i + 1));
-						partvalidation.setStatus("You Can set Wrong Data on Internal Feedback only");
+						partvalidation
+								.setStatus("You Can set Wrong Data on Internal Feedback only");
 						setCellColore(statusCell, 0xD2254D);
 						setCellColore(fbtypeCell, 0xD2254D);
 						writeValidtionStatus(xcellrange, false);
@@ -1882,11 +1910,13 @@ public class WorkingSheet
 
 					if(status.equals("Updated") && fbtype.equals("QA"))
 					{
-						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty() || Actionduedate.isEmpty())
+						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty()
+								|| Actionduedate.isEmpty())
 						{
 							// JOptionPane.showMessageDialog(null,
 							// " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
-							partvalidation.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
+							partvalidation
+									.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
 							setCellColore(CactionCell, 0xD2254D);
 							setCellColore(PactionCell, 0xD2254D);
 							setCellColore(RootcauseCell, 0xD2254D);
@@ -1901,7 +1931,8 @@ public class WorkingSheet
 							{
 								// JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
 								setCellColore(ActionduedateCell, 0xD2254D);
-								partvalidation.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
+								partvalidation
+										.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
 								writeValidtionStatus(xcellrange, false);
 								canSave = false;
 								continue part;
@@ -1910,7 +1941,8 @@ public class WorkingSheet
 					}
 
 					// if((status.equals("Approved") && !comment.equals("")) || (status.equals("Rejected") && comment.equals("")))
-					if((status.equals("Reject QA") || status.equals("Wrong Data")) && comment.equals(""))
+					if((status.equals("Reject QA") || status.equals("Wrong Data"))
+							&& comment.equals(""))
 					{
 						partvalidation.setStatus("Wrong Comment");
 						setCellColore(commentCell, 0xD2254D);
@@ -1918,7 +1950,8 @@ public class WorkingSheet
 						canSave = false;
 						continue part;
 					}
-					if((status.equals("Reject QA") || status.equals("Wrong Data")) && !comment.equals(""))
+					if((status.equals("Reject QA") || status.equals("Wrong Data"))
+							&& !comment.equals(""))
 					{
 						if(!wrongfets.isEmpty())
 						{
@@ -1930,7 +1963,8 @@ public class WorkingSheet
 									String[] comments = comment.split("\\|");
 									if(features.length != comments.length)
 									{
-										partvalidation.setStatus("comment must be as count as the features");
+										partvalidation
+												.setStatus("comment must be as count as the features");
 										setCellColore(commentCell, 0xD2254D);
 										writeValidtionStatus(xcellrange, false);
 										canSave = false;
@@ -1940,9 +1974,11 @@ public class WorkingSheet
 									{
 										for(String com : comments)
 										{
-											if(!com.equalsIgnoreCase("notissue") && !com.equalsIgnoreCase("issue"))
+											if(!com.equalsIgnoreCase("notissue")
+													&& !com.equalsIgnoreCase("issue"))
 											{
-												partvalidation.setStatus("comment must be (Issue , notissue)");
+												partvalidation
+														.setStatus("comment must be (Issue , notissue)");
 												setCellColore(commentCell, 0xD2254D);
 												writeValidtionStatus(xcellrange, false);
 												canSave = false;
@@ -1953,7 +1989,8 @@ public class WorkingSheet
 								}
 								else
 								{
-									partvalidation.setStatus("comment must be as count as the features");
+									partvalidation
+											.setStatus("comment must be as count as the features");
 									setCellColore(commentCell, 0xD2254D);
 									writeValidtionStatus(xcellrange, false);
 									canSave = false;
@@ -2180,7 +2217,9 @@ public class WorkingSheet
 					{
 						setCellColore(pnCell, 0xD2254D);
 						writeValidtionStatus(xcellrange, false);
-						if(partvalidation.getStatus().equals("Reject, contains unaccepted character In Part Number") || partvalidation.getStatus().equals("Reject, Found Before"))
+						if(partvalidation.getStatus().equals(
+								"Reject, contains unaccepted character In Part Number")
+								|| partvalidation.getStatus().equals("Reject, Found Before"))
 							canSave = false;
 						continue part;
 					}
@@ -2190,11 +2229,13 @@ public class WorkingSheet
 
 					if(status.equals("Updated") && fbtype.equals("QA"))
 					{
-						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty() || Actionduedate.isEmpty())
+						if(Caction.isEmpty() || Paction.isEmpty() || Rootcause.isEmpty()
+								|| Actionduedate.isEmpty())
 						{
 							// JOptionPane.showMessageDialog(null,
 							// " You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update in row :" + (i + 1));
-							partvalidation.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
+							partvalidation
+									.setStatus("You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date when update");
 							setCellColore(CactionCell, 0xD2254D);
 							setCellColore(PactionCell, 0xD2254D);
 							setCellColore(RootcauseCell, 0xD2254D);
@@ -2209,7 +2250,8 @@ public class WorkingSheet
 							{
 								// JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + (i + 1));
 								setCellColore(ActionduedateCell, 0xD2254D);
-								partvalidation.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
+								partvalidation
+										.setStatus("You must enter Action_Due_Date with 'dd/MM/yyyy' fromat");
 								writeValidtionStatus(xcellrange, false);
 								canSave = false;
 								continue part;
@@ -2238,7 +2280,8 @@ public class WorkingSheet
 									String[] comments = comment.split("\\|");
 									if(features.length != comments.length)
 									{
-										partvalidation.setStatus("comment must be as count as the features");
+										partvalidation
+												.setStatus("comment must be as count as the features");
 										setCellColore(commentCell, 0xD2254D);
 										writeValidtionStatus(xcellrange, false);
 										canSave = false;
@@ -2248,9 +2291,11 @@ public class WorkingSheet
 									{
 										for(String com : comments)
 										{
-											if(!com.equalsIgnoreCase("notissue") && !com.equalsIgnoreCase("issue"))
+											if(!com.equalsIgnoreCase("notissue")
+													&& !com.equalsIgnoreCase("issue"))
 											{
-												partvalidation.setStatus("comment must be (Issue , notissue)");
+												partvalidation
+														.setStatus("comment must be (Issue , notissue)");
 												setCellColore(commentCell, 0xD2254D);
 												writeValidtionStatus(xcellrange, false);
 												canSave = false;
@@ -2261,7 +2306,8 @@ public class WorkingSheet
 								}
 								else
 								{
-									partvalidation.setStatus("comment must be as count as the features");
+									partvalidation
+											.setStatus("comment must be as count as the features");
 									setCellColore(commentCell, 0xD2254D);
 									writeValidtionStatus(xcellrange, false);
 									canSave = false;
@@ -2481,7 +2527,8 @@ public class WorkingSheet
 			if(!canSave)
 			{
 				System.out.println("Can Save: " + canSave);
-				JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+				JOptionPane.showMessageDialog(null,
+						"can't save sheet duto some errors in your data");
 				return;
 			}
 			for(int i = 0; i < sheetData.size(); i++)
@@ -2501,7 +2548,8 @@ public class WorkingSheet
 				desc = partData.get(descriptionColumn);
 				if(plType == null)
 				{
-					JOptionPane.showMessageDialog(null, "Can't Load this PL Name as PL Type Not Clear");
+					JOptionPane.showMessageDialog(null,
+							"Can't Load this PL Name as PL Type Not Clear");
 				}
 				if(plType.equals("Semiconductor"))
 				{
@@ -2555,12 +2603,14 @@ public class WorkingSheet
 					pdfSet.add(pdfUrl);
 				else
 				{
-					JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n" + pdfUrl);
+					JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
+							+ pdfUrl);
 					return;
 				}
 			}
-			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null, StatusName.doneFLagEngine, "");
-			
+			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null,
+					StatusName.doneFLagEngine, "");
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();
@@ -2627,11 +2677,13 @@ public class WorkingSheet
 					{
 						partInfo.setFeedbackType("LUT");
 					}
-					else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
+					else if(partData.get(valStatusColumn).equals(
+							"Reject, Found on Acquisition Table"))
 					{
 						partInfo.setFeedbackType("Acquisition");
 					}
-					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long
+							.valueOf(comid));
 
 					partInfo.setPN(pn);
 					partInfo.setSupplierName(vendorName);
@@ -2651,7 +2703,8 @@ public class WorkingSheet
 					if(summarydata)
 					{
 						oldflag = partData.get(oldflagIndex);
-						if(!oldflag.isEmpty() && !status.isEmpty() && (oldflag.equals("R") || oldflag.equals("W")))
+						if(!oldflag.isEmpty() && !status.isEmpty()
+								&& (oldflag.equals("R") || oldflag.equals("W")))
 						{
 							changedparts.add(pn);
 						}
@@ -2661,7 +2714,9 @@ public class WorkingSheet
 						if("".equals(comment))
 						{
 							System.out.println("Comment shouldn't be null");
-							JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,
+									"Comment can not be empty for rejected parts",
+									"Saving Not Done", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						else
@@ -2697,8 +2752,10 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
-				DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.WaittingParametricInsertion, QAName); // // Eng
-				DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.tlFeedback, QAName);
+				DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
+						StatusName.WaittingParametricInsertion, QAName); // // Eng
+				DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+						StatusName.tlFeedback, QAName);
 				// DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
 
 				if(summarydata)
@@ -2749,7 +2806,8 @@ public class WorkingSheet
 					String pdf = partData.get(pdfIndex);
 					String pl = partData.get(plIndex);
 					String supplier = partData.get(supplierIndex);
-					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+					PartComponent component = DataDevQueryUtil.getComponentBycomid(Long
+							.valueOf(comid));
 					partInfo.setComponent(component);
 					partInfo.setIssuedBy(QAName);
 
@@ -2759,7 +2817,8 @@ public class WorkingSheet
 					if(!pdfs.containsKey(pdf))
 						pdfs.put(pdf, data);
 					oldflag = partData.get(oldflagIndex);
-					if(!oldflag.isEmpty() && !status.isEmpty() && (oldflag.equals("R") || oldflag.equals("W")))
+					if(!oldflag.isEmpty() && !status.isEmpty()
+							&& (oldflag.equals("R") || oldflag.equals("W")))
 					{
 						changedparts.add(pn);
 					}
@@ -2793,6 +2852,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2868,7 +2928,9 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						Loading.close();
 						JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
+
 						return;
 					}
 					else
@@ -2906,9 +2968,12 @@ public class WorkingSheet
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
 			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null, StatusName.qaReview, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null, StatusName.engFeedback, teamLeaderName);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
+
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}
@@ -2920,6 +2985,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3018,7 +3084,10 @@ public class WorkingSheet
 				{
 					if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
 					{
-						JOptionPane.showMessageDialog(null, " You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :" + i + 1);
+						Loading.close();
+						JOptionPane.showMessageDialog(null,
+								" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
+										+ i + 1);
 						return;
 					}
 				}
@@ -3027,7 +3096,9 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
-						JOptionPane.showMessageDialog(null, "Comment can not be empty for rejected parts", "Saving Not Done", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"Comment can not be empty for rejected parts", "Saving Not Done",
+								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					else
@@ -3061,9 +3132,10 @@ public class WorkingSheet
 
 			}
 
-			DataDevQueryUtil.savePartsFeedback(feedBackParts);
-			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback, devName);
-
+			DataDevQueryUtil.savePartsFeedback(feedBackParts);		
+			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback,
+					devName);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3077,6 +3149,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3304,9 +3377,13 @@ public class WorkingSheet
 				}
 			}
 			DataDevQueryUtil.savePartsFeedback(partsToStoreFeedback);
-			DataDevQueryUtil.saveTrackingParamtric(qareviewpdfs, selectedPL, null, StatusName.qaReview, teamLeaderName); // // Eng
-			DataDevQueryUtil.saveTrackingParamtric(engfeedbackpfds, selectedPL, null, StatusName.engFeedback, teamLeaderName);
-			DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(qareviewpdfs, selectedPL, null,
+					StatusName.qaReview, teamLeaderName); // // Eng
+			DataDevQueryUtil.saveTrackingParamtric(engfeedbackpfds, selectedPL, null,
+					StatusName.engFeedback, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null,
+					StatusName.qaFeedback, teamLeaderName);
+			Loading.close();
 
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
@@ -3321,7 +3398,8 @@ public class WorkingSheet
 
 		try
 		{
-			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(trac.getDocument().getPdf(), trac.getSupplier(), trac.getPl());
+			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(trac.getDocument()
+					.getPdf(), trac.getSupplier(), trac.getPl());
 			Set<String> parts = partsData.keySet();
 			for(String part : parts)
 			{
@@ -3405,6 +3483,7 @@ public class WorkingSheet
 				}
 				if(status.equals(StatusName.UpdateMask) && !(Part.length() == RightValue.length()))
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
@@ -3414,7 +3493,9 @@ public class WorkingSheet
 
 				String Flag = partData.get(Flagcell);
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker) || checker.equals(StatusName.generic_part))
+				if(checker.equals(StatusName.MaskMultiData)
+						|| checker.equals(StatusName.RootPartChecker)
+						|| checker.equals(StatusName.generic_part))
 				{
 					FeatureName = partData.get(FeatureNameindex);
 					FeatureValue = partData.get(FeatureValueindex);
@@ -3435,7 +3516,9 @@ public class WorkingSheet
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
 				qachk.setCheckpartid(Long.valueOf(checkpartid));
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker) || checker.equals(StatusName.generic_part))
+				if(checker.equals(StatusName.MaskMultiData)
+						|| checker.equals(StatusName.RootPartChecker)
+						|| checker.equals(StatusName.generic_part))
 				{
 					qachk.setFeatureName(FeatureName);
 					qachk.setFeatureValue(FeatureValue);
@@ -3453,9 +3536,11 @@ public class WorkingSheet
 			DataDevQueryUtil.updateqacheckspart(inputparts);
 			DataDevQueryUtil.updateqacheckspart(affectedparts);
 			DataDevQueryUtil.updateqapartsstatus(allparts);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally
@@ -3497,6 +3582,7 @@ public class WorkingSheet
 				String Comment = partData.get(commentIndex);
 				if(status.equals(StatusName.reject) && Comment.isEmpty())
 				{
+					Loading.close();
 					JOptionPane.showMessageDialog(null, "You Must Enter Comment if Rejected");
 					return;
 				}
@@ -3507,7 +3593,8 @@ public class WorkingSheet
 				String NanAlphaPart = partData.get(NanAlphaPartindex);
 				String chkpart = partData.get(chkpartidx);
 				// String fbcomment = partData.get(fbcommentIndex);
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				if(checker.equals(StatusName.MaskMultiData)
+						|| checker.equals(StatusName.RootPartChecker))
 				{
 					FeatureName = partData.get(FeatureNameindex);
 					FeatureValue = partData.get(FeatureValueindex);
@@ -3530,7 +3617,8 @@ public class WorkingSheet
 				qachk.setChecker(checker);
 				qachk.setStatus(status);
 				qachk.setFlag(Flag);
-				if(checker.equals(StatusName.MaskMultiData) || checker.equals(StatusName.RootPartChecker))
+				if(checker.equals(StatusName.MaskMultiData)
+						|| checker.equals(StatusName.RootPartChecker))
 				{
 					qachk.setFeatureName(FeatureName);
 					qachk.setFeatureValue(FeatureValue);
@@ -3539,9 +3627,11 @@ public class WorkingSheet
 				allparts.add(qachk);
 			}
 			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			Loading.close();
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally
@@ -3552,7 +3642,8 @@ public class WorkingSheet
 
 	}
 
-	private boolean isRowValuesApproved(XCellRange xcellrange, int lastColNum) throws IndexOutOfBoundsException
+	private boolean isRowValuesApproved(XCellRange xcellrange, int lastColNum)
+			throws IndexOutOfBoundsException
 	{
 		relatedFeature = new ArrayList<ArrayList<String>>();
 		boolean appFlag = true;
@@ -3625,7 +3716,8 @@ public class WorkingSheet
 		return appFlag;
 	}
 
-	private boolean fetValsHaveSpaces(XCellRange xcellrange, int lastColNum) throws IndexOutOfBoundsException
+	private boolean fetValsHaveSpaces(XCellRange xcellrange, int lastColNum)
+			throws IndexOutOfBoundsException
 	{
 		boolean haveSpaces = false;
 
@@ -3662,7 +3754,8 @@ public class WorkingSheet
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
 			Supplier supplier = ParaQueryUtil.getSupplierByName(supplierName);
 			// Map<String, List<String>> partsData = ParametricQueryUtil.getExtractorData(pdfUrl, supplierName, plName);
-			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(doc.getPdf(), supplier, pl);
+			Map<String, List<String>> partsData = ParaQueryUtil.getExtractorData(doc.getPdf(),
+					supplier, pl);
 			Set<String> parts = partsData.keySet();
 			for(String part : parts)
 			{
@@ -3701,7 +3794,8 @@ public class WorkingSheet
 
 	}
 
-	private Map<String, String> readRowValues(XCellRange xcellrange, int lastColNum) throws IndexOutOfBoundsException
+	private Map<String, String> readRowValues(XCellRange xcellrange, int lastColNum)
+			throws IndexOutOfBoundsException
 	{
 
 		Map<String, String> fetValues = new HashMap<String, String>();
@@ -3717,7 +3811,8 @@ public class WorkingSheet
 		return fetValues;
 	}
 
-	private Map<String, String> readRowValues(ArrayList<String> partData) throws IndexOutOfBoundsException
+	private Map<String, String> readRowValues(ArrayList<String> partData)
+			throws IndexOutOfBoundsException
 	{
 
 		Map<String, String> fetValues = new HashMap<String, String>();
@@ -3732,7 +3827,8 @@ public class WorkingSheet
 		return fetValues;
 	}
 
-	private void writeValidtionStatus(XCellRange xcellrange, boolean flag) throws IndexOutOfBoundsException
+	private void writeValidtionStatus(XCellRange xcellrange, boolean flag)
+			throws IndexOutOfBoundsException
 	{
 		if(flag)
 		{
@@ -3745,9 +3841,12 @@ public class WorkingSheet
 		else
 		{
 
-			getCellText(xcellrange.getCellByPosition(valCommentColumn, 0)).setString(partvalidation.getComment());
-			getCellText(xcellrange.getCellByPosition(valStatusColumn, 0)).setString(partvalidation.getStatus());
-			getCellText(xcellrange.getCellByPosition(valTaxonomyColumn, 0)).setString(partvalidation.getTaxonomy());
+			getCellText(xcellrange.getCellByPosition(valCommentColumn, 0)).setString(
+					partvalidation.getComment());
+			getCellText(xcellrange.getCellByPosition(valStatusColumn, 0)).setString(
+					partvalidation.getStatus());
+			getCellText(xcellrange.getCellByPosition(valTaxonomyColumn, 0)).setString(
+					partvalidation.getTaxonomy());
 			// setRangColor(xcellrange, 0xD2254D);
 			// setCellColore(cell, 0xF22B5A);
 		}
@@ -3817,7 +3916,8 @@ public class WorkingSheet
 			if(AppContext.AllnewDocuments != null)
 				for(TrackingParametric doc : AppContext.AllnewDocuments)
 				{
-					Document document = (Document) session.load(Document.class, doc.getDocument().getId());
+					Document document = (Document) session.load(Document.class, doc.getDocument()
+							.getId());
 					try
 					{
 						cell = getCellByPosission(0, startrow);
@@ -3836,7 +3936,8 @@ public class WorkingSheet
 						cell.setText(document.getTitle() == null ? "" : document.getTitle());
 						cell = getCellByPosission(7, startrow);
 						String s;
-						cell.setText((s = clientutils.getSupplierUrlByDocument(document).getUrl()) == null ? "" : s);
+						cell.setText((s = clientutils.getSupplierUrlByDocument(document).getUrl()) == null ? ""
+								: s);
 					}catch(Exception e)
 					{
 						// TODO Auto-generated catch block
@@ -3847,9 +3948,11 @@ public class WorkingSheet
 			try
 			{
 				cell = getCellByPosission(8, startrow);
-				cell.SetApprovedValues(prepShowAllStatusList(), getCellRangByPosission(8, AppContext.AllnewDocuments.size(), StatrtRecord));
+				cell.SetApprovedValues(prepShowAllStatusList(),
+						getCellRangByPosission(8, AppContext.AllnewDocuments.size(), StatrtRecord));
 				cell = getCellByPosission(9, startrow);
-				cell.SetApprovedValues(prepShowAllCommentList(), getCellRangByPosission(9, AppContext.AllnewDocuments.size(), StatrtRecord));
+				cell.SetApprovedValues(prepShowAllCommentList(),
+						getCellRangByPosission(9, AppContext.AllnewDocuments.size(), StatrtRecord));
 			}catch(Exception ex)
 			{
 				ex.printStackTrace();
@@ -3925,11 +4028,14 @@ public class WorkingSheet
 				// String s = supplierUrl.getUrl();
 
 				cell = getCellByPosission(13, startrow);
-				cell.SetApprovedValues(prepShowAllStatusList(), getCellRangByPosission(13, list.size(), startrow));
+				cell.SetApprovedValues(prepShowAllStatusList(),
+						getCellRangByPosission(13, list.size(), startrow));
 				cell = getCellByPosission(14, startrow);
-				cell.SetApprovedValues(prepShowAllCommentList(), getCellRangByPosission(14, list.size(), startrow));
+				cell.SetApprovedValues(prepShowAllCommentList(),
+						getCellRangByPosission(14, list.size(), startrow));
 				cell = getCellByPosission(15, startrow);
-				cell.SetApprovedValues(prepShowAllTaxonomies(), getCellRangByPosission(15, list.size(), startrow));
+				cell.SetApprovedValues(prepShowAllTaxonomies(),
+						getCellRangByPosission(15, list.size(), startrow));
 
 				startrow++;
 			}
@@ -3988,7 +4094,9 @@ public class WorkingSheet
 	{
 		try
 		{
-			XCellRangeAddressable xcellRangeAddressable = (com.sun.star.sheet.XCellRangeAddressable) UnoRuntime.queryInterface(com.sun.star.sheet.XCellRangeAddressable.class, sheet.getCellRangeByPosition(0, 0, (int) right, RowSelectedRange));
+			XCellRangeAddressable xcellRangeAddressable = (com.sun.star.sheet.XCellRangeAddressable) UnoRuntime
+					.queryInterface(com.sun.star.sheet.XCellRangeAddressable.class,
+							sheet.getCellRangeByPosition(0, 0, (int) right, RowSelectedRange));
 			xMovement.removeRange(xcellRangeAddressable.getRangeAddress(), CellDeleteMode.ROWS);
 		}catch(Exception ex)
 		{
@@ -4245,7 +4353,8 @@ public class WorkingSheet
 					continue;
 				}
 
-				String feedbackStatus = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
+				String feedbackStatus = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName,
+						pdfUrl, plName, docFeedbackComment, revUrl, rightTax);
 				if("Done".equals(feedbackStatus))
 				{
 					cell = getCellByPosission(feedbackStatusIdx, i + 1);
@@ -4487,10 +4596,12 @@ public class WorkingSheet
 				}
 				if(!canSave)
 				{
-					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(
+							error);
 				}
 				else
-					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(
+							"No Problem");
 
 			}catch(Exception e)
 			{
@@ -4530,7 +4641,9 @@ public class WorkingSheet
 				String donelflag = getCellText(doneflagCell).getString();
 				setCellColore(sampleflagCell, 0xFFFFFF);
 				setCellColore(finalflagCell, 0xFFFFFF);
-				if((finalflag.equals("R") || finalflag.equals("W")) || (!finalflag.isEmpty() && !finalflag.equals("A") && !finalflag.equals("S") && !finalflag.equals("Fast")))
+				if((finalflag.equals("R") || finalflag.equals("W"))
+						|| (!finalflag.isEmpty() && !finalflag.equals("A")
+								&& !finalflag.equals("S") && !finalflag.equals("Fast")))
 				{
 					error += "Finalflag Must be in (A,S,Fast) |";
 					setCellColore(finalflagCell, 0xD2254D);
@@ -4555,10 +4668,12 @@ public class WorkingSheet
 
 				if(!canSave)
 				{
-					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(error);
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(
+							error);
 				}
 				else
-					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("No Problem");
+					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(
+							"No Problem");
 
 			}catch(Exception e)
 			{
@@ -4782,7 +4897,8 @@ public class WorkingSheet
 				cell.setText("LastDDComment");
 			HeaderList.add(cell);
 
-			if(checkerType.equals(StatusName.MaskMultiData) || checkerType.equals(StatusName.RootPartChecker))
+			if(checkerType.equals(StatusName.MaskMultiData)
+					|| checkerType.equals(StatusName.RootPartChecker))
 			{
 				cell = getCellByPosission(15, 0);
 				cell.setText("FeatureName");
@@ -4825,7 +4941,8 @@ public class WorkingSheet
 				{
 					canSave = false;
 				}
-				getCellText(xcellrange.getCellByPosition(validationresultidx, 0)).setString(result.get(0));
+				getCellText(xcellrange.getCellByPosition(validationresultidx, 0)).setString(
+						result.get(0));
 				setRangColor(xcellrange, 0x088A0D);
 			}
 
