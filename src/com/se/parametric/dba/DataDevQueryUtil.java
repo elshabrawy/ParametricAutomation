@@ -121,7 +121,7 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID=6 and tp.tracking_task_type_id <> 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42) and tp.tracking_task_type_id <> 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
 
 			System.out.println("Server Mesage   " + sql);
 		}
@@ -129,7 +129,7 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID=6 and tp.tracking_task_type_id <> 15 AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
+					+ " and tp.TRACKING_TASK_STATUS_ID=in (6,42) and tp.tracking_task_type_id <> 15 AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
 					+ start
 					+ "', 'MM/DD/YYYY') AND TO_DATE('"
 					+ end
@@ -212,13 +212,13 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID=6  and tp.tracking_task_type_id = 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42)  and tp.tracking_task_type_id = 15 group by  p.name  , s.name  , ttt.name ,EXTRACTION_STATUS, TP.PRIORIY order by pl, supplier, type, TP.PRIORIY";
 		}
 		else
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID=6  and tp.tracking_task_type_id = 15 AND ASSIGNED_DATE BETWEEN TO_DATE('"
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42)  and tp.tracking_task_type_id = 15 AND ASSIGNED_DATE BETWEEN TO_DATE('"
 					+ start
 					+ "', 'MM/DD/YYYY') AND TO_DATE('"
 					+ end
@@ -544,10 +544,22 @@ public class DataDevQueryUtil
 
 			if(!status.equals("All"))
 			{
+				List<TrackingTaskStatus> statusObj;
 				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.eq("name", status));
-				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-				criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
+
+				if(status.equals(StatusName.assigned))
+				{
+					Disjunction or = Restrictions.disjunction();
+					or.add(Restrictions.eq("name", StatusName.assigned));
+					or.add(Restrictions.eq("name", StatusName.inprogress));
+					statusCriteria.add(or);
+				}
+				else
+				{
+					statusCriteria.add(Restrictions.eq("name", status));
+				}
+				statusObj = statusCriteria.list();
+				criteria.add(Restrictions.in("trackingTaskStatus", statusObj));
 			}
 
 			if(!(usersId.length == 0) && usersId[0] != 0 && usersId != null)
@@ -1180,7 +1192,7 @@ public class DataDevQueryUtil
 			}
 			if(status != null && !status.equals("All"))
 			{
-				qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
+				qury.append(" AND t.TRACKING_TASK_STATUS_ID in (6,42)");
 			}
 			if(type != null && !type.equals("All"))
 			{

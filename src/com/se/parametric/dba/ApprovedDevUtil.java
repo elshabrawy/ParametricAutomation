@@ -1032,12 +1032,16 @@ public class ApprovedDevUtil
 						Iterator it = set.iterator();
 						TrackingParametric tp = (TrackingParametric) it.next();
 						long statusId = tp.getTrackingTaskStatus().getId();
-						if(statusId!=10)
-						{
+						if(statusId==StatusName.inprogressId||statusId==StatusName.doneFLagEngineId){
+							row[2] = tp.getSupplier().getName();
+							row[4] = tp.getTrackingTaskType().getName();
+						}else
 							continue;
-						}
-						row[2] = tp.getSupplier().getName();
-						row[4] = tp.getTrackingTaskType().getName();
+//						if(statusId!=10)
+//						{
+//							continue;
+//						}
+						
 						
 					}
 
@@ -1472,7 +1476,7 @@ public class ApprovedDevUtil
 			criteria.addOrder(Order.desc("groupFullValue"));
 			// criteria.addOrder(Order.asc("approvedValueOrder"));
 			String sql = "document_id in (select document_id from tracking_parametric where ";
-			String trckparastatus = "document_id in (select document_id from tracking_parametric where TRACKING_TASK_STATUS_ID = 10) ";
+			String trckparastatus = "document_id in (select document_id from tracking_parametric where TRACKING_TASK_STATUS_ID in("+StatusName.doneFLagEngineId+","+StatusName.inprogressId +")) ";
 			boolean sup = false;
 			boolean typ = false;
 
@@ -1642,7 +1646,7 @@ public class ApprovedDevUtil
 					else
 					{
 						unApprovedDTO.setPartNumber("");
-						unApprovedDTO.setPdfUrl("");
+						unApprovedDTO.setPdfUrl((groupRecord.getDocument()!=null)?groupRecord.getDocument().getPdf().getSeUrl():"");
 					}
 					String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? "" : groupRecord.getPlFeature().getUnit().getName();
 					unApprovedDTO.setFeatureUnit(featureUnit);
