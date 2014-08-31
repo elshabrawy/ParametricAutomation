@@ -1,23 +1,24 @@
 package com.se.parametric.unappValue;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
 import org.hibernate.Session;
 
@@ -29,17 +30,15 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.grm.client.mapping.GrmUser;
-import com.se.parametric.Loading;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
-import com.se.parametric.util.ImagePanel;
 
 public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 {
@@ -49,100 +48,58 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel, flowChart;
-	JPanel devSheetButtonPanel;
+	WorkingAreaPanel selectionPanel/* , flowChart */;
 	JTabbedPane tabbedPane;
-	JButton button = null;
-	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
-	JPanel unapprovedPanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
 	public ArrayList<ArrayList<String>> list;
 	Long[] teamMembers = null;
 	ArrayList<String> row = null;
 	GrmUserDTO userDTO;
 	ArrayList<UnApprovedDTO> unApproveds = new ArrayList<UnApprovedDTO>();;
-	static AlertsPanel alertsPanel, alertsPanel1;
 	boolean validated;
 
 	public EngUnApprovedValueFeedback(GrmUserDTO userDTO)
 	{
 		this.userDTO = userDTO;
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,
 				"Eng");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
-		selectionPanel = new JPanel();
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] filterLabels = { "PL Name", "Supplier", "Task Type" };
-		sheetPanel = new SheetPanel();
-		sheetPanel.setSize(width - 110, (((height - 100) * 6) / 10));
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120,
-				(((height - 100) * 7) / 10));
-		// filterPanel = new FilterPanel(filterLabels, filterData, width - 110, (((height - 100) * 4) / 10));
-		// filterPanel.setBounds(0, 0, width - 110, (((height - 100) * 4) / 10));
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 110,
-				(((height - 100) * 3) / 10), false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add(" validate ");
 		buttonLabels.add("Save");
-
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel1 = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		alertsPanel1.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(sheetPanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-		selectionPanel.setBounds(0, 0, width - 120, height - 100);
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
+		selectionPanel.addButtonsPanel(buttonLabels, this);
+		sheetPanel = selectionPanel.getSheet();
+		selectionPanel.addComponentsToPanel();
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
-		tabSheet = new JPanel();
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 120, 0, 108, height / 3);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-		save.setBounds(3, 80, 85, 29);
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 85, 29);
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 85, 29);
-		validate.addActionListener(this);
-		save.addActionListener(this);
-		separation.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		tabSheet.setLayout(null);
-		tabSheet.add(devSheetButtonPanel);
-		tabSheet.add(alertsPanel1);
-		add(tabbedPane);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
-		tabbedPane.addTab("Sheet", null, tabSheet, null);
-		flowChart = new ImagePanel("QASeparation.jpg");
-		tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
+
+		add(tabbedPane);
 	}
 
 	@Override
@@ -152,11 +109,9 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		alertsPanel.updateFlags(flags);
-		alertsPanel1.updateFlags(flags);
-
+		selectionPanel.updateFlags();
 	}
 
 	public static void main(String[] args)
@@ -185,8 +140,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
-			devPanel.updateFlags(flags);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+			devPanel.updateFlags();
 
 			try
 			{
@@ -213,7 +168,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			UnApprovedDTO obj = null;
 			if(event.getSource().equals(filterPanel.filterButton))
 			{
@@ -313,8 +268,11 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Accept Wrong Value");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 15);
-				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
-				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -322,6 +280,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,
 						"Eng");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 
 			else if(event.getActionCommand().equals(" validate "))
@@ -332,7 +291,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				if(wsheet.isEmpty())
 				{
 					tabbedPane.setSelectedIndex(1);
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "All Values are Approved");
 
 				}
@@ -353,8 +312,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						}
 					}
 					ws.writeSheetData(validationResult, 1);
-					// session.close();
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, " Validation Done");
 				}
 			}
@@ -378,7 +336,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								{
 									if(!validated)
 									{
-										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null,
 												" Validate First due to some errors in your data");
 
@@ -392,7 +350,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							if(newValReq.get(12).equals("Update")
 									&& !newValReq.get(19).equals("Wrong Separation"))
 							{
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										" You Can update on Wrong Seperation Feedback only in row :"
 												+ (i + 1));
@@ -402,7 +360,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							if(newValReq.get(12).equals("Accept Wrong Value")
 									&& !newValReq.get(19).equals("Wrong Value"))
 							{
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										" You Can Accept on Wrong Value Feedback only in row :"
 												+ (i + 1));
@@ -417,7 +375,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										|| newValReq.get(16).isEmpty()
 										|| newValReq.get(17).isEmpty())
 								{
-									Loading.close();
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null,
 											" You must enter C_Action && P_Action && ROOT_Cause && Action_Due_Date in row :"
 													+ (i + 1));
@@ -429,7 +387,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
 											"DD/MM/YYYY") == false)
 									{
-										Loading.close();
+										MainWindow.glass.setVisible(false);
 										JOptionPane.showMessageDialog(null,
 												" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
 														+ (i + 1));
@@ -531,20 +489,29 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							else
 							{
-								Loading.close();
-								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ " + newValReq.get(4) + " Can't Save dueto change in main columns");
-
+								MainWindow.glass.setVisible(false);
+								JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
+										+ newValReq.get(4)
+										+ " Can't Save dueto change in main columns");
 							}
 						}
 
 						System.out.println("size is " + result.size());
 					}
 				}
-				Loading.close();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Saved Done");
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
+		}
+	}
+
+	public void clearOfficeResources()
+	{
+		if(sheetPanel != null)
+		{
+			sheetPanel.closeApplication();
 		}
 	}
 

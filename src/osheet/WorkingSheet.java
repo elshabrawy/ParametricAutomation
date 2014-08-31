@@ -1,12 +1,8 @@
 package osheet;
 
-import java.awt.Color;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,27 +11,22 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
+
 import com.se.automation.db.SessionUtil;
 import com.se.automation.db.client.dto.ComponentDTO;
 import com.se.automation.db.client.dto.QAChecksDTO;
 import com.se.automation.db.client.mapping.Document;
-import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.PartComponent;
 import com.se.automation.db.client.mapping.Pl;
-import com.se.automation.db.client.mapping.PlFeature;
-import com.se.automation.db.client.mapping.QaCheckParts;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
-import com.se.automation.db.client.mapping.TblRules;
 import com.se.automation.db.client.mapping.TrackingParametric;
 import com.se.automation.db.parametric.RelatedFeature;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
-import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -79,7 +70,8 @@ public class WorkingSheet
 	private Thread threadDrowData;
 	private Thread ShowAllThread;
 	protected boolean Validated;
-	protected boolean canSave = false;
+	public boolean canSave = false;
+	public boolean saved = false;
 	protected int descriptionColumn;
 	protected int valStatusColumn;
 	protected int valCommentColumn;
@@ -1600,7 +1592,9 @@ public class WorkingSheet
 						if(partvalidation.getStatus().equals(
 								"Reject, contains unaccepted character In Part Number")
 								|| partvalidation.getStatus().equals("Reject, Found Before"))
+						{
 							canSave = false;
+						}
 						continue part;
 					}
 				}
@@ -1715,7 +1709,8 @@ public class WorkingSheet
 					writeValidtionStatus(xcellrange, true);
 
 				}
-				if(!update || (update && !status.equals("Rejected")))
+				if(!update || (update && !status.equals("Rejected"))
+						|| (update && !status.equals("Approved")))
 				{
 					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
 					if(!appFlag)
@@ -2422,7 +2417,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2439,84 +2434,90 @@ public class WorkingSheet
 			int lastRow = getLastRow();
 			for(int i = 3; i < lastRow + 1; i++)
 			{
-				String seletedRange = "A" + i + ":" + lastColumn + i;
-				xcellrange = sheet.getCellRangeByName(seletedRange);
-				String famCross = "", generic = "";
-				XCell genCell = null;
-				XCell famCrossCell = null;
-				if(NPIFlag)
+				try
 				{
-					if(npiIndex > 0)
+					String seletedRange = "A" + i + ":" + lastColumn + i;
+					xcellrange = sheet.getCellRangeByName(seletedRange);
+					String famCross = "", generic = "";
+					XCell genCell = null;
+					XCell famCrossCell = null;
+					if(NPIFlag)
 					{
-						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
-						String npi = getCellText(npiCell).getString();
-						if(!npi.isEmpty() && !npihasvalue)
+						if(npiIndex > 0)
 						{
-							npihasvalue = true;
+							XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+							String npi = getCellText(npiCell).getString();
+							if(!npi.isEmpty() && !npihasvalue)
+							{
+								npihasvalue = true;
+							}
 						}
 					}
-				}
 
-				XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
-				String pn = getCellText(pnCell).getString();
-				XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
-				String supplierName = getCellText(suppCell).getString();
-				XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
-				String family = getCellText(famCell).getString();
-				XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
-				String mask = getCellText(maskCell).getString();
-				// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+					XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
+					String pn = getCellText(pnCell).getString();
+					XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
+					String supplierName = getCellText(suppCell).getString();
+					XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
+					String family = getCellText(famCell).getString();
+					XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
+					String mask = getCellText(maskCell).getString();
+					// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
 
-				if(plType.equals("Semiconductor"))
-				{
-					genCell = xcellrange.getCellByPosition(genericCellNo, 0);
-					famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
-					generic = getCellText(genCell).getString();
-					famCross = getCellText(famCrossCell).getString();
-				}
-				if(pn.isEmpty())
-				{
-					partvalidation.setStatus("Empty Part");
-					setCellColore(pnCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-				}
-				if(family.isEmpty())
-				{
-					partvalidation.setStatus("Empty Family");
-					setCellColore(famCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-				}
-				/**** validate that mask not null ***/
-				if(mask.isEmpty())
-				{
-					partvalidation.setStatus("Empty Mask)");
-					setCellColore(maskCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-				}
-				else if(mask.length() != pn.length())
-				{
-					partvalidation.setStatus("Wrong Mask Length");
-					setCellColore(maskCell, 0xD2254D);
-					writeValidtionStatus(xcellrange, false);
-					canSave = false;
-				}
-				/**
-				 * validate that generic and family Cross not null
-				 */
-				if(plType.equals("Semiconductor"))
-				{
-
-					if(generic.isEmpty() || famCross.isEmpty())
+					if(plType.equals("Semiconductor"))
 					{
-						partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
-						setCellColore(genCell, 0xD2254D);
-						setCellColore(famCrossCell, 0xD2254D);
+						genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+						famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+						generic = getCellText(genCell).getString();
+						famCross = getCellText(famCrossCell).getString();
+					}
+					if(pn.isEmpty())
+					{
+						partvalidation.setStatus("Empty Part");
+						setCellColore(pnCell, 0xD2254D);
 						writeValidtionStatus(xcellrange, false);
 						canSave = false;
 					}
+					if(family.isEmpty())
+					{
+						partvalidation.setStatus("Empty Family");
+						setCellColore(famCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+					}
+					/**** validate that mask not null ***/
+					if(mask.isEmpty())
+					{
+						partvalidation.setStatus("Empty Mask)");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+					}
+					else if(mask.length() != pn.length())
+					{
+						partvalidation.setStatus("Wrong Mask Length");
+						setCellColore(maskCell, 0xD2254D);
+						writeValidtionStatus(xcellrange, false);
+						canSave = false;
+					}
+					/**
+					 * validate that generic and family Cross not null
+					 */
+					if(plType.equals("Semiconductor"))
+					{
+
+						if(generic.isEmpty() || famCross.isEmpty())
+						{
+							partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+							setCellColore(genCell, 0xD2254D);
+							setCellColore(famCrossCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+						}
+					}
+				}catch(Exception e)
+				{
+					e.printStackTrace();
 				}
 			}
 			if(NPIFlag && !npihasvalue && canSave)
@@ -2528,87 +2529,106 @@ public class WorkingSheet
 			if(!canSave)
 			{
 				System.out.println("Can Save: " + canSave);
-				Loading.close();
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null,
 						"can't save sheet duto some errors in your data");
 				return;
 			}
 			for(int i = 0; i < sheetData.size(); i++)
 			{
-				PartInfoDTO partInfo = new PartInfoDTO();
-				ArrayList<String> partData = sheetData.get(i);
-				String pn = "", supplierName = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null;
-				supplierName = partData.get(supCell);
-				pn = partData.get(PartCell);
-				if(pn.isEmpty())
+				try
 				{
-					return;
-				}
-				family = partData.get(familyCell);
-				mask = partData.get(maskCellNo);
-				pdfUrl = partData.get(pdfCellNo);
-				desc = partData.get(descriptionColumn);
-				if(plType == null)
-				{
-					JOptionPane.showMessageDialog(null,
-							"Can't Load this PL Name as PL Type Not Clear");
-				}
-				if(plType.equals("Semiconductor"))
-				{
-					famCross = partData.get(famCrossCellNo);
-					generic = partData.get(genericCellNo);
-				}
-				if(NPIFlag)
-					NPIPart = partData.get(npiCellNo);
-				String newsLink = partData.get(newsCellNo);
-				partInfo.setNewsLink(newsLink);
-				if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
-				{
-					partInfo.setFeedbackType("LUT");
-				}
-				else if(partData.get(valStatusColumn).equals("Reject, Found on Acquisition Table"))
-				{
-					partInfo.setFeedbackType("Acquisition");
-				}
+					String seletedRange2 = "A" + (3 + i) + ":" + lastColumn + (3 + i);
+					xcellrange = sheet.getCellRangeByName(seletedRange2);
+					// int ss = Integer.parseInt("sss", 4);
+					PartInfoDTO partInfo = new PartInfoDTO();
+					ArrayList<String> partData = sheetData.get(i);
+					String pn = "", supplierName = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null;
+					supplierName = partData.get(supCell);
+					pn = partData.get(PartCell);
+					if(pn.isEmpty())
+					{
+						return;
+					}
+					family = partData.get(familyCell);
+					mask = partData.get(maskCellNo);
+					pdfUrl = partData.get(pdfCellNo);
+					desc = partData.get(descriptionColumn);
+					if(plType == null)
+					{
+						JOptionPane.showMessageDialog(null,
+								"Can't Load this PL Name as PL Type Not Clear");
+					}
+					if(plType.equals("Semiconductor"))
+					{
+						famCross = partData.get(famCrossCellNo);
+						generic = partData.get(genericCellNo);
+					}
+					if(NPIFlag)
+						NPIPart = partData.get(npiCellNo);
+					String newsLink = partData.get(newsCellNo);
+					partInfo.setNewsLink(newsLink);
+					if(partData.get(valStatusColumn).equals("Reject, Found on LUT Table"))
+					{
+						partInfo.setFeedbackType("LUT");
+					}
+					else if(partData.get(valStatusColumn).equals(
+							"Reject, Found on Acquisition Table"))
+					{
+						partInfo.setFeedbackType("Acquisition");
+					}
+					partInfo.setPN(pn);
+					partInfo.setSupplierName(supplierName);
+					partInfo.setFamily(family);
+					partInfo.setFamilycross(famCross);
+					partInfo.setMask(mask);
+					partInfo.setGeneric(generic);
+					partInfo.setPdfUrl(pdfUrl);
+					partInfo.setPlName(selectedPL);
+					partInfo.setFetValues(readRowValues(partData));
+					partInfo.setNPIFlag(NPIPart);
+					partInfo.setDescription(desc);
+					boolean save = false;
+					if(!update)
+					{
+						try
+						{
+							save = DataDevQueryUtil.saveParamtric(partInfo);
+						}catch(ConstraintViolationException e)
+						{
+							if(e.getMessage().contains(
+									"unique constraint (PART_COMP_PART_SUPP_PL_UQ)"))
+								continue;
+						}
 
-				partInfo.setPN(pn);
-				partInfo.setSupplierName(supplierName);
-				partInfo.setFamily(family);
-				partInfo.setFamilycross(famCross);
-				partInfo.setMask(mask);
-				partInfo.setGeneric(generic);
-				partInfo.setPdfUrl(pdfUrl);
-				partInfo.setPlName(selectedPL);
-				partInfo.setFetValues(readRowValues(partData));
-				partInfo.setNPIFlag(NPIPart);
-				partInfo.setDescription(desc);
-				boolean save = false;
-				if(!update)
+					}
+					else
+					{
+						save = DataDevQueryUtil.updateParamtric(partInfo);
+					}
+
+					// System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
+					if(save)
+						pdfSet.add(pdfUrl);
+					else
+					{
+						JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
+								+ pdfUrl);
+						return;
+					}
+				}catch(Exception e)
 				{
 					try
 					{
-						save = DataDevQueryUtil.saveParamtric(partInfo);
-					}catch(ConstraintViolationException e)
+						// Cell cell = getCellByPosission(lastColNum + 1, i + 1);
+						// cell.setText(e.getMessage());
+						partvalidation.setStatus(e.getMessage());
+						writeValidtionStatus(xcellrange, false);
+						continue;
+					}catch(Exception ex)
 					{
-						if(e.getMessage().contains("unique constraint (PART_COMP_PART_SUPP_PL_UQ)"))
-							continue;
+						ex.printStackTrace();
 					}
-
-				}
-				else
-				{
-					save = DataDevQueryUtil.updateParamtric(partInfo);
-				}
-
-				// System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
-				if(save)
-					pdfSet.add(pdfUrl);
-				else
-				{
-					Loading.close();
-					JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
-							+ pdfUrl);
-					return;
 				}
 			}
 			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null,
@@ -2616,6 +2636,7 @@ public class WorkingSheet
 
 		}catch(Exception e)
 		{
+
 			e.printStackTrace();
 		}
 
@@ -2855,7 +2876,8 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
+
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2931,11 +2953,10 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
-						Loading.close();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								"Comment can not be empty for rejected parts", "Saving Not Done",
 								JOptionPane.ERROR_MESSAGE);
-
 						return;
 					}
 					else
@@ -2975,12 +2996,9 @@ public class WorkingSheet
 					StatusName.qaReview, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
 					StatusName.engFeedback, teamLeaderName);
-			Loading.close();
-			JOptionPane.showMessageDialog(null, "Saving Data Finished");
-
 		}catch(Exception e)
 		{
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}
@@ -2992,7 +3010,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3091,7 +3109,7 @@ public class WorkingSheet
 				{
 					if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
 					{
-						Loading.close();
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
 										+ i + 1);
@@ -3103,6 +3121,7 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								"Comment can not be empty for rejected parts", "Saving Not Done",
 								JOptionPane.ERROR_MESSAGE);
@@ -3142,7 +3161,7 @@ public class WorkingSheet
 			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback,
 					devName);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3156,7 +3175,7 @@ public class WorkingSheet
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3390,8 +3409,7 @@ public class WorkingSheet
 					StatusName.engFeedback, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null,
 					StatusName.qaFeedback, teamLeaderName);
-			Loading.close();
-
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
@@ -3485,12 +3503,13 @@ public class WorkingSheet
 				String checkpartid = partData.get(CheckpartidIndex);
 				if(!status.equals("Exception") && RightValue.isEmpty())
 				{
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
 					return;
 				}
 				if(status.equals(StatusName.UpdateMask) && !(Part.length() == RightValue.length()))
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
@@ -3543,11 +3562,11 @@ public class WorkingSheet
 			DataDevQueryUtil.updateqacheckspart(inputparts);
 			DataDevQueryUtil.updateqacheckspart(affectedparts);
 			DataDevQueryUtil.updateqapartsstatus(allparts);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally
@@ -3589,7 +3608,7 @@ public class WorkingSheet
 				String Comment = partData.get(commentIndex);
 				if(status.equals(StatusName.reject) && Comment.isEmpty())
 				{
-					Loading.close();
+					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "You Must Enter Comment if Rejected");
 					return;
 				}
@@ -3634,11 +3653,11 @@ public class WorkingSheet
 				allparts.add(qachk);
 			}
 			DataDevQueryUtil.updateqaexceptionspart(allparts, screen);
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally

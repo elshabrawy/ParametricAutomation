@@ -1,9 +1,14 @@
 package com.se.Quality;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,17 +30,17 @@ import osheet.WorkingSheet;
 import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
-import com.se.parametric.Loading;
+import com.se.parametric.MainWindow;
 import com.se.parametric.commonPanel.AlertsPanel;
 import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
+import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
 import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.UnApprovedDTO;
-import com.se.parametric.util.ImagePanel;
 
 public class QualityUnApprovedValue extends JPanel implements ActionListener
 {
@@ -48,92 +53,60 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	JPanel tabSheet, selectionPanel, flowChart;
-	JPanel devSheetButtonPanel;
+	WorkingAreaPanel tabSheet, selectionPanel/* , flowChart */;
 	JTabbedPane tabbedPane;
-	JButton button = null;
-	JButton showAll = new JButton("Show All");
-	JButton save, validate, separation;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
 	boolean foundPdf = false;
-	JPanel unapprovedPanel = null;
 	FilterPanel filterPanel = null;
-	ButtonsPanel buttonsPanel;
 	public ArrayList<ArrayList<String>> list;
 	Long[] teamMembers = null;
 	ArrayList<String> row = null;
 	GrmUserDTO userDTO;
 	ArrayList<UnApprovedDTO> unApproveds;
 	QAUnApprovedValueFeedback QAAppfeedBack = null;
-	static AlertsPanel alertsPanel;
 
 	public QualityUnApprovedValue(GrmUserDTO userDTO)
 	{
 		this.userDTO = userDTO;
-		setLayout(null);
+		this.setLayout(new BorderLayout());
 		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(
 				new Long[] { userDTO.getId() }, null, null, "QA");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
-		selectionPanel = new JPanel();
+		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] filterLabels = { "Eng Name", "PL Name", "Supplier", "Status", "Task Type" };
-		sheetPanel.setBounds(0, (((height - 100) * 3) / 10), width - 120, height
-				- (((height - 100) * 3) / 10) - 130);
-		filterPanel = new FilterPanel(filterLabels, filterData, width - 120,
-				(((height - 100) * 3) / 10), false);
-		filterPanel.setBounds(0, 0, width - 120, (((height - 100) * 3) / 10));
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
-		// buttonLabels.add("Feedback History");
-		buttonsPanel = new ButtonsPanel(buttonLabels);
-		JButton buttons[] = buttonsPanel.getButtons();
-		for(int i = 0; i < buttons.length; i++)
-		{
-			buttons[i].addActionListener(this);
-		}
-		buttonsPanel.setBounds(width - 120, 0, 108, height / 3);
-		alertsPanel = new AlertsPanel(userDTO);
-		alertsPanel.setBounds(width - 120, height / 3, 110, height * 3 / 4);
-		selectionPanel.setLayout(null);
-		selectionPanel.add(filterPanel);
-		selectionPanel.add(sheetPanel);
-		selectionPanel.add(buttonsPanel);
-		selectionPanel.add(alertsPanel);
-		selectionPanel.setBounds(0, 0, width - 110, height - 100);
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, width, height - 100);
+		selectionPanel.addButtonsPanel(buttonLabels, this);
+		selectionPanel.addComponentsToPanel();
 		QAAppfeedBack = new QAUnApprovedValueFeedback(userDTO);
-		devSheetButtonPanel = new JPanel();
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		devSheetButtonPanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null,
-				null));
-		devSheetButtonPanel.setBounds(width - 110, 0, 106, height - 100);
-		QAAppfeedBack.setBounds(width - 110, 0, 106, height - 100);
-		devSheetButtonPanel.setLayout(null);
-		save = new JButton("Save");
-
-		save.setBounds(3, 80, 85, 29);
-		validate = new JButton("Validate");
-		validate.setBounds(3, 46, 85, 29);
-		separation = new JButton("Separation");
-		separation.setBounds(3, 11, 85, 29);
-		validate.addActionListener(this);
-		save.addActionListener(this);
-		separation.addActionListener(this);
-		devSheetButtonPanel.add(separation);
-		devSheetButtonPanel.add(validate);
-		devSheetButtonPanel.add(save);
-		devSheetButtonPanel.setBackground(new Color(211, 211, 211));
-		add(tabbedPane);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
-		flowChart = new ImagePanel("QASeparation.jpg");
-		tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		// flowChart = new ImagePanel("QASeparation.jpg");
+		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
+		this.add(tabbedPane);
+		this.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0)
+			{
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0)
+			{
+				if(null != tabbedPane.getSelectedComponent())
+				{
+					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -143,10 +116,10 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		longRunProcess.execute();
 	}
 
-	public void updateFlags(ArrayList<String> flags)
+	public void updateFlags()
 	{
-		alertsPanel.updateFlags(flags);
-		QAAppfeedBack.alertsPanel.updateFlags(flags);
+		selectionPanel.updateFlags();
+		QAAppfeedBack.selectionPanel.updateFlags();
 
 	}
 
@@ -178,8 +151,8 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
-			devPanel.updateFlags(flags);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
+			devPanel.updateFlags();
 
 			try
 			{
@@ -206,7 +179,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			Loading.show();
+			MainWindow.glass.setVisible(true);
 			WorkingSheet ws = null;
 			UnApprovedDTO obj = null;
 			tabbedPane.setSelectedIndex(0);
@@ -280,6 +253,11 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				statusValues.add("Wrong Value");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 15);
+				Robot bot = new Robot();
+				bot.mouseMove(1165, 345);
+				bot.mousePress(InputEvent.BUTTON1_MASK);
+				bot.mouseRelease(InputEvent.BUTTON1_MASK);
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -294,6 +272,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getUnapprovedReviewFilter(
 						new Long[] { userDTO.getId() }, startDate, endDate, "QA");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getActionCommand().equals("Save"))
 			{
@@ -312,7 +291,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 							if((newValReq.get(14).equals("Wrong Separation") || newValReq.get(14)
 									.equals("Wrong Value")) && newValReq.get(15).trim().isEmpty())
 							{
-								Loading.close();
+								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
 										" You Must Write Comment with Status Wrong Separation,Wrong Value Check row : "
 												+ (i + 1));
@@ -368,6 +347,7 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 								}
 								else
 								{
+									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null, newValReq.get(0) + " @ "
 											+ newValReq.get(6)
 											+ " Can't Save dueto change in main columns");
@@ -392,8 +372,16 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 				}
 				JOptionPane.showMessageDialog(null, "Save Done");
 			}
-			Loading.close();
+			MainWindow.glass.setVisible(false);
 			return null;
+		}
+	}
+
+	public void clearOfficeResources()
+	{
+		if(sheetPanel != null)
+		{
+			sheetPanel.closeApplication();
 		}
 	}
 

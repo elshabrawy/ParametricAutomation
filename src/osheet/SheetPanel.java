@@ -1,77 +1,40 @@
 package osheet;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.Panel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-import com.se.automation.db.client.dto.ComponentDTO;
-import com.se.automation.db.client.dto.PlfeatureValuesDTO;
-import com.sun.star.beans.Property;
+import com.se.parametric.MainWindow;
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.beans.XPropertySetInfo;
 import com.sun.star.comp.beans.NoConnectionException;
 import com.sun.star.comp.beans.OOoBean;
-import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNamed;
-import com.sun.star.document.XEventBroadcaster;
-import com.sun.star.document.XEventListener;
 import com.sun.star.frame.XModel;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.sheet.CellDeleteMode;
-import com.sun.star.sheet.XCellRangeAddressable;
-import com.sun.star.sheet.XCellRangesQuery;
-import com.sun.star.sheet.XSheetCellRanges;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
 import com.sun.star.sheet.XSpreadsheetView;
-import com.sun.star.sheet.XSpreadsheets;
 import com.sun.star.table.XCell;
-import com.sun.star.table.XCellRange;
 import com.sun.star.text.XText;
 import com.sun.star.uno.Any;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XComponentContext;
 
 /**
  * 
  * @author ahmed_nehad
  */
-public class SheetPanel extends Panel
+public class SheetPanel extends JPanel
 {
-
 	protected OOoBean aBean;
 	protected SheetViewData SVD = new SheetViewData();
 	private boolean documentOpened = false;
-	private XEventBroadcaster xEventBroad;
 	private Properties culmns;
-	protected JButton butSeparation, save;
-	private Frame frame;
-	public static int row, column;
-
-	protected JButton btuSaveParts;
 
 	/** Creates new form panle */
 	public SheetPanel()
 	{
-
-		// this.frame = frame;
-		initComponents();
 		inits();
-
 	}
 
 	protected void laodprops()
@@ -79,7 +42,6 @@ public class SheetPanel extends Panel
 		try
 		{
 			culmns = new Properties();
-			// culmns.load(ClassLoader.getSystemResourceAsStream("resources/LIST.DAT"));
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -89,7 +51,6 @@ public class SheetPanel extends Panel
 	protected String getCulmn(int i)
 	{
 		StringBuffer buf = new StringBuffer();
-		System.out.println(i);
 		do
 		{
 			if(i < 0)
@@ -107,7 +68,6 @@ public class SheetPanel extends Panel
 				buf.append(culmns.getProperty("" + i));
 
 		}while(i >= 26);
-		System.out.println(buf.toString());
 		return buf.toString();
 
 	}
@@ -123,60 +83,41 @@ public class SheetPanel extends Panel
 	private void inits()
 	{
 		laodprops();
-		try
-		{
-			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-
-		}
 		aBean = new OOoBean();
-
-		FlowLayout flout = new FlowLayout();
-
-		Dimension dimension = new Dimension(100, 20);
 		setLayout(new BorderLayout());
-		setSize(new Dimension(200, 200));
-
-		butSeparation = new JButton("Separate");
-		butSeparation.setSize(dimension);
-
 		add(aBean, BorderLayout.CENTER);
-
-		// prepare sheet
-		attachEventHandler();
-		// ----------------------------
-
 	}
 
-	public void attachEventHandler()
-	{
-		try
-		{
-			XEventListener listener = null;
-
-			XComponentContext xRemoteContext = aBean.getOOoConnection().getComponentContext();
-
-			String st2[] = xRemoteContext.getServiceManager().getAvailableServiceNames();
-
-			Object xGlobalBroadCaster = xRemoteContext.getServiceManager().createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster", xRemoteContext);
-
-			xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(XEventBroadcaster.class, xGlobalBroadCaster);
-
-			// xEventBroad.addEventListener(this);
-		}catch(Exception e)
-		{
-			String msg = "Unable to attach an event listener.";
-			e.printStackTrace();
-		}
-	}
+	// public void attachEventHandler()
+	// {
+	// try
+	// {
+	// XEventListener listener = null;
+	//
+	// XComponentContext xRemoteContext = aBean.getOOoConnection().getComponentContext();
+	//
+	// String st2[] = xRemoteContext.getServiceManager().getAvailableServiceNames();
+	//
+	// Object xGlobalBroadCaster = xRemoteContext.getServiceManager()
+	// .createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster",
+	// xRemoteContext);
+	//
+	// XEventBroadcaster xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(
+	// XEventBroadcaster.class, xGlobalBroadCaster);
+	//
+	// // xEventBroad.addEventListener(this);
+	// }catch(Exception e)
+	// {
+	// String msg = "Unable to attach an event listener.";
+	// e.printStackTrace();
+	// }
+	// }
 
 	public void openOfficeDoc()
 	{
 		documentOpened = true;
 		openDoc("private:factory/scalc");
-
+		activate();
 	}
 
 	/**
@@ -192,23 +133,22 @@ public class SheetPanel extends Panel
 	{
 		try
 		{
+			// if(!aBean.isOOoConnected())
+			// {
+			// remove(aBean);
+			// aBean = new OOoBean();
+			// add(aBean, BorderLayout.CENTER);
+			// repaint();
+			// attachEventHandler();
+			// }
+			closeDoc();
+			// remove(aBean);
+			// aBean = new OOoBean();
+			// add(aBean, BorderLayout.CENTER);
+			// repaint();
+			// attachEventHandler();
 
-			if(!aBean.isOOoConnected())
-			{
-				remove(aBean);
-				aBean = new OOoBean();
-				add(aBean, java.awt.BorderLayout.CENTER);
-				repaint();
-				attachEventHandler();
-
-			}
-			remove(aBean);
-			aBean = new OOoBean();
-			add(aBean, java.awt.BorderLayout.CENTER);
-			repaint();
-			attachEventHandler();
-
-			PropertyValue[] args = new PropertyValue[3];
+			PropertyValue[] args = new PropertyValue[2];
 			args[0] = new PropertyValue();
 			args[0].Name = "read-only";
 			args[0].Value = new Boolean(false);
@@ -216,21 +156,26 @@ public class SheetPanel extends Panel
 			args[1].Name = "NoRestore";
 			args[1].Value = new Boolean(Boolean.TRUE);
 
-			args[2] = new PropertyValue();
-			args[2].Name = "Password";
-			args[2].Value = "123";
+			// args[2] = new PropertyValue();
+			// args[2].Name = "Password";
+			// args[2].Value = "123";
 
 			// remove(aBean);
 			// aBean = new OOoBean();
 			// add(aBean, java.awt.BorderLayout.CENTER);
+			MainWindow.glass.validate();
 			aBean.loadFromURL(url, args);
-			aBean.aquireSystemWindow();
+			// aBean.aquireSystemWindow();
 			// repaint();
 			documentOpened = true;
+			aBean.invalidate();
+			SwingUtilities.getWindowAncestor(aBean).revalidate();
+			// MainWindow.glass.setVisible(false);
+			MainWindow.glass.setVisible(true);
+			MainWindow.glass.invalidate();
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
 		}
 	}
 
@@ -238,7 +183,6 @@ public class SheetPanel extends Panel
 	{
 		if(documentOpened)
 		{
-
 			aBean.clear();
 		}
 	}
@@ -250,11 +194,10 @@ public class SheetPanel extends Panel
 	{
 		try
 		{
-			aBean.aquireSystemWindow();
-		}catch(Exception ex)
+			aBean.getFrame().getComponentWindow().setFocus();
+		}catch(NoConnectionException e)
 		{
-			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
+
 		}
 	}
 
@@ -263,53 +206,60 @@ public class SheetPanel extends Panel
 	 */
 	public void closeApplication()
 	{
-		aBean.stopOOoConnection();
+		// aBean.stopOOoConnection();
+		try
+		{
+			aBean.getOOoDesktop().terminate();
+		}catch(NoConnectionException e)
+		{
+		}
 	}
 
 	public XSpreadsheet getActivSheet()
 	{
 		try
 		{
-			XSpreadsheetView xSpreadsheetView = (XSpreadsheetView) UnoRuntime.queryInterface(XSpreadsheetView.class, aBean.getController());
+			XSpreadsheetView xSpreadsheetView = (XSpreadsheetView) UnoRuntime.queryInterface(
+					XSpreadsheetView.class, aBean.getController());
 			return xSpreadsheetView.getActiveSheet();
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
 		}
 		return null;
 	}
 
-	/**
-	 * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is
-	 * always regenerated by the Form Editor.
-	 */
-	@SuppressWarnings("unchecked")
-	private void initComponents()
-	{
-
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 400, Short.MAX_VALUE));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
-	}
+	// /**
+	// * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is
+	// * always regenerated by the Form Editor.
+	// */
+	// @SuppressWarnings("unchecked")
+	// private void initComponents()
+	// {
+	//
+	// javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+	// this.setLayout(layout);
+	// layout.setHorizontalGroup(layout.createParallelGroup(
+	// javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 400, Short.MAX_VALUE));
+	// layout.setVerticalGroup(layout.createParallelGroup(
+	// javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
+	// }
 
 	public XSpreadsheetDocument getOpendSheetDoc()
 	{
 		try
 		{
-			if(!aBean.isOOoConnected())
-				attachEventHandler();
+			// if(!aBean.isOOoConnected())
+			// attachEventHandler();
 
 			XModel model = aBean.getDocument();
-			XSpreadsheetDocument xCalcDocument = (XSpreadsheetDocument) UnoRuntime.queryInterface(XSpreadsheetDocument.class, model);
+			XSpreadsheetDocument xCalcDocument = (XSpreadsheetDocument) UnoRuntime.queryInterface(
+					XSpreadsheetDocument.class, model);
 			return xCalcDocument;
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
-			// AppContext.FirMessageError(ex.getMessage(), this.getClass(), ex);
 		}
-
 		return null;
 	}
 
@@ -319,7 +269,6 @@ public class SheetPanel extends Panel
 		try
 		{
 			sheetsnames = getOpendSheetDoc().getSheets().getElementNames();
-			System.out.println("doc sheets size:" + sheetsnames.length);
 
 			getOpendSheetDoc().getSheets().insertNewByName(name, (short) index);
 			Any an = (Any) getOpendSheetDoc().getSheets().getByName(name);
@@ -327,7 +276,6 @@ public class SheetPanel extends Panel
 			{
 				renamesheetList(sheetsnames);
 				sheetsnames = getOpendSheetDoc().getSheets().getElementNames();
-				System.out.println("doc sheets size:" + sheetsnames.length);
 			}
 			return (XSpreadsheet) an.getObject();
 		}catch(Exception ex)
@@ -354,16 +302,13 @@ public class SheetPanel extends Panel
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
-
 		}
 
 		return null;
-
 	}
 
 	public void saveDoc(String filepath)
 	{
-		System.out.println("Save Sheet");
 		try
 		{
 			PropertyValue[] args = new PropertyValue[2];
@@ -376,7 +321,7 @@ public class SheetPanel extends Panel
 			this.aBean.getDocument().storeAsURL("file:///" + filepath, args);
 		}catch(Exception ex)
 		{
-			Logger.getLogger(SheetPanel.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -422,11 +367,8 @@ public class SheetPanel extends Panel
 			this.SVD.setViewdata(this.aBean.getController().getViewData() + "");
 		}catch(NoConnectionException ex)
 		{
-			Logger.getLogger(SheetPanel.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
-		row = SVD.getSelectedCellposesions().y;
-		column = SVD.getSelectedCellposesions().x;
-		System.out.println(SVD.getSelectedCellposesions().y + " and " + SVD.getSelectedCellposesions().x);
 		return this.SVD.getSelectedCellposesions().x;
 	}
 
@@ -437,7 +379,7 @@ public class SheetPanel extends Panel
 			this.SVD.setViewdata(this.aBean.getController().getViewData() + "");
 		}catch(NoConnectionException ex)
 		{
-			Logger.getLogger(SheetPanel.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 
 		return this.SVD.getSelectedCellposesions().y;
@@ -445,9 +387,6 @@ public class SheetPanel extends Panel
 
 	public XCell getCellByPosission(int x, int y) throws Exception
 	{
-		// if (this.sheet == null)
-		// throw new Exception("Error no sheet activated");
-		// System.out.println(getActiveSheetName());
 		return getCellByPosission(getActivSheet(), x, y);
 	}
 
@@ -462,7 +401,7 @@ public class SheetPanel extends Panel
 			return xcell;
 		}catch(Exception ex)
 		{
-			Logger.getLogger(SheetPanel.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 		return null;
 	}

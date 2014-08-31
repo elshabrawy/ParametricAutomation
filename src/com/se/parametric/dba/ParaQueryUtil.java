@@ -35,6 +35,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
+
 import com.se.automation.db.CloneUtil;
 import com.se.automation.db.QueryUtil;
 import com.se.automation.db.SessionUtil;
@@ -114,7 +115,6 @@ import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.FeatureDTO;
 import com.se.parametric.dto.GrmUserDTO;
 import com.se.parametric.dto.RelatedFeaturesDTO;
-import com.se.parametric.dto.UnApprovedDTO;
 import com.se.parametric.excel.ExcelHandler2003;
 
 public class ParaQueryUtil
@@ -157,6 +157,32 @@ public class ParaQueryUtil
 			session.close();
 		}
 		// getSeparatedSections1(" to  | - to ");
+	}
+
+	public static void changeUserPass(String userName, String newPass)
+	{
+		Session session = null;
+		try
+		{
+			session = com.se.grm.db.SessionUtil.getSession();
+			SQLQuery query = session
+					.createSQLQuery("UPDATE grm_user SET password=? WHERE full_name=?");
+			if(!session.getTransaction().isInitiator())
+				session.beginTransaction();
+			query.setString(0, newPass).setString(1, userName);
+			query.executeUpdate();
+			session.getTransaction().commit();
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			session.getTransaction().rollback();
+		}finally
+		{
+			if(session != null)
+			{
+				com.se.grm.db.SessionUtil.getSession().close();
+			}
+		}
 	}
 
 	public static List<String> getSigns()
@@ -3314,6 +3340,7 @@ public class ParaQueryUtil
 		{
 			parametricApprovedGroup.setReviewedDate(d);
 		}
+
 		Long qaUserId = getQAUserId(getPlByPlName(session, plName),
 				getTrackingTaskTypeByName("Approved Values", session));
 		if(qaUserId != null && paraUserId != 120)
@@ -4624,7 +4651,8 @@ public class ParaQueryUtil
 		{
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("document", getDocumentBySeUrl(pdfUrl, session)));
-			criteria.createCriteria("trackingTaskStatus").add(Restrictions.eq("id", 6l));
+			criteria.createCriteria("trackingTaskStatus").add(
+					Restrictions.in("id", new Object[] { 6L, 42L }));
 			if(userId != null)
 				criteria.add(Restrictions.eq("parametricUserId", userId));
 			// criteria.setProjection(Projections.distinct(Projections.property("pl")));

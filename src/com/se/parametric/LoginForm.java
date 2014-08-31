@@ -2,11 +2,21 @@ package com.se.parametric;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,7 +27,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import com.se.parametric.dba.ParaQueryUtil;
@@ -27,11 +36,11 @@ public class LoginForm extends JFrame
 {
 
 	private JPanel contentPane;
-	private JTextField txtUserName;
-	private JTextField txtPassword;
+	public JTextField txtUserName;
+	public JTextField txtPassword;
 	String userName, password;
-	MainWindow mainFrame;
-	static LoginForm loginframe;
+	static MainWindow mainFrame;
+	public static LoginForm loginframe;
 
 	/**
 	 * Launch the application.
@@ -43,6 +52,9 @@ public class LoginForm extends JFrame
 			{
 				try
 				{
+					// select the Look and Feel
+					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+					// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					loginframe = new LoginForm();
 					loginframe.setTitle("Parametric Automation");
 					loginframe.setVisible(true);
@@ -59,18 +71,11 @@ public class LoginForm extends JFrame
 	 */
 	public LoginForm()
 	{
-//		com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default");
-//		try
-//		{
-//			UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
-//		}catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 383, 249);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
+		setBounds((width - 383) / 2, (height - 249) / 2, 383, 249);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -80,15 +85,22 @@ public class LoginForm extends JFrame
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 
-		JButton btnNewButton = new JButton("OK");
+		final JButton btnNewButton = new JButton("OK");
+
+		btnNewButton.setFocusable(true); // How do I get focus on button on App launch?
+		btnNewButton.requestFocus(true);
+
 		btnNewButton.addActionListener(new ActionListener() {
 
-	        public void actionPerformed(ActionEvent evt) {	     
-	                LongRunProcess2 longRunProcess = new LongRunProcess2();
-	                longRunProcess.execute();	            
-	        }
-	    } );
+			public void actionPerformed(ActionEvent evt)
+			{
+				LongRunProcess2 longRunProcess = new LongRunProcess2();
+				longRunProcess.execute();
+			}
+		});
+
 		btnNewButton.setBounds(144, 154, 81, 33);
+
 		panel.add(btnNewButton);
 
 		txtUserName = new JTextField();
@@ -120,33 +132,100 @@ public class LoginForm extends JFrame
 		titleLab.setBounds(10, 11, 345, 34);
 		panel.add(titleLab);
 
-		JLabel lblver = new JLabel("Ver 1.0 : 7-8-2014 ");
-		lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
-		lblver.setForeground(new Color(160, 82, 45));
-		lblver.setBounds(220, 170, 150, 60);
-		panel.add(lblver);
+		// JLabel lblver = new JLabel("Ver 1.0 : 20-7-2014 ");
+		// lblver.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		// lblver.setForeground(new Color(160, 82, 45));
+		// lblver.setBounds(220, 170, 150, 60);
+		// panel.add(lblver);
+		txtUserName.setFocusable(true);
+		txtUserName.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if(txtPassword.getText().trim().equals("")
+							|| txtUserName.getText().trim().equals(""))
+					{
+						JOptionPane.showMessageDialog(null, "UserName or Password Can't be empty");
+					}
+					else
+					{
+						btnNewButton.doClick();
+					}
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+
+			}
+		});
+		txtPassword.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if(txtPassword.getText().trim().equals("")
+							|| txtUserName.getText().trim().equals(""))
+					{
+						JOptionPane.showMessageDialog(null, "UserName or Password Can't be empty");
+					}
+					else
+					{
+						btnNewButton.doClick();
+					}
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
-	class LongRunProcess extends SwingWorker
+	class LongRunProcess extends SwingWorker<Object, Object>
 	{
+		GrmUserDTO grmUser;
+
+		public LongRunProcess(GrmUserDTO grmUser)
+		{
+			this.grmUser = grmUser;
+		}
+
 		/**
 		 * @throws Exception
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Integer result = 0;
-
 			while(true)
 			{
 				if(mainFrame != null)
 				{
-					result += 10;
-					System.out.println("Result = " + result);
-
-					mainFrame.updateFlags();
 					try
 					{
-						Thread.sleep(50000);
+						mainFrame.updateFlags(grmUser);
+						TimeUnit.MINUTES.sleep(5);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();
@@ -157,49 +236,76 @@ public class LoginForm extends JFrame
 			// return result;
 		}
 	}
-	
-	class LongRunProcess2 extends SwingWorker
+
+	class LongRunProcess2 extends SwingWorker<Object, Object>
 	{
 		/**
 		 * @throws Exception
 		 */
 		protected Object doInBackground() throws Exception
 		{
-			Loading loading = new Loading();
-			
-			loading.show();
+
+			// Loading loading = new Loading();
+
+			// loading.show();
+			JPanel glass = new JPanel() {
+				public void paintComponent(Graphics g)
+
+				{
+					g.setColor(new Color(0, 0, 0, 140));
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
+			};
+			// Set it non-opaque
+			glass.setOpaque(false);
+			// Set layout to JPanel
+			glass.setLayout(new GridBagLayout());
+			// Add the jlabel with the image icon
+			glass.add(new JLabel(new ImageIcon(getClass().getResource("/Resources/loading.gif"))));
+			// Take glass pane
+			setGlassPane(glass);
+			// Add MouseListener
+			glass.addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent me)
+				{
+					// Consume the event, now the input is blocked
+					me.consume();
+					// Create beep sound, when mouse is pressed
+					Toolkit.getDefaultToolkit().beep();
+				}
+			});
+			glass.setVisible(true);
 			userName = txtUserName.getText().toString();
 			password = txtPassword.getText().toString();
 			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
 			if(grmUser == null)
 			{
-				loading.close();
+				MainWindow.glass.setVisible(false);
+				glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
 			else
 			{
 
+				LongRunProcess process = new LongRunProcess(grmUser);
 				mainFrame = new MainWindow();
-				mainFrame.setVisible(true);
-				// primaryStage.hide();
-				Runtime.getRuntime().gc();
-				mainFrame.init(grmUser);
-				loginframe.setVisible(false);
-			}
-			// thread.stop();
-			LongRunProcess process = new LongRunProcess();
-			try
-			{
-				process.execute();
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			finally{
-			loading.close();
-			}
+				try
+				{
+					mainFrame.init(grmUser);
+					process.execute();
+					loginframe.setVisible(false);
+					mainFrame.setVisible(true);
 
-			 return null;
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+
+				}finally
+				{
+					glass.setVisible(false);
+				}
+			}
+			return null;
 		}
 	}
 }

@@ -1,7 +1,11 @@
 package com.se.parametric.commonPanel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -25,19 +29,26 @@ public class ButtonsPanel extends JPanel
 
 	public ButtonsPanel(ArrayList<String> buttonLabels)
 	{
+		Dimension btnDim = new Dimension(100, 32);
 		buttons = new JButton[buttonLabels.size()];
-		this.setLayout(null);
+		this.setLayout(new GridBagLayout());
 		setBackground(new Color(211, 211, 211));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		int y = 5;
+
+		GridBagConstraints bagConstraints = new GridBagConstraints();
+		bagConstraints.gridx = 0;
+		bagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		bagConstraints.insets = new Insets(0, 0, 10, 0);
+		bagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+		this.setMaximumSize(new Dimension(115, 170));
 		for(int i = 0; i < buttonLabels.size(); i++)
 		{
 			buttons[i] = new JButton(buttonLabels.get(i));
-			buttons[i].setBounds(3, y, 95, 29);
 			buttons[i].setForeground(new Color(25, 25, 112));
 			buttons[i].setFont(new Font("Tahoma", Font.BOLD, 11));
-			y += 32;
-			this.add(buttons[i]);
+			buttons[i].setPreferredSize(btnDim);
+			bagConstraints.gridy = i;
+			this.add(buttons[i], bagConstraints);
 		}
 	}
 
