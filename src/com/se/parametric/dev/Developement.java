@@ -492,8 +492,8 @@ public class Developement extends JPanel implements ActionListener
 					// save Separation
 					if(validated)
 					{
-						MainWindow.glass.setVisible(false);
 						saveseparation();
+						MainWindow.glass.setVisible(false);
 						int reply = JOptionPane.showConfirmDialog(null,
 								"Approved Saving Done , Press OK to save Parts", "Development",
 								JOptionPane.OK_OPTION);

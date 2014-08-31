@@ -1593,7 +1593,9 @@ public class WorkingSheet
 						if(partvalidation.getStatus().equals(
 								"Reject, contains unaccepted character In Part Number")
 								|| partvalidation.getStatus().equals("Reject, Found Before"))
+						{
 							canSave = false;
+						}
 						continue part;
 					}
 				}
