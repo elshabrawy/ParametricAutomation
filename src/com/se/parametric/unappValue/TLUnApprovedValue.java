@@ -260,6 +260,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				bot.mouseMove(1165, 345);
 				bot.mousePress(InputEvent.BUTTON1_MASK);
 				bot.mouseRelease(InputEvent.BUTTON1_MASK);
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -275,6 +276,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 						startDate, endDate, "parametric");
 				filterPanel.refreshFilters();
 				MainWindow.glass.setVisible(false);
+				filterPanel.setCollapsed(true);
 			}
 
 			else if(event.getActionCommand().equals(" validate "))

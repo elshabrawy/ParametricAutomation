@@ -532,6 +532,8 @@ public class Developement extends JPanel implements ActionListener
 				tablePanel.setCurrentPage(1);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
 				MainWindow.glass.setVisible(false);
+				filterPanel.setCollapsed(true);
+//				filterPanel.
 
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
@@ -548,6 +550,7 @@ public class Developement extends JPanel implements ActionListener
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
 				MainWindow.glass.setVisible(false);
+				filterPanel.setCollapsed(true);
 
 			}
 			/**

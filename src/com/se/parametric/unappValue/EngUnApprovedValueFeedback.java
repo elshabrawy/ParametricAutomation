@@ -276,6 +276,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				bot.mouseRelease(InputEvent.BUTTON1_MASK);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
 				// filterPanel.jDateChooser2.setDate(new Date(System.currentTimeMillis()));
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -283,6 +284,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 				filterPanel.filterList = ApprovedDevUtil.getEngUnapprovedData(userDTO, null, null,
 						"Eng");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 
 			else if(event.getActionCommand().equals(" validate "))

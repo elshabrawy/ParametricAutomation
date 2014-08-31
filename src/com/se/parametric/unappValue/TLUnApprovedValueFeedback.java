@@ -263,6 +263,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 				ws.writeReviewData(list, 1, 13);
 
 				MainWindow.glass.setVisible(false);
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource().equals(filterPanel.refreshButton))
 			{
@@ -277,6 +278,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 						endDate, "TL");
 				filterPanel.refreshFilters();
 				MainWindow.glass.setVisible(false);
+				filterPanel.setCollapsed(true);
 			}
 
 			else if(event.getActionCommand().equals("validate"))

@@ -276,12 +276,14 @@ public class QAException extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
 				filterPanel.filterList = DataDevQueryUtil.getQAexceptionFilterData(userDTO, "Qa");
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 
 			}
 			else if(event.getActionCommand().equals("Save"))

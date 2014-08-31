@@ -550,6 +550,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -565,7 +566,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						startDate, endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
-
+				filterPanel.setCollapsed(true);
 			}
 			/**
 			 * Load Data development Sheet

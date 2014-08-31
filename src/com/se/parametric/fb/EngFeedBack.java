@@ -228,6 +228,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				tablePanel.selectedData = DataDevQueryUtil.getDevFeedbackPDF(userId, plName,
 						supplierName, issuedBy, feedbackType, startDate, endDate);
 				tablePanel.setTableData1(0, tablePanel.selectedData);
+				filterPanel.setCollapsed(true);
 
 			}
 			/**
@@ -247,7 +248,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
-
+				filterPanel.setCollapsed(true);
 			}
 			/**
 			 * Load Data development Sheet
