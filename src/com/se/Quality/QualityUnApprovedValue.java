@@ -1,7 +1,6 @@
 package com.se.Quality;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -14,14 +13,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.SoftBevelBorder;
 
 import osheet.Cell;
 import osheet.SheetPanel;
@@ -31,12 +27,9 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.ApprovedDevUtil;
-import com.se.parametric.dba.ParaQueryUtil;
 import com.se.parametric.dev.PdfLinks;
 import com.se.parametric.dto.DocumentInfoDTO;
 import com.se.parametric.dto.GrmUserDTO;
@@ -49,11 +42,11 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	 * Create the panel.
 	 */
 	DocumentInfoDTO documentInfoDTO = null;
-	SheetPanel sheetPanel = new SheetPanel();
+	SheetPanel sheetPanel;
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
 	ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
-	WorkingAreaPanel tabSheet, selectionPanel/* , flowChart */;
+	WorkingAreaPanel selectionPanel;
 	JTabbedPane tabbedPane;
 	Map<String, WorkingSheet> wsMap = new HashMap<String, WorkingSheet>();
 	ArrayList<ArrayList<String>> separationValues = new ArrayList<ArrayList<String>>();
@@ -70,8 +63,6 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 	{
 		this.userDTO = userDTO;
 		this.setLayout(new BorderLayout());
-		int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getUnapprovedReviewFilter(
 				new Long[] { userDTO.getId() }, null, null, "QA");
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
@@ -82,13 +73,14 @@ public class QualityUnApprovedValue extends JPanel implements ActionListener
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Save");
 		selectionPanel.addButtonsPanel(buttonLabels, this);
-		selectionPanel.addComponentsToPanel();
+		sheetPanel = selectionPanel.getSheet();
 		QAAppfeedBack = new QAUnApprovedValueFeedback(userDTO);
+
+		selectionPanel.addComponentsToPanel();
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Quality UnApproved Review", null, selectionPanel, null);
 		tabbedPane.addTab("Quality UnApproved FeedBack", null, QAAppfeedBack, null);
-		// flowChart = new ImagePanel("QASeparation.jpg");
-		// tabbedPane.addTab("Separation Flow", null, flowChart, null);
 		this.add(tabbedPane);
 		this.addFocusListener(new FocusListener() {
 

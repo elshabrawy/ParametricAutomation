@@ -171,8 +171,8 @@ public class SheetPanel extends JPanel
 			aBean.invalidate();
 			SwingUtilities.getWindowAncestor(aBean).revalidate();
 			// MainWindow.glass.setVisible(false);
-			MainWindow.glass.setVisible(true);
-			MainWindow.glass.invalidate();
+//			MainWindow.glass.setVisible(true);
+//			MainWindow.glass.invalidate();
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
