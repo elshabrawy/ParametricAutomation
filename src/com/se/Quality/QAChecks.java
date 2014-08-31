@@ -303,12 +303,14 @@ public class QAChecks extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
 				filterPanel.filterList = DataDevQueryUtil.getQAchecksFilterData(userDTO);
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 
 			}
 			else if(event.getActionCommand().equals("Save"))

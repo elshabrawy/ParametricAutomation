@@ -475,11 +475,13 @@ public class QAReviewData extends JPanel implements ActionListener
 			if(event.getSource() == filterPanel.filterButton)
 			{
 				dofilter();
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO);
 				filterPanel.refreshFilters();
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.addsummary)
 			{

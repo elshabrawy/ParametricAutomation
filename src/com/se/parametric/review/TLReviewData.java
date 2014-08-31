@@ -239,7 +239,7 @@ public class TLReviewData extends JPanel implements ActionListener
 				{
 					e.printStackTrace();
 				}
-
+				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
@@ -255,7 +255,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
-
+				filterPanel.setCollapsed(true);
 			}
 			/**
 			 * Load Data development Sheet
