@@ -62,8 +62,8 @@ public class ApprovedDevUtil
 		Criteria criteria;
 		try
 		{
-			ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(row.get(4),
-					row.get(0), row.get(3), session);
+			ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(row.get(6),
+					row.get(0), row.get(5), session);
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			criteria.add(Restrictions.eq("name", status));
 			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();

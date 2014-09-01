@@ -280,7 +280,7 @@ public class LoginForm extends JFrame
 			GrmUserDTO grmUser = ParaQueryUtil.checkUser(userName, password);
 			if(grmUser == null)
 			{
-				MainWindow.glass.setVisible(false);
+				// MainWindow.glass.setVisible(false);
 				glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "User Name or Password is Error");
 			}
