@@ -1799,15 +1799,23 @@ public class ApprovedDevUtil
 						if(team.equals("QA"))
 						{
 							if(!Datatype.equals("FB"))
-								unApprovedDTO.setReceivedDate(sdf.format(
-										groupRecord.getReviewedDate()).toString());
+							{
+								if(groupRecord.getReviewedDate() != null)
+								{
+									unApprovedDTO.setReceivedDate(sdf.format(
+											groupRecord.getReviewedDate()).toString());
+								}
+							}
 						}
 						else
 						{
 							if(!Datatype.equals("FB"))
 							{
-								unApprovedDTO.setReceivedDate(sdf.format(rd.getStoreDate())
-										.toString());
+								if(rd.getStoreDate() != null)
+								{
+									unApprovedDTO.setReceivedDate(sdf.format(rd.getStoreDate())
+											.toString());
+								}
 							}
 						}
 					}
