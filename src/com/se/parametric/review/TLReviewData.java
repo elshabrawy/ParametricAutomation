@@ -430,7 +430,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
 						wsMap.get(wsName).validateParts(true);
-						if(!ws.canSave)
+						if(!wsMap.get(wsName).canSave)
 						{
 							saveevent = event;
 							input = new ArrayList<ArrayList<String>>();
@@ -465,7 +465,6 @@ public class TLReviewData extends JPanel implements ActionListener
 						{
 							if(!wsMap.get(wsName).saved)
 							{
-								wsMap.get(wsName).saved = true;
 								wsMap.get(wsName).saveTLReviewAction(teamLeaderName);
 							}
 							else

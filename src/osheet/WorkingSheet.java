@@ -1580,6 +1580,7 @@ public class WorkingSheet
 
 				if(pn.isEmpty())
 				{
+					canSave = false;
 					return result;
 				}
 				if(!update)
@@ -2418,6 +2419,7 @@ public class WorkingSheet
 		{
 			System.out.println("Can Save: " + canSave);
 			MainWindow.glass.setVisible(false);
+			saved = false;
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2534,6 +2536,7 @@ public class WorkingSheet
 						"can't save sheet duto some errors in your data");
 				return;
 			}
+			saved = true;
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				try
@@ -2636,7 +2639,7 @@ public class WorkingSheet
 
 		}catch(Exception e)
 		{
-
+			MainWindow.glass.setVisible(false);
 			e.printStackTrace();
 		}
 
@@ -2648,6 +2651,7 @@ public class WorkingSheet
 		{
 			try
 			{
+				saved = true;
 				List<String> rejectedPdfs = new ArrayList<String>();
 				List<String> acceptedPdfs = new ArrayList<String>();
 				List<String> changedparts = new ArrayList<>();
@@ -2737,7 +2741,9 @@ public class WorkingSheet
 					{
 						if("".equals(comment))
 						{
+							saved = false;
 							System.out.println("Comment shouldn't be null");
+							MainWindow.glass.setVisible(false);
 							JOptionPane.showMessageDialog(null,
 									"Comment can not be empty for rejected parts",
 									"Saving Not Done", JOptionPane.ERROR_MESSAGE);
@@ -2786,15 +2792,22 @@ public class WorkingSheet
 				{
 					DataDevQueryUtil.deleteoldfeedbacks(changedparts, QAName);
 				}
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
+				saved = false;
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Can't Save Data");
 				e.printStackTrace();
 			}
 		}
 		else
+		{
+			saved = false;
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+		}
 
 	}
 
@@ -2809,7 +2822,7 @@ public class WorkingSheet
 				List<String> changedparts = new ArrayList<>();
 				List<PartInfoDTO> AllParts = new ArrayList<PartInfoDTO>();
 				ArrayList<String> sheetHeader = getHeader();
-
+				saved = true;
 				String oldflag = "";
 				int oldflagIndex = sheetHeader.indexOf("Sample QA Flag");
 				int statusIndex = sheetHeader.indexOf("Final QA Flag");
@@ -2861,13 +2874,20 @@ public class WorkingSheet
 				// JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}catch(Exception e)
 			{
+				saved = false;
+				MainWindow.glass.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Can't Save Data");
 				e.printStackTrace();
 			}
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Done");
 		}
 		else
+		{
+			saved = false;
+			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
+		}
 
 	}
 
@@ -2877,7 +2897,7 @@ public class WorkingSheet
 		{
 			System.out.println("Can Save: " + canSave);
 			MainWindow.glass.setVisible(false);
-
+			saved = false;
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -2887,7 +2907,7 @@ public class WorkingSheet
 			List<String> acceptedPdfs = new ArrayList<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
-
+			saved = true;
 			int partcell = sheetHeader.indexOf("Part Number");
 			int statuscellidx = sheetHeader.indexOf("Status");
 			int commentcellidx = sheetHeader.indexOf("Comment");
@@ -2953,6 +2973,7 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						saved = false;
 						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								"Comment can not be empty for rejected parts", "Saving Not Done",
@@ -2999,6 +3020,7 @@ public class WorkingSheet
 		}catch(Exception e)
 		{
 			MainWindow.glass.setVisible(false);
+			saved = false;
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}
@@ -3011,6 +3033,7 @@ public class WorkingSheet
 		{
 			System.out.println("Can Save: " + canSave);
 			MainWindow.glass.setVisible(false);
+			saved = false;
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
@@ -3024,7 +3047,7 @@ public class WorkingSheet
 			ArrayList<String> sheetHeader = getHeader();
 			List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
-
+			saved = true;
 			int issuerIndex = sheetHeader.indexOf("Issued By");
 
 			int Cactionindex = sheetHeader.indexOf("C_Action");
@@ -3109,6 +3132,7 @@ public class WorkingSheet
 				{
 					if(ApprovedDevUtil.isThisDateValid(ActinDueDate, "DD/MM/YYYY") == false)
 					{
+						saved = false;
 						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								" You must enter Action_Due_Date with 'dd/MM/yyyy' fromat in row :"
@@ -3121,6 +3145,7 @@ public class WorkingSheet
 					if("".equals(comment))
 					{
 						System.out.println("Comment shouldn't be null");
+						saved = false;
 						MainWindow.glass.setVisible(false);
 						JOptionPane.showMessageDialog(null,
 								"Comment can not be empty for rejected parts", "Saving Not Done",
@@ -3165,6 +3190,7 @@ public class WorkingSheet
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			saved = false;
 			e.printStackTrace();
 		}
 
@@ -3176,11 +3202,13 @@ public class WorkingSheet
 		{
 			System.out.println("Can Save: " + canSave);
 			MainWindow.glass.setVisible(false);
+			saved = false;
 			JOptionPane.showMessageDialog(null, "can't save sheet duto some errors in your data");
 			return;
 		}
 		try
 		{
+			saved = true;
 			List<String> qareviewpdfs = new ArrayList<String>();
 			List<String> qafeedbackpdfs = new ArrayList<String>();
 			List<String> engfeedbackpfds = new ArrayList<String>();
@@ -3413,6 +3441,7 @@ public class WorkingSheet
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			saved = false;
 			e.printStackTrace();
 		}
 
@@ -3475,7 +3504,7 @@ public class WorkingSheet
 			ArrayList<QAChecksDTO> affectedparts = new ArrayList<>();
 			ArrayList<QAChecksDTO> allparts = new ArrayList<>();
 			ArrayList<String> sheetHeader = getHeader();
-
+			saved = true;
 			int CheckpartidIndex = sheetHeader.indexOf("CheckPartID");
 			int ComidIndex = sheetHeader.indexOf("Comid");
 			int statusIndex = sheetHeader.indexOf("Status");
@@ -3504,12 +3533,14 @@ public class WorkingSheet
 				if(!status.equals("Exception") && RightValue.isEmpty())
 				{
 					MainWindow.glass.setVisible(false);
+					saved = false;
 					JOptionPane.showMessageDialog(null, "You Must Enter RightValue");
 					return;
 				}
 				if(status.equals(StatusName.UpdateMask) && !(Part.length() == RightValue.length()))
 				{
 					MainWindow.glass.setVisible(false);
+					saved = true;
 					JOptionPane.showMessageDialog(null, "New Mask Must be as Length as Part ");
 					return;
 				}
@@ -3566,6 +3597,7 @@ public class WorkingSheet
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
 		{
+			saved = false;
 			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
@@ -3600,6 +3632,7 @@ public class WorkingSheet
 			String FeatureName = "";
 			String FeatureValue = "";
 			ArrayList<ArrayList<String>> fileData = readSpreadsheet(1);
+			saved = true;
 			for(int i = 0; i < fileData.size(); i++)
 			{
 				QAChecksDTO qachk = new QAChecksDTO();
@@ -3608,6 +3641,7 @@ public class WorkingSheet
 				String Comment = partData.get(commentIndex);
 				if(status.equals(StatusName.reject) && Comment.isEmpty())
 				{
+					saved = false;
 					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "You Must Enter Comment if Rejected");
 					return;
@@ -3658,6 +3692,7 @@ public class WorkingSheet
 		}catch(Exception e)
 		{
 			MainWindow.glass.setVisible(false);
+			saved = false;
 			JOptionPane.showMessageDialog(null, "Can't Save Data");
 			e.printStackTrace();
 		}finally
@@ -4215,13 +4250,13 @@ public class WorkingSheet
 				cell.setText(header.get(i));
 				HeaderList.add(cell);
 			}
-			String hdrUintRange = "A" + 1 + ":L" + 1;
+			String hdrUintRange = "A" + 1 + ":N" + 1;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0x8A8C8B);
-			hdrUintRange = "A" + 2 + ":F" + 500;
+			hdrUintRange = "A" + 2 + ":H" + 500;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0xEAAFD6);
-			hdrUintRange = "G" + 2 + ":L" + 500;
+			hdrUintRange = "G" + 2 + ":N" + 500;
 			xHdrUnitrange = sheet.getCellRangeByName(hdrUintRange);
 			setRangColor(xHdrUnitrange, 0xB0F2C4);
 

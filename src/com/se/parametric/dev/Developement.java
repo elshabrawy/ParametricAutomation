@@ -612,7 +612,7 @@ public class Developement extends JPanel implements ActionListener
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
 						wsMap.get(wsName).validateParts(false);
-						if(!ws.canSave)
+						if(!wsMap.get(wsName).canSave)
 						{
 							saveevent = event;
 							input = new ArrayList<ArrayList<String>>();
@@ -626,7 +626,6 @@ public class Developement extends JPanel implements ActionListener
 												"Seperation", JOptionPane.YES_NO_OPTION);
 								if(reply == JOptionPane.YES_OPTION)
 								{
-
 									openseperation();
 								}
 								else
@@ -646,7 +645,6 @@ public class Developement extends JPanel implements ActionListener
 						{
 							if(!wsMap.get(wsName).saved)
 							{
-								wsMap.get(wsName).saved = true;
 								wsMap.get(wsName).saveParts(false);
 								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null, "Saving Data Finished");
@@ -745,6 +743,7 @@ public class Developement extends JPanel implements ActionListener
 				}
 				List<String> appValues = wsMap.get(plName).getApprovedFeatuer().get(featureName);
 				appValues.add(featureFullValue);
+				wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
 			}
 		}
 
@@ -777,7 +776,7 @@ public class Developement extends JPanel implements ActionListener
 			row.add("PL_Name");// 0
 			row.add("Part");// 1
 			row.add("Datasheet");// 2
-			row.add("Supplier");//3
+			row.add("Supplier");// 3
 			row.add("ReceivedDate");// 4
 			row.add("Feature Name");// 5
 			row.add("Feature Value");// 6

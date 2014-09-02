@@ -177,7 +177,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 3);
 			fbPanel.updateFlags();
 
 			try
@@ -530,7 +530,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 						WorkingSheet ws = wsMap.get(wsName);
 						if(!ws.saved)
 						{
-							ws.saved = true;
 							ws.saveEngFeedbackAction(userName);
 						}
 						else

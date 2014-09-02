@@ -290,7 +290,6 @@ public class ExceptionFB extends JPanel implements ActionListener
 					{
 						if(!wsMap.get(wsName).saved)
 						{
-							wsMap.get(wsName).saved = true;
 							wsMap.get(wsName).saveQAexceptionAction(checker, engName, "DD");
 						}
 						else
