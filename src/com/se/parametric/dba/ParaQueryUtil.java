@@ -3801,12 +3801,21 @@ public class ParaQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			SQLQuery query = session
-					.createSQLQuery(" SELECT  comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
-							+ "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)=:nanpartnum AND supplier_id=GETSUPPLIERID (:suppName)");
+			String sql = "SELECT /*+ index (comp CMNANPN_SUPPPL_SUP_IDX)*/comp.COM_ID,"
+					+ " p.NAME, GETPDFURLBYDOCID (comp.DOCUMENT_ID)"
+					+ " FROM Part_COMPONENT comp,SUPPLIER_PL suppl , PL p"
+					+ " WHERE CM.NONALPHANUM (comp.PART_NUMBER)='" + NANINPUTPART + "'"
+					+ " AND comp.SUPPLIER_ID   =GETSUPPLIERID ('" + supplierName + "')"
+					+ " and comp.SUPPLIER_PL_ID = suppl.ID" + " and suppl.PL_ID = p.ID ";
+			// SQLQuery query = session
+			// .createSQLQuery(" SELECT  comp.COM_ID, GETPLNameBYSupPLID(comp.SUPPLIER_PL_ID), GETPDFURLBYDOCID (comp.DOCUMENT_ID) FROM   Part_COMPONENT comp "
+			// + "WHERE   CM.NONALPHANUM (comp.PART_NUMBER)='"
+			// + NANINPUTPART
+			// + "' AND supplier_id=GETSUPPLIERID ('" + supplierName + "')");
+			SQLQuery query = session.createSQLQuery(sql);
 
-			query.setParameter("nanpartnum", NANINPUTPART.trim());
-			query.setParameter("suppName", supplierName);
+			// query.setParameter("nanpartnum", NANINPUTPART.trim());
+			// query.setParameter("suppName", supplierName);
 
 			return (Object[]) query.uniqueResult();
 		}catch(Exception ex)
@@ -3829,9 +3838,9 @@ public class ParaQueryUtil
 		{
 			session = SessionUtil.getSession();
 			SQLQuery query = session
-					.createSQLQuery("select acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM =:nanpartnum and acq.OLD_MAN_ID =CM.GET_MAN_ID(:suppName)");
-			query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
-			query.setParameter("suppName", supplierName);
+					.createSQLQuery("select /*+ index(acq ACQ_OLDNANPART_OLDMANID_IDX)*/ acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM ='"+NAN_INPUT_PART.trim()+"' and acq.OLD_MAN_ID =CM.GET_MAN_ID('"+supplierName+"')");
+			// query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
+			// query.setParameter("suppName", supplierName);
 
 			return query.uniqueResult();
 		}catch(Exception ex)

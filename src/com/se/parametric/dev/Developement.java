@@ -535,16 +535,24 @@ public class Developement extends JPanel implements ActionListener
 					// save Separation
 					if(validated)
 					{
-						saveseparation();
-						MainWindow.glass.setVisible(false);
-						int reply = JOptionPane.showConfirmDialog(null,
-								"Approved Saving Done , Press OK to save Parts", "Development",
-								JOptionPane.OK_OPTION);
-						if(reply == JOptionPane.OK_OPTION)
+						if(saveseparation())
 						{
-							MainWindow.glass.setVisible(true);
-							((AbstractButton) saveevent.getSource()).doClick();
-							tabbedPane.setSelectedIndex(1);
+							MainWindow.glass.setVisible(false);
+							int reply = JOptionPane.showConfirmDialog(null,
+									"Approved Saving Done , Press OK to save Parts", "Development",
+									JOptionPane.OK_OPTION);
+							if(reply == JOptionPane.OK_OPTION)
+							{
+								MainWindow.glass.setVisible(true);
+								((AbstractButton) saveevent.getSource()).doClick();
+								tabbedPane.setSelectedIndex(1);
+							}
+						}
+						else
+						{
+							MainWindow.glass.setVisible(false);
+							JOptionPane.showMessageDialog(null,
+									"can't save seperation duto some errors in your data");
 						}
 					}
 
@@ -693,7 +701,7 @@ public class Developement extends JPanel implements ActionListener
 			return null;
 		}
 
-		private void saveseparation()
+		private boolean saveseparation()
 		{
 			ArrayList<String> row;
 			if(!validated)
@@ -702,7 +710,7 @@ public class Developement extends JPanel implements ActionListener
 				JOptionPane.showMessageDialog(null,
 						" Validate First due to some errors in your data");
 
-				return;
+				return false;
 			}
 
 			for(int i = 0; i < separationValues.size(); i++)
@@ -712,12 +720,25 @@ public class Developement extends JPanel implements ActionListener
 				String plName = row.get(0);
 				String featureName = row.get(5);
 				String featureFullValue = row.get(6);
+				String value = row.get(9);
 
 				try
 				{
+					if(value.trim().equals(""))
+					{
+						try
+						{
+							Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
+							cell.setText("Value can't be null");
+						}catch(Exception e)
+						{
+							e.printStackTrace();
+						}
+						return false;
+					}
 					List<ApprovedParametricDTO> approved = ApprovedDevUtil
 							.createApprovedValuesList(featureFullValue, plName, featureName,
-									row.get(7), row.get(8), row.get(9), row.get(12), row.get(13),
+									row.get(7), row.get(8), value, row.get(12), row.get(13),
 									row.get(11), row.get(10));
 
 					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
@@ -730,7 +751,7 @@ public class Developement extends JPanel implements ActionListener
 				{
 					try
 					{
-						Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+						Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
 						cell.setText(ex.getMessage());
 					}catch(Exception e)
 					{
@@ -745,6 +766,7 @@ public class Developement extends JPanel implements ActionListener
 				appValues.add(featureFullValue);
 				wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
 			}
+			return true;
 		}
 
 		private void validateseparation()
