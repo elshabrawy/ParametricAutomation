@@ -1494,7 +1494,7 @@ public class DataDevQueryUtil
 			StringBuffer qury = new StringBuffer();
 			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME,Get_family_crossName(C.FAMILY_CROSS_ID) family_Cross , Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value(c.MASK_ID,C.PART_NUMBER) MASK,GETNPIBYCOMID(c.COM_ID) NPI_FLAG, GETNPINewsPDFURL (c.DOCUMENT_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
 					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID");
+					+ " FROM  TRACKING_PARAMETRIC T, Part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID(+) AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID");
 			if(plName != null && !plName.equals("All"))
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
@@ -1662,7 +1662,7 @@ public class DataDevQueryUtil
 					/** Part Number */
 					partData.add(data[4].toString());
 					/** family */
-					partData.add(data[5].toString());
+					partData.add(data[5]!= null ? data[5].toString() : "");
 
 					if(plType.equals("Semiconductor"))
 					{
