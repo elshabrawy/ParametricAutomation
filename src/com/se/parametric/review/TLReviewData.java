@@ -541,6 +541,8 @@ public class TLReviewData extends JPanel implements ActionListener
 			row.add("PL_Name");
 			row.add("Part");
 			row.add("Datasheet");
+			row.add("Supplier");// 3
+			row.add("ReceivedDate");// 4
 			row.add("Feature Name");
 			row.add("Feature Value");
 			row.add("Feature Unit");
