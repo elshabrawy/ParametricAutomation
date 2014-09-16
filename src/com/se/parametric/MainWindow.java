@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import java.util.Date;
 
-
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,7 +41,7 @@ import com.se.parametric.util.ImagePanel;
 
 public class MainWindow extends JFrame
 {
-	public static ArrayList<String> flags=new ArrayList<String>();
+	public static ArrayList<String> flags = new ArrayList<String>();
 	// private JPanel contentPane;
 	// JPanel panel, panel2;
 	// int width, height;
@@ -52,35 +51,35 @@ public class MainWindow extends JFrame
 	private GrmUserDTO loggedInUser;
 	public static JPanel glass;
 
-//	static
-//	{
-//		glass = new JPanel() {
-//			public void paintComponent(Graphics g)
-//
-//			{
-//				g.setColor(new Color(0, 0, 0, 140));
-//				g.fillRect(0, 0, getWidth(), getHeight());
-//			}
-//		};
-//		// Set it non-opaque
-//		glass.setOpaque(false);
-//		// Set layout to JPanel
-//		glass.setLayout(new GridBagLayout());
-//		// Add the jlabel with the image icon
-//
-//		glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
-//
-//		// Add MouseListener
-//		glass.addMouseListener(new MouseAdapter() {
-//			public void mousePressed(MouseEvent me)
-//			{
-//				// Consume the event, now the input is blocked
-//				me.consume();
-//				// Create beep sound, when mouse is pressed
-//				Toolkit.getDefaultToolkit().beep();
-//			}
-//		});
-//	}
+	// static
+	// {
+	// glass = new JPanel() {
+	// public void paintComponent(Graphics g)
+	//
+	// {
+	// g.setColor(new Color(0, 0, 0, 140));
+	// g.fillRect(0, 0, getWidth(), getHeight());
+	// }
+	// };
+	// // Set it non-opaque
+	// glass.setOpaque(false);
+	// // Set layout to JPanel
+	// glass.setLayout(new GridBagLayout());
+	// // Add the jlabel with the image icon
+	//
+	// glass.add(new JLabel(new ImageIcon("Resources/loading.gif")));
+	//
+	// // Add MouseListener
+	// glass.addMouseListener(new MouseAdapter() {
+	// public void mousePressed(MouseEvent me)
+	// {
+	// // Consume the event, now the input is blocked
+	// me.consume();
+	// // Create beep sound, when mouse is pressed
+	// Toolkit.getDefaultToolkit().beep();
+	// }
+	// });
+	// }
 
 	public MainWindow()
 	{
@@ -165,7 +164,7 @@ public class MainWindow extends JFrame
 		setJMenuBar(menuBar);
 		createLoading();
 		setGlassPane(glass);
-		
+
 	}
 
 	private void createLoading()
@@ -196,7 +195,7 @@ public class MainWindow extends JFrame
 				Toolkit.getDefaultToolkit().beep();
 			}
 		});
-		
+
 	}
 
 	private void showupdatespanel()
@@ -207,12 +206,12 @@ public class MainWindow extends JFrame
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
 		dialog.setLayout(null);
-		JLabel lbl = new JLabel("Version No 2.0");
+		JLabel lbl = new JLabel("Version No 2.1");
 		lbl.setFont(new Font("Simpson", Font.BOLD, 18));
 		lbl.setForeground(new Color(160, 82, 45));
 		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
 
-		JLabel lbl2 = new JLabel("Last updates on 26/8/2014 :- ");
+		JLabel lbl2 = new JLabel("Last updates on 16/9/2014 :- ");
 		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
 		lbl2.setForeground(new Color(189, 67, 67));
 		lbl2.setBounds(0, 55, 250, 20);
@@ -237,7 +236,12 @@ public class MainWindow extends JFrame
 		txt += "6- Change the Date Title in Table of Filter result" + "\n";
 		txt += "7- Add Menus for Cycles and new Options (Logout,ChangePassword)" + "\n";
 		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)" + "\n";
-		txt += "" + "\n";
+		txt += "9- Update saving of approvedvalues  " + "\n";
+		txt += "10- Update loading of (development & update) screens" + "\n";
+		txt += "11- Enhance Seperaton Header in (Development&TL Review) screens " + "\n";
+		txt += "12- Prevent saving twice" + "\n";
+		txt += "12- Prevent saving seperation without value" + "\n";
+		txt += "13- Solve issue of naming office sheet due to special char (\\)" + "\n";
 		txtarea.setText(txt);
 		txtarea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(txtarea);
@@ -344,11 +348,11 @@ public class MainWindow extends JFrame
 
 	public void updateFlags(GrmUserDTO grmUser)
 	{
-		
+
 		long userRole = grmUser.getGrmRole().getId();
-		long userGroup = grmUser.getGrmGroup().getId();		
+		long userGroup = grmUser.getGrmGroup().getId();
 		flags = ParaQueryUtil.getAlerts(grmUser.getId(), userGroup, userRole);
-//		mainPanel.updateFlags();
+		// mainPanel.updateFlags();
 	}
 
 	public void showImagePanel(String title, String imgName)
@@ -441,6 +445,5 @@ public class MainWindow extends JFrame
 		dialog.pack();
 		dialog.setVisible(true);
 	}
-	
 
 }
