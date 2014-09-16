@@ -126,14 +126,16 @@ public class WorkingSheet
 			// System.out.println(c);
 			num++;
 		}
-		this.sheet = sheetPanel.NewSheetByName(sheetName, 0);
+		String plName = sheetName.replace("/", "$");
+		this.sheet = sheetPanel.NewSheetByName(plName, 0);
 
 	}
 
 	public WorkingSheet(SheetPanel sheetPanel, String sheetPlName, int idx, boolean flag)
 	{
 		this.sheetPanel = sheetPanel;
-		this.sheet = sheetPanel.NewSheetByName(sheetPlName, idx);
+		String plName = sheetPlName.replace("/", "$");
+		this.sheet = sheetPanel.NewSheetByName(plName, idx);
 		int num = 0;
 		for(char c = 'A'; c <= 'Z'; ++c)
 		{
@@ -147,7 +149,8 @@ public class WorkingSheet
 	public WorkingSheet(SheetPanel sheetPanel, String sheetPlName, int idx)
 	{
 		this.sheetPanel = sheetPanel;
-		this.sheet = sheetPanel.NewSheetByName(sheetPlName, idx);
+		String plName = sheetPlName.replace("/", "$");
+		this.sheet = sheetPanel.NewSheetByName(plName, idx);
 		this.selectedPL = sheetPlName;
 		int num = 0;
 		for(char c = 'A'; c <= 'Z'; ++c)
@@ -178,7 +181,8 @@ public class WorkingSheet
 	public WorkingSheet(SheetPanel sheetPanel, TrackingParametric track, int index)
 	{
 		this.sheetPanel = sheetPanel;
-		this.sheet = sheetPanel.NewSheetByName(track.getPl().getName(), index);
+		String plName = track.getPl().getName().replace("/", "$");
+		this.sheet = sheetPanel.NewSheetByName(plName, index);
 		this.supplierPl = track.getSupplierPl();
 		this.sheetpl = track.getPl();
 		// this.trackingParametric = track;
