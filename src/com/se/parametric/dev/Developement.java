@@ -278,6 +278,7 @@ public class Developement extends JPanel implements ActionListener
 						DocumentInfoDTO docInfo = docsInfo.get(i);
 						suppName = docInfo.getSupplierName();
 						plName = docInfo.getPlName();
+						
 						ws = new WorkingSheet(sheetpanel, plName, i);
 						sheetpanel.saveDoc("C:/Report/Parametric_Auto/"
 								+ pdfUrl.replaceAll(".*/", "") + "@" + userDTO.getFullName() + "@"
