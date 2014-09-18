@@ -77,7 +77,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		String[] filterLabels = { "PL Name", "PL Type", "Supplier", "Task Type", "User Name",
 				"PDF Status" };
 		tablePanel = selectionPanel.getTablePanel(tableHeader);
-		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, false, this);
+		filterPanel = selectionPanel.getFilterPanel(filterLabels, filterData, true, this);
 
 		ArrayList<String> buttonLabels = new ArrayList<String>();
 		buttonLabels.add("Load PDF");
@@ -465,7 +465,7 @@ public class QAReviewData extends JPanel implements ActionListener
 		protected Object doInBackground() throws Exception
 		{
 
-			MainWindow.glass.setVisible(false);
+			MainWindow.glass.setVisible(true);
 			ArrayList<String> row = null;
 			// String[] statuses=null;
 			boolean isExclamationMark = false;
