@@ -363,7 +363,10 @@ public class Update extends JPanel implements ActionListener
 				sheetpanel.openOfficeDoc();
 				System.out.println("PL Name : " + plName + "\nSupplier Name : " + supplierName
 						+ " " + typeBuilder.toString());
-
+				if(type.equals("All"))
+				{
+					type = "NPI Update";
+				}
 				// ArrayList<TableInfoDTO> tableRecs = ParaQueryUtil.getReviewPDF(new Long[] { userId }, plName, supplierName, type, extracted,
 				// "Assigned", startDate, endDate, null, "assigned", priority);
 				ArrayList<TableInfoDTO> tableRecs = DataDevQueryUtil.getAllAssigined(userId,
@@ -540,6 +543,10 @@ public class Update extends JPanel implements ActionListener
 				String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 				String extracted = filterPanel.comboBoxItems[3].getSelectedItem().toString();
 				String priority = filterPanel.comboBoxItems[4].getSelectedItem().toString();
+				if(taskType.equals("All"))
+				{
+					taskType = "NPI Update";
+				}
 				tablePanel.selectedData = DataDevQueryUtil.getReviewPDFupdate(
 						new Long[] { userId }, plName, supplierName, taskType, extracted,
 						startDate, endDate, null, "assigned", priority, StatusName.assigned, null);
