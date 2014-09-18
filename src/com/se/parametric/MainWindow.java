@@ -240,6 +240,10 @@ public class MainWindow extends JFrame
 		txt += "- Prevent saving twice\n";
 		txt += "- Prevent saving seperation without value\n";
 		txt += "- Solve issue of naming office sheet due to special char (\\)\n";
+		txt += "- Load Non PDF News and solve null news in development screen \n";
+		txt += "- Display loading window in QA Review screen \n";
+		txt += "- Enhance dofilter & loading pdfs in Update screen \n";
+		txt += "- Enhance the problem of header in QA screen \n";
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
