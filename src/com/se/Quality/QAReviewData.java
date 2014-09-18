@@ -350,7 +350,7 @@ public class QAReviewData extends JPanel implements ActionListener
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							for(int l = 0; l < 5; l++)
+							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
 							}
@@ -376,7 +376,7 @@ public class QAReviewData extends JPanel implements ActionListener
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							for(int l = 0; l < 4; l++)
+							for(int l = 0; l < 7; l++)
 							{
 								sheetRecord.add("");
 							}
