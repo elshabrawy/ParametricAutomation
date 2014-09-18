@@ -2520,15 +2520,24 @@ public class DataDevQueryUtil
 		try
 		{
 			SQLQuery query = session
-					.createSQLQuery("select GETPDFURLbydoc(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('"
+					.createSQLQuery("select GETPDFURLbydoc1(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('"
 							+ pdfURL + "')");
 			Object[] list = (Object[]) query.uniqueResult();
-			newsLink = (list[0] == null) ? "" : list[0].toString();
-			newsDesc = (list[1] == null) ? "" : list[1].toString();
-			newsDate = (list[2] == null) ? "" : list[2].toString();
-			newsData.add(newsLink);
-			newsData.add(newsDesc);
-			newsData.add(newsDate);
+			if(list == null || list.length == 0)
+			{
+				newsData.add("");
+				newsData.add("");
+				newsData.add("");
+			}
+			else
+			{
+				newsLink = (list[0] == null) ? "" : list[0].toString();
+				newsDesc = (list[1] == null) ? "" : list[1].toString();
+				newsDate = (list[2] == null) ? "" : list[2].toString();
+				newsData.add(newsLink);
+				newsData.add(newsDesc);
+				newsData.add(newsDate);
+			}
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();

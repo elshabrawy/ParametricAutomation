@@ -1998,7 +1998,7 @@ public class ApprovedDevUtil
 					break;
 				}
 			}
-			for(int i = 0; i < conditionArr.length; i++)
+			for(int i = 0; i < unitArr.length; i++)
 			{
 				if(checkPlFetUnit(plname, fetName, fetValue, unitArr[i], session) == false)
 

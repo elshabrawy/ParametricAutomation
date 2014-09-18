@@ -1520,6 +1520,7 @@ public class WorkingSheet
 		String lastColumn = getColumnName(lastColNum);
 		ArrayList<String> sheetHeader = getHeader();
 		int npiIndex = sheetHeader.indexOf("NPI");
+		int newsIndex = sheetHeader.indexOf("News Link");
 		String plname = "";
 		String seletedRange = "A" + 3 + ":" + lastColumn + 3;
 		xcellrange = sheet.getCellRangeByName(seletedRange);
@@ -1654,6 +1655,20 @@ public class WorkingSheet
 						writeValidtionStatus(xcellrange, false);
 						canSave = false;
 						continue part;
+					}
+					/**** validate that News not null ***/
+					else if(NPIFlag)
+					{
+						XCell newsCell = xcellrange.getCellByPosition(newsIndex, 0);
+						String news = getCellText(newsCell).getString();
+						if(news.isEmpty())
+						{
+							partvalidation.setStatus("Wrong News Link");
+							setCellColore(newsCell, 0xD2254D);
+							writeValidtionStatus(xcellrange, false);
+							canSave = false;
+							continue part;
+						}
 					}
 					/**
 					 * validate that generic and family Cross not null

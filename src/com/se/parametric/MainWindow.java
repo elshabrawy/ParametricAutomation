@@ -226,26 +226,36 @@ public class MainWindow extends JFrame
 		txtarea.setLineWrap(true);
 		txtarea.setForeground(new Color(0, 0, 0));
 		txtarea.setFont(new Font("Simpson", Font.BOLD, 12));
-		txtarea.setBounds(0, 80, 383, 180);
+		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
-		txt += "1- Change the Automaion Colors" + "\n";
-		txt += "2- Change the display of Tabs" + "\n";
-		txt += "3- Enhance the Problem of Loading Screen" + "\n";
-		txt += "4- Enhance the dispaly Filter Area" + "\n";
-		txt += "5- Enhance the dispaly counts Area" + "\n";
-		txt += "6- Change the Date Title in Table of Filter result" + "\n";
-		txt += "7- Add Menus for Cycles and new Options (Logout,ChangePassword)" + "\n";
-		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)" + "\n";
-		txt += "9- Update saving of approvedvalues  " + "\n";
-		txt += "10- Update loading of (development & update) screens" + "\n";
-		txt += "11- Enhance Seperaton Header in (Development&TL Review) screens " + "\n";
-		txt += "12- Prevent saving twice" + "\n";
-		txt += "12- Prevent saving seperation without value" + "\n";
-		txt += "13- Solve issue of naming office sheet due to special char (\\)" + "\n";
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.1 @ 18/9/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+		
+		txt += "- Get Non PDF News and solve null news list\n";
+		txt += "- Validate that News not Blank\n";
+		txt += "- Update saving of approvedvalues(Conflict between Condition and Unit)\n";
+		txt += "- Update loading of (development & update) screens\n";
+		txt += "- Enhance Seperaton Header in (Development&TL Review) screens\n";
+		txt += "- Prevent saving twice\n";
+		txt += "- Prevent saving seperation without value\n";
+		txt += "- Solve issue of naming office sheet due to special char (\\)\n";
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+		txt += "1- Change the Automaion Colors\n";
+		txt += "2- Change the display of Tabs\n";
+		txt += "3- Enhance the Problem of Loading Screen\n";
+		txt += "4- Enhance the dispaly Filter Area\n";
+		txt += "5- Enhance the dispaly counts Area\n";
+		txt += "6- Change the Date Title in Table of Filter result\n";
+		txt += "7- Add Menus for Cycles and new Options (Logout,ChangePassword)\n";
+		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)\n";
+		
 		txtarea.setText(txt);
 		txtarea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(txtarea);
-		scrollPane.setBounds(0, 80, 383, 180);
+		scrollPane.setBounds(0, 80, 450, 250);
 		scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		dialog.add(lbl);
 		dialog.add(lbl2);
@@ -253,7 +263,7 @@ public class MainWindow extends JFrame
 		dialog.add(lbl3);
 		dialog.setLocationRelativeTo(this);
 		dialog.setTitle("Parametric Automation");
-		dialog.setBounds((width - 383) / 2, (height - 249) / 2, 383, 330);
+		dialog.setBounds((width - 450) / 2, (height - 249) / 2, 470, 330);
 		dialog.setVisible(true);
 
 	}
