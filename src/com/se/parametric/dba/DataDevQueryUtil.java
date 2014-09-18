@@ -2141,49 +2141,49 @@ public class DataDevQueryUtil
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
 			}
-			if(Pltype != null && !Pltype.equals("All"))
-			{
-				qury.append("  AND Get_PL_Type(T.PL_ID)='" + Pltype + "'");
-			}
-			if(!vendorName.equals("All") && vendorName != null)
-			{
-				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
-			}
-			if(type != null && !type.equals("All"))
-			{
-				if(type.equals("NPI"))
-				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
-							+ "'),getTaskTypeId('" + StatusName.npiTransferred
-							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
-				}
-				else
-				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
-				}
-			}
-			if(!(usersId.length == 0) && usersId != null)
-			{
-				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
-			}
+//			if(Pltype != null && !Pltype.equals("All"))
+//			{
+//				qury.append("  AND Get_PL_Type(T.PL_ID)='" + Pltype + "'");
+//			}
+//			if(!vendorName.equals("All") && vendorName != null)
+//			{
+//				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
+//			}
+//			if(type != null && !type.equals("All"))
+//			{
+//				if(type.equals("NPI"))
+//				{
+//					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
+//							+ "'),getTaskTypeId('" + StatusName.npiTransferred
+//							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
+//				}
+//				else
+//				{
+//					qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
+//				}
+//			}
+//			if(!(usersId.length == 0) && usersId != null)
+//			{
+//				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
+//			}
 			if(docsIds != null && docsIds.length > 0)
 			{
 				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
 						+ " )");
 			}
-			if(startDate != null && endDate != null)
-			{
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************"
-						+ formatter.format(endDate));
-
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-				qury.append(dateRangeCond);
-				// qury = qury +
-				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
-			}
+//			if(startDate != null && endDate != null)
+//			{
+//				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//				System.out.println(formatter.format(startDate) + "**************"
+//						+ formatter.format(endDate));
+//
+//				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+//						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+//						+ formatter.format(endDate) + "','DD/MM/RRRR')";
+//				qury.append(dateRangeCond);
+//				// qury = qury +
+//				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
+//			}
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 			// Medical Application|DD Review|Minimum Storage Temperature
 
