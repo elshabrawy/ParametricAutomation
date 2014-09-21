@@ -2141,49 +2141,49 @@ public class DataDevQueryUtil
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
 			}
-//			if(Pltype != null && !Pltype.equals("All"))
-//			{
-//				qury.append("  AND Get_PL_Type(T.PL_ID)='" + Pltype + "'");
-//			}
-//			if(!vendorName.equals("All") && vendorName != null)
-//			{
-//				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
-//			}
-//			if(type != null && !type.equals("All"))
-//			{
-//				if(type.equals("NPI"))
-//				{
-//					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
-//							+ "'),getTaskTypeId('" + StatusName.npiTransferred
-//							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
-//				}
-//				else
-//				{
-//					qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
-//				}
-//			}
-//			if(!(usersId.length == 0) && usersId != null)
-//			{
-//				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
-//			}
+			// if(Pltype != null && !Pltype.equals("All"))
+			// {
+			// qury.append("  AND Get_PL_Type(T.PL_ID)='" + Pltype + "'");
+			// }
+			// if(!vendorName.equals("All") && vendorName != null)
+			// {
+			// qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
+			// }
+			// if(type != null && !type.equals("All"))
+			// {
+			// if(type.equals("NPI"))
+			// {
+			// qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
+			// + "'),getTaskTypeId('" + StatusName.npiTransferred
+			// + "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
+			// }
+			// else
+			// {
+			// qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
+			// }
+			// }
+			// if(!(usersId.length == 0) && usersId != null)
+			// {
+			// qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
+			// }
 			if(docsIds != null && docsIds.length > 0)
 			{
 				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
 						+ " )");
 			}
-//			if(startDate != null && endDate != null)
-//			{
-//				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-//				System.out.println(formatter.format(startDate) + "**************"
-//						+ formatter.format(endDate));
-//
-//				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-//						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-//						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-//				qury.append(dateRangeCond);
-//				// qury = qury +
-//				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
-//			}
+			// if(startDate != null && endDate != null)
+			// {
+			// SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			// System.out.println(formatter.format(startDate) + "**************"
+			// + formatter.format(endDate));
+			//
+			// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+			// + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+			// + formatter.format(endDate) + "','DD/MM/RRRR')";
+			// qury.append(dateRangeCond);
+			// // qury = qury +
+			// // " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
+			// }
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 			// Medical Application|DD Review|Minimum Storage Temperature
 
@@ -4952,8 +4952,7 @@ public class DataDevQueryUtil
 
 	}
 
-	public static ArrayList<ArrayList<String>> getsummarydata(Date startDate, Date endDate,
-			GrmUserDTO userDTO)
+	public static ArrayList<ArrayList<String>> getsummarydata(GrmUserDTO userDTO)
 	{
 		Session session = SessionUtil.getSession();
 		// ArrayList<SummaryDTO> alldata = new ArrayList<>();
@@ -4963,7 +4962,7 @@ public class DataDevQueryUtil
 		{
 			StringBuffer qury = new StringBuffer();
 			String Sql = "";
-			Sql = " SELECT GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
+			Sql = " SELECT  /*+ INDEX(C PART_COMP_DOC_ID_SUP_PL_IDX) */ GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
 			Sql = Sql
 					+ "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
 			Sql = Sql
@@ -4971,7 +4970,7 @@ public class DataDevQueryUtil
 			Sql = Sql
 					+ "Name (t.TRACKING_TASK_TYPE_ID) task_type, getuserName (T.USER_ID) username, t.";
 			Sql = Sql
-					+ "ASSIGNED_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
+					+ "QA_REVIEW_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
 			Sql = Sql
 					+ "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
 			Sql = Sql
@@ -4984,17 +4983,17 @@ public class DataDevQueryUtil
 			// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
 			// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12
 
-			if(startDate != null && endDate != null)
-			{
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************"
-						+ formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-				qury.append(dateRangeCond);
-
-			}
+			// if(startDate != null && endDate != null)
+			// {
+			// SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			// System.out.println(formatter.format(startDate) + "**************"
+			// + formatter.format(endDate));
+			// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+			// + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+			// + formatter.format(endDate) + "','DD/MM/RRRR')";
+			// qury.append(dateRangeCond);
+			//
+			// }
 			System.out.println(qury.toString());
 			Long[] users = ParaQueryUtil.getusersbyqualityandstatus(userDTO,
 					StatusName.waitingsummary);

@@ -157,18 +157,8 @@ public class QAReviewData extends JPanel implements ActionListener
 
 	private void loadsummary()
 	{
-		Date startDate = null;
-		Date endDate = null;
-
-		if(filterPanel.jDateChooser1.isEnabled())
-		{
-			startDate = filterPanel.jDateChooser1.getDate();
-			endDate = filterPanel.jDateChooser2.getDate();
-		}
-
 		wsMap.clear();
-		ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(startDate, endDate,
-				userDTO);
+		ArrayList<ArrayList<String>> data = DataDevQueryUtil.getsummarydata(userDTO);
 		tabbedPane.setSelectedIndex(2);
 		SummaryPanel.openOfficeDoc();
 
@@ -350,7 +340,7 @@ public class QAReviewData extends JPanel implements ActionListener
 						for(int j = 0; j < plData.size(); j++)
 						{
 							ArrayList<String> sheetRecord = plData.get(j);
-							for(int l = 0; l < 7; l++)
+							for(int l = 0; l < 8; l++)
 							{
 								sheetRecord.add("");
 							}
