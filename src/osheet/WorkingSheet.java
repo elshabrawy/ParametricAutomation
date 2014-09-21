@@ -4746,7 +4746,7 @@ public class WorkingSheet
 					canSave = false;
 				}
 
-				if(!canSave)
+				if(!canSave && !error.equals(""))
 				{
 					getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString(
 							error);
