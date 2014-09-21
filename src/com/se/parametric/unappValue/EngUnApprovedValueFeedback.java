@@ -330,7 +330,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 						for(int i = 0; i < result.size(); i++)
 						{
 							ArrayList<String> newValReq = result.get(i);
-							if(newValReq.get(12).equals("Update"))
+							if(newValReq.get(14).equals("Update"))
 							{
 								try
 								{
@@ -347,8 +347,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									continue;
 								}
 							}
-							if(newValReq.get(12).equals("Update")
-									&& !newValReq.get(19).equals("Wrong Separation"))
+							if(newValReq.get(14).equals("Update")
+									&& !newValReq.get(21).equals("Wrong Separation"))
 							{
 								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
@@ -357,8 +357,8 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 
 								return null;
 							}
-							if(newValReq.get(12).equals("Accept Wrong Value")
-									&& !newValReq.get(19).equals("Wrong Value"))
+							if(newValReq.get(14).equals("Accept Wrong Value")
+									&& !newValReq.get(21).equals("Wrong Value"))
 							{
 								MainWindow.glass.setVisible(false);
 								JOptionPane.showMessageDialog(null,
@@ -369,11 +369,11 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							}
 							if((newValReq.get(12).equals("Update") || newValReq.get(12).equals(
 									"Accept Wrong Value"))
-									&& newValReq.get(18).equals("QA"))
+									&& newValReq.get(20).equals("QA"))
 							{
-								if(newValReq.get(14).isEmpty() || newValReq.get(15).isEmpty()
-										|| newValReq.get(16).isEmpty()
-										|| newValReq.get(17).isEmpty())
+								if(newValReq.get(16).isEmpty() || newValReq.get(17).isEmpty()
+										|| newValReq.get(18).isEmpty()
+										|| newValReq.get(19).isEmpty())
 								{
 									MainWindow.glass.setVisible(false);
 									JOptionPane.showMessageDialog(null,
@@ -382,9 +382,9 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 
 									return null;
 								}
-								if(!newValReq.get(17).isEmpty())
+								if(!newValReq.get(19).isEmpty())
 								{
-									if(ApprovedDevUtil.isThisDateValid(newValReq.get(17),
+									if(ApprovedDevUtil.isThisDateValid(newValReq.get(19),
 											"DD/MM/YYYY") == false)
 									{
 										MainWindow.glass.setVisible(false);
@@ -402,21 +402,21 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							UnApprovedDTO oldValReq = unApproveds.get(i);
 							if(newValReq.get(0).equals(oldValReq.getPlName())
-									&& newValReq.get(3).equals(oldValReq.getFeatureName())
-									&& newValReq.get(4).equals(oldValReq.getFeatureValue())
-									&& newValReq.get(5).equals(oldValReq.getFeatureUnit()))
+									&& newValReq.get(5).equals(oldValReq.getFeatureName())
+									&& newValReq.get(6).equals(oldValReq.getFeatureValue())
+									&& newValReq.get(7).equals(oldValReq.getFeatureUnit()))
 							{
-								oldValReq.setSign(newValReq.get(6));
-								oldValReq.setValue(newValReq.get(7));
-								oldValReq.setType(newValReq.get(8));
-								oldValReq.setCondition(newValReq.get(9));
-								oldValReq.setMultiplier(newValReq.get(10));
-								oldValReq.setUnit(newValReq.get(11));
-								oldValReq.setComment(newValReq.get(13));
+								oldValReq.setSign(newValReq.get(8));
+								oldValReq.setValue(newValReq.get(9));
+								oldValReq.setType(newValReq.get(10));
+								oldValReq.setCondition(newValReq.get(11));
+								oldValReq.setMultiplier(newValReq.get(12));
+								oldValReq.setUnit(newValReq.get(13));
+								oldValReq.setComment(newValReq.get(15));
 								long issuedto = oldValReq.getIssuedby();
 								long issuedby = oldValReq.getIssueTo();
 
-								if(result.get(i).get(12).equals("Reject"))
+								if(result.get(i).get(14).equals("Reject"))
 								{
 									oldValReq.setFbType(StatusName.internal);
 									// ParaQueryUtil.saveRejectEng(userDTO, oldValReq, newValReq.get(15));
@@ -426,12 +426,12 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									oldValReq.setGruopSatus(StatusName.tlFeedback);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(result.get(i).get(12).equals("Update"))
+								else if(result.get(i).get(14).equals("Update"))
 								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
+									oldValReq.setCAction(newValReq.get(16));
+									oldValReq.setPAction(newValReq.get(17));
+									oldValReq.setRootCause(newValReq.get(18));
+									oldValReq.setActionDueDate(newValReq.get(19));
 
 									oldValReq.setFbType(StatusName.internal);
 									oldValReq.setIssuedby(issuedby);
@@ -441,12 +441,12 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
-								else if(result.get(i).get(12).equals("Accept Wrong Value"))
+								else if(result.get(i).get(14).equals("Accept Wrong Value"))
 								{
-									oldValReq.setCAction(newValReq.get(14));
-									oldValReq.setPAction(newValReq.get(15));
-									oldValReq.setRootCause(newValReq.get(16));
-									oldValReq.setActionDueDate(newValReq.get(17));
+									oldValReq.setCAction(newValReq.get(16));
+									oldValReq.setPAction(newValReq.get(17));
+									oldValReq.setRootCause(newValReq.get(18));
+									oldValReq.setActionDueDate(newValReq.get(19));
 									// close old Feedback
 
 									oldValReq.setIssuedby(issuedby);
@@ -463,7 +463,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 									if(oldValReq.getFbType().equals(StatusName.internal))
 									{
 										oldValReq.setIssuedby(issuedto);
-										oldValReq.setComment(newValReq.get(21));
+										oldValReq.setComment(newValReq.get(23));
 									}
 									else
 									{
@@ -479,7 +479,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
-										oldValReq.setComment(newValReq.get(23));
+										oldValReq.setComment(newValReq.get(25));
 										oldValReq.setIssuedby(qaUserId);
 									}
 									// oldValReq.setFbType(oldValReq.getFbType());

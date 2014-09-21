@@ -244,6 +244,7 @@ public class MainWindow extends JFrame
 		txt += "- Display loading window in QA Review screen \n";
 		txt += "- Enhance dofilter & loading pdfs in Update screen \n";
 		txt += "- Enhance the problem of header in QA screen \n";
+		txt += "- Enhance the saving in Eng-unapproved feedback screen \n";
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
