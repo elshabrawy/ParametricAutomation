@@ -1325,7 +1325,7 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								long statusId = tp.getTrackingTaskStatus().getId();
-								if(statusId != 10)
+								if(statusId != 10&&statusId != 42)
 								{
 									continue;
 								}
@@ -1361,7 +1361,7 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								long statusId = tp.getTrackingTaskStatus().getId();
-								if(statusId != 10)
+								if(statusId != 10&&statusId != 42)
 								{
 									continue;
 								}
