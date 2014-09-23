@@ -249,6 +249,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 				statusValues.add("Update");
 				statusValues.add("Wrong Value");
 				statusValues.add("Wrong Separation");
+				statusValues.add("Missed Part");
 				ws.statusValues = statusValues;
 				ws.writeReviewData(list, 1, 15);
 				// filterPanel.jDateChooser1.setDate(new Date(System.currentTimeMillis()));
@@ -370,19 +371,94 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									oldValReq.setIssueType(newValReq.get(14));
 									if(newValReq.get(14).equals("Approved"))
 									{
-										ApprovedDevUtil.setValueApproved(result.get(i),
-												StatusName.qaReview);
+										if(newValReq.get(1).trim().equals(""))
+										{
+											try
+											{
+												Cell cell = wsMap.get("Unapproved Values")
+														.getCellByPosission(16, i + 1);
+												cell.setText("You can't set status '"
+														+ newValReq.get(14) + "' for Missed Part");
+											}catch(Exception ex)
+											{
+												ex.printStackTrace();
+											}
+											continue;
+										}
+										else
+										{
+											ApprovedDevUtil.setValueApproved(result.get(i),
+													StatusName.qaReview);
+										}
 									}
 									else if(newValReq.get(14).equals("Update"))
 									{
-										ApprovedDevUtil.updateApprovedValue(updateFlag, oldValReq);
+										if(newValReq.get(1).trim().equals(""))
+										{
+											try
+											{
+												Cell cell = wsMap.get("Separation")
+														.getCellByPosission(16, i + 1);
+												cell.setText("You can't set status '"
+														+ newValReq.get(14) + "' for Missed Part");
+											}catch(Exception ex)
+											{
+												ex.printStackTrace();
+											}
+											continue;
+										}
+										else
+										{
+											ApprovedDevUtil.updateApprovedValue(updateFlag,
+													oldValReq);
+										}
 									}
 									else if(newValReq.get(14).equals("Wrong Value"))
 									{
-										ApprovedDevUtil.saveWrongSeparation(oldValReq);
+										if(newValReq.get(1).trim().equals(""))
+										{
+											try
+											{
+												Cell cell = wsMap.get("Separation")
+														.getCellByPosission(16, i + 1);
+												cell.setText("You can't set status '"
+														+ newValReq.get(14) + "' for Missed Part");
+											}catch(Exception ex)
+											{
+												ex.printStackTrace();
+											}
+											continue;
+										}
+										else
+										{
+											ApprovedDevUtil.saveWrongSeparation(oldValReq);
+										}
 									}
 									else if(newValReq.get(14).equals("Wrong Separation"))
 									{
+										if(newValReq.get(1).trim().equals(""))
+										{
+											try
+											{
+												Cell cell = wsMap.get("Separation")
+														.getCellByPosission(16, i + 1);
+												cell.setText("You can't set status '"
+														+ newValReq.get(14) + "' for Missed Part");
+											}catch(Exception ex)
+											{
+												ex.printStackTrace();
+											}
+											continue;
+										}
+										else
+										{
+											ApprovedDevUtil.saveWrongSeparation(oldValReq);
+										}
+									}
+									else if(newValReq.get(14).equals("Missed Part"))
+									{
+										oldValReq
+												.setComment("Missed Part , you must save parts of this value");
 										ApprovedDevUtil.saveWrongSeparation(oldValReq);
 									}
 								}
@@ -397,8 +473,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							{
 								try
 								{
-									Cell cell = wsMap.get("Separation").getCellByPosission(16,
-											i + 1);
+									Cell cell = wsMap.get("Unapproved Values").getCellByPosission(
+											16, i + 1);
 									cell.setText(e.getMessage());
 								}catch(Exception ex)
 								{
