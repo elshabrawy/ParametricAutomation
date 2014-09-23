@@ -1695,11 +1695,18 @@ public class DataDevQueryUtil
 							/** NPI news */
 							partData.add((data[10] == null) ? "" : data[10].toString());
 							List<String> newsData = getNewsLink(data[12].toString());
-							/** NPI desc */
-							partData.add(newsData.get(1));
-							/** NPI date */
-							partData.add(newsData.get(2));
-
+							if(!newsData.isEmpty())
+							{
+								/** NPI desc */
+								partData.add(newsData.get(1));
+								/** NPI date */
+								partData.add(newsData.get(2));
+							}
+							else
+							{
+								partData.add("");
+								partData.add("");
+							}
 						}
 						/** pdf url */
 						partData.add(data[12].toString());
@@ -2281,7 +2288,7 @@ public class DataDevQueryUtil
 						allData.put(lastPl, plData);
 					}
 					boolean NPIFlag = isNPITaskType(usersId, plout, vendorName, type,
-							availableStatus, startDate, endDate, docsIds);
+							availableStatus, null, null, docsIds);
 					partData = new ArrayList<String>();
 					/** Pl Name */
 					partData.add(data[0].toString());
@@ -2521,7 +2528,7 @@ public class DataDevQueryUtil
 		{
 			SQLQuery query = session
 					.createSQLQuery("select GETPDFURLbydoc1(doc_id),NEWS_TITLE,NEWS_DATE from TBL_NEW_NPI where OFFLINE_DS =GET_DOCID_BY_PDFURL('"
-							+ pdfURL + "')");
+							+ pdfURL + "') and rownum=1");
 			Object[] list = (Object[]) query.uniqueResult();
 			if(list == null || list.length == 0)
 			{
@@ -4175,10 +4182,15 @@ public class DataDevQueryUtil
 		{
 			session = SessionUtil.getSession();
 		}
+		String sql = "select  /*+INDEX (com PRT_MAN_IDX)*/ COM_ID from PART_COMPONENT com where PART_NUMBER = '"
+				+ partnumber
+				+ "' and SUPPLIER_ID = (select /*+INDEX (s SUPPLIER_U01)*/ id from supplier s where NAME = '"
+				+ suppliername + "') ";
+		SQLQuery sqlqry = session.createSQLQuery(sql);
+		BigDecimal comid = (BigDecimal) sqlqry.uniqueResult();
+		long id = comid == null ? 1L : comid.longValue();
 		final Criteria crit = session.createCriteria(PartComponent.class);
-		crit.add(Restrictions.eq("partNumber", partnumber));
-		crit.createCriteria("supplierPl").createCriteria("supplier")
-				.add(Restrictions.eq("name", suppliername));
+		crit.add(Restrictions.eq("comId", id));
 		PartComponent component = (PartComponent) crit.uniqueResult();
 		return component;
 	}
