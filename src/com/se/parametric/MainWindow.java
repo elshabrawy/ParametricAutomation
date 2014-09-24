@@ -211,7 +211,7 @@ public class MainWindow extends JFrame
 		lbl.setForeground(new Color(160, 82, 45));
 		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
 
-		JLabel lbl2 = new JLabel("Last updates on 16/9/2014 :- ");
+		JLabel lbl2 = new JLabel("Last updates on 23/9/2014 :- ");
 		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
 		lbl2.setForeground(new Color(189, 67, 67));
 		lbl2.setBounds(0, 55, 250, 20);
@@ -229,7 +229,19 @@ public class MainWindow extends JFrame
 		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
 		txt += "---------------------------------------------\n";
-		txt += "~~~~~~~ Version No 2.1 @ 23/9/2014 ~~~~~~~~~\n";
+		txt += "~~~~~~~ Version No 2.2 @ 23/9/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+		
+		txt += "- Enhance the saving in Eng-unapproved feedback screen \n";
+		txt += "- Enhance displaying of newsdata in TL screen \n";
+		txt += "- Enhance saving in NPIUpdate \n";
+		txt += "- Enhance filter  of unapproved values to display all assgined pdfs  \n";
+		txt += "- Enhance display of un approved values in TL Seperation \n";
+		txt += "- Add new status to TL & Eng to manage the cycle of unapproved values with missed parts  \n";
+		txt += "- Check the header of seperation in all screens  \n";
+		
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.1 @ 16/9/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
 
 		txt += "- Get Non PDF News and solve null news list\n";
@@ -244,15 +256,7 @@ public class MainWindow extends JFrame
 		txt += "- Display loading window in QA Review screen \n";
 		txt += "- Enhance dofilter & loading pdfs in Update screen \n";
 		txt += "- Enhance the problem of header in QA screen \n";
-		txt += "- Enhance the saving in Eng-unapproved feedback screen \n";
-		txt += "- Enhance displaying of newsdata in TL screen \n";
-		txt += "- pass null date to NPI task method \n";
-		txt += "- Enhance getnews data method \n";
-		txt += "- Enhance function of get component by part,supplier \n";
-		txt += "- Enhance filter  of unapproved values to display pdfs in doneengine & in progress \n";
-		txt += "- Enhance display of un approved values in TL Seperation \n";
-		txt += "- Add new status to TL & Eng to manage the cycle of unapproved values with missed parts  \n";
-		txt += "- Check the header of seperation in all screens  \n";
+
 
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";

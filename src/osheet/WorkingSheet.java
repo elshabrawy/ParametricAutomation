@@ -1729,8 +1729,7 @@ public class WorkingSheet
 					writeValidtionStatus(xcellrange, true);
 
 				}
-				if(!update || (update && !status.equals("Rejected"))
-						|| (update && !status.equals("Approved")))
+				if(!update || (update && !status.equals("Rejected") && !status.equals("Approved")))
 				{
 					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
 					if(!appFlag)
