@@ -2808,6 +2808,8 @@ public class DataDevQueryUtil
 				famGen.setFamilyCross(fam);
 				famGen.setMapGeneric(gen);
 				famGen.setAutoFlag(1l);
+				famGen.setSupplierId(track.getSupplier());
+				famGen.setInsertiondate(new Date());
 				session.saveOrUpdate(famGen);
 				// session.beginTransaction().commit()
 			}
@@ -2932,6 +2934,8 @@ public class DataDevQueryUtil
 				famGen.setFamilyCross(fam);
 				famGen.setMapGeneric(gen);
 				famGen.setAutoFlag(1l);
+				famGen.setSupplierId(track.getSupplier());
+				famGen.setInsertiondate(new Date());
 				session.saveOrUpdate(famGen);
 				// session.beginTransaction().commit()
 			}
