@@ -145,11 +145,11 @@ public class TLFeedBack extends JPanel implements ActionListener
 				row = separationValues.get(i);
 
 				String plName = row.get(0);
-				String featureName = row.get(3);
-				String featureFullValue = row.get(4);
+				String featureName = row.get(5);
+				String featureFullValue = row.get(6);
 				List<ApprovedParametricDTO> approved = ApprovedDevUtil.createApprovedValuesList(
-						featureFullValue, plName, featureName, row.get(5), row.get(6), row.get(7),
-						row.get(10), row.get(11), row.get(9), row.get(8));
+						featureFullValue, plName, featureName, row.get(7), row.get(8), row.get(9),
+						row.get(12), row.get(13), row.get(11), row.get(10));
 				try
 				{
 					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
@@ -176,6 +176,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 		row.add("PL_Name");
 		row.add("Part");
 		row.add("Datasheet");
+		row.add("Supplier");// 3
+		row.add("ReceivedDate");// 4
 		row.add("Feature Name");
 		row.add("Feature Value");
 		row.add("Feature Unit");
@@ -305,7 +307,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						continue;
 					}
 				}
-				ws.writeReviewData(plData, 2, 3);
+				ws.writeReviewData(plData, 2, 4);
 				k++;
 			}
 		}catch(Exception e)
@@ -474,7 +476,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 		frame.show();
 		while(true)
 		{
-//			ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
+			// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 1, 1);
 			fbPanel.updateFlags();
 
 			try

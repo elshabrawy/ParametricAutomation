@@ -432,6 +432,8 @@ public class Update extends JPanel implements ActionListener
 				row.add("PL_Name");
 				row.add("Part");
 				row.add("Datasheet");
+				row.add("Supplier");// 3
+				row.add("ReceivedDate");// 4
 				row.add("Feature Name");
 				row.add("Feature Value");
 				row.add("Feature Unit");
@@ -480,19 +482,19 @@ public class Update extends JPanel implements ActionListener
 					for(int i = 0; i < separationValues.size(); i++)
 					{
 						row = separationValues.get(i);
-						if(row.get(7).contains("!"))
+						if(row.get(9).contains("!"))
 						{
 							isExclamationMark = true;
 						}
 						String plName = row.get(0);
-						String featureName = row.get(3);
-						String featureFullValue = row.get(4);
+						String featureName = row.get(5);
+						String featureFullValue = row.get(6);
 						try
 						{
 							List<ApprovedParametricDTO> approved = ApprovedDevUtil
 									.createApprovedValuesList(featureFullValue, plName,
-											featureName, row.get(5), row.get(6), row.get(7),
-											row.get(10), row.get(11), row.get(9), row.get(8));
+											featureName, row.get(7), row.get(8), row.get(9),
+											row.get(12), row.get(13), row.get(11), row.get(10));
 
 							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
 									featureName, featureFullValue, row.get(2), userId);
@@ -504,7 +506,7 @@ public class Update extends JPanel implements ActionListener
 						{
 							try
 							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(12, i + 1);
+								Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
 								cell.setText(ex.getMessage());
 							}catch(Exception e)
 							{

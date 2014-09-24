@@ -229,9 +229,9 @@ public class MainWindow extends JFrame
 		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
 		txt += "---------------------------------------------\n";
-		txt += "~~~~~~~ Version No 2.1 @ 18/9/2014 ~~~~~~~~~\n";
+		txt += "~~~~~~~ Version No 2.1 @ 23/9/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
-		
+
 		txt += "- Get Non PDF News and solve null news list\n";
 		txt += "- Validate that News not Blank\n";
 		txt += "- Update saving of approvedvalues(Conflict between Condition and Unit)\n";
@@ -245,6 +245,15 @@ public class MainWindow extends JFrame
 		txt += "- Enhance dofilter & loading pdfs in Update screen \n";
 		txt += "- Enhance the problem of header in QA screen \n";
 		txt += "- Enhance the saving in Eng-unapproved feedback screen \n";
+		txt += "- Enhance displaying of newsdata in TL screen \n";
+		txt += "- pass null date to NPI task method \n";
+		txt += "- Enhance getnews data method \n";
+		txt += "- Enhance function of get component by part,supplier \n";
+		txt += "- Enhance filter  of unapproved values to display pdfs in doneengine & in progress \n";
+		txt += "- Enhance display of un approved values in TL Seperation \n";
+		txt += "- Add new status to TL & Eng to manage the cycle of unapproved values with missed parts  \n";
+		txt += "- Check the header of seperation in all screens  \n";
+
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
@@ -256,7 +265,7 @@ public class MainWindow extends JFrame
 		txt += "6- Change the Date Title in Table of Filter result\n";
 		txt += "7- Add Menus for Cycles and new Options (Logout,ChangePassword)\n";
 		txt += "8- update Unapproved Header by add(Vendor,ReveivedDate)\n";
-		
+
 		txtarea.setText(txt);
 		txtarea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(txtarea);
