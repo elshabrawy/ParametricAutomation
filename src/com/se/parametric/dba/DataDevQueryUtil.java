@@ -1683,7 +1683,7 @@ public class DataDevQueryUtil
 
 						partData.add(data[6] != null ? data[6].toString() : "");
 						/** generic */
-						partData.add((data[8] == null) ? "" : data[8].toString());
+						partData.add((data[7] == null) ? "" : data[7].toString());
 						/** Mask */
 						partData.add((data[8] == null) ? "" : data[8].toString());
 

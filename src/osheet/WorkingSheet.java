@@ -1321,6 +1321,8 @@ public class WorkingSheet
 			// for (int record = 0; record < lastRow - 2; record++) {
 
 			// = getCellText(partCell).getString();
+			ArrayList<String> header = getHeader();
+			supCell = header.indexOf("Supplier Name");
 			for(int i = startParametricFT; i < endParametricFT; i++)
 			{
 				row = new ArrayList<String>();
