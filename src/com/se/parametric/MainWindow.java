@@ -231,15 +231,15 @@ public class MainWindow extends JFrame
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.2 @ 23/9/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
-		
+
 		txt += "- Enhance the saving in Eng-unapproved feedback screen \n";
 		txt += "- Enhance displaying of newsdata in TL screen \n";
-		txt += "- Enhance saving in NPIUpdate \n";
+		txt += "- Enhance performance of saving in NPIUpdate \n";
 		txt += "- Enhance filter  of unapproved values to display all assgined pdfs  \n";
 		txt += "- Enhance display of un approved values in TL Seperation \n";
 		txt += "- Add new status to TL & Eng to manage the cycle of unapproved values with missed parts  \n";
 		txt += "- Check the header of seperation in all screens  \n";
-		
+
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.1 @ 16/9/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
@@ -256,7 +256,6 @@ public class MainWindow extends JFrame
 		txt += "- Display loading window in QA Review screen \n";
 		txt += "- Enhance dofilter & loading pdfs in Update screen \n";
 		txt += "- Enhance the problem of header in QA screen \n";
-
 
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.0 @ 26/8/2014 ~~~~~~~~~\n";

@@ -1090,7 +1090,7 @@ public class DataDevQueryUtil
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12,15)");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12)");
 				}
 				else
 				{
@@ -1211,7 +1211,7 @@ public class DataDevQueryUtil
 			{
 				if(type.equals("NPI"))
 				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12,15)");
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(4,12)");
 				}
 				else
 				{
@@ -1527,7 +1527,7 @@ public class DataDevQueryUtil
 				{
 					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
 							+ "'),getTaskTypeId('" + StatusName.npiTransferred
-							+ "'),getTaskTypeId('" + StatusName.npiUpdate + "'))");
+							+ "'))");
 				}
 				else
 				{
