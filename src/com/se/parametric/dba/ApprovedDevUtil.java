@@ -1048,15 +1048,15 @@ public class ApprovedDevUtil
 					session.saveOrUpdate(FBCyc);
 				}
 			}
-			// criteria = session.createCriteria(TrackingTaskStatus.class);
-			// criteria.add(Restrictions.eq("name", app.getGruopSatus()));
-			// TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
+			 criteria = session.createCriteria(TrackingTaskStatus.class);
+			 criteria.add(Restrictions.eq("name", app.getFbStatus()));
+			 TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
-			// groups.setStatus(trackingParaStatus);
-			// session.saveOrUpdate(groups);
+			 groups.setStatus(trackingTaskStatus);
+			 session.saveOrUpdate(groups);
 			for(TrackingParametric tp : tracks)
 			{
 				// session.beginTransaction().begin();
