@@ -397,7 +397,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 										{
 											try
 											{
-												Cell cell = wsMap.get("Separation")
+												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
@@ -419,7 +419,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 										{
 											try
 											{
-												Cell cell = wsMap.get("Separation")
+												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
@@ -440,7 +440,7 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 										{
 											try
 											{
-												Cell cell = wsMap.get("Separation")
+												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
