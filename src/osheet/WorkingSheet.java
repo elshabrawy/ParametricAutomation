@@ -4984,16 +4984,28 @@ public class WorkingSheet
 			else
 				cell.setText("QAComment");
 			HeaderList.add(cell);
-			cell = getCellByPosission(14, 0);
-			if(team == "QA")
-				cell.setText("LastQAComment");
-			else
-				cell.setText("LastDDComment");
-			HeaderList.add(cell);
+			// cell = getCellByPosission(14, 0);
+			// if(team == "QA")
+			// cell.setText("LastQAComment");
+			// else
+			// cell.setText("LastDDComment");
+			// HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData)
 					|| checkerType.equals(StatusName.RootPartChecker))
 			{
+				cell = getCellByPosission(14, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(15, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+			}
+			if(checkerType.equals(StatusName.generic_part))
+			{
+				cell = getCellByPosission(14, 0);
+				cell.setText("Generic");
+				HeaderList.add(cell);
 				cell = getCellByPosission(15, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
