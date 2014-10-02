@@ -3068,14 +3068,15 @@ public class DataDevQueryUtil
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
 				// track.setQaReviewDate(new Date());
-				TrackingTaskType taskType = track.getTrackingTaskType();
-				Pl pl = track.getPl();
-				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
-				track.setQaUserId(qaUserId);
-				track.setQaReviewDate(ParaQueryUtil.getDate());
+				// TrackingTaskType taskType = track.getTrackingTaskType();
+				// Pl pl = track.getPl();
+				// Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
+				// track.setQaUserId(qaUserId);
+				// track.setQaReviewDate(ParaQueryUtil.getDate());
 				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
 						session, status);
-				track.setTrackingTaskStatus(trackingTaskStatus);
+				if(track.getTrackingTaskStatus().getName() == StatusName.waitingsummary)
+					track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
 			}
 
