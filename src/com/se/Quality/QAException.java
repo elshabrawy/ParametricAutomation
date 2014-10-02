@@ -184,6 +184,15 @@ public class QAException extends JPanel implements ActionListener
 					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i)
 							.getFeatureValue());
 				}
+				else if(reviewData.get(i).getChecker().equals(StatusName.generic_part))
+				{
+					row.add(reviewData.get(i).getGeneric() == null ? "" : reviewData.get(i)
+							.getGeneric());
+					row.add(reviewData.get(i).getFeatureName() == null ? "" : reviewData.get(i)
+							.getFeatureName());
+					row.add(reviewData.get(i).getFeatureValue() == null ? "" : reviewData.get(i)
+							.getFeatureValue());
+				}
 				data.add(row);
 			}
 			ws.writeReviewData(data, 1, statusindx + 1);
