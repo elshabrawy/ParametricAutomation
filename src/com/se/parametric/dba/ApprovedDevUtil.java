@@ -1048,15 +1048,15 @@ public class ApprovedDevUtil
 					session.saveOrUpdate(FBCyc);
 				}
 			}
-			 criteria = session.createCriteria(TrackingTaskStatus.class);
-			 criteria.add(Restrictions.eq("name", app.getFbStatus()));
-			 TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
+			criteria = session.createCriteria(TrackingTaskStatus.class);
+			criteria.add(Restrictions.eq("name", app.getFbStatus()));
+			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			TrackingTaskStatus trackingParaStatus = (TrackingTaskStatus) criteria.uniqueResult();
-			 groups.setStatus(trackingTaskStatus);
-			 session.saveOrUpdate(groups);
+			groups.setStatus(trackingTaskStatus);
+			session.saveOrUpdate(groups);
 			for(TrackingParametric tp : tracks)
 			{
 				// session.beginTransaction().begin();
@@ -1170,7 +1170,7 @@ public class ApprovedDevUtil
 	}
 
 	public static FeedBackData getFeedbackData(long issuedTo, ParametricApprovedGroup groupRecord,
-			String taskType, Session session)
+			String taskType, Date startdate, Date enddate, Session session)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		FeedBackData result = null;
@@ -1182,6 +1182,10 @@ public class ApprovedDevUtil
 		feedBackCrit.createAlias("parametricFeedback", "feedback");
 		feedBackCrit.add(Restrictions.eq("feedback.type", "V"));
 		feedBackCrit.add(Restrictions.eq("feedback.itemId", groupRecord.getId()));
+		if(startdate != null && enddate != null)
+		{
+			feedBackCrit.add(Expression.between("storeDate", startdate, enddate));
+		}
 		appFeedback = (ParametricFeedbackCycle) feedBackCrit.uniqueResult();
 		if(appFeedback != null)
 		{
@@ -1325,7 +1329,7 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								long statusId = tp.getTrackingTaskStatus().getId();
-								if(statusId != 10&&statusId != 42)
+								if(statusId != 10 && statusId != 42)
 								{
 									continue;
 								}
@@ -1361,7 +1365,7 @@ public class ApprovedDevUtil
 								Iterator it = set.iterator();
 								TrackingParametric tp = (TrackingParametric) it.next();
 								long statusId = tp.getTrackingTaskStatus().getId();
-								if(statusId != 10&&statusId != 42)
+								if(statusId != 10 && statusId != 42)
 								{
 									continue;
 								}
@@ -1489,6 +1493,7 @@ public class ApprovedDevUtil
 			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//
 
 			groups.setStatus(trackingTaskStatus);
+			groups.setReviewedDate(new Date());
 			session.saveOrUpdate(groups);
 
 		}catch(Exception e)
@@ -1589,7 +1594,18 @@ public class ApprovedDevUtil
 
 			if(startDate != null && endDate != null)
 			{
-				criteria.add(Expression.between("storeDate", startDate, endDate));
+
+				if(!Datatype.equals("FB"))
+				{
+					if(team.equals("QA"))
+					{
+						criteria.add(Expression.between("reviewedDate", startDate, endDate));
+					}
+					else
+					{
+						criteria.add(Expression.between("storeDate", startDate, endDate));
+					}
+				}
 			}
 
 			if(plName != null && !plName.equals("All"))
@@ -1690,7 +1706,8 @@ public class ApprovedDevUtil
 				}
 				if(Datatype.equals("FB"))
 				{
-					FBData = getFeedbackData(issuedTo, groupRecord, tsktype, session);
+					FBData = getFeedbackData(issuedTo, groupRecord, tsktype, startDate, endDate,
+							session);
 					if(FBData != null)
 					{
 						unApprovedDTO.setComment(FBData.getComment());
@@ -1813,8 +1830,8 @@ public class ApprovedDevUtil
 							{
 								if(rd.getStoreDate() != null)
 								{
-									unApprovedDTO.setReceivedDate(sdf.format(rd.getStoreDate())
-											.toString());
+									unApprovedDTO.setReceivedDate(sdf.format(
+											groupRecord.getStoreDate()).toString());
 								}
 							}
 						}
