@@ -129,7 +129,7 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID=in (6,42) and tp.tracking_task_type_id <> 15 AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42) and tp.tracking_task_type_id <> 15 AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
 					+ start
 					+ "', 'MM/DD/YYYY') AND TO_DATE('"
 					+ end
@@ -1526,8 +1526,7 @@ public class DataDevQueryUtil
 				if(type.equals("NPI"))
 				{
 					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
-							+ "'),getTaskTypeId('" + StatusName.npiTransferred
-							+ "'))");
+							+ "'),getTaskTypeId('" + StatusName.npiTransferred + "'))");
 				}
 				else
 				{
@@ -1683,7 +1682,7 @@ public class DataDevQueryUtil
 
 						partData.add(data[6] != null ? data[6].toString() : "");
 						/** generic */
-						partData.add((data[8] == null) ? "" : data[8].toString());
+						partData.add((data[7] == null) ? "" : data[7].toString());
 						/** Mask */
 						partData.add((data[8] == null) ? "" : data[8].toString());
 
@@ -3069,14 +3068,15 @@ public class DataDevQueryUtil
 				TrackingParametric track = (TrackingParametric) criteria.uniqueResult();
 				System.err.println("Track Id=" + track.getId());
 				// track.setQaReviewDate(new Date());
-				TrackingTaskType taskType = track.getTrackingTaskType();
-				Pl pl = track.getPl();
-				Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
-				track.setQaUserId(qaUserId);
-				track.setQaReviewDate(ParaQueryUtil.getDate());
+				// TrackingTaskType taskType = track.getTrackingTaskType();
+				// Pl pl = track.getPl();
+				// Long qaUserId = ParaQueryUtil.getQAUserId(pl, taskType);
+				// track.setQaUserId(qaUserId);
+				// track.setQaReviewDate(ParaQueryUtil.getDate());
 				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
 						session, status);
-				track.setTrackingTaskStatus(trackingTaskStatus);
+				if(track.getTrackingTaskStatus().getName() == StatusName.waitingsummary)
+					track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
 			}
 
@@ -3942,7 +3942,7 @@ public class DataDevQueryUtil
 			String sql = "";
 			sql = " SELECT FB_COMMENT, u.full_name, U.GROUP_ID, FB.ITEM_ID, FB.FEEDBACK_TYPE , s.";
 			sql = sql
-					+ "name status_name,fbs.FEEDBACK_STATUS FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
+					+ "name status_name,fbs.FEEDBACK_STATUS,GETISSUETYPE(FB.ISSUE_TYPE) FROM PARAMETRIC_FEEDBACK_CYCLE FBc, PARAMETRIC_FEEDBACK FB, p";
 			sql = sql
 					+ "art_component c, grm.grm_user u, TRACKING_PARAMETRIC t ,tracking_task_status s,PARA_FEEDBACK_STATUS fbs";
 			sql = sql
@@ -3974,6 +3974,7 @@ public class DataDevQueryUtil
 				feed.add(objArr[4].toString());// feedback source
 				feed.add(objArr[5].toString());// feedback status add by Ahmed Makram
 				feed.add(objArr[6].toString()); // feedback action by mohamed gawad
+				feed.add(objArr[7].toString()); // feedback issueType by mohamed gawad
 			}
 			else
 				feed = null;

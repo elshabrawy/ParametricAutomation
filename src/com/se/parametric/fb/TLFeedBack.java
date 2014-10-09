@@ -260,6 +260,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				int fbcommentindex = sheetHeader.indexOf("FBComment");
 				int engindex = sheetHeader.indexOf("Develop Eng.");
 				int FBStatusindex = sheetHeader.indexOf("FBStatus");
+				int issuetypeidx = sheetHeader.indexOf("Issue Type");
 				ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 				for(int j = plData.size() - 1; j > -1; j--)
 				{
@@ -299,6 +300,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 						sheetRecord.set(sentBYIndex, feedCom.get(1));
 						sheetRecord.set(wrongfetsindex, wrongfeatures);
 						sheetRecord.set(fbcommentindex, feedCom.get(0));
+						sheetRecord.set(issuetypeidx, feedCom.get(7));
 						plData.set(j, sheetRecord);
 					}catch(Exception e)
 					{
@@ -369,9 +371,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 					wsMap.put(pl, ws);
 					if(docInfoDTO.getTaskType().contains("NPI"))
 						ws.setNPIflag(true);
-					ws.setTLFBHeader(
-							Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."),
-							false);
+					ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator",
+							"Develop Eng.", "Issue Type"), false);
 					ArrayList<String> sheetHeader = ws.getHeader();
 					int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 					int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -384,6 +385,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 					int fbcommentindex = sheetHeader.indexOf("FBComment");
 					int FBStatusindex = sheetHeader.indexOf("FBStatus");
 					int engindex = sheetHeader.indexOf("Develop Eng.");
+					int issuetypeidx = sheetHeader.indexOf("Issue Type");
 					ArrayList<ArrayList<String>> plData = reviewData.get(pl);
 					for(int j = plData.size() - 1; j > -1; j--)
 					{
@@ -427,6 +429,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(sentBYIndex, feedCom.get(1));
 							sheetRecord.set(wrongfetsindex, wrongfeatures);
 							sheetRecord.set(fbcommentindex, feedCom.get(0));
+							sheetRecord.set(issuetypeidx, feedCom.get(7));
 							plData.set(j, sheetRecord);
 						}catch(Exception e)
 						{

@@ -1321,6 +1321,8 @@ public class WorkingSheet
 			// for (int record = 0; record < lastRow - 2; record++) {
 
 			// = getCellText(partCell).getString();
+			ArrayList<String> header = getHeader();
+			supCell = header.indexOf("Supplier Name");
 			for(int i = startParametricFT; i < endParametricFT; i++)
 			{
 				row = new ArrayList<String>();
@@ -3230,6 +3232,7 @@ public class WorkingSheet
 			List<String> qareviewpdfs = new ArrayList<String>();
 			List<String> qafeedbackpdfs = new ArrayList<String>();
 			List<String> engfeedbackpfds = new ArrayList<String>();
+			List<String> doneflagpfds = new ArrayList<String>();
 			List<PartInfoDTO> partsToStoreFeedback = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			int issueSourceIndex = sheetHeader.indexOf("Issue Initiator");
@@ -3249,6 +3252,7 @@ public class WorkingSheet
 			int Taxonomyindex = sheetHeader.indexOf("Taxonomy");
 			int fbtypeindex = sheetHeader.indexOf("Feedback Type");
 			int comidindex = sheetHeader.indexOf("Comid");
+			int issuetypeidx = sheetHeader.indexOf("Issue Type");
 			ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 			String pn = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null, flowSource;
 			for(int i = 0; i < fileData.size(); i++)
@@ -3260,7 +3264,7 @@ public class WorkingSheet
 				String vendorName = partData.get(supcell);
 				String plName = partData.get(Taxonomyindex);
 				// String issuedToEng = partData.get(1); // from eng column
-				String issuedby = partData.get(issuerIndex);
+				String issuetype = partData.get(issuetypeidx);
 				String issuedToEng = partData.get(engindex);//
 				String issueSourceName = partData.get(issueSourceIndex);// from issuer column
 				String fbtype = partData.get(fbtypeindex);
@@ -3320,15 +3324,23 @@ public class WorkingSheet
 						partInfo.setActinDueDate(actionduedate);
 						partInfo.setIssuedTo(issueSourceName);
 						partInfo.setFeedBackStatus(StatusName.accept);
-						partInfo.setFeedBackCycleType("Wrong Data");
+						partInfo.setFeedBackCycleType(issuetype);
 						if(!engfeedbackpfds.contains(pdfUrl))
 						{
 							if(qareviewpdfs.contains(pdfUrl))
 							{
 								qareviewpdfs.remove(pdfUrl);
 							}
-							// QA_feedback
-							qafeedbackpdfs.add(pdfUrl);
+							if(issuetype == StatusName.wrongValue)
+							{
+								// doneflag_engine
+								doneflagpfds.add(pdfUrl);
+							}
+							else
+							{
+								// QA_feedback
+								qafeedbackpdfs.add(pdfUrl);
+							}
 						}
 						partsToStoreFeedback.add(partInfo);
 					}
@@ -3455,6 +3467,9 @@ public class WorkingSheet
 					StatusName.engFeedback, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null,
 					StatusName.qaFeedback, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(doneflagpfds, selectedPL, null,
+					StatusName.doneFLagEngine, teamLeaderName);
+
 			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
@@ -4969,16 +4984,28 @@ public class WorkingSheet
 			else
 				cell.setText("QAComment");
 			HeaderList.add(cell);
-			cell = getCellByPosission(14, 0);
-			if(team == "QA")
-				cell.setText("LastQAComment");
-			else
-				cell.setText("LastDDComment");
-			HeaderList.add(cell);
+			// cell = getCellByPosission(14, 0);
+			// if(team == "QA")
+			// cell.setText("LastQAComment");
+			// else
+			// cell.setText("LastDDComment");
+			// HeaderList.add(cell);
 
 			if(checkerType.equals(StatusName.MaskMultiData)
 					|| checkerType.equals(StatusName.RootPartChecker))
 			{
+				cell = getCellByPosission(14, 0);
+				cell.setText("FeatureName");
+				HeaderList.add(cell);
+				cell = getCellByPosission(15, 0);
+				cell.setText("FeatureValue");
+				HeaderList.add(cell);
+			}
+			if(checkerType.equals(StatusName.generic_part))
+			{
+				cell = getCellByPosission(14, 0);
+				cell.setText("Generic");
+				HeaderList.add(cell);
 				cell = getCellByPosission(15, 0);
 				cell.setText("FeatureName");
 				HeaderList.add(cell);
