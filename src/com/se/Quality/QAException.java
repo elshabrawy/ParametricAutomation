@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,8 +28,6 @@ import com.se.automation.db.parametric.StatusName;
 import com.se.grm.client.mapping.GrmGroup;
 import com.se.grm.client.mapping.GrmRole;
 import com.se.parametric.MainWindow;
-import com.se.parametric.commonPanel.AlertsPanel;
-import com.se.parametric.commonPanel.ButtonsPanel;
 import com.se.parametric.commonPanel.FilterPanel;
 import com.se.parametric.commonPanel.WorkingAreaPanel;
 import com.se.parametric.dba.DataDevQueryUtil;
@@ -221,7 +218,7 @@ public class QAException extends JPanel implements ActionListener
 		uDTO.setGrmGroup(group);
 		QAException devPanel = new QAException(uDTO);
 		frame.getContentPane().add(devPanel);
-		frame.show();
+		frame.setVisible(true);
 		// while(true)
 		// {
 		// ArrayList<String> flags = ParaQueryUtil.getAlerts(uDTO.getId(), 101, 3);
@@ -245,7 +242,7 @@ public class QAException extends JPanel implements ActionListener
 
 	}
 
-	class LongRunProcess extends SwingWorker
+	class LongRunProcess extends SwingWorker<Object, Object>
 	{
 		ActionEvent event = null;
 
@@ -261,7 +258,7 @@ public class QAException extends JPanel implements ActionListener
 		{
 
 			MainWindow.glass.setVisible(true);
-			ArrayList<String> row = null;
+//			ArrayList<String> row = null;
 			/**
 			 * Show pdfs Action
 			 * **/
