@@ -85,7 +85,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 
 		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
-				"InfectedTaxonomies", "AssginedDate" };
+				"InfectedTaxonomies", "FeedBackDate" };
 		String[] filterHeader = { "PL Name", "Supplier", "Feedback Type", "Issued By" };
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserFeedbackData(userDTO, null, null);
 		tablePanel = selectionPanel.getTablePanel(labels);
@@ -289,7 +289,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 						tablePanel.loadedPdfs.add(pdfUrl);
 						JComboBox[] combos = filterPanel.comboBoxItems;
-						String plName = combos[0].getSelectedItem().toString();
+						// String plName = combos[0].getSelectedItem().toString();
+						String plName = docInfoDTO.getPlName();
 						String supplierName = combos[1].getSelectedItem().toString();
 						String feedbackType = combos[2].getSelectedItem().toString();
 						String issuedBy = combos[3].getSelectedItem().toString();
@@ -422,6 +423,15 @@ public class EngFeedBack extends JPanel implements ActionListener
 				Date startDate = null;
 				Date endDate = null;
 				Long[] users = { userId };
+				Long[] pdfs = new Long[tablePanel.selectedData.size()];
+				String[] pdfurls = new String[tablePanel.selectedData.size()];
+				for(int i = 0; i < tablePanel.selectedData.size(); i++)
+				{
+					pdfurls[i] = tablePanel.selectedData.get(i).getPdfUrl();
+					Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfurls[i]);
+					pdfs[i] = document.getId();
+
+				}
 				if(filterPanel.jDateChooser1.isEnabled())
 				{
 					startDate = filterPanel.jDateChooser1.getDate();
@@ -434,7 +444,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
 							.getFeedbackParametricValueReview(users, plName, supplierName,
 									StatusName.engFeedback, feedbackType, issuedBy, startDate,
-									endDate, null, userDTO.getId());
+									endDate, pdfs, userDTO.getId());
 					int k = 0;
 					wsMap.clear();
 					tabbedPane.setSelectedIndex(1);
