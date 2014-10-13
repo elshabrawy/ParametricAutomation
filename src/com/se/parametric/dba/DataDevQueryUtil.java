@@ -129,7 +129,7 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42) and tp.tracking_task_type_id <> 15 AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42) and tp.tracking_task_type_id <> 15 AND TP.MODIFICATION_DATE BETWEEN TO_DATE('"
 					+ start
 					+ "', 'MM/DD/YYYY') AND TO_DATE('"
 					+ end
@@ -151,32 +151,67 @@ public class DataDevQueryUtil
 		return result;
 	}
 
-	public static ArrayList<Object[]> getQAReviewFilterData(GrmUserDTO grmUser)
+	public static ArrayList<Object[]> getQAReviewFilterData(GrmUserDTO grmUser, Date startdate,
+			Date enddate)
 	{
 		Long UserID = grmUser.getId();
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<String> row = null;
 		ArrayList<Object[]> list2 = null;
 		Session session = SessionUtil.getSession();
+		String start = "";
+		String end = "";
+		String Sql = "";
 		try
 		{
+			if(startdate != null)
+			{
+				start = new SimpleDateFormat("MM/dd/yyyy").format(startdate);
+
+			}
+			if(enddate != null)
+			{
+				end = new SimpleDateFormat("MM/dd/yyyy").format(enddate);
+			}
 			TrackingTaskStatus taskStatus = null;
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", StatusName.qaReview));
 			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
+			if(startdate == null && enddate == null)
+			{
 
-			String Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
-			Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
-					+ "' FROM Tracking_Parametric tp, pl p, supplier";
-			Sql = Sql
-					+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
-			Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
-					+ ") AND tp.supplier_id = s.id AN";
-			Sql = Sql
-					+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
-			Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId()
-					+ " GROUP BY p.name, s.name, ttt.name, U.FULL";
-			Sql = Sql + "_NAME, st.NAME, Get_PL_Type(P.ID )";
+				Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
+				Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
+						+ "' FROM Tracking_Parametric tp, pl p, supplier";
+				Sql = Sql
+						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
+				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
+						+ ") AND tp.supplier_id = s.id AN";
+				Sql = Sql
+						+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
+				Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId()
+						+ " GROUP BY p.name, s.name, ttt.name, U.FULL";
+				Sql = Sql + "_NAME, st.NAME, Get_PL_Type(P.ID )";
+			}
+			else
+			{
+				Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
+				Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
+						+ "' FROM Tracking_Parametric tp, pl p, supplier";
+				Sql = Sql
+						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
+				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
+						+ ") AND tp.supplier_id = s.id AN";
+				Sql = Sql
+						+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
+				Sql = Sql + "ING_TASK_STATUS_ID and QA_USER_ID=" + grmUser.getId();
+				Sql = Sql
+						+ " AND TP.MODIFICATION_DATE BETWEEN TO_DATE('"
+						+ start
+						+ "', 'MM/DD/YYYY') AND TO_DATE('"
+						+ end
+						+ "', 'MM/DD/YYYY')  GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME, Get_PL_Type(P.ID )";
+			}
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(Sql).list();
 		}finally
 		{
@@ -218,7 +253,7 @@ public class DataDevQueryUtil
 		{
 			sql = "select distinct p.name pl, s.name supplier, ttt.name type ,EXTRACTION_STATUS, TP.PRIORIY from Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt where tp.pl_id = p.id and tp.supplier_id = s.id and tp.tracking_task_type_id = ttt.id and user_id = "
 					+ UserID
-					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42)  and tp.tracking_task_type_id = 15 AND ASSIGNED_DATE BETWEEN TO_DATE('"
+					+ " and tp.TRACKING_TASK_STATUS_ID in (6,42)  and tp.tracking_task_type_id = 15 AND MODIFICATION_DATE BETWEEN TO_DATE('"
 					+ start
 					+ "', 'MM/DD/YYYY') AND TO_DATE('"
 					+ end
@@ -300,7 +335,7 @@ public class DataDevQueryUtil
 			sql = sql
 					+ "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
 			sql = sql
-					+ "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND FBc.STORE_DATE BETWEEN TO_DATE ('"
+					+ "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND TP.MODIFICATION_DATE BETWEEN TO_DATE ('"
 					+ startDate + "', 'MM/DD/YYYY')";
 			sql = sql + " AND TO_DATE ('" + endDate + "', 'MM/DD/YYYY') AND FBc.ISSUE";
 			sql = sql + "D_TO = " + UserID + " AND FB.ID = FBC.PARA_FEEDBACK_ID";
@@ -398,7 +433,7 @@ public class DataDevQueryUtil
 						+ "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = "
 						+ UserID + ")";
 				SqlStatement = SqlStatement
-						+ "AND TP.FINISHED_DATE BETWEEN TO_DATE('"
+						+ "AND TP.MODIFICATION_DATE BETWEEN TO_DATE('"
 						+ start
 						+ "', 'MM/DD/YYYY') AND TO_DATE('"
 						+ end
@@ -497,7 +532,7 @@ public class DataDevQueryUtil
 						+ " AND FBC.FEEDBACK_RECIEVED = 0 AND FBC.ISSUED_";
 				Sql = Sql
 						+ "BY = u.id AND FB.FEEDBACK_TYPE = tft.id AND FB.ID = FBC.PARA_FEEDBACK_ID"
-						+ " AND TP.ASSIGNED_DATE BETWEEN TO_DATE('" + start
+						+ " AND TP.MODIFICATION_DATE BETWEEN TO_DATE('" + start
 						+ "', 'MM/DD/YYYY') AND TO_DATE('" + end + "', 'MM/DD/YYYY')";
 				// sql = " select distinct pl.name pl_name, s.name supplier_name , u.full_name issuer_name, TFT.NAME feedback_name " +
 				// " from tracking_parametric tp, pl, supplier s, parts_feedback pf, part_component c, grm.grm_user u, "
@@ -570,21 +605,9 @@ public class DataDevQueryUtil
 			// System.out.println(criteria.list().size());
 			if(startDate != null && endDate != null)
 			{
-				if(inputType.equals("assigned"))
-				{
-					criteria.add(Restrictions.ge("assignedDate", startDate));
-					criteria.add(Restrictions.lt("assignedDate", endDate));
-				}
-				else if(inputType.equals("finished"))
-				{
-					criteria.add(Restrictions.ge("finishedDate", startDate));
-					criteria.add(Restrictions.lt("finishedDate", endDate));
-				}
-				else if(inputType.equals("QAReview"))
-				{
-					criteria.add(Restrictions.ge("qaReviewDate", startDate));
-					criteria.add(Restrictions.lt("qaReviewDate", endDate));
-				}
+
+				criteria.add(Restrictions.ge("modificationdate", startDate));
+				criteria.add(Restrictions.lt("modificationdate", endDate));
 
 			}
 			if(inputType.equals("QAReview"))
@@ -1115,7 +1138,7 @@ public class DataDevQueryUtil
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY");
 				System.out.println(formatter.format(startDate) + "**************"
 						+ formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+				String dateRangeCond = " AND t.MODIFICATION_DATE BETWEEN TO_DATE ('"
 						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
 						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 
@@ -1237,7 +1260,7 @@ public class DataDevQueryUtil
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY");
 				System.out.println(formatter.format(startDate) + "**************"
 						+ formatter.format(endDate));
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+				String dateRangeCond = " AND t.MODIFICATION_DATE BETWEEN TO_DATE ('"
 						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
 						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 
@@ -1268,7 +1291,7 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(data[5].toString());
 				docInfo.setExtracted(data[6] != null && data[6].toString().equals("1") ? "Yes"
 						: "No");
-				docInfo.setPriority(data[7].toString());
+				docInfo.setPriority(data[7] == null ? "" : data[7].toString());
 				docInfo.setDate(data[8].toString());
 				docInfo.setTitle(data[9] != null ? data[9].toString() : "");
 				docInfo.setTaxonomies(data[10].toString());
@@ -1282,215 +1305,6 @@ public class DataDevQueryUtil
 			session.close();
 		}
 		return tableData;
-	}
-
-	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview(
-			Long[] usersId, String plName, String vendorName, String type, String status,
-			Date startDate, Date endDate, Long[] docsIds) throws Exception
-	{
-		Session session = SessionUtil.getSession();
-		Map<String, ArrayList<ArrayList<String>>> allData = new HashMap<String, ArrayList<ArrayList<String>>>();
-
-		SQLQuery query = null;
-		try
-		{
-			StringBuffer qury = new StringBuffer();
-			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME ,GET_MSK_Value (c.MASK_ID, C.PART_NUMBER) MASK,Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
-					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID"
-					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g WHERE t.DOCUMENT_ID = c.DOCUMENT_ID and T.SUPPLIER_PL_ID=C.SUPPLIER_PL_ID AND c.COM_ID = R.COM_ID and C.FAMILY_ID=FAM.ID AND R.PL_FEATURE_ID = PF.ID AND PF.FET_ID = F.ID AND R.GROUP_APPROVED_VALUE_ID = G.ID  ");
-			if(plName != null && !plName.equals("All"))
-			{
-				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
-			}
-			if(!vendorName.equals("All") && vendorName != null)
-			{
-				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
-			}
-			if(status != null && !status.equals("All"))
-			{
-				qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
-			}
-			if(type != null && !type.equals("All"))
-			{
-				qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
-			}
-			if(!(usersId.length == 0) && usersId != null)
-			{
-				String users = "";
-				for(int i = 0; i < usersId.length; i++)
-				{
-					if(i == usersId.length - 1)
-					{
-						users = users + usersId[i];
-					}
-					else
-					{
-						users = users + usersId[i] + ",";
-					}
-				}
-				qury.append(" AND T.USER_ID IN (" + users + ")");
-			}
-			if(docsIds != null && docsIds.length > 0)
-			{
-				qury.append(" AND t.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
-						+ " )");
-			}
-			if(startDate != null && endDate != null)
-			{
-				endDate.setDate(endDate.getDate() + 1);
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************"
-						+ formatter.format(endDate));
-
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-				qury.append(dateRangeCond);
-				// qury = qury +
-				// " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('01/11/2012', 'DD/MM/RRRR') AND  TO_DATE ('03/03/2013', 'DD/MM/RRRR')";
-			}
-			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
-
-			System.out.println(qury.toString());
-			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
-					qury.toString()).list();
-			ArrayList<ArrayList<String>> plData = new ArrayList<ArrayList<String>>();
-			ArrayList<String> partData = new ArrayList<String>();
-			List<String> plFets = new ArrayList<String>();
-			Map<String, List<String>> plFetsMap = new HashMap<String, List<String>>();
-			System.out.println("All Data Size:" + result.size());
-			String lastPart = "";
-			String lastPl = "";
-			int x = -1;
-			for(int i = 0; i < result.size(); i++)
-			{
-				Object[] data = result.get(i);
-				String plout = data[0].toString();
-				// int fetOrder= getPlFeatureByExactName(data[10].toString(), plout, session).getDevelopmentOrder();
-				if(plFetsMap.get(plout) == null)
-					plFetsMap.put(plout, ParaQueryUtil.getPlFeautreNames(plout));
-				String plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session))
-						.getName();
-				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
-						+ data[10].toString() + " ~ " + data[11].toString() + " idx:"
-						+ partData.indexOf(data[10].toString()));
-				if(data[4].toString().equals(lastPart))
-				{
-					// partData.add(data[11].toString()); /* fet Value */
-					partData.set(partData.indexOf(data[10].toString()), data[11].toString());
-					if(i == result.size() - 1)
-					{
-						plFets = plFetsMap.get(lastPl);
-						for(int j = 0; j < plFets.size(); j++)
-						{
-							if(partData.indexOf(plFets.get(j)) != -1)
-								partData.set(partData.indexOf(plFets.get(j)), "");
-						}
-						if(allData.get(lastPl) == null)
-						{
-
-							plData = new ArrayList<ArrayList<String>>();
-
-							if(!partData.isEmpty())
-							{
-								plData.add(partData);
-							}
-
-						}
-						else
-						{
-							plData = allData.get(lastPl);
-							plData.add(partData);
-						}
-						if(!plData.isEmpty())
-						{
-							allData.put(lastPl, plData);
-						}
-					}
-					continue;
-				}
-				else
-				{
-					plFets = plFetsMap.get(lastPl);
-					if(plFets != null)
-					{
-						for(int j = 0; j < plFets.size(); j++)
-						{
-							if(partData.indexOf(plFets.get(j)) != -1)
-								partData.set(partData.indexOf(plFets.get(j)), "");
-						}
-					}
-					if(allData.get(lastPl) == null)
-					{
-						plData = new ArrayList<ArrayList<String>>();
-						if(!partData.isEmpty())
-						{
-							plData.add(partData);
-						}
-					}
-					else
-					{
-						plData = allData.get(lastPl);
-						plData.add(partData);
-					}
-					if(!plData.isEmpty())
-					{
-						allData.put(lastPl, plData);
-					}
-
-					partData = new ArrayList<String>();
-					partData.add(data[0].toString()); /* Pl Name */
-					partData.add(data[1].toString()); /* user name */
-					partData.add(""); /* Status */
-					partData.add(""); /* Comment */
-					partData.add(data[2].toString()); /* Task Type */
-					partData.add(data[3].toString()); /* Supplier */
-					partData.add(data[4].toString()); /* Part Number */
-					partData.add(data[5].toString()); /* family */
-					partData.add(data[6].toString());/* Mask */
-
-					if(plType.equals("Semiconductor"))
-					{
-						partData.add(data[7].toString());/* family cross */
-						partData.add(data[8].toString());/* genric */
-						partData.add(data[9].toString());/* pdf url */
-					}
-					else
-					{
-						partData.add(data[9].toString());/* pdf url */
-					}
-					plFets = plFetsMap.get(plout);
-					partData.addAll(plFets);
-					partData.set(partData.indexOf(data[10].toString()), data[11].toString());
-					// x= plFets.indexOf(data[10].toString());
-					// partData.add(data[11].toString()); /* fet Value */
-
-				}
-
-				if(result.size() == 1)
-				{
-					for(int j = 0; j < plFets.size(); j++)
-					{
-						if(partData.indexOf(plFets.get(j)) != -1)
-							partData.set(partData.indexOf(plFets.get(j)), "");
-					}
-					plData = new ArrayList<ArrayList<String>>();
-					if(!partData.isEmpty())
-					{
-						plData.add(partData);
-						allData.put(plout, plData);
-					}
-				}
-
-				lastPart = data[4].toString();
-				lastPl = plout;
-			}
-		}finally
-		{
-			session.close();
-		}
-		return allData;
-
 	}
 
 	public static Map<String, ArrayList<ArrayList<String>>> getParametricValueReview1(
@@ -2610,10 +2424,10 @@ public class DataDevQueryUtil
 			Set<Document> docsSet = new HashSet<Document>();
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("parametricUserId", userId));
-			// if(startDate != null && endDate != null)
-			// {
-			// criteria.add(Expression.between("finishedDate", startDate, endDate));
-			// }
+			if(startDate != null && endDate != null)
+			{
+				criteria.add(Expression.between("modificationdate", startDate, endDate));
+			}
 			criteria.add(Restrictions.eq("trackingTaskStatus",
 					ParaQueryUtil.getTrackingTaskStatus(session, StatusName.engFeedback)));
 
@@ -2642,10 +2456,10 @@ public class DataDevQueryUtil
 				GrmUser byUser = ParaQueryUtil.getGRMUserByName(issuedBy);
 				ParametricFeedbackCriteria.add(Restrictions.eq("issuedBy", byUser.getId()));
 			}
-			if(startDate != null && endDate != null)
-			{
-				ParametricFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
-			}
+			// if(startDate != null && endDate != null)
+			// {
+			// ParametricFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
+			// }
 			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
 			{
 				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
@@ -2995,17 +2809,18 @@ public class DataDevQueryUtil
 		return true;
 	}
 
-	public static void saveTrackingParamtric(List<String> pdfSet, String plName,
+	public static void saveTrackingParamtric(Set<String> pdfSet, String plName,
 			String supplierName, String status, String user) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
 		{
 			// getTrackingTaskStatus(session, status);
-			for(int i = 0; i < pdfSet.size(); i++)
+			for(String pdfurl : pdfSet)
 			{
+
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
-				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfSet.get(i), session);
+				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfurl, session);
 				criteria.add(Restrictions.eq("document", document));
 				criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, plName)));
 				if(supplierName != null)
@@ -4617,29 +4432,65 @@ public class DataDevQueryUtil
 		return comment;
 	}
 
-	public static ArrayList<Object[]> getQAFeedBackFilterData(GrmUserDTO grmUser)
+	public static ArrayList<Object[]> getQAFeedBackFilterData(GrmUserDTO grmUser, Date startdate,
+			Date enddate)
 	{
 		Long UserID = grmUser.getId();
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		ArrayList<String> row = null;
 		ArrayList<Object[]> list2 = null;
 		Session session = SessionUtil.getSession();
+		String start = "";
+		String end = "";
+		String sql = "";
 		try
 		{
+			if(startdate != null)
+			{
+				start = new SimpleDateFormat("MM/dd/yyyy").format(startdate);
 
-			String sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,Get_PL_Type(P.ID ) "
-					+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
-					+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
-					+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
-					+ StatusName.qaFeedback
-					+ "')  "
-					+ "         AND tp.supplier_id = s.id  "
-					+ "         AND tp.tracking_task_type_id = ttt.id   "
-					+ "        AND u.id = tp.user_id     "
-					+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  "
-					+ "         and QA_USER_ID="
-					+ grmUser.getId()
-					+ " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
+			}
+			if(enddate != null)
+			{
+				end = new SimpleDateFormat("MM/dd/yyyy").format(enddate);
+			}
+
+			if(startdate == null && enddate == null)
+			{
+				sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,Get_PL_Type(P.ID ) "
+						+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
+						+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
+						+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qaFeedback
+						+ "')  "
+						+ "         AND tp.supplier_id = s.id  "
+						+ "         AND tp.tracking_task_type_id = ttt.id   "
+						+ "        AND u.id = tp.user_id     "
+						+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  "
+						+ "         and QA_USER_ID="
+						+ grmUser.getId()
+						+ " GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
+			}
+			else
+			{
+				sql = "  SELECT   DISTINCT p.name pl, s.name supplier, ttt.name TYPE, U.FULL_NAME user_Name,Get_PL_Type(P.ID ) "
+						+ "  FROM   Tracking_Parametric tp, pl p, supplier s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st  "
+						+ " WHERE  tp.pl_id = p.id   AND tp.tracking_task_type_id IN (0, 1, 4, 12, 14)     "
+						+ "      AND tp.TRACKING_TASK_STATUS_ID = getTaskstatusId('"
+						+ StatusName.qaFeedback
+						+ "')  "
+						+ "         AND tp.supplier_id = s.id  "
+						+ "         AND tp.tracking_task_type_id = ttt.id   "
+						+ "        AND u.id = tp.user_id     "
+						+ "      AND st.id = tp.TRACKING_TASK_STATUS_ID  "
+						+ "         and QA_USER_ID=" + grmUser.getId();
+				sql = sql
+						+ " AND TP.MODIFICATION_DATE BETWEEN TO_DATE('"
+						+ start
+						+ "', 'MM/DD/YYYY') AND TO_DATE('"
+						+ end
+						+ "', 'MM/DD/YYYY')  GROUP BY p.name, s.name, ttt.name, U.FULL_NAME, st.NAME,P.ID";
+			}
 			list2 = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
 			for(int i = 0; i < list2.size(); i++)
 			{
@@ -5695,6 +5546,10 @@ public class DataDevQueryUtil
 					doqachksaction(qachk, session);
 					partaction = StatusName.Done;
 				}
+			}
+			else if(qachk.getStatus().equals(StatusName.WaittingQAChecks))
+			{
+				partaction = StatusName.WaittingQAChecks;
 			}
 			cri = session.createCriteria(QaChecksStatus.class);
 			cri.add(Restrictions.eq("name", qachk.getStatus()));

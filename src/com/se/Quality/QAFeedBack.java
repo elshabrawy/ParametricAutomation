@@ -65,7 +65,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAFeedBackFilterData(userDTO,null,null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
 
@@ -496,8 +496,15 @@ public class QAFeedBack extends JPanel implements ActionListener
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
+				Date startDate = null;
+				Date endDate = null;
 
-				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO);
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO,startDate,endDate);
 				filterPanel.refreshFilters();
 				filterPanel.setCollapsed(true);
 

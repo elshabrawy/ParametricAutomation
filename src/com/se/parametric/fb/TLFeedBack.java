@@ -227,9 +227,18 @@ public class TLFeedBack extends JPanel implements ActionListener
 				startDate = filterPanel.jDateChooser1.getDate();
 				endDate = filterPanel.jDateChooser2.getDate();
 			}
+			Long[] pdfs = new Long[tablePanel.selectedData.size()];
+			String[] pdfurls = new String[tablePanel.selectedData.size()];
+			for(int i = 0; i < tablePanel.selectedData.size(); i++)
+			{
+				pdfurls[i] = tablePanel.selectedData.get(i).getPdfUrl();
+				Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfurls[i]);
+				pdfs[i] = document.getId();
+
+			}
 			Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
 					.getFeedbackParametricValueReview(teamMembers, plName, supplierName,
-							documentStatus, feedbackTypeStr, issuerName, startDate, endDate, null,
+							documentStatus, feedbackTypeStr, issuerName, startDate, endDate, pdfs,
 							userDTO.getId());
 			// Map<String, ArrayList<ArrayList<String>>> reviewData = ParaQueryUtil.getParametricValueReview1(teamMembers,
 			// plName,

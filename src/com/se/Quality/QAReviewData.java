@@ -64,7 +64,8 @@ public class QAReviewData extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAReviewFilterData(userDTO);
+		ArrayList<Object[]> filterData = DataDevQueryUtil
+				.getQAReviewFilterData(userDTO, null, null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
 		// PDFURL PL Name Supplier Name No. of Parts per PDF No. of Done Parts per PDF No. of parts per PL No. of Done parts per PL PL_Type
@@ -469,7 +470,15 @@ public class QAReviewData extends JPanel implements ActionListener
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
-				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO);
+				Date startDate = null;
+				Date endDate = null;
+
+				if(filterPanel.jDateChooser1.isEnabled())
+				{
+					startDate = filterPanel.jDateChooser1.getDate();
+					endDate = filterPanel.jDateChooser2.getDate();
+				}
+				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO,startDate,endDate);
 				filterPanel.refreshFilters();
 				filterPanel.setCollapsed(true);
 			}

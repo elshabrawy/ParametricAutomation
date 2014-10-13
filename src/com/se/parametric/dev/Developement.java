@@ -9,8 +9,10 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
@@ -718,7 +720,7 @@ public class Developement extends JPanel implements ActionListener
 
 						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
 								featureName, featureFullValue, row.get(2), userId);
-						List<String> pdfs = new ArrayList<>();
+						Set<String> pdfs = new HashSet<String>();
 						pdfs.add(row.get(2));
 						DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
 								StatusName.inprogress, "");
