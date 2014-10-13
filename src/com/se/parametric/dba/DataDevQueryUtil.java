@@ -2995,17 +2995,18 @@ public class DataDevQueryUtil
 		return true;
 	}
 
-	public static void saveTrackingParamtric(List<String> pdfSet, String plName,
+	public static void saveTrackingParamtric(Set<String> pdfSet, String plName,
 			String supplierName, String status, String user) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
 		{
 			// getTrackingTaskStatus(session, status);
-			for(int i = 0; i < pdfSet.size(); i++)
+			for(String pdfurl : pdfSet)
 			{
+				
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
-				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfSet.get(i), session);
+				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfurl, session);
 				criteria.add(Restrictions.eq("document", document));
 				criteria.add(Restrictions.eq("pl", ParaQueryUtil.getPlByPlName(session, plName)));
 				if(supplierName != null)
