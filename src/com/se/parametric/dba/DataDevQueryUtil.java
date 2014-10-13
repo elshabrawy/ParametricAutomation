@@ -300,7 +300,7 @@ public class DataDevQueryUtil
 			sql = sql
 					+ "_ID AND C.COM_ID = FB.ITEM_ID AND FBc.ISSUED_BY = U.ID AND FB.FEEDBACK_TYPE = ";
 			sql = sql
-					+ "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND tp.FINISHED_DATE BETWEEN TO_DATE ('"
+					+ "TFT.ID AND FBc.FEEDBACK_RECIEVED = 0 AND FBc.STORE_DATE BETWEEN TO_DATE ('"
 					+ startDate + "', 'MM/DD/YYYY')";
 			sql = sql + " AND TO_DATE ('" + endDate + "', 'MM/DD/YYYY') AND FBc.ISSUE";
 			sql = sql + "D_TO = " + UserID + " AND FB.ID = FBC.PARA_FEEDBACK_ID";
@@ -398,7 +398,7 @@ public class DataDevQueryUtil
 						+ "ATUS_ID AND tp.user_id IN (SELECT id FROM grm.GRM_USER WHERE Leader = "
 						+ UserID + ")";
 				SqlStatement = SqlStatement
-						+ "AND TP.ASSIGNED_DATE BETWEEN TO_DATE('"
+						+ "AND TP.FINISHED_DATE BETWEEN TO_DATE('"
 						+ start
 						+ "', 'MM/DD/YYYY') AND TO_DATE('"
 						+ end
@@ -1512,48 +1512,48 @@ public class DataDevQueryUtil
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
 			}
-			if(!vendorName.equals("All") && vendorName != null)
-			{
-				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
-			}
+			// if(!vendorName.equals("All") && vendorName != null)
+			// {
+			// qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
+			// }
 			if(status != null && !status.equals("All"))
 			{
 				// qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + status + "')");
 				qury.append(" AND t.TRACKING_TASK_STATUS_ID =" + statusId);
 			}
-			if(type != null && !type.equals("All"))
-			{
-				if(type.equals("NPI"))
-				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
-							+ "'),getTaskTypeId('" + StatusName.npiTransferred + "'))");
-				}
-				else
-				{
-					qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
-				}
-			}
-			if(!(usersId.length == 0) && usersId != null)
-			{
-				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
-			}
+			// if(type != null && !type.equals("All"))
+			// {
+			// if(type.equals("NPI"))
+			// {
+			// qury.append(" AND t.TRACKING_TASK_TYPE_ID in(getTaskTypeId('" + StatusName.npi
+			// + "'),getTaskTypeId('" + StatusName.npiTransferred + "'))");
+			// }
+			// else
+			// {
+			// qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
+			// }
+			// }
+			// if(!(usersId.length == 0) && usersId != null)
+			// {
+			// qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
+			// }
 			if(docsIds != null && docsIds.length > 0)
 			{
 				qury.append(" AND c.DOCUMENT_ID in ( " + getArrayAsCommaSeperatedList(docsIds)
 						+ " )");
 			}
-			if(startDate != null && endDate != null)
-			{
-				endDate.setDate(endDate.getDate() + 1);
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************"
-						+ formatter.format(endDate));
-
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-				qury.append(dateRangeCond);
-			}
+			// if(startDate != null && endDate != null)
+			// {
+			// endDate.setDate(endDate.getDate() + 1);
+			// SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			// System.out.println(formatter.format(startDate) + "**************"
+			// + formatter.format(endDate));
+			//
+			// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+			// + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+			// + formatter.format(endDate) + "','DD/MM/RRRR')";
+			// qury.append(dateRangeCond);
+			// }
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
 			System.out.println(qury.toString());
@@ -1802,16 +1802,16 @@ public class DataDevQueryUtil
 			{
 				qury.append("  AND T.PL_ID=GET_PL_ID('" + plName + "')");
 			}
-			if(!vendorName.equals("All") && vendorName != null)
-			{
-				qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
-			}
-			if(!(usersId.length == 0) && usersId != null)
-			{
-
-				qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
-
-			}
+			// if(!vendorName.equals("All") && vendorName != null)
+			// {
+			// qury.append("  and T.SUPPLIER_ID=GETSUPPLIERID('" + vendorName + "')");
+			// }
+			// if(!(usersId.length == 0) && usersId != null)
+			// {
+			//
+			// qury.append(" AND T.USER_ID IN (" + getArrayAsCommaSeperatedList(usersId) + ")");
+			//
+			// }
 			if(docStatus != null && !docStatus.equals("All"))
 			{
 				qury.append(" AND t.TRACKING_TASK_STATUS_ID = getTaskstatusId('" + docStatus + "')");
@@ -1859,17 +1859,17 @@ public class DataDevQueryUtil
 						+ " )");
 			}
 
-			if(startDate != null && endDate != null)
-			{
-				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				System.out.println(formatter.format(startDate) + "**************"
-						+ formatter.format(endDate));
-
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
-						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
-						+ formatter.format(endDate) + "','DD/MM/RRRR')";
-				qury.append(dateRangeCond);
-			}
+			// if(startDate != null && endDate != null)
+			// {
+			// SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			// System.out.println(formatter.format(startDate) + "**************"
+			// + formatter.format(endDate));
+			//
+			// String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+			// + formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
+			// + formatter.format(endDate) + "','DD/MM/RRRR')";
+			// qury.append(dateRangeCond);
+			// }
 			qury.append(" ORDER BY   T.DOCUMENT_ID,plName, C.PART_NUMBER, PF.DEVELOPMENT_ORDER");
 
 			System.out.println(qury.toString());
@@ -2606,13 +2606,14 @@ public class DataDevQueryUtil
 
 		try
 		{
+			HashMap<Document, Date> docsmap = new HashMap<Document, Date>();
 			Set<Document> docsSet = new HashSet<Document>();
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("parametricUserId", userId));
-			if(startDate != null && endDate != null)
-			{
-				criteria.add(Expression.between("finishedDate", startDate, endDate));
-			}
+			// if(startDate != null && endDate != null)
+			// {
+			// criteria.add(Expression.between("finishedDate", startDate, endDate));
+			// }
 			criteria.add(Restrictions.eq("trackingTaskStatus",
 					ParaQueryUtil.getTrackingTaskStatus(session, StatusName.engFeedback)));
 
@@ -2641,7 +2642,10 @@ public class DataDevQueryUtil
 				GrmUser byUser = ParaQueryUtil.getGRMUserByName(issuedBy);
 				ParametricFeedbackCriteria.add(Restrictions.eq("issuedBy", byUser.getId()));
 			}
-
+			if(startDate != null && endDate != null)
+			{
+				ParametricFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
+			}
 			if(feedbackTypeStr != null && !feedbackTypeStr.equals("All"))
 			{
 				ParametricFeedbackCriteria.createAlias("parametricFeedback", "Feedback");
@@ -2658,7 +2662,8 @@ public class DataDevQueryUtil
 					ParametricFeedbackCycle parametricfeedbackCycle = parametricfeedbackCycles
 							.get(i);
 					Document doc = parametricfeedbackCycle.getParametricFeedback().getDocument();
-					docsSet.add(doc);
+					docsSet.add(parametricfeedbackCycle.getParametricFeedback().getDocument());
+					docsmap.put(doc, parametricfeedbackCycle.getStoreDate());
 				}
 			}
 
@@ -2682,10 +2687,15 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
 						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
-				Date finishDate = obj.getFinishedDate();
-				if(finishDate != null)
+				Date fbDate = null;
+				if(docsmap.containsKey(obj.getDocument()))
 				{
-					docInfo.setDate(finishDate.toString());
+					fbDate = docsmap.get(obj.getDocument());
+				}
+
+				if(fbDate != null)
+				{
+					docInfo.setDate(fbDate.toString());
 				}
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
