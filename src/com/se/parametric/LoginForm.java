@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
@@ -225,7 +226,8 @@ public class LoginForm extends JFrame
 					try
 					{
 						mainFrame.updateFlags(grmUser);
-						Thread.sleep(10*60*1000);
+						System.out.println("------ I will sleep now -------" + new Date());
+						Thread.sleep(10 * 60 * 1000);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();
