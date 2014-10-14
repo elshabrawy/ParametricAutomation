@@ -225,7 +225,7 @@ public class LoginForm extends JFrame
 					try
 					{
 						mainFrame.updateFlags(grmUser);
-						TimeUnit.MINUTES.sleep(5);
+						Thread.sleep(10*60*1000);
 					}catch(InterruptedException e)
 					{
 						e.printStackTrace();

@@ -4183,15 +4183,19 @@ public class DataDevQueryUtil
 			{
 				maskMaster = maskMaster + "%";
 			}
-			Query q = session.createQuery("select o from MasterPartMask o  where o.mstrPart=:man");
-			q.setParameter("man", maskMaster);
-			mask = (MasterPartMask) q.uniqueResult();
+			// Query q = session.createQuery("select o from MasterPartMask o  where o.mstrPart=:man");
+			// q.setParameter("man", maskMaster);
+			// mask = (MasterPartMask) q.uniqueResult();
+			Criteria cri = session.createCriteria(MasterPartMask.class);
+			cri.add(Restrictions.eq("mstrPart", maskMaster));
+			mask = (MasterPartMask) cri.uniqueResult();
 			if(mask == null)
 				return null;
-			q = session
-					.createSQLQuery("select * from PART_MASK_VALUE  where MASK_PN=:val and mask_id =:mskid");
-			q.setParameter("val", maskValue);
-			q.setParameter("mskid", mask.getId());
+			SQLQuery q = session
+					.createSQLQuery("select /*+ INDEX(x PART_MASK_PN_ID_IDX) */ x.mask_id from PART_MASK_VALUE x where x.MASK_PN='"
+							+ maskValue + "' and x.mask_id =" + mask.getId() + "");
+			// q.setParameter("val", maskValue);
+			// q.setParameter("mskid", mask.getId());
 			// q.list();
 
 			if(q.list().isEmpty())
