@@ -2818,7 +2818,6 @@ public class DataDevQueryUtil
 			// getTrackingTaskStatus(session, status);
 			for(String pdfurl : pdfSet)
 			{
-
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfurl, session);
 				criteria.add(Restrictions.eq("document", document));
