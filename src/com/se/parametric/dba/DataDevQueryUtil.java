@@ -735,19 +735,19 @@ public class DataDevQueryUtil
 				}
 				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
 				docInfo.setPlType(Pltype == null ? "" : Pltype.getName());
-				Date date = obj.getFinishedDate();
-				if(inputType.equals("assigned"))
-				{
-					date = obj.getAssignedDate();
-				}
-				else if(inputType.equals("finished"))
-				{
-					date = obj.getFinishedDate();
-				}
-				else if(inputType.equals("QAReview"))
-				{
-					date = obj.getQaReviewDate();
-				}
+				Date date = obj.getModificationdate();
+				// if(inputType.equals("assigned"))
+				// {
+				// date = obj.getAssignedDate();
+				// }
+				// else if(inputType.equals("finished"))
+				// {
+				// date = obj.getFinishedDate();
+				// }
+				// else if(inputType.equals("QAReview"))
+				// {
+				// date = obj.getQaReviewDate();
+				// }
 				if(date != null)
 				{
 					docInfo.setDate(date.toString().split(" ")[0]);
@@ -810,21 +810,9 @@ public class DataDevQueryUtil
 			// System.out.println(criteria.list().size());
 			if(startDate != null && endDate != null)
 			{
-				if(inputType.equals("assigned"))
-				{
-					criteria.add(Restrictions.ge("assignedDate", startDate));
-					criteria.add(Restrictions.lt("assignedDate", endDate));
-				}
-				else if(inputType.equals("finished"))
-				{
-					criteria.add(Restrictions.ge("finishedDate", startDate));
-					criteria.add(Restrictions.lt("finishedDate", endDate));
-				}
-				else if(inputType.equals("QAReview"))
-				{
-					criteria.add(Restrictions.ge("qaReviewDate", startDate));
-					criteria.add(Restrictions.lt("qaReviewDate", endDate));
-				}
+
+				criteria.add(Restrictions.ge("modificationdate", startDate));
+				criteria.add(Restrictions.lt("modificationdate", endDate));
 
 			}
 			if(extracted != null && !extracted.equals("All"))
@@ -940,11 +928,7 @@ public class DataDevQueryUtil
 				}
 				Pl Pltype = ParaQueryUtil.getPLType(obj.getPl());
 				docInfo.setPlType(Pltype == null ? "" : Pltype.getName());
-				Date date = obj.getFinishedDate();
-				if(inputType.equals("assigned"))
-				{
-					date = obj.getAssignedDate();
-				}
+				Date date = obj.getModificationdate();
 				if(date != null)
 				{
 					docInfo.setDate(date.toString().split(" ")[0]);
@@ -2265,7 +2249,11 @@ public class DataDevQueryUtil
 				if(!docs.isEmpty())
 					criteria.add(Restrictions.in("document", docs));
 			}
-
+			if(startDate != null && endDate != null)
+			{
+				criteria.add(Restrictions.ge("modificationdate", startDate));
+				criteria.add(Restrictions.lt("modificationdate", endDate));
+			}
 			Set<Document> docsSet = new HashSet<Document>();
 			Criteria partsFeedbackCriteria = session.createCriteria(ParametricFeedbackCycle.class);
 			partsFeedbackCriteria.add(Restrictions.eq("feedbackRecieved", 0l));
@@ -2275,10 +2263,7 @@ public class DataDevQueryUtil
 				GrmUser issuedby = ParaQueryUtil.getGRMUserByName(issuer);
 				partsFeedbackCriteria.add(Restrictions.eq("issuedBy", issuedby.getId()));
 			}
-			if(startDate != null && endDate != null)
-			{
-				partsFeedbackCriteria.add(Expression.between("storeDate", startDate, endDate));
-			}
+
 			List<ParametricFeedbackCycle> parametricfeedbackcycles = partsFeedbackCriteria.list();
 			if((parametricfeedbackcycles != null))
 			{
@@ -2310,7 +2295,7 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
 						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
-				Date finishDate = obj.getFinishedDate();
+				Date finishDate = obj.getModificationdate();
 				if(finishDate != null)
 				{
 					docInfo.setDate(finishDate.toString());
@@ -2501,16 +2486,8 @@ public class DataDevQueryUtil
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
 						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
-				Date fbDate = null;
-				if(docsmap.containsKey(obj.getDocument()))
-				{
-					fbDate = docsmap.get(obj.getDocument());
-				}
-
-				if(fbDate != null)
-				{
-					docInfo.setDate(fbDate.toString());
-				}
+				Date date = obj.getModificationdate();
+				docInfo.setDate(date.toString());
 				docInfo.setInfectedParts(infectedParts);
 				docInfo.setInfectedTaxonomies(infectedTaxonomies);
 				tableData.add(docInfo);
@@ -2818,7 +2795,6 @@ public class DataDevQueryUtil
 			// getTrackingTaskStatus(session, status);
 			for(String pdfurl : pdfSet)
 			{
-
 				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdfurl, session);
 				criteria.add(Restrictions.eq("document", document));

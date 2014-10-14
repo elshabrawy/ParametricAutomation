@@ -85,7 +85,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 
 		selectionPanel = new WorkingAreaPanel(this.userDTO);
 		String[] labels = new String[] { "PdfUrl", "PlName", "SupplierName", "InfectedParts",
-				"InfectedTaxonomies", "FeedBackDate" };
+				"InfectedTaxonomies", "AssginedDate" };
 		String[] filterHeader = { "PL Name", "Supplier", "Feedback Type", "Issued By" };
 		ArrayList<Object[]> filterData = DataDevQueryUtil.getUserFeedbackData(userDTO, null, null);
 		tablePanel = selectionPanel.getTablePanel(labels);
