@@ -255,7 +255,7 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null,
 						StatusName.tlFeedback, startDate, endDate, null))
 					ws.setNPIflag(true);
-				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng."),
+				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng.","Issue Type"),
 						false);
 				ArrayList<String> sheetHeader = ws.getHeader();
 				int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");

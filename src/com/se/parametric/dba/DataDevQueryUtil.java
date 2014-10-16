@@ -3883,7 +3883,7 @@ public class DataDevQueryUtil
 				System.out.println(formatter.format(startDate) + "**************"
 						+ formatter.format(endDate));
 
-				String dateRangeCond = " AND t.ASSIGNED_DATE BETWEEN TO_DATE ('"
+				String dateRangeCond = " AND t.MODIFICATION_DATE BETWEEN TO_DATE ('"
 						+ formatter.format(startDate) + "','DD/MM/RRRR')AND  TO_DATE ('"
 						+ formatter.format(endDate) + "','DD/MM/RRRR')";
 				qury.append(dateRangeCond);
