@@ -295,13 +295,14 @@ public class TLReviewData extends JPanel implements ActionListener
 					{
 						JComboBox[] combos = filterPanel.comboBoxItems;
 
-						String plName = combos[0].getSelectedItem().toString();
+						// String plName = combos[0].getSelectedItem().toString();
 						String supplierName = combos[1].getSelectedItem().toString();
 						String taskType = combos[2].getSelectedItem().toString();
 						String userName = combos[3].getSelectedItem().toString();
 						wsMap.clear();
 						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 						String pdfUrl = docInfoDTO.getPdfUrl();
+						String plName = docInfoDTO.getPlName();
 						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 						Date startDate = null, endDate = null;
 						if(filterPanel.jDateChooser1.isEnabled())
@@ -382,6 +383,15 @@ public class TLReviewData extends JPanel implements ActionListener
 					String supplierName = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 					String taskType = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 					String userName = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+					Long[] pdfs = new Long[tablePanel.selectedData.size()];
+					String[] pdfurls = new String[tablePanel.selectedData.size()];
+					for(int i = 0; i < tablePanel.selectedData.size(); i++)
+					{
+						pdfurls[i] = tablePanel.selectedData.get(i).getPdfUrl();
+						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfurls[i]);
+						pdfs[i] = document.getId();
+
+					}
 					if(!userName.equals("All"))
 					{
 						long userId = ParaQueryUtil.getUserIdByExactName(userName);
@@ -393,7 +403,7 @@ public class TLReviewData extends JPanel implements ActionListener
 					}
 					Map<String, ArrayList<ArrayList<String>>> reviewData = DataDevQueryUtil
 							.getParametricValueReview1(teamMembers, plName, supplierName, taskType,
-									StatusName.tlReview, startDate, endDate, null);
+									StatusName.tlReview, startDate, endDate, pdfs);
 					int k = 0;
 					tabbedPane.setSelectedIndex(1);
 					sheetpanel.openOfficeDoc();

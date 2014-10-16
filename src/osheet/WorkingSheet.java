@@ -3,6 +3,7 @@ package osheet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -586,6 +587,7 @@ public class WorkingSheet
 			}
 			Cell cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 			cell.setText("Description");
+			descriptionColumn = HeaderList.size();
 			HeaderList.add(cell);
 			if(!isQA)
 				setValidationHeaders();
@@ -2446,7 +2448,7 @@ public class WorkingSheet
 		try
 		{
 			ArrayList<ArrayList<String>> sheetData = readSpreadsheet(2);
-			List<String> pdfSet = new ArrayList<String>();
+			Set<String> pdfSet = new HashSet<String>();
 			XCellRange xcellrange = null;
 			int lastColNum = HeaderList.size();
 			String lastColumn = getColumnName(lastColNum);
@@ -2619,9 +2621,13 @@ public class WorkingSheet
 							save = DataDevQueryUtil.saveParamtric(partInfo);
 						}catch(ConstraintViolationException e)
 						{
+							e.printStackTrace();
 							if(e.getMessage().contains(
-									"unique constraint (PART_COMP_PART_SUPP_PL_UQ)"))
-								continue;
+									"PART_COMP_PART_SUPP_PL_UQ")){
+								partvalidation.setStatus("Part Dupplicated in The sheet");
+								writeValidtionStatus(xcellrange, false);
+								save=true;
+								}
 						}
 
 					}
@@ -2632,6 +2638,7 @@ public class WorkingSheet
 
 					// System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
 					if(save)
+			
 						pdfSet.add(pdfUrl);
 					else
 					{
@@ -2672,8 +2679,8 @@ public class WorkingSheet
 			try
 			{
 				saved = true;
-				List<String> rejectedPdfs = new ArrayList<String>();
-				List<String> acceptedPdfs = new ArrayList<String>();
+				Set<String> rejectedPdfs = new HashSet<String>();
+				Set<String> acceptedPdfs = new HashSet<String>();
 				List<String> changedparts = new ArrayList<>();
 				List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 				List<PartInfoDTO> AllParts = new ArrayList<PartInfoDTO>();
@@ -2923,8 +2930,8 @@ public class WorkingSheet
 		}
 		try
 		{
-			List<String> rejectedPdfs = new ArrayList<String>();
-			List<String> acceptedPdfs = new ArrayList<String>();
+			Set<String> rejectedPdfs = new HashSet<String>();
+			Set<String> acceptedPdfs = new HashSet<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			saved = true;
@@ -3059,7 +3066,7 @@ public class WorkingSheet
 		}
 		try
 		{
-			List<String> pdfs = new ArrayList<String>();
+			Set<String> pdfs = new HashSet<String>();
 			List<String> fbTypes = new ArrayList<String>();
 			// List<PartInfoDTO> updatedParts = new ArrayList<PartInfoDTO>();
 			// List<PartInfoDTO> rejectedParts = new ArrayList<PartInfoDTO>();
@@ -3229,10 +3236,10 @@ public class WorkingSheet
 		try
 		{
 			saved = true;
-			List<String> qareviewpdfs = new ArrayList<String>();
-			List<String> qafeedbackpdfs = new ArrayList<String>();
-			List<String> engfeedbackpfds = new ArrayList<String>();
-			List<String> doneflagpfds = new ArrayList<String>();
+			Set<String> qareviewpdfs = new HashSet<String>();
+			Set<String> qafeedbackpdfs = new HashSet<String>();
+			Set<String> engfeedbackpfds = new HashSet<String>();
+			Set<String> doneflagpfds = new HashSet<String>();
 			List<PartInfoDTO> partsToStoreFeedback = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			int issueSourceIndex = sheetHeader.indexOf("Issue Initiator");
@@ -3563,7 +3570,7 @@ public class WorkingSheet
 				String Vendor = partData.get(supcell);
 				String Part = partData.get(partcell);
 				String checkpartid = partData.get(CheckpartidIndex);
-				if(!status.equals("Exception") && RightValue.isEmpty())
+				if((!status.equals(StatusName.WaittingQAChecks)&&!status.equals("Exception")) && RightValue.isEmpty())
 				{
 					MainWindow.glass.setVisible(false);
 					saved = false;
@@ -4830,6 +4837,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.Exception);
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 			else if(checkerType.equals(StatusName.MaskMultiSupplier))
 			{
@@ -4843,6 +4851,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateMask);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 			else if(checkerType.equals(StatusName.FamilyMultiSupplier))
 			{
@@ -4856,6 +4865,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.WrongTax);
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateFamily);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 			else if(checkerType.equals(StatusName.MaskMultiData))
 			{
@@ -4877,6 +4887,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateParametricData);
 				statusValues.add(StatusName.UpdateMask);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 			else if(checkerType.equals(StatusName.RootPartChecker))
 			{
@@ -4898,6 +4909,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateParametricData);
 				statusValues.add(StatusName.UpdateFamily);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 			else if(checkerType.equals(StatusName.generic_part))
 			{
@@ -4921,6 +4933,7 @@ public class WorkingSheet
 				statusValues.add(StatusName.WrongPart);
 				statusValues.add(StatusName.UpdateParametricData);
 				statusValues.add(StatusName.UpdateGeneric);
+				statusValues.add(StatusName.WaittingQAChecks);
 			}
 
 		}catch(Exception e)

@@ -1850,7 +1850,7 @@ public class ApprovedDevUtil
 					unApprovedDTO.setPlName(pl);
 					String featureValue = (groupRecord.getGroupFullValue() == null) ? ""
 							: groupRecord.getGroupFullValue();
-					unApprovedDTO.setFeatureValue(featureValue);
+					unApprovedDTO.setFeatureValue(featureValue.replace((char) 153, '™'));
 					String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? ""
 							: groupRecord.getPlFeature().getFeature().getName();
 					unApprovedDTO.setFeatureName(featureName);
@@ -1859,7 +1859,7 @@ public class ApprovedDevUtil
 
 					if(!fetValue.replace("[|/!]", "").trim().equals(""))
 					{
-						unApprovedDTO.setValue(fetValue);
+						unApprovedDTO.setValue(fetValue.replace((char) 153, '™'));
 					}
 					else
 					{
