@@ -365,7 +365,7 @@ public class Update extends JPanel implements ActionListener
 				sheetpanel.openOfficeDoc();
 				System.out.println("PL Name : " + plName + "\nSupplier Name : " + supplierName
 						+ " " + typeBuilder.toString());
-				if(type.equals("All"))
+				if(type.equals("All") || type.contains("NPI"))
 				{
 					type = "NPI Update";
 				}
@@ -564,7 +564,7 @@ public class Update extends JPanel implements ActionListener
 			else if(event.getSource() == filterPanel.refreshButton)
 			{
 
-				filterPanel.filterList = DataDevQueryUtil.getUserData(userDTO,
+				filterPanel.filterList = DataDevQueryUtil.getUserNPIData(userDTO,
 						filterPanel.startDate, filterPanel.endDate);
 				tablePanel.clearTable();
 				filterPanel.refreshFilters();
