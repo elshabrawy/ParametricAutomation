@@ -4786,15 +4786,21 @@ public class DataDevQueryUtil
 		Session session = null;
 		TrackingParametric track = null;
 		TrackingTaskStatus status = null;
+		TrackingTaskStatus status2 = null;
 		try
 		{
 			session = SessionUtil.getSession();
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", StatusName.waitingsummary));
 			status = (TrackingTaskStatus) cri.uniqueResult();
+			
+			cri = session.createCriteria(TrackingTaskStatus.class);
+			cri.add(Restrictions.eq("name", StatusName.qaReview));
+			status2 = (TrackingTaskStatus) cri.uniqueResult();
 
 			cri = session.createCriteria(TrackingParametric.class);
 			cri.add(Restrictions.eq("document", doc));
+			cri.add(Restrictions.eq("trackingTaskStatus", status2));
 			track = (TrackingParametric) cri.uniqueResult();
 			if(track != null)
 				track.setTrackingTaskStatus(status);

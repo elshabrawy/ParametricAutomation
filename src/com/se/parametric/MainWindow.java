@@ -206,12 +206,12 @@ public class MainWindow extends JFrame
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
 		dialog.setLayout(null);
-		JLabel lbl = new JLabel("Version No 2.1");
+		JLabel lbl = new JLabel("Version No 2.3");
 		lbl.setFont(new Font("Simpson", Font.BOLD, 18));
 		lbl.setForeground(new Color(160, 82, 45));
 		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
 
-		JLabel lbl2 = new JLabel("Last updates on 23/9/2014 :- ");
+		JLabel lbl2 = new JLabel("Last updates on 19/10/2014 :- ");
 		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
 		lbl2.setForeground(new Color(189, 67, 67));
 		lbl2.setBounds(0, 55, 250, 20);
@@ -228,6 +228,20 @@ public class MainWindow extends JFrame
 		txtarea.setFont(new Font("Simpson", Font.BOLD, 12));
 		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.3 @ 19/10/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+
+		txt += "- Enhance shift of cloumns in tlreview screen \n";
+		txt += "- Enhance the problem of special character ™ \n";
+		txt += "- Display and filter data with one date Modification date \n";
+		txt += "- Update saving to ignore Dupplication in the sheet while insert  \n";
+		txt += "- Enhance load pdf & load all  \n";
+		txt += "- Enhance filtring by date in unapproved screens \n";
+		txt += "- Complete the cycle of wrongvalue FB  \n";
+		txt += "- Add generic to header of QA Checks  \n";
+		txt += "- Add to summary pdfs has Qareview status  \n";
+
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.2 @ 23/9/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
