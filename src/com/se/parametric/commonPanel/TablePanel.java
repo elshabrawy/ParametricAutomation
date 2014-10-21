@@ -268,6 +268,10 @@ public class TablePanel extends JPanel implements ActionListener
 			this.setCurrentPage(this.getPageNumber());
 			paggingLabel.setText("" + this.getPageNumber());
 			setTableData1(1, getRows1(this.getPageNumber()));
+			previous.setEnabled(true);
+			first.setEnabled(true);
+			next.setEnabled(false);
+			last.setEnabled(false);
 		}
 
 	}
@@ -324,6 +328,31 @@ public class TablePanel extends JPanel implements ActionListener
 		this.pageNumber = pageNumber;
 	}
 
+	public void setPaggingLabel(int currentPage){
+		paggingLabel.setText("" + currentPage);
+		if(currentPage == 1)
+		{
+			previous.setEnabled(false);
+			first.setEnabled(false);
+		}
+		else if(currentPage == this.getPageNumber()){
+			next.setEnabled(false);
+			last.setEnabled(false);
+			previous.setEnabled(true);
+			first.setEnabled(true);
+		}
+		else
+		{
+			previous.setEnabled(true);
+			first.setEnabled(true);
+		}
+	}
+	
+	public void updateSheetPanelPagging(){
+		setPaggingLabel(getCurrentPage());
+		setTableData1(1, getRows1(getCurrentPage()));
+	}
+	
 	public void setTableData(int x, ArrayList<ArrayList<String>> result)
 	{
 

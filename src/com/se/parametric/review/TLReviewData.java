@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
@@ -109,6 +111,17 @@ public class TLReviewData extends JPanel implements ActionListener
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
 		this.add(tabbedPane);
 
+		tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0)
+			{
+				System.err.println(tablePanel.getCurrentPage());				
+				if(tabbedPane.getSelectedIndex() == 0){
+					tablePanel.updateSheetPanelPagging();
+				}					
+			}
+		});
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -232,6 +245,7 @@ public class TLReviewData extends JPanel implements ActionListener
 							supplierName, taskType, null, startDate, endDate, null, "finished",
 							null, StatusName.tlReview, null, null);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+					tablePanel.setCurrentPage(1);
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
 				{
@@ -295,12 +309,15 @@ public class TLReviewData extends JPanel implements ActionListener
 					{
 						JComboBox[] combos = filterPanel.comboBoxItems;
 
+						int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
+								* tablePanel.getRecordsPerPage() + selectedPdfs[0];
 						// String plName = combos[0].getSelectedItem().toString();
 						String supplierName = combos[1].getSelectedItem().toString();
 						String taskType = combos[2].getSelectedItem().toString();
 						String userName = combos[3].getSelectedItem().toString();
 						wsMap.clear();
-						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+//						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 						String pdfUrl = docInfoDTO.getPdfUrl();
 						String plName = docInfoDTO.getPlName();
 						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);

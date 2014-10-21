@@ -25,6 +25,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
@@ -120,6 +122,19 @@ public class EngFeedBack extends JPanel implements ActionListener
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
 		this.add(tabbedPane);
 
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0)
+			{
+				System.err.println(tablePanel.getCurrentPage());				
+				if(tabbedPane.getSelectedIndex() == 0){
+					tablePanel.updateSheetPanelPagging();
+				}					
+			}
+		});
+		
 		this.addFocusListener(new FocusListener() {
 
 			@Override

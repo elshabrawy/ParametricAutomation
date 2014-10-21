@@ -226,7 +226,7 @@ public class LoginForm extends JFrame
 					try
 					{
 						mainFrame.updateFlags(grmUser);
-						System.out.println("------ I will sleep now -------" + new Date());
+						System.err.println("------ I will sleep now -------" + new Date());
 						Thread.sleep(10 * 60 * 1000);
 					}catch(InterruptedException e)
 					{
