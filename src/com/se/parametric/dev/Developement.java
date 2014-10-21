@@ -634,6 +634,7 @@ public class Developement extends JPanel implements ActionListener
 				}catch(Exception e)
 				{
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage());
 				}
 			}
 
@@ -669,8 +670,8 @@ public class Developement extends JPanel implements ActionListener
 
 		private boolean saveseparation()
 		{
-			try
-			{
+//			try
+//			{
 
 				ArrayList<String> row;
 				if(!validated)
@@ -724,31 +725,32 @@ public class Developement extends JPanel implements ActionListener
 						pdfs.add(row.get(2));
 						DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
 								StatusName.inprogress, "");
-					}catch(ArrayIndexOutOfBoundsException ex)
+						
+						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
+								.get(featureName);
+						appValues.add(featureFullValue);
+						wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
+						
+					}catch(Exception ex)
 					{
 						try
 						{
 							Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
 							cell.setText(ex.getMessage());
+							return false;
 						}catch(Exception e)
 						{
 							e.printStackTrace();
+							return false;
 						}
-						ex.printStackTrace();
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
 					}
-					List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
-							.get(featureName);
-					appValues.add(featureFullValue);
-					wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
 				}
 
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
+//			}catch(Exception e)
+//			{
+//				e.printStackTrace();
+//				return false;
+//			}
 			return true;
 		}
 

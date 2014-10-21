@@ -2856,8 +2856,8 @@ public class DataDevQueryUtil
 			// getTrackingTaskStatus(session, status);
 			for(String pdf : pdfSet.keySet())
 			{
-				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdf, session);
+				Criteria criteria = session.createCriteria(TrackingParametric.class);
 				criteria.add(Restrictions.eq("document", document));
 				criteria.add(Restrictions.eq("pl",
 						ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
@@ -3879,6 +3879,7 @@ public class DataDevQueryUtil
 			}
 			if(startDate != null && endDate != null)
 			{
+				endDate.setDate(endDate.getDate() + 1);
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 				System.out.println(formatter.format(startDate) + "**************"
 						+ formatter.format(endDate));
@@ -4793,7 +4794,7 @@ public class DataDevQueryUtil
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", StatusName.waitingsummary));
 			status = (TrackingTaskStatus) cri.uniqueResult();
-			
+
 			cri = session.createCriteria(TrackingTaskStatus.class);
 			cri.add(Restrictions.eq("name", StatusName.qaReview));
 			status2 = (TrackingTaskStatus) cri.uniqueResult();
@@ -4912,7 +4913,7 @@ public class DataDevQueryUtil
 		try
 		{
 			session = SessionUtil.getSession();
-			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Can't Read') ConfidentialStatus from TRACKING_PARAMETRIC t"
+			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Cant Read') ConfidentialStatus from TRACKING_PARAMETRIC t"
 					+ " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('"
 					+ pdfurl
 					+ "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
