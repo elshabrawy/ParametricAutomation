@@ -517,7 +517,7 @@ public class Developement extends JPanel implements ActionListener
 					}
 
 				}
-				MainWindow.glass.setVisible(false);
+			//	MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Show pdfs Action
@@ -662,7 +662,7 @@ public class Developement extends JPanel implements ActionListener
 				MainWindow.glass.setVisible(false);
 
 			}
-			MainWindow.glass.setVisible(false);
+			//MainWindow.glass.setVisible(false);
 
 			return null;
 		}
