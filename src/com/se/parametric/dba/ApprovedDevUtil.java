@@ -1587,10 +1587,9 @@ public class ApprovedDevUtil
 			String userCol = "paraUserId";
 			if(team.equals("QA"))
 				userCol = "qaUserId";
-			Criteria criteria = session.createCriteria(ParametricApprovedGroup.class, "group");
-			criteria.add(Restrictions.in(userCol, userids));
-			criteria.createAlias("status", "status");
-			criteria.add(Restrictions.eq("status.name", status));
+			Criteria criteria = session.createCriteria(ParametricApprovedGroup.class, "group")
+					.add(Restrictions.in(userCol, userids)).createAlias("status", "status")
+					.add(Restrictions.eq("status.name", status));
 
 			if(startDate != null && endDate != null)
 			{
@@ -1702,7 +1701,8 @@ public class ApprovedDevUtil
 				separationgroups = (List<ParametricSeparationGroup>) SeparationCri.list();
 				if(separationgroups.isEmpty())
 				{
-					continue;
+					// continue;
+					separationgroups = new ArrayList<ParametricSeparationGroup>();
 				}
 				if(Datatype.equals("FB"))
 				{
@@ -1732,6 +1732,57 @@ public class ApprovedDevUtil
 					}
 				}
 
+				String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? ""
+						: groupRecord.getPlFeature().getUnit().getName();
+				unApprovedDTO.setFeatureUnit(featureUnit);
+				String pl = (groupRecord.getPlFeature().getPl().getName() == null) ? ""
+						: groupRecord.getPlFeature().getPl().getName();
+				unApprovedDTO.setPlName(pl);
+				String featureValue = (groupRecord.getGroupFullValue() == null) ? "" : groupRecord
+						.getGroupFullValue();
+				unApprovedDTO.setFeatureValue(featureValue.replace((char) 153, '™'));
+				String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? ""
+						: groupRecord.getPlFeature().getFeature().getName();
+				unApprovedDTO.setFeatureName(featureName);
+				rdList = ParaQueryUtil.getParametricReviewData(groupRecord.getId(), session);
+				unApprovedDTO.setUserId(groupRecord.getParaUserId());
+				unApprovedDTO.setQaUserId(groupRecord.getQaUserId() == null ? 0l : groupRecord
+						.getQaUserId());
+				if(!rdList.isEmpty())
+				{
+					rd = (ParametricReviewData) rdList.get(0);
+					unApprovedDTO.setPartNumber(rd.getComponent().getPartNumber());
+					unApprovedDTO.setPdfUrl(rd.getComponent().getDocument().getPdf().getSeUrl());
+					unApprovedDTO.setSupplier(rd.getComponent().getSupplierId().getName());
+					if(team.equals("QA"))
+					{
+						if(!Datatype.equals("FB"))
+						{
+							if(groupRecord.getReviewedDate() != null)
+							{
+								unApprovedDTO.setReceivedDate(sdf.format(
+										groupRecord.getReviewedDate()).toString());
+							}
+						}
+					}
+					else
+					{
+						if(!Datatype.equals("FB"))
+						{
+							if(rd.getStoreDate() != null)
+							{
+								unApprovedDTO.setReceivedDate(sdf
+										.format(groupRecord.getStoreDate()).toString());
+							}
+						}
+					}
+				}
+				else
+				{
+					unApprovedDTO.setPartNumber("");
+					unApprovedDTO.setPdfUrl((groupRecord.getDocument() != null) ? groupRecord
+							.getDocument().getPdf().getSeUrl() : "");
+				}
 				for(int k = 0; k < separationgroups.size(); k++)
 				{
 					separationgroup = separationgroups.get(k);
@@ -1804,56 +1855,56 @@ public class ApprovedDevUtil
 						unitValue += (patterns[5].contains(" to ")) ? " to " : patterns[5].trim();
 					}
 
-					rdList = ParaQueryUtil.getParametricReviewData(groupRecord.getId(), session);
-
-					if(!rdList.isEmpty())
-					{
-						rd = (ParametricReviewData) rdList.get(0);
-						unApprovedDTO.setPartNumber(rd.getComponent().getPartNumber());
-						unApprovedDTO
-								.setPdfUrl(rd.getComponent().getDocument().getPdf().getSeUrl());
-						unApprovedDTO.setSupplier(rd.getComponent().getSupplierId().getName());
-						if(team.equals("QA"))
-						{
-							if(!Datatype.equals("FB"))
-							{
-								if(groupRecord.getReviewedDate() != null)
-								{
-									unApprovedDTO.setReceivedDate(sdf.format(
-											groupRecord.getReviewedDate()).toString());
-								}
-							}
-						}
-						else
-						{
-							if(!Datatype.equals("FB"))
-							{
-								if(rd.getStoreDate() != null)
-								{
-									unApprovedDTO.setReceivedDate(sdf.format(
-											groupRecord.getStoreDate()).toString());
-								}
-							}
-						}
-					}
-					else
-					{
-						unApprovedDTO.setPartNumber("");
-						unApprovedDTO.setPdfUrl((groupRecord.getDocument() != null) ? groupRecord
-								.getDocument().getPdf().getSeUrl() : "");
-					}
-					String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? ""
-							: groupRecord.getPlFeature().getUnit().getName();
-					unApprovedDTO.setFeatureUnit(featureUnit);
-					String pl = (groupRecord.getPlFeature().getPl().getName() == null) ? ""
-							: groupRecord.getPlFeature().getPl().getName();
-					unApprovedDTO.setPlName(pl);
-					String featureValue = (groupRecord.getGroupFullValue() == null) ? ""
-							: groupRecord.getGroupFullValue();
-					unApprovedDTO.setFeatureValue(featureValue.replace((char) 153, '™'));
-					String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? ""
-							: groupRecord.getPlFeature().getFeature().getName();
-					unApprovedDTO.setFeatureName(featureName);
+					// rdList = ParaQueryUtil.getParametricReviewData(groupRecord.getId(), session);
+					//
+					// if(!rdList.isEmpty())
+					// {
+					// rd = (ParametricReviewData) rdList.get(0);
+					// unApprovedDTO.setPartNumber(rd.getComponent().getPartNumber());
+					// unApprovedDTO
+					// .setPdfUrl(rd.getComponent().getDocument().getPdf().getSeUrl());
+					// unApprovedDTO.setSupplier(rd.getComponent().getSupplierId().getName());
+					// if(team.equals("QA"))
+					// {
+					// if(!Datatype.equals("FB"))
+					// {
+					// if(groupRecord.getReviewedDate() != null)
+					// {
+					// unApprovedDTO.setReceivedDate(sdf.format(
+					// groupRecord.getReviewedDate()).toString());
+					// }
+					// }
+					// }
+					// else
+					// {
+					// if(!Datatype.equals("FB"))
+					// {
+					// if(rd.getStoreDate() != null)
+					// {
+					// unApprovedDTO.setReceivedDate(sdf.format(
+					// groupRecord.getStoreDate()).toString());
+					// }
+					// }
+					// }
+					// }
+					// else
+					// {
+					// unApprovedDTO.setPartNumber("");
+					// unApprovedDTO.setPdfUrl((groupRecord.getDocument() != null) ? groupRecord
+					// .getDocument().getPdf().getSeUrl() : "");
+					// }
+					// String featureUnit = (groupRecord.getPlFeature().getUnit() == null) ? ""
+					// : groupRecord.getPlFeature().getUnit().getName();
+					// unApprovedDTO.setFeatureUnit(featureUnit);
+					// String pl = (groupRecord.getPlFeature().getPl().getName() == null) ? ""
+					// : groupRecord.getPlFeature().getPl().getName();
+					// unApprovedDTO.setPlName(pl);
+					// String featureValue = (groupRecord.getGroupFullValue() == null) ? ""
+					// : groupRecord.getGroupFullValue();
+					// unApprovedDTO.setFeatureValue(featureValue.replace((char) 153, '™'));
+					// String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? ""
+					// : groupRecord.getPlFeature().getFeature().getName();
+					// unApprovedDTO.setFeatureName(featureName);
 					String fromSign = (separationgroup.getApprovedParametricValue().getFromSign() == null) ? ""
 							: separationgroup.getApprovedParametricValue().getFromSign().getName();
 
@@ -1910,9 +1961,7 @@ public class ApprovedDevUtil
 					{
 						unApprovedDTO.setUnit("");
 					}
-					unApprovedDTO.setUserId(groupRecord.getParaUserId());
-					unApprovedDTO.setQaUserId(groupRecord.getQaUserId() == null ? 0l : groupRecord
-							.getQaUserId());
+
 				}
 				result.add(unApprovedDTO);
 			}
