@@ -241,6 +241,7 @@ public class MainWindow extends JFrame
 		txt += "- Complete the cycle of wrongvalue FB  \n";
 		txt += "- Add generic to header of QA Checks  \n";
 		txt += "- Add to summary pdfs has Qareview status  \n";
+		txt += "- Enhance loading of summary to increase performance  \n";
 
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.2 @ 23/9/2014 ~~~~~~~~~\n";

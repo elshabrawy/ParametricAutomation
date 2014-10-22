@@ -2857,10 +2857,11 @@ public class DataDevQueryUtil
 			for(String pdf : pdfSet.keySet())
 			{
 				Document document = ParaQueryUtil.getDocumentBySeUrl(pdf, session);
-				Criteria criteria = session.createCriteria(TrackingParametric.class);
-				criteria.add(Restrictions.eq("document", document));
-				criteria.add(Restrictions.eq("pl",
-						ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
+				Criteria criteria = session
+						.createCriteria(TrackingParametric.class)
+						.add(Restrictions.eq("document", document))
+						.add(Restrictions.eq("pl",
+								ParaQueryUtil.getPlByPlName(session, pdfSet.get(pdf).get(0))));
 				if(pdfSet.get(pdf).get(1) != null && pdfSet.get(pdf).get(1).equals(""))
 				{
 					criteria.add(Restrictions.eq("supplier",
@@ -2876,7 +2877,7 @@ public class DataDevQueryUtil
 				// track.setQaReviewDate(ParaQueryUtil.getDate());
 				TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatus(
 						session, status);
-				if(track.getTrackingTaskStatus().getName() == StatusName.waitingsummary)
+				if(track.getTrackingTaskStatus().getName().equals(StatusName.waitingsummary))
 					track.setTrackingTaskStatus(trackingTaskStatus);
 				session.saveOrUpdate(track);
 			}
@@ -4827,7 +4828,7 @@ public class DataDevQueryUtil
 		{
 			StringBuffer qury = new StringBuffer();
 			String Sql = "";
-			Sql = " SELECT  /*+ INDEX(C PART_COMP_DOC_ID_SUP_PL_IDX) */ GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
+			Sql = " SELECT  /*+ INDEX(T DOC_SUP_TASK_QAUSER_IDX) */ GETPDFURLbydoc (T.DOCUMENT_ID) pdfurl, getonlinelink_non_pdf (T.DOCUME";
 			Sql = Sql
 					+ "NT_ID) onlinelink, Get_PL_Type (t.pl_id) pltype, GET_PL_NAME (t.PL_ID) plName,";
 			Sql = Sql
@@ -4837,13 +4838,13 @@ public class DataDevQueryUtil
 			Sql = Sql
 					+ "QA_REVIEW_DATE, C.QAFLAG, DECODE (C.DONEFLAG, NULL, 'No', 0, 'No', 1, 'Yes') DO";
 			Sql = Sql
-					+ "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id ";
+					+ "NEFLAG, DECODE (C.EXTRACTIONFLAG, NULL, 'No', 0, 'No', 1, 'Yes') EXTRACTIONFLAG,T.DOCUMENT_ID,t.pl_id,"
+					+ "DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Cant Read') ConfidentialStatus ";
 			Sql = Sql
 					+ "FROM TRACKING_PARAMETRIC T, Part_COMPONENT c WHERE t.DOCUMENT_ID = c.DOCUMEN";
 			Sql = Sql + "T_ID AND T.SUPPLIER_PL_ID = C.SUPPLIER_PL_ID AND T.QA_USER_ID = "
 					+ userDTO.getId() + " AND T.TRACK";
-			Sql = Sql + "ING_TASK_STATUS_ID = getTaskstatusId ('" + StatusName.waitingsummary
-					+ "')";
+			Sql = Sql + "ING_TASK_STATUS_ID = " + StatusName.waitingsummaryId + "";
 			qury.append(Sql);
 			// pdfurl_0 onlinelink_1 pltype_2 plName_3 COM_ID_4 PART_NUMBER_5
 			// supName_6 task_type_7 username_8 DATE_9 QAFLAG_10 DONEFLAG_11 EXTRACTIONFLAG_12
@@ -4864,17 +4865,38 @@ public class DataDevQueryUtil
 					StatusName.waitingsummary);
 			ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(
 					qury.toString()).list();
+			List<Integer> noparts = new ArrayList<>();
+			// String keyword = "";
 			for(int i = 0; i < result.size(); i++)
 			{
 				Object[] data = result.get(i);
+				String pdf = "";
+
 				ArrayList<String> summary = new ArrayList<String>();
 				summary.add(data[0] == null ? "" : data[0].toString());// pdfurl_0
 				summary.add(data[1] == null ? "" : data[1].toString());// onlinelink_1
 				summary.add(data[2] == null ? "" : data[2].toString());// pltype_2
 				summary.add(data[3] == null ? "" : data[3].toString());// plName_3
 
-				List<Integer> noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
-						Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
+				if(i == 0)
+				{
+					noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
+							Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
+					// keyword = getConfidentialStatus(Long.valueOf(data[13].toString()),
+					// Long.valueOf(data[14].toString()));
+					pdf = data[0] == null ? "" : data[0].toString();
+				}
+				else
+				{
+					if(!pdf.equals(data[0] == null ? "" : data[0].toString()))
+					{
+						noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
+								Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
+						// keyword = getConfidentialStatus(Long.valueOf(data[13].toString()),
+						// Long.valueOf(data[14].toString()));
+						pdf = data[0] == null ? "" : data[0].toString();
+					}
+				}
 				summary.add(noparts.get(0).toString());// PDFParts_4
 				summary.add(noparts.get(2).toString());// PDFDoneParts_5
 				summary.add(noparts.get(1).toString());// PLparts_6
@@ -4893,9 +4915,10 @@ public class DataDevQueryUtil
 				summary.add(comment);// QAcomment_16
 				summary.add(data[11] == null ? "" : data[11].toString());// DONEFLAG_17
 				summary.add(data[12] == null ? "" : data[12].toString());// EXTRACTIONFLAG_18
-				String keyword = getConfidentialStatus(data[0] == null ? "" : data[0].toString(),
-						data[3] == null ? "" : data[3].toString());
-				summary.add(keyword == null ? "" : keyword);// ConfidentialStatus_19
+
+				// getConfidentialStatus(Long.valueOf(data[13].toString()),
+				// Long.valueOf(data[14].toString()));
+				summary.add(data[15] == null ? "" : data[15].toString());// ConfidentialStatus_19
 				allsummary.add(summary);
 			}
 
@@ -4906,7 +4929,7 @@ public class DataDevQueryUtil
 		return allsummary;
 	}
 
-	private static String getConfidentialStatus(String pdfurl, String plname)
+	private static String getConfidentialStatus(long pdfid, long plid)
 	{
 		Session session = null;
 		String result = "";
@@ -4914,9 +4937,7 @@ public class DataDevQueryUtil
 		{
 			session = SessionUtil.getSession();
 			String sqlstatment = "select DECODE (t.CONFIDENTIAL_STATUS, NULL, ' ', 0, 'NotConfidential', 1, 'Confidential',2, 'Cant Read') ConfidentialStatus from TRACKING_PARAMETRIC t"
-					+ " where DOCUMENT_ID = GET_DOCID_BY_PDFURL('"
-					+ pdfurl
-					+ "') and PL_ID = GET_PL_ID_BY_NAME('" + plname + "')";
+					+ " where DOCUMENT_ID = " + pdfid + " and PL_ID = " + plid + "";
 			SQLQuery sql = session.createSQLQuery(sqlstatment);
 			result = (String) sql.uniqueResult();
 		}catch(Exception e)

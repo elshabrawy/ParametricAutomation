@@ -2622,12 +2622,12 @@ public class WorkingSheet
 						}catch(ConstraintViolationException e)
 						{
 							e.printStackTrace();
-							if(e.getMessage().contains(
-									"PART_COMP_PART_SUPP_PL_UQ")){
+							if(e.getMessage().contains("PART_COMP_PART_SUPP_PL_UQ"))
+							{
 								partvalidation.setStatus("Part Dupplicated in The sheet");
 								writeValidtionStatus(xcellrange, false);
-								save=true;
-								}
+								save = true;
+							}
 						}
 
 					}
@@ -2638,7 +2638,7 @@ public class WorkingSheet
 
 					// System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
 					if(save)
-			
+
 						pdfSet.add(pdfUrl);
 					else
 					{
@@ -2810,7 +2810,7 @@ public class WorkingSheet
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
 				DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
-						StatusName.WaittingParametricInsertion, QAName); // // Eng
+						StatusName.waitingsummary, QAName); // // Eng
 				DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
 						StatusName.tlFeedback, QAName);
 				// DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
@@ -3570,7 +3570,8 @@ public class WorkingSheet
 				String Vendor = partData.get(supcell);
 				String Part = partData.get(partcell);
 				String checkpartid = partData.get(CheckpartidIndex);
-				if((!status.equals(StatusName.WaittingQAChecks)&&!status.equals("Exception")) && RightValue.isEmpty())
+				if((!status.equals(StatusName.WaittingQAChecks) && !status.equals("Exception"))
+						&& RightValue.isEmpty())
 				{
 					MainWindow.glass.setVisible(false);
 					saved = false;

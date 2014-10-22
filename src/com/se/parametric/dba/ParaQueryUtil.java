@@ -1795,7 +1795,7 @@ public class ParaQueryUtil
 
 		try
 		{
-			session = SessionUtil.getSession();
+//			session = SessionUtil.getSession();
 			SQLQuery query = session.createSQLQuery("select GET_DOCID_BY_PDFURL('" + seUrl
 					+ "') from dual");
 			long docId = ((BigDecimal) query.uniqueResult()).longValue();
