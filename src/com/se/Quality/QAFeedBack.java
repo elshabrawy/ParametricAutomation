@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import osheet.SheetPanel;
 import osheet.WorkingSheet;
@@ -101,6 +103,19 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0)
+			{
+				System.err.println(tablePanel.getCurrentPage());				
+				if(tabbedPane.getSelectedIndex() == 0){
+					tablePanel.updateSheetPanelPagging();
+				}					
+			}
+		});
+		
 		this.addFocusListener(new FocusListener() {
 
 			@Override
