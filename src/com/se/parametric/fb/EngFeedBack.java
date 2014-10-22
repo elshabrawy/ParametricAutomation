@@ -135,7 +135,6 @@ public class EngFeedBack extends JPanel implements ActionListener
 			}
 		});
 		
-		
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -685,3 +684,4 @@ public class EngFeedBack extends JPanel implements ActionListener
 	}
 
 }
+

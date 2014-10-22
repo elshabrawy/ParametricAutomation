@@ -244,8 +244,8 @@ public class TLReviewData extends JPanel implements ActionListener
 					tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(teamMembers, plName,
 							supplierName, taskType, null, startDate, endDate, null, "finished",
 							null, StatusName.tlReview, null, null);
-					tablePanel.setCurrentPage(1);
 					System.out.println("Selected Data Size=" + tablePanel.selectedData.size());
+					tablePanel.setCurrentPage(1);
 					tablePanel.setTableData1(0, tablePanel.selectedData);
 				}catch(Exception e)
 				{
@@ -616,3 +616,4 @@ public class TLReviewData extends JPanel implements ActionListener
 		}
 	}
 }
+

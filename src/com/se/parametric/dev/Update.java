@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import osheet.Cell;
 import osheet.SheetPanel;
@@ -120,6 +122,20 @@ public class Update extends JPanel implements ActionListener
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
 		this.add(tabbedPane);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0)
+			{
+				System.err.println(tablePanel.getCurrentPage());				
+				if(tabbedPane.getSelectedIndex() == 0){
+					tablePanel.updateSheetPanelPagging();
+				}					
+			}
+		});
+		
+		
 		this.addFocusListener(new FocusListener() {
 
 			@Override
