@@ -96,6 +96,7 @@ public class QAChecks extends JPanel implements ActionListener
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Seperation", null, tabSheet, null);
 
+		
 		this.addFocusListener(new FocusListener() {
 
 			@Override
