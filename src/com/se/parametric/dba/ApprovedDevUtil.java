@@ -1701,7 +1701,6 @@ public class ApprovedDevUtil
 				separationgroups = (List<ParametricSeparationGroup>) SeparationCri.list();
 				if(separationgroups.isEmpty())
 				{
-					// continue;
 					separationgroups = new ArrayList<ParametricSeparationGroup>();
 				}
 				if(Datatype.equals("FB"))
@@ -1905,6 +1904,7 @@ public class ApprovedDevUtil
 					// String featureName = (groupRecord.getPlFeature().getFeature().getName() == null) ? ""
 					// : groupRecord.getPlFeature().getFeature().getName();
 					// unApprovedDTO.setFeatureName(featureName);
+
 					String fromSign = (separationgroup.getApprovedParametricValue().getFromSign() == null) ? ""
 							: separationgroup.getApprovedParametricValue().getFromSign().getName();
 
