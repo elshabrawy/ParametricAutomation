@@ -6251,8 +6251,19 @@ public class DataDevQueryUtil
 			}
 			qaexception.setPlId(qachk.getProductLine().getId());
 			qaexception.setPreQaCheckers(checker);
-			session.saveOrUpdate(qaexception);
 
+			cri = session.createCriteria(PreQaCheckersException.class);
+			cri.add(Restrictions.eq("family", qaexception.getFamily()));
+			cri.add(Restrictions.eq("comid", qaexception.getComid()));
+			cri.add(Restrictions.eq("preQaCheckers", qaexception.getPreQaCheckers()));
+			cri.add(Restrictions.eq("plId", qaexception.getPlId()));
+			cri.add(Restrictions.eq("fetValue", qaexception.getFetValue()));
+			cri.add(Restrictions.eq("plFetId", qaexception.getPlFetId()));
+			PreQaCheckersException tmp = (PreQaCheckersException) cri.uniqueResult();
+			if(tmp == null)
+			{
+				session.saveOrUpdate(qaexception);
+			}
 		}catch(Exception e)
 		{
 			e.printStackTrace();
