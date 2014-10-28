@@ -4641,7 +4641,7 @@ public class WorkingSheet
 								List<String> plfets = ParaQueryUtil.getPlFeautreNames(Plname);
 								for(int f = 0; f < features.length; f++)
 								{
-									if(!plfets.contains(features[f]))
+									if(!plfets.contains("F_"+features[f]))
 									{
 										error += "Feature No (" + (f + 1) + ") is wrong |";
 										// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Feature No (" + (f + 1) +
@@ -4667,7 +4667,7 @@ public class WorkingSheet
 						{
 							// String[] features = wrongfeatures.split("|");
 							List<String> plfets = ParaQueryUtil.getPlFeautreNames(Plname);
-							if(!plfets.contains(wrongfeatures))
+							if(!plfets.contains("F_"+wrongfeatures))
 							{
 								error += "Feature is wrong |";
 								// getCellText(xcellrange.getCellByPosition(ValidationCommentIndex, 0)).setString("Feature is wrong");
