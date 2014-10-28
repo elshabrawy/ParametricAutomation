@@ -1795,7 +1795,7 @@ public class ParaQueryUtil
 
 		try
 		{
-//			session = SessionUtil.getSession();
+			// session = SessionUtil.getSession();
 			SQLQuery query = session.createSQLQuery("select GET_DOCID_BY_PDFURL('" + seUrl
 					+ "') from dual");
 			long docId = ((BigDecimal) query.uniqueResult()).longValue();
@@ -3838,7 +3838,10 @@ public class ParaQueryUtil
 		{
 			session = SessionUtil.getSession();
 			SQLQuery query = session
-					.createSQLQuery("select /*+ index(acq ACQ_OLDNANPART_OLDMANID_IDX)*/ acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM ='"+NAN_INPUT_PART.trim()+"' and acq.OLD_MAN_ID =CM.GET_MAN_ID('"+supplierName+"')");
+					.createSQLQuery("select /*+ index(acq ACQ_OLDNANPART_OLDMANID_IDX)*/ acq.OLD_COM_ID from cm.TBL_PART_ACQUISITION acq where acq.OLD_NAN_PARTNUM ='"
+							+ NAN_INPUT_PART.trim()
+							+ "' and acq.OLD_MAN_ID =CM.GET_MAN_ID('"
+							+ supplierName + "')");
 			// query.setParameter("nanpartnum", NAN_INPUT_PART.trim());
 			// query.setParameter("suppName", supplierName);
 
@@ -5009,7 +5012,7 @@ public class ParaQueryUtil
 			for(PlFeature plFeature : plfets)
 			{
 				String fetName = plFeature.getFeature().getName();
-				fets.add(fetName);
+				fets.add("F_" + fetName);
 			}
 			return fets;
 		}catch(Exception e)
@@ -5413,9 +5416,9 @@ public class ParaQueryUtil
 			// Criteria cr = session.createCriteria(MapGeneric.class);
 			// cr.add(Restrictions.eq("generic", genName));
 			// generic = (MapGeneric) cr.uniqueResult();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
@@ -5444,9 +5447,9 @@ public class ParaQueryUtil
 			// Criteria cr = session.createCriteria(FamilyCross.class);
 			// cr.add(Restrictions.eq("family", famName));
 			// familyCross = (FamilyCross) cr.uniqueResult();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
