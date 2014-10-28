@@ -67,7 +67,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 		userId = userDTO.getId();
 		width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAFeedBackFilterData(userDTO,null,null);
+		ArrayList<Object[]> filterData = DataDevQueryUtil.getQAFeedBackFilterData(userDTO, null,
+				null);
 		System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " "
 				+ filterData.size());
 
@@ -103,19 +104,20 @@ public class QAFeedBack extends JPanel implements ActionListener
 
 		filterPanel.filterButton.addActionListener(this);
 		filterPanel.refreshButton.addActionListener(this);
-		
+
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
-		
+
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -356,6 +358,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 							Long.valueOf(sheetRecord.get(ComidIndex)), userDTO.getId());
 					ArrayList<String> feedCom = DataDevQueryUtil.getFeedbackByPartAndSupp(
 							partNumber, supplierName);
+					System.err.println(partNumber);
 					String lstqaComment = DataDevQueryUtil.getlastengComment(
 							new Long(feedCom.get(3)), userDTO.getId());
 					ParaFeedbackAction action = null;
@@ -500,13 +503,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 			{
 				Date startDate = null;
 				Date endDate = null;
-				try
-				{
-					dofilter(startDate, endDate);
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
+				dofilter(startDate, endDate);
+
 				filterPanel.setCollapsed(true);
 			}
 			else if(event.getSource() == filterPanel.refreshButton)
@@ -519,7 +517,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO,startDate,endDate);
+				filterPanel.filterList = DataDevQueryUtil.getQAFeedBackFilterData(userDTO,
+						startDate, endDate);
 				filterPanel.refreshFilters();
 				filterPanel.setCollapsed(true);
 
@@ -555,13 +554,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 				else
 				{
-					try
-					{
-						loadpdf(selectedPdfs);
-					}catch(Exception ex)
-					{
-						ex.printStackTrace();
-					}
+					loadpdf(selectedPdfs);
 				}
 			}
 			/**
@@ -583,14 +576,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 					MainWindow.glass.setVisible(false);
 					return null;
 				}
-
-				try
-				{
-					loadpdfall(startDate, endDate);
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
+				loadpdfall(startDate, endDate);
 			}
 
 			/**

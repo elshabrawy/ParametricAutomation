@@ -14,6 +14,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -90,6 +92,14 @@ public class LoginForm extends JFrame
 
 		btnNewButton.setFocusable(true); // How do I get focus on button on App launch?
 		btnNewButton.requestFocus(true);
+
+		if(!checkversion())
+		{
+			JOptionPane
+					.showMessageDialog(null,
+							"Please copy the last jar from the path : \"\\\\sw4\\Reports\\Apps\\parametricAuto \" ");
+			System.exit(0);
+		}
 
 		btnNewButton.addActionListener(new ActionListener() {
 
@@ -205,6 +215,21 @@ public class LoginForm extends JFrame
 		});
 	}
 
+	private boolean checkversion()
+	{
+		File currentjar = new File("D:\\parametricAuto\\Para_Automation.jar");
+		File lastjar = new File("\\\\sw4\\Reports\\Apps\\parametricAuto\\Para_Automation.jar");
+		// System.out.println("Before Format : " + currentjar.lastModified());
+		// System.out.println("Before Format : " + lastjar.lastModified());
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		System.out.println("current jar Format : " + sdf.format(currentjar.lastModified()));
+		System.out.println("last jar Format : " + sdf.format(lastjar.lastModified()));
+		if(currentjar.lastModified() < lastjar.lastModified())
+			return false;
+		else
+			return true;
+	}
+
 	class LongRunProcess extends SwingWorker<Object, Object>
 	{
 		GrmUserDTO grmUser;
@@ -311,4 +336,3 @@ public class LoginForm extends JFrame
 		}
 	}
 }
-

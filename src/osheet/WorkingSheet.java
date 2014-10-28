@@ -2809,10 +2809,20 @@ public class WorkingSheet
 				}
 				DataDevQueryUtil.saveQAFlag(AllParts);
 				DataDevQueryUtil.savePartsFeedback(feedbackParts);
-				DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
-						StatusName.waitingsummary, QAName); // // Eng
-				DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
-						StatusName.waitingsummary, QAName);
+				if(!screen.equals("FB"))
+				{
+					DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
+							StatusName.waitingsummary, QAName); // // Eng
+					DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+							StatusName.waitingsummary, QAName);
+				}
+				else
+				{
+					DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
+							StatusName.WaittingParametricInsertion, QAName); // // Eng
+					DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+							StatusName.tlFeedback, QAName);
+				}
 				// DataDevQueryUtil.saveTrackingParamtric(qafeedbackpdfs, selectedPL, null, StatusName.qaFeedback, teamLeaderName);
 
 				if(summarydata)
