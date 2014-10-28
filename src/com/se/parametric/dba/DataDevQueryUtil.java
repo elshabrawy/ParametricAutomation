@@ -659,8 +659,18 @@ public class DataDevQueryUtil
 				List taskType = null;
 				if(type.equals("NPI"))
 				{
-					typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"),
-							Restrictions.eq("name", "NPI Transferred")));
+					if(inputType.equals("assigned"))
+					{
+						typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"),
+								Restrictions.eq("name", "NPI Transferred")));	
+					}
+					else
+					{
+						typeCriteria.add(Restrictions.or(Restrictions.eq("name", "NPI"),
+								Restrictions.eq("name", "NPI Transferred"),Restrictions.eq("name", "NPI Update")));	
+						
+					}
+					
 				}
 				else
 				{
@@ -1384,11 +1394,11 @@ public class DataDevQueryUtil
 				// plType = ParaQueryUtil.getPLType(QueryUtil.getPlByExactName(plout, session)).getName();
 				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
 						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
-						+ partData.indexOf(data[13].toString()));
+						+ partData.indexOf("F_"+data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 					if(i == result.size() - 1)
 					{
 						plFets = plFetsMap.get(lastPl);
@@ -1534,7 +1544,7 @@ public class DataDevQueryUtil
 					}
 					plFets = plFetsMap.get(plout);
 					partData.addAll(plFets);
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 					// x= plFets.indexOf(data[10].toString());
 					// partData.add(data[11].toString()); /* fet Value */
 
@@ -1695,11 +1705,11 @@ public class DataDevQueryUtil
 						.getName();
 				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
 						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
-						+ partData.indexOf(data[13].toString()));
+						+ partData.indexOf("F_"+data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 					if(i == result.size() - 1)
 					{
 						plFets = plFetsMap.get(lastPl);
@@ -1848,7 +1858,7 @@ public class DataDevQueryUtil
 					}
 					plFets = plFetsMap.get(plout);
 					partData.addAll(plFets);
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 					// x= plFets.indexOf(data[10].toString());
 					// partData.add(data[11].toString()); /* fet Value */
 
@@ -2016,11 +2026,11 @@ public class DataDevQueryUtil
 						.getName();
 				System.out.println(plout + " @ " + "Part:" + data[4].toString() + " ~ "
 						+ data[13].toString() + " ~ " + data[14].toString() + " idx:"
-						+ partData.indexOf(data[13].toString()));
+						+ partData.indexOf("F_"+data[13].toString()));
 				if(data[4].toString().equals(lastPart))
 				{
 					// partData.add(data[11].toString()); /* fet Value */
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 					if(i == result.size() - 1)
 					{
 						plFets = plFetsMap.get(lastPl);
@@ -2163,7 +2173,7 @@ public class DataDevQueryUtil
 					}
 					plFets = plFetsMap.get(plout);
 					partData.addAll(plFets);
-					partData.set(partData.indexOf(data[13].toString()), data[14].toString());
+					partData.set(partData.indexOf("F_"+data[13].toString()), data[14].toString());
 				}
 
 				if(i == result.size() - 1)
@@ -2639,10 +2649,10 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(data);
 				// session.beginTransaction().commit();
 			}
-			// }catch(Exception ex)
-			// {
-			// ex.printStackTrace();
-			// return false;
+			 }catch(Exception ex)
+			 {
+			 ex.printStackTrace();
+			 return false;
 		}finally
 		{
 			session.close();
@@ -3822,9 +3832,9 @@ public class DataDevQueryUtil
 			Criteria cr = session.createCriteria(TrackingFeedbackType.class);
 			cr.add(Restrictions.eq("name", feedbackTypeStr));
 			feedbackType = (TrackingFeedbackType) cr.uniqueResult();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
@@ -4214,9 +4224,9 @@ public class DataDevQueryUtil
 			// Criteria cr = session.createCriteria(MasterPartMask.class);
 			// cr.add(Restrictions.eq("mstrPart", famName));
 			// mask = (MasterPartMask) cr.uniqueResult();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+//		}catch(Exception e)
+//		{
+//			e.printStackTrace();
 		}finally
 		{
 			session.close();
