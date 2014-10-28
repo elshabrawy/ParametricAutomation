@@ -206,12 +206,12 @@ public class MainWindow extends JFrame
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
 		dialog.setLayout(null);
-		JLabel lbl = new JLabel("Version No 2.4");
+		JLabel lbl = new JLabel("Version No 2.5");
 		lbl.setFont(new Font("Simpson", Font.BOLD, 18));
 		lbl.setForeground(new Color(160, 82, 45));
 		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
 
-		JLabel lbl2 = new JLabel("Last updates on 22/10/2014 :- ");
+		JLabel lbl2 = new JLabel("Last updates on 28/10/2014 :- ");
 		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
 		lbl2.setForeground(new Color(189, 67, 67));
 		lbl2.setBounds(0, 55, 250, 20);
@@ -230,6 +230,14 @@ public class MainWindow extends JFrame
 		String txt = "";
 		
 		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.5 @ 28/10/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+
+		txt += "- Enhance loading NPIUpdate in TL&QA screen  \n";
+		txt += "- Remove exception in get mask&generic&family methods \n";
+		txt += "- Enance issue of display feature value that the same as feature name  \n";
+		
+		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.4 @ 22/10/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
 
@@ -238,6 +246,7 @@ public class MainWindow extends JFrame
 		txt += "- Handle exceptions in saving approved values and parts  \n";
 		txt += "- Enhance loadall action in NPIUPDATE screen  \n";
 		txt += "- Enhance issue of selection from another page of filter result  \n";
+		txt += "- Enhance issue of seperation loading and saving  \n";
 		
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.3 @ 19/10/2014 ~~~~~~~~~\n";
