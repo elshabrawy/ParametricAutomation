@@ -3260,19 +3260,31 @@ public class DataDevQueryUtil
 			{
 				docFeedback.setComments(docFeedbackComment);
 			}
-			docFeedback.setErrortype(docFeedbackComment);
-			docFeedback.setPriority(99l);
-			docFeedback.setSeUrl(pdfUrl);
-			docFeedback.setTeam("Parametric");
-			docFeedback.setUsername(userName);
-			docFeedback.setIssueDate(ParaQueryUtil.getDate());
-			docFeedback.setStatus("unexecuted");
-			session.saveOrUpdate(docFeedback);
+			if(!docFeedbackComment.equals(StatusName.NeedContact))
+			{
+				docFeedback.setErrortype(docFeedbackComment);
+				docFeedback.setPriority(99l);
+				docFeedback.setSeUrl(pdfUrl);
+				docFeedback.setTeam("Parametric");
+				docFeedback.setUsername(userName);
+				docFeedback.setIssueDate(ParaQueryUtil.getDate());
+				docFeedback.setStatus("unexecuted");
+				session.saveOrUpdate(docFeedback);
+			}
 			Pl pl = ParaQueryUtil.getPlByPlName(plName);
 			TrackingParametric trackingParametric = getTrackingParametricByDocumentAndPl(document,
 					pl, session);
-			TrackingTaskStatus trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(
-					session, StatusName.srcFeedback);
+			TrackingTaskStatus trackingTaskStatus = null;
+			if(docFeedbackComment.equals(StatusName.NeedContact))
+			{
+				trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(session,
+						StatusName.NeedContact);
+			}
+			else
+			{
+				trackingTaskStatus = ParaQueryUtil.getTrackingTaskStatusByExactName(session,
+						StatusName.srcFeedback);
+			}
 			trackingParametric.setTrackingTaskStatus(trackingTaskStatus);
 			session.update(trackingParametric);
 			// session.beginTransaction().commit();

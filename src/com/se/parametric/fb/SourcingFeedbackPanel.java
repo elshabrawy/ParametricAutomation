@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.text.JTextComponent;
 
+import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.MainWindow;
 import com.se.parametric.dba.DataDevQueryUtil;
 import com.se.parametric.dba.ParaQueryUtil;
@@ -57,7 +58,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		commentCombo = new JComboBox<String>();
 		commentCombo.setEditable(true);
 		String[] statusComboItems = { "Wrong Revision", "Wrong Taxonomy", "Reject",
-				"Not Available Data" };
+				"Not Available Data", StatusName.NeedContact };
 		statusCombo = new JComboBox<String>(statusComboItems);
 		sendFeedbackBtn = new JButton("Send Feedback");
 
@@ -140,7 +141,8 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		else if("Reject".equals(type))
 		{
 			String[] rejectCommentOptions = { "Documentation", "Broken Link",
-					"No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor" };
+					"No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor",
+					"Not NPI" };
 			for(int i = 0; i < rejectCommentOptions.length; i++)
 			{
 				model.addElement(rejectCommentOptions[i]);
@@ -278,6 +280,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 							JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
+
 				if("Wrong Revision".equals(statusCombo.getSelectedItem().toString()))
 				{
 					try
@@ -334,7 +337,12 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					rightTax = null;
 					revUrl = null;
 				}
-
+				else if(StatusName.NeedContact.equals(statusCombo.getSelectedItem().toString()))
+				{
+					docFeedbackComment = StatusName.NeedContact;
+					rightTax = null;
+					revUrl = null;
+				}
 				String pdfUrl = dsUrlTF.getText().trim();
 				String plName = plTF.getText().trim();
 				String status = DataDevQueryUtil.sendFeedbackToSourcingTeam(userName, pdfUrl,
