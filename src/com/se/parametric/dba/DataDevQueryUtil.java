@@ -1602,7 +1602,7 @@ public class DataDevQueryUtil
 		{
 			StringBuffer qury = new StringBuffer();
 			qury.append("  SELECT GET_PL_NAME (t.PL_ID) plName,getuserName (T.USER_ID),GetTaskTypeName (t.TRACKING_TASK_TYPE_ID) task_type, GETSUPPLIERNAME (t.supplier_id) supName,C.PART_NUMBER,FAM.NAME ,"
-					+ " Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross,GET_MSK_Value (c.MASK_ID,C.PART_NUMBER) MASK,GETNPIBYCOMID(c.COM_ID) NPI_FLAG,"
+					+ " Get_family_crossName (C.FAMILY_CROSS_ID) family_Cross,Get_GENERIC_Name (C.GENERIC_ID) generic_Nam,GET_MSK_Value (c.MASK_ID,C.PART_NUMBER) MASK,GETNPIBYCOMID(c.COM_ID) NPI_FLAG,"
 					+ " GET_News_PDF_URL(c.DOCUMENT_ID, c.SUPPLIER_ID) newsLike,c.DESCRIPTION, GETPDFURLBYDOCID (t.DOCUMENT_ID) pdfurl,F.NAME fetName, G.GROUP_FULL_VALUE fetVal,t.ASSIGNED_DATE,"
 					+ " GetTaskStatusName (TRACKING_TASK_STATUS_ID) task_Status,C.COM_ID,R.PL_FEATURE_ID,R.GROUP_APPROVED_VALUE_ID,t.DOCUMENT_ID,t.PL_ID,TY.NAME type"
 					+ " FROM  TRACKING_PARAMETRIC T, part_COMPONENT c,family fam,PARAMETRIC_REVIEW_DATA r,pl_feature_unit pf, feature f,PARAMETRIC_APPROVED_GROUP g,PARAMETRIC_FEEDBACK FB, PARAMETRIC_FEEDBACK_CYCLE FBC, TRACKING_FEEDBACK_TYPE ty"
@@ -1814,12 +1814,12 @@ public class DataDevQueryUtil
 
 					if(plType.equals("Semiconductor"))
 					{
-						partData.add(data[7] == null ? "" : data[6].toString());
 						/** family cross */
-						partData.add(data[6].toString());
+						partData.add(data[6] != null ? data[6].toString() : "");
 						/** generic */
-						partData.add((data[8] == null) ? "" : data[8].toString());
+						partData.add((data[7] == null) ? "" : data[7].toString());
 						/** Mask */
+						partData.add((data[8] == null) ? "" : data[8].toString());
 						if(NPIFlag)
 						{
 
