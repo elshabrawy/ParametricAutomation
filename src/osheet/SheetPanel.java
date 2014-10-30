@@ -318,7 +318,7 @@ public class SheetPanel extends JPanel
 			args[1] = new PropertyValue();
 			args[1].Name = "FilterName";
 			args[1].Value = "MS Excel 97";
-			this.aBean.getDocument().storeAsURL("file:///" + filepath, args);
+			this.aBean.getDocument().storeToURL("file:///" + filepath, args);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();

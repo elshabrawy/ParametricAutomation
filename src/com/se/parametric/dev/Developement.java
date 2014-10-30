@@ -52,7 +52,7 @@ public class Developement extends JPanel implements ActionListener
 	 * @wbp.nonvisual location=120,351
 	 */
 	DocumentInfoDTO documentInfoDTO = null;
-	SheetPanel sheetpanel = new SheetPanel();
+	SheetPanel sheetpanel;
 	SheetPanel separationPanel = new SheetPanel();
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;
@@ -122,20 +122,20 @@ public class Developement extends JPanel implements ActionListener
 		tabbedPane.addTab("Sheet", tabSheet);
 		tabbedPane.addTab("Separation", separationTab);
 		add(tabbedPane);
-		
+
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
-		
-		
+
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -533,7 +533,7 @@ public class Developement extends JPanel implements ActionListener
 					}
 
 				}
-			//	MainWindow.glass.setVisible(false);
+				// MainWindow.glass.setVisible(false);
 			}
 			/**
 			 * Show pdfs Action
@@ -679,94 +679,94 @@ public class Developement extends JPanel implements ActionListener
 				MainWindow.glass.setVisible(false);
 
 			}
-			//MainWindow.glass.setVisible(false);
+			// MainWindow.glass.setVisible(false);
 
 			return null;
 		}
 
 		private boolean saveseparation()
 		{
-//			try
-//			{
+			// try
+			// {
 
-				ArrayList<String> row;
-				if(!validated)
+			ArrayList<String> row;
+			if(!validated)
+			{
+				MainWindow.glass.setVisible(false);
+				JOptionPane.showMessageDialog(null,
+						" Validate First due to some errors in your data");
+
+				return false;
+			}
+
+			for(int i = 0; i < separationValues.size(); i++)
+			{
+				row = separationValues.get(i);
+
+				String plName = row.get(0);
+				String featureName = row.get(5);
+				String featureFullValue = row.get(6);
+				String value = row.get(9);
+				if(featureFullValue.startsWith("'") || featureFullValue.startsWith("‘"))
 				{
-					MainWindow.glass.setVisible(false);
-					JOptionPane.showMessageDialog(null,
-							" Validate First due to some errors in your data");
-
-					return false;
+					featureFullValue = featureFullValue.substring(1);
+				}
+				if(value.startsWith("'") || value.startsWith("‘"))
+				{
+					value = value.substring(1);
 				}
 
-				for(int i = 0; i < separationValues.size(); i++)
+				try
 				{
-					row = separationValues.get(i);
-
-					String plName = row.get(0);
-					String featureName = row.get(5);
-					String featureFullValue = row.get(6);
-					String value = row.get(9);
-					if(featureFullValue.startsWith("'") || featureFullValue.startsWith("‘"))
-					{
-						featureFullValue = featureFullValue.substring(1);
-					}
-					if(value.startsWith("'") || value.startsWith("‘"))
-					{
-						value = value.substring(1);
-					}
-
-					try
-					{
-						if(value.trim().equals(""))
-						{
-							try
-							{
-								Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
-								cell.setText("Value can't be null");
-							}catch(Exception e)
-							{
-								e.printStackTrace();
-							}
-							return false;
-						}
-						List<ApprovedParametricDTO> approved = ApprovedDevUtil
-								.createApprovedValuesList(featureFullValue, plName, featureName,
-										row.get(7), row.get(8), value, row.get(12), row.get(13),
-										row.get(11), row.get(10));
-
-						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
-								featureName, featureFullValue, row.get(2), userId);
-						Set<String> pdfs = new HashSet<String>();
-						pdfs.add(row.get(2));
-						DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
-								StatusName.inprogress, "");
-						
-						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
-								.get(featureName);
-						appValues.add(featureFullValue);
-						wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
-						
-					}catch(Exception ex)
+					if(value.trim().equals(""))
 					{
 						try
 						{
 							Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
-							cell.setText(ex.getMessage());
-							return false;
+							cell.setText("Value can't be null");
 						}catch(Exception e)
 						{
 							e.printStackTrace();
-							return false;
 						}
+						return false;
+					}
+					List<ApprovedParametricDTO> approved = ApprovedDevUtil
+							.createApprovedValuesList(featureFullValue, plName, featureName,
+									row.get(7), row.get(8), value, row.get(12), row.get(13),
+									row.get(11), row.get(10));
+
+					ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName, featureName,
+							featureFullValue, row.get(2), userId);
+					Set<String> pdfs = new HashSet<String>();
+					pdfs.add(row.get(2));
+					DataDevQueryUtil.saveTrackingParamtric(pdfs, plName, null,
+							StatusName.inprogress, "");
+
+					List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
+							.get(featureName);
+					appValues.add(featureFullValue);
+					wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
+
+				}catch(Exception ex)
+				{
+					try
+					{
+						Cell cell = wsMap.get("Separation").getCellByPosission(14, i + 1);
+						cell.setText(ex.getMessage());
+						return false;
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+						return false;
 					}
 				}
+			}
 
-//			}catch(Exception e)
-//			{
-//				e.printStackTrace();
-//				return false;
-//			}
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
+			// return false;
+			// }
 			return true;
 		}
 
@@ -860,4 +860,3 @@ public class Developement extends JPanel implements ActionListener
 	}
 
 }
-
