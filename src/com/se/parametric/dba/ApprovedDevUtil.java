@@ -1575,7 +1575,7 @@ public class ApprovedDevUtil
 
 	public static ArrayList<UnApprovedDTO> getUnapprovedReviewData(Long[] userids, String engName,
 			Date startDate, Date endDate, String plName, String supplierName, String status,
-			String tsktype, String team, String Datatype, long issuedTo)
+			String tsktype, String team, String Datatype, long issuedTo) throws Exception
 	{
 		ArrayList<UnApprovedDTO> result = new ArrayList<UnApprovedDTO>();
 		Session session = SessionUtil.getSession();
@@ -1968,10 +1968,9 @@ public class ApprovedDevUtil
 				result.add(unApprovedDTO);
 			}
 
-			// }
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
+			// }catch(Exception ex)
+			// {
+			// ex.printStackTrace();
 		}finally
 		{
 			session.close();
@@ -2082,10 +2081,10 @@ public class ApprovedDevUtil
 			result.add(error);
 			result.add(unitstring);
 
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			return result;
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
+			// return result;
 		}finally
 		{
 			session.close();
