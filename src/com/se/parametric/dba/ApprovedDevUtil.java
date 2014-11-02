@@ -2051,7 +2051,7 @@ public class ApprovedDevUtil
 					error += " |All the separation column should be Null except value ";
 				}
 			}
-			else if(value.contains("Min") || value.contains("Max") || value.contains("Typ"))
+			else if(value.contains("(Min)") || value.contains("(Max)") || value.contains("(Typ)"))
 			{
 				unitstring = "false";
 				error += " |The Value contains \"(Min), (Typ), (Max)\"";
