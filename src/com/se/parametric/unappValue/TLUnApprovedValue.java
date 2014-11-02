@@ -329,8 +329,8 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if(newValReq.get(14).equals("Update"))
 							{
-								try
-								{
+//								try
+//								{
 									if(!validated)
 									{
 										MainWindow.glass.setVisible(false);
@@ -339,10 +339,10 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 
 										return null;
 									}
-								}catch(Exception e)
-								{
-									continue;
-								}
+//								}catch(Exception e)
+//								{
+//									continue;
+//								}
 
 							}
 						}
@@ -375,16 +375,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										if(newValReq.get(1).trim().equals(""))
 										{
-											try
-											{
+//											try
+//											{
 												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
-											}catch(Exception ex)
-											{
-												ex.printStackTrace();
-											}
+//											}catch(Exception ex)
+//											{
+//												ex.printStackTrace();
+//											}
 											continue;
 										}
 										else
@@ -397,16 +397,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										if(newValReq.get(1).trim().equals(""))
 										{
-											try
-											{
+//											try
+//											{
 												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
-											}catch(Exception ex)
-											{
-												ex.printStackTrace();
-											}
+//											}catch(Exception ex)
+//											{
+//												ex.printStackTrace();
+//											}
 											continue;
 										}
 										else
@@ -419,16 +419,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										if(newValReq.get(1).trim().equals(""))
 										{
-											try
-											{
+//											try
+//											{
 												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
-											}catch(Exception ex)
-											{
-												ex.printStackTrace();
-											}
+//											}catch(Exception ex)
+//											{
+//												ex.printStackTrace();
+//											}
 											continue;
 										}
 										else
@@ -440,16 +440,16 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 									{
 										if(newValReq.get(1).trim().equals(""))
 										{
-											try
-											{
+//											try
+//											{
 												Cell cell = wsMap.get("Unapproved Values")
 														.getCellByPosission(16, i + 1);
 												cell.setText("You can't set status '"
 														+ newValReq.get(14) + "' for Missed Part");
-											}catch(Exception ex)
-											{
-												ex.printStackTrace();
-											}
+//											}catch(Exception ex)
+//											{
+//												ex.printStackTrace();
+//											}
 											continue;
 										}
 										else
@@ -473,15 +473,15 @@ public class TLUnApprovedValue extends JPanel implements ActionListener
 								}
 							}catch(Exception e)
 							{
-								try
-								{
+//								try
+//								{
 									Cell cell = wsMap.get("Unapproved Values").getCellByPosission(
 											16, i + 1);
 									cell.setText(e.getMessage());
-								}catch(Exception ex)
-								{
-									ex.printStackTrace();
-								}
+//								}catch(Exception ex)
+//								{
+//									ex.printStackTrace();
+//								}
 								continue;
 							}
 						}

@@ -54,9 +54,10 @@ public class ApprovedDevUtil
 	 * @param row
 	 * @param status
 	 *            Last update @ 9-9-2013 to be Common for QA and parametric TL
+	 * @throws Exception
 	 * 
 	 */
-	public static void setValueApproved(ArrayList<String> row, String status)
+	public static void setValueApproved(ArrayList<String> row, String status) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Criteria criteria;
@@ -71,16 +72,16 @@ public class ApprovedDevUtil
 			group.setReviewedDate(new Date());
 			session.saveOrUpdate(group);
 
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
 		}
 	}
 
-	public static void updateApprovedValue(int updateFlag, UnApprovedDTO app)
+	public static void updateApprovedValue(int updateFlag, UnApprovedDTO app) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		try
@@ -93,9 +94,9 @@ public class ApprovedDevUtil
 			saveAppGroupAndSepValue(0, updateFlag, approved, app.getPlName(), app.getFeatureName(),
 					app.getFeatureValue(), app.getPdfUrl(), app.getUserId());
 
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
@@ -809,8 +810,9 @@ public class ApprovedDevUtil
 	 * @param app
 	 * @param fbType
 	 *            Updated @ 9-9-2013 to be common for QA and parametric Team Leader
+	 * @throws Exception
 	 */
-	public static void saveWrongSeparation(UnApprovedDTO app)
+	public static void saveWrongSeparation(UnApprovedDTO app) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Criteria criteria;
@@ -906,10 +908,10 @@ public class ApprovedDevUtil
 				groups.setStatus(trackingTaskStatus);
 				session.saveOrUpdate(groups);
 			}
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			System.out.println("here");
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
+			// System.out.println("here");
 		}finally
 		{
 			session.close();
@@ -1400,7 +1402,7 @@ public class ApprovedDevUtil
 		return result;
 	}
 
-	public static void replyApprovedValueFB(UnApprovedDTO app)
+	public static void replyApprovedValueFB(UnApprovedDTO app) throws Exception
 	{
 		Session session = SessionUtil.getSession();
 		Criteria criteria;
@@ -1496,9 +1498,9 @@ public class ApprovedDevUtil
 			groups.setReviewedDate(new Date());
 			session.saveOrUpdate(groups);
 
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			// }catch(Exception e)
+			// {
+			// e.printStackTrace();
 		}finally
 		{
 			session.close();
@@ -1506,43 +1508,43 @@ public class ApprovedDevUtil
 	}
 
 	public static ParaFeedbackAction getParaAction(String cAction, String pAction,
-			String rootCause, String actionDueDate, Session session)
+			String rootCause, String actionDueDate, Session session) throws ParseException
 	{
 		ParaFeedbackAction feedbackAction = null;
-		try
+		// try
+		// {
+		Criteria criteria = null;
+		criteria = session.createCriteria(ParaFeedbackAction.class);
+		criteria.add(Restrictions.eq("CAction", cAction));
+		criteria.add(Restrictions.eq("PAction", pAction));
+		criteria.add(Restrictions.eq("rootCause", rootCause));
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		if(!actionDueDate.isEmpty())
 		{
-			Criteria criteria = null;
-			criteria = session.createCriteria(ParaFeedbackAction.class);
-			criteria.add(Restrictions.eq("CAction", cAction));
-			criteria.add(Restrictions.eq("PAction", pAction));
-			criteria.add(Restrictions.eq("rootCause", rootCause));
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Date date = sdf.parse(actionDueDate);
+			System.out.println(date);
+			criteria.add(Restrictions.eq("actionDueDate", date));
+		}
+		feedbackAction = (ParaFeedbackAction) criteria.uniqueResult();
+		if(feedbackAction == null)
+		{
+			feedbackAction = new ParaFeedbackAction();
+			feedbackAction.setId(System.nanoTime());
+			feedbackAction.setCAction(cAction);
+			feedbackAction.setPAction(pAction);
+			feedbackAction.setRootCause(rootCause);
 			if(!actionDueDate.isEmpty())
 			{
-				Date date = sdf.parse(actionDueDate);
-				System.out.println(date);
-				criteria.add(Restrictions.eq("actionDueDate", date));
+				Date Acdate = sdf.parse(actionDueDate);
+				System.out.println(Acdate);
+				feedbackAction.setActionDueDate(Acdate);
 			}
-			feedbackAction = (ParaFeedbackAction) criteria.uniqueResult();
-			if(feedbackAction == null)
-			{
-				feedbackAction = new ParaFeedbackAction();
-				feedbackAction.setId(System.nanoTime());
-				feedbackAction.setCAction(cAction);
-				feedbackAction.setPAction(pAction);
-				feedbackAction.setRootCause(rootCause);
-				if(!actionDueDate.isEmpty())
-				{
-					Date Acdate = sdf.parse(actionDueDate);
-					System.out.println(Acdate);
-					feedbackAction.setActionDueDate(Acdate);
-				}
-				session.saveOrUpdate(feedbackAction);
-			}
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			session.saveOrUpdate(feedbackAction);
 		}
+		// }catch(Exception e)
+		// {
+		// e.printStackTrace();
+		// }
 		return feedbackAction;
 	}
 

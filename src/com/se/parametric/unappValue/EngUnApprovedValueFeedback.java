@@ -333,20 +333,20 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if(newValReq.get(14).equals("Update"))
 							{
-								try
+								// try
+								// {
+								if(!validated)
 								{
-									if(!validated)
-									{
-										MainWindow.glass.setVisible(false);
-										JOptionPane.showMessageDialog(null,
-												" Validate First due to some errors in your data");
+									MainWindow.glass.setVisible(false);
+									JOptionPane.showMessageDialog(null,
+											" Validate First due to some errors in your data");
 
-										return null;
-									}
-								}catch(Exception e)
-								{
-									continue;
+									return null;
 								}
+								// }catch(Exception e)
+								// {
+								// continue;
+								// }
 							}
 							if(newValReq.get(14).equals("Update")
 									&& (!newValReq.get(21).equals("Wrong Separation") && !newValReq
@@ -436,18 +436,17 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										{
 											if(newValReq.get(1).trim().equals(""))
 											{
-												try
-												{
-													Cell cell = wsMap.get("Unapproved Values")
-															.getCellByPosission(27, i + 1);
-													cell.setText("You can't set status '"
-															+ newValReq.get(14)
-															+ "' with Empty Part");
-													cell.setCellColore(0xCB3D30);
-												}catch(Exception ex)
-												{
-													ex.printStackTrace();
-												}
+												// try
+												// {
+												Cell cell = wsMap.get("Unapproved Values")
+														.getCellByPosission(27, i + 1);
+												cell.setText("You can't set status '"
+														+ newValReq.get(14) + "' with Empty Part");
+												cell.setCellColore(0xCB3D30);
+												// }catch(Exception ex)
+												// {
+												// ex.printStackTrace();
+												// }
 												continue;
 											}
 										}
@@ -491,18 +490,17 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										else
 										{
 											Long qaUserId = 0L;
-											try
-											{
-												qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
-														.getPlByPlName(session,
-																oldValReq.getPlName()),
-														ParaQueryUtil.getTrackingTaskTypeByName(
-																"Approved Values", session));
-											}catch(Exception e)
-											{
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
+											// try
+											// {
+											qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
+													.getPlByPlName(session, oldValReq.getPlName()),
+													ParaQueryUtil.getTrackingTaskTypeByName(
+															"Approved Values", session));
+											// }catch(Exception e)
+											// {
+											// // TODO Auto-generated catch block
+											// e.printStackTrace();
+											// }
 											oldValReq.setComment(newValReq.get(25));
 											oldValReq.setIssuedby(qaUserId);
 										}
@@ -520,15 +518,15 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 								}
 							}catch(Exception e)
 							{
-								try
-								{
-									Cell cell = wsMap.get("Unapproved Values").getCellByPosission(
-											27, i + 1);
-									cell.setText(e.getMessage());
-								}catch(Exception ex)
-								{
-									ex.printStackTrace();
-								}
+								// try
+								// {
+								Cell cell = wsMap.get("Unapproved Values").getCellByPosission(27,
+										i + 1);
+								cell.setText(e.getMessage());
+								// }catch(Exception ex)
+								// {
+								// ex.printStackTrace();
+								// }
 								continue;
 							}
 						}

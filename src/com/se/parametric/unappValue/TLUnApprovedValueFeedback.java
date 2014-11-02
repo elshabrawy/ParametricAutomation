@@ -339,20 +339,20 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 							ArrayList<String> newValReq = result.get(i);
 							if(newValReq.get(14).equals("Update"))
 							{
-								try
+								// try
+								// {
+								if(!validated)
 								{
-									if(!validated)
-									{
-										MainWindow.glass.setVisible(false);
-										JOptionPane.showMessageDialog(null,
-												" Validate First due to some errors in your data");
+									MainWindow.glass.setVisible(false);
+									JOptionPane.showMessageDialog(null,
+											" Validate First due to some errors in your data");
 
-										return null;
-									}
-								}catch(Exception e)
-								{
-									continue;
+									return null;
 								}
+								// }catch(Exception e)
+								// {
+								// continue;
+								// }
 							}
 							// if(newValReq.get(12).equals("Approved Eng.") && !newValReq.get(18).equals("Internal"))
 							// {
