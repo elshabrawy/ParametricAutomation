@@ -36,15 +36,24 @@ import com.se.parametric.dto.PartInfoDTO;
 import com.se.parametric.dto.TableInfoDTO;
 import com.se.parametric.util.ClientUtil;
 import com.se.parametric.util.ValidatePart;
+import com.sun.star.beans.PropertyVetoException;
+import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XPropertySetInfo;
+import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.sheet.CellDeleteMode;
+import com.sun.star.sheet.ConditionOperator;
+import com.sun.star.sheet.ValidationType;
 import com.sun.star.sheet.XCellRangeAddressable;
+import com.sun.star.sheet.XCellRangeData;
+import com.sun.star.sheet.XSheetCondition;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.table.XCell;
 import com.sun.star.table.XCellRange;
 import com.sun.star.text.XText;
+import com.sun.star.uno.Any;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.CellProtection;
 
@@ -4086,79 +4095,143 @@ public class WorkingSheet
 
 		try
 		{
-			int startrow = StatrtRecord;
+			int startRow = StatrtRecord;
 			Cell cell;
-			System.out.println("Show All List size:" + list.size());
+
+			XCellRange xCellRange = this.sheet.getCellRangeByPosition(0, startRow, 12, list.size());
+			XCellRangeData xData = UnoRuntime.queryInterface(XCellRangeData.class, xCellRange);
+
+			Object[][] aValues = new Object[list.size()][13];
 			Date sd = new Date();
+
 			for(int i = 0; i < list.size(); i++)
 			{
-				if(i % 100 == 0)
-					System.out.println("Rec. No:" + startrow);
 				TableInfoDTO docInfoDTO = list.get(i);
-				// String pdfUrl = docInfoDTO.getPdfUrl();
-				// Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
-				cell = getCellByPosission(0, startrow);
-				cell.setText("document.getPdf().getSeUrl()");
-				cell.setText(docInfoDTO.getPdfUrl());
-				cell = getCellByPosission(1, startrow);
-				cell.setText(docInfoDTO.getSupplierName());
-				cell = getCellByPosission(2, startrow);
-				// String supplierUrl = ParaQueryUtil.getSupplierUrlByDocument(document);
-				// cell.setText(supplierUrl);
-				cell.setText(docInfoDTO.getSupplierSiteUrl());
-				cell = getCellByPosission(3, startrow);
-				cell.setText(docInfoDTO.getPlName());
-				cell = getCellByPosission(4, startrow);
-				cell.setText(docInfoDTO.getTaskType());
-				cell = getCellByPosission(5, startrow);
-				// String date = document.getPdf().getDownloadDate().toString();
-				cell.setText(docInfoDTO.getDownloadDate());
-				cell = getCellByPosission(6, startrow);
-				// date = document.getPdf().getCerDate().toString();
-				cell.setText(docInfoDTO.getCerDate());
-				cell = getCellByPosission(7, startrow);
-				// cell.setText(document.getTitle() == null ? "" : document.getTitle());
-				cell.setText(docInfoDTO.getTitle());
-				cell = getCellByPosission(8, startrow);
-				// String onloneLink = ParaQueryUtil.getOnlineLinkByDocument(document);
-				// cell.setText(onloneLink);
-				cell.setText(docInfoDTO.getOnlineLink());
-				cell = getCellByPosission(9, startrow);
-				// long pagesNo = document.getPdf().getPageCount();
-				cell.setText("" + docInfoDTO.getPagesCount());
-				cell = getCellByPosission(10, startrow);
-				cell.setText(docInfoDTO.getExtracted());
-				cell = getCellByPosission(11, startrow);
-				// String newsLink = ParaQueryUtil.getNewsLink(document.getPdf().getId());
-				cell.setText(docInfoDTO.getNewsLink());
-				cell = getCellByPosission(12, startrow);
-				// String taxPath = ParaQueryUtil.getTaxonomyPath(document.getPdf().getId());
-				cell.setText(docInfoDTO.getTaxPath());
 
-				// String url = documgetSupplierPl().getSupplier().getSiteUrl();
-				// System.out.println("url"+row.getPdf().getSupplierUrl().getUrl());
-				// String s = supplierUrl.getUrl();
+				aValues[i][0] = docInfoDTO.getPdfUrl() == null ? "" : docInfoDTO.getPdfUrl();
+				aValues[i][1] = docInfoDTO.getSupplierName() == null ? "" : docInfoDTO
+						.getSupplierName();
+				aValues[i][2] = docInfoDTO.getSupplierSiteUrl() == null ? "" : docInfoDTO
+						.getSupplierSiteUrl();
+				aValues[i][3] = docInfoDTO.getPlName() == null ? "" : docInfoDTO.getPlName();
+				aValues[i][4] = docInfoDTO.getTaskType() == null ? "" : docInfoDTO.getTaskType();
+				aValues[i][5] = docInfoDTO.getDownloadDate() == null ? "" : docInfoDTO
+						.getDownloadDate();
+				aValues[i][6] = docInfoDTO.getCerDate() == null ? "" : docInfoDTO.getCerDate();
+				aValues[i][7] = docInfoDTO.getTitle() == null ? "" : docInfoDTO.getTitle();
+				aValues[i][8] = docInfoDTO.getOnlineLink() == null ? "" : docInfoDTO
+						.getOnlineLink();
+				aValues[i][9] = docInfoDTO.getPagesCount();
+				aValues[i][10] = docInfoDTO.getExtracted() == null ? "" : docInfoDTO.getExtracted();
+				aValues[i][11] = docInfoDTO.getNewsLink() == null ? "" : docInfoDTO.getNewsLink();
+				aValues[i][12] = docInfoDTO.getTaxPath() == null ? "" : docInfoDTO.getTaxPath();
+				// aValues[i][13] = prepShowAllStatusList().toString();
+				// aValues[i][14] = prepShowAllStatusList().toString();
+				// aValues[i][15] = prepShowAllStatusList().toString();
 
-				cell = getCellByPosission(13, startrow);
-				cell.SetApprovedValues(prepShowAllStatusList(),
-						getCellRangByPosission(13, list.size(), startrow));
-				cell = getCellByPosission(14, startrow);
-				cell.SetApprovedValues(prepShowAllCommentList(),
-						getCellRangByPosission(14, list.size(), startrow));
-				cell = getCellByPosission(15, startrow);
-				cell.SetApprovedValues(prepShowAllTaxonomies(),
-						getCellRangByPosission(15, list.size(), startrow));
+				// // String pdfUrl = docInfoDTO.getPdfUrl();
+				// // Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
+				// cell = getCellByPosission(0, startrow);
+				// cell.setText("document.getPdf().getSeUrl()");
+				// cell.setText(docInfoDTO.getPdfUrl());
+				// cell = getCellByPosission(1, startrow);
+				// cell.setText(docInfoDTO.getSupplierName());
+				// cell = getCellByPosission(2, startrow);
+				// // String supplierUrl = ParaQueryUtil.getSupplierUrlByDocument(document);
+				// // cell.setText(supplierUrl);
+				// cell.setText(docInfoDTO.getSupplierSiteUrl());
+				// cell = getCellByPosission(3, startrow);
+				// cell.setText(docInfoDTO.getPlName());
+				// cell = getCellByPosission(4, startrow);
+				// cell.setText(docInfoDTO.getTaskType());
+				// cell = getCellByPosission(5, startrow);
+				// // String date = document.getPdf().getDownloadDate().toString();
+				// cell.setText(docInfoDTO.getDownloadDate());
+				// cell = getCellByPosission(6, startrow);
+				// // date = document.getPdf().getCerDate().toString();
+				// cell.setText(docInfoDTO.getCerDate());
+				// cell = getCellByPosission(7, startrow);
+				// // cell.setText(document.getTitle() == null ? "" : document.getTitle());
+				// cell.setText(docInfoDTO.getTitle());
+				// cell = getCellByPosission(8, startrow);
+				// // String onloneLink = ParaQueryUtil.getOnlineLinkByDocument(document);
+				// // cell.setText(onloneLink);
+				// cell.setText(docInfoDTO.getOnlineLink());
+				// cell = getCellByPosission(9, startrow);
+				// // long pagesNo = document.getPdf().getPageCount();
+				// cell.setText("" + docInfoDTO.getPagesCount());
+				// cell = getCellByPosission(10, startrow);
+				// cell.setText(docInfoDTO.getExtracted());
+				// cell = getCellByPosission(11, startrow);
+				// // String newsLink = ParaQueryUtil.getNewsLink(document.getPdf().getId());
+				// cell.setText(docInfoDTO.getNewsLink());
+				// cell = getCellByPosission(12, startrow);
+				// // String taxPath = ParaQueryUtil.getTaxonomyPath(document.getPdf().getId());
+				// cell.setText(docInfoDTO.getTaxPath());
+				//
+				// // String url = documgetSupplierPl().getSupplier().getSiteUrl();
+				// // System.out.println("url"+row.getPdf().getSupplierUrl().getUrl());
+				// // String s = supplierUrl.getUrl();
+				//
+				// cell = getCellByPosission(13, startrow);
+				// cell.SetApprovedValues(prepShowAllStatusList(),
+				// getCellRangByPosission(13, list.size(), startrow));
+				// cell = getCellByPosission(14, startrow);
+				// cell.SetApprovedValues(prepShowAllCommentList(),
+				// getCellRangByPosission(14, list.size(), startrow));
+				// cell = getCellByPosission(15, startrow);
+				// cell.SetApprovedValues(prepShowAllTaxonomies(),
+				// getCellRangByPosission(15, list.size(), startrow));
 
-				startrow++;
+				startRow++;
 			}
+			xData.setDataArray(aValues);
+
+			xCellRange = this.sheet.getCellRangeByPosition(13, StatrtRecord, 13, list.size());
+			assignValuesListToRange(xCellRange, prepShowAllStatusList());
+			xCellRange = this.sheet.getCellRangeByPosition(14, StatrtRecord, 14, list.size());
+			assignValuesListToRange(xCellRange, prepShowAllCommentList());
+			xCellRange = this.sheet.getCellRangeByPosition(15, StatrtRecord, 15, list.size());
+			assignValuesListToRange(xCellRange, prepShowAllTaxonomies());
 			Date ed = new Date();
 			System.out.println("~~~~ Time : ~~~~ " + sd + "  ****  " + ed);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
+		}
+	}
 
+	private void assignValuesListToRange(XCellRange cellRange, List<String> values)
+			throws IllegalArgumentException, UnknownPropertyException, PropertyVetoException,
+			WrappedTargetException
+	{
+		XPropertySet xCellRangePropSet = UnoRuntime.queryInterface(XPropertySet.class, cellRange);
+		Any an = (Any) xCellRangePropSet.getPropertyValue("ValidationLocal");
+		XPropertySet xValidPropSet = (XPropertySet) an.getObject();
+		xValidPropSet.setPropertyValue("Type", ValidationType.LIST);
+		xValidPropSet.setPropertyValue("ShowList", (short) 1);
+
+		// condition
+		XSheetCondition xCondition = (XSheetCondition) UnoRuntime.queryInterface(
+				XSheetCondition.class, xValidPropSet);
+		xCondition.setOperator(ConditionOperator.EQUAL);
+		StringBuffer conditions = new StringBuffer();
+		if(values != null)
+		{
+			for(String s : values)
+			{
+				conditions.append("\"" + s + "\";");
+				if(conditions.toString().length() > 26000)
+				{
+					break;
+				}
+			}
+			xCondition.setFormula1(conditions.toString());
+			xCellRangePropSet.setPropertyValue("ValidationLocal", xValidPropSet);
 		}
 
+		xCellRangePropSet = UnoRuntime.queryInterface(XPropertySet.class, cellRange);
+		xCellRangePropSet.setPropertyValue("CellBackColor", new Integer(0xFFFFCC));
 	}
 
 	private List<String> prepShowAllStatusList()

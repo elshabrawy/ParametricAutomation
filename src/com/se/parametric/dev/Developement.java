@@ -52,7 +52,7 @@ public class Developement extends JPanel implements ActionListener
 	 * @wbp.nonvisual location=120,351
 	 */
 	DocumentInfoDTO documentInfoDTO = null;
-	SheetPanel sheetpanel = new SheetPanel();
+	SheetPanel sheetpanel;
 	SheetPanel separationPanel = new SheetPanel();
 	WorkingSheet ws;
 	PdfLinks pdfLinks = null;

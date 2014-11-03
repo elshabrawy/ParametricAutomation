@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,6 +49,11 @@ public class LoginForm extends JFrame
 	 */
 	public static void main(String[] args)
 	{
+		/**
+		 * disables recovery screen
+		 */
+		System.setProperty("com.sun.star.officebean.Options", "-norestore");
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run()
 			{
