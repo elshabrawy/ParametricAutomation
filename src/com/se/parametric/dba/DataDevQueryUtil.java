@@ -6258,21 +6258,22 @@ public class DataDevQueryUtil
 		{
 			Criteria cri = session.createCriteria(PreQaCheckers.class);
 			cri.add(Restrictions.eq("name", qachk.getChecker()));
-			
+
 			PreQaCheckers checker = (PreQaCheckers) cri.uniqueResult();
 			PreQaCheckersException qaexception = new PreQaCheckersException();
 			qaexception.setId(System.nanoTime());
 			qaexception.setComid(qachk.getPart().getComId());
 			qaexception.setFamily(qachk.getFamily());
 			if(qachk.getChecker().equals(StatusName.MaskMultiData)
-					|| qachk.getChecker().equals(StatusName.RootPartChecker))
+					|| qachk.getChecker().equals(StatusName.RootPartChecker)
+					|| qachk.getChecker().equals(StatusName.generic_part))
 			{
 				qaexception.setFetValue(qachk.getFeatureValue() == null ? "" : qachk
 						.getFeatureValue());
 				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(),
 						qachk.getProductLine().getName(), session);
 				qaexception.setPlFetId(plFeature.getId());
-			
+
 				cri.add(Restrictions.eq("fetValue", qaexception.getFetValue()));
 				cri.add(Restrictions.eq("plFetId", qaexception.getPlFetId()));
 			}
