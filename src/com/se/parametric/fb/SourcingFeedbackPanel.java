@@ -142,7 +142,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		{
 			String[] rejectCommentOptions = { "Documentation", "Broken Link",
 					"No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor",
-					"Not NPI" };
+					"Not NPI","Wrong News" };
 			for(int i = 0; i < rejectCommentOptions.length; i++)
 			{
 				model.addElement(rejectCommentOptions[i]);

@@ -104,14 +104,15 @@ public class TLFeedBack extends JPanel implements ActionListener
 
 		this.add(tabbedPane);
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
 		this.addFocusListener(new FocusListener() {
@@ -268,8 +269,8 @@ public class TLFeedBack extends JPanel implements ActionListener
 				if(DataDevQueryUtil.isNPITaskType(null, pl, supplierName, null,
 						StatusName.tlFeedback, startDate, endDate, null))
 					ws.setNPIflag(true);
-				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng.","Issue Type"),
-						false);
+				ws.setTLFBHeader(Arrays.asList("LastTLComment", "Issue Initiator", "Develop Eng.",
+						"Issue Type"), false);
 				ArrayList<String> sheetHeader = ws.getHeader();
 				int lstTLcommentIndex = sheetHeader.indexOf("LastTLComment");
 				int issuerIndex = sheetHeader.indexOf("Issue Initiator");
@@ -308,8 +309,10 @@ public class TLFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(Cactionindex, action.getCAction());
 							sheetRecord.set(Pactionindex, action.getPAction());
 							sheetRecord.set(RootcauseIndex, action.getRootCause());
-							sheetRecord.set(Actionduedateindex, action.getActionDueDate()
-									.toString());
+							Date date = action.getActionDueDate();
+							SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+							sheetRecord.set(Actionduedateindex, date == null ? "" : sdf
+									.format(date).toString());
 						}
 						for(int l = 0; l < 8; l++)
 						{
