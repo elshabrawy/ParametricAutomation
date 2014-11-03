@@ -6258,6 +6258,7 @@ public class DataDevQueryUtil
 		{
 			Criteria cri = session.createCriteria(PreQaCheckers.class);
 			cri.add(Restrictions.eq("name", qachk.getChecker()));
+			
 			PreQaCheckers checker = (PreQaCheckers) cri.uniqueResult();
 			PreQaCheckersException qaexception = new PreQaCheckersException();
 			qaexception.setId(System.nanoTime());
@@ -6271,6 +6272,9 @@ public class DataDevQueryUtil
 				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(qachk.getFeatureName(),
 						qachk.getProductLine().getName(), session);
 				qaexception.setPlFetId(plFeature.getId());
+			
+				cri.add(Restrictions.eq("fetValue", qaexception.getFetValue()));
+				cri.add(Restrictions.eq("plFetId", qaexception.getPlFetId()));
 			}
 			qaexception.setPlId(qachk.getProductLine().getId());
 			qaexception.setPreQaCheckers(checker);
@@ -6280,8 +6284,6 @@ public class DataDevQueryUtil
 			cri.add(Restrictions.eq("comid", qaexception.getComid()));
 			cri.add(Restrictions.eq("preQaCheckers", qaexception.getPreQaCheckers()));
 			cri.add(Restrictions.eq("plId", qaexception.getPlId()));
-			cri.add(Restrictions.eq("fetValue", qaexception.getFetValue()));
-			cri.add(Restrictions.eq("plFetId", qaexception.getPlFetId()));
 			PreQaCheckersException tmp = (PreQaCheckersException) cri.uniqueResult();
 			if(tmp == null)
 			{
