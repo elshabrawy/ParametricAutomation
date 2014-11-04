@@ -3714,7 +3714,8 @@ public class WorkingSheet
 				String chkpart = partData.get(chkpartidx);
 				// String fbcomment = partData.get(fbcommentIndex);
 				if(checker.equals(StatusName.MaskMultiData)
-						|| checker.equals(StatusName.RootPartChecker))
+						|| checker.equals(StatusName.RootPartChecker)
+						|| checker.equals(StatusName.generic_part))
 				{
 					FeatureName = partData.get(FeatureNameindex);
 					FeatureValue = partData.get(FeatureValueindex);
@@ -3738,7 +3739,8 @@ public class WorkingSheet
 				qachk.setStatus(status);
 				qachk.setFlag(Flag);
 				if(checker.equals(StatusName.MaskMultiData)
-						|| checker.equals(StatusName.RootPartChecker))
+						|| checker.equals(StatusName.RootPartChecker)
+						|| checker.equals(StatusName.generic_part))
 				{
 					qachk.setFeatureName(FeatureName);
 					qachk.setFeatureValue(FeatureValue);
