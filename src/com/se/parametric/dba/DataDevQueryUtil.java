@@ -2536,6 +2536,11 @@ public class DataDevQueryUtil
 			com.setPdf(track.getDocument().getPdf());
 			com.setPartNumber(partInfo.getPN());
 			com.setStoreDate(new Date());
+
+			Object[] nunalphavalues = getnunalphavalues(
+					partInfo.getMask() == null ? "" : partInfo.getMask(),
+					partInfo.getGeneric() == null ? "" : partInfo.getGeneric(),
+					partInfo.getFamilycross() == null ? "" : partInfo.getFamilycross(), session);
 			Family family = ParaQueryUtil.getFamilyByExactName(partInfo.getFamily(), session);
 			// if family not found insert new family record
 			if(family == null)
@@ -2551,7 +2556,7 @@ public class DataDevQueryUtil
 			if(partInfo.getMask() != null)
 			{
 
-				MasterPartMask mask = getMask(partInfo.getMask());
+				MasterPartMask mask = getMask(nunalphavalues[1].toString());
 				if(mask == null)
 				{
 					mask = insertMask(partInfo.getMask(), session);
@@ -2568,12 +2573,12 @@ public class DataDevQueryUtil
 			// com.setNpiFlag(0l);
 			if(partInfo.getGeneric() != null && partInfo.getFamilycross() != null)
 			{
-				gen = ParaQueryUtil.getGeneric(partInfo.getGeneric());
+				gen = ParaQueryUtil.getGeneric(nunalphavalues[2].toString());
 				if(gen == null)
 				{
 					gen = insertGeneric(partInfo.getGeneric(), session);
 				}
-				fam = ParaQueryUtil.getFamilyCross(partInfo.getFamilycross());
+				fam = ParaQueryUtil.getFamilyCross(nunalphavalues[3].toString());
 				if(fam == null)
 				{
 					fam = insertFamilyCross(partInfo.getFamilycross(), session);
@@ -2659,6 +2664,26 @@ public class DataDevQueryUtil
 			session.close();
 		}
 		return true;
+
+	}
+
+	private static Object[] getnunalphavalues(String mask, String generic, String familycross,
+			Session session)
+	{
+
+		String sql = "select 1,";
+		if(!mask.equals(""))
+			sql += "CM.NONALPHANUM_MASK('" + mask + "') mask,";
+		if(!generic.equals(""))
+			sql += "CM.NONALPHANUM('" + generic + "') generic,";
+		if(!familycross.equals(""))
+			sql += "CM.NONALPHANUM('" + familycross + "') familycross,";
+
+		sql = sql.substring(0, sql.length() - 1);
+		sql += " from dual ";
+		SQLQuery query = session.createSQLQuery(sql);
+		Object[] list = (Object[]) query.uniqueResult();
+		return list;
 
 	}
 
@@ -4202,8 +4227,7 @@ public class DataDevQueryUtil
 		MasterPartMask mask = null;
 		try
 		{
-			String maskMaster = getNonAlphaMask(maskValue).replaceAll("_", "%").replaceAll(
-					"(%){2,}", "%");
+			String maskMaster = maskValue.replaceAll("_", "%").replaceAll("(%){2,}", "%");
 			if(!maskMaster.contains("%"))
 			{
 				maskMaster = maskMaster + "%";

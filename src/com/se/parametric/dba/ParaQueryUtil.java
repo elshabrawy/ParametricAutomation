@@ -5400,9 +5400,7 @@ public class ParaQueryUtil
 		{
 
 			Query q = session.createQuery("select o from MapGeneric o "
-					+ " where CM.NONALPHANUM (o.generic)=:man");
-			q.setParameter("man", getNonAlphaPart(genName));
-
+					+ " where CM.NONALPHANUM (o.generic)='" + genName + "'");
 			generic = (MapGeneric) q.uniqueResult();
 			// System.out.println("Gen id="+generic.getId());
 			// if (q.list().size() > 0) {
@@ -5438,9 +5436,7 @@ public class ParaQueryUtil
 		{
 
 			Query q = session.createQuery("select o from FamilyCross o "
-					+ " where CM.NONALPHANUM (o.family)=:man");
-			q.setParameter("man", getNonAlphaPart(famName));
-
+					+ " where CM.NONALPHANUM (o.family)='" + famName + "'");
 			familyCross = (FamilyCross) q.uniqueResult();
 			// System.out.println("Family Cross id="+familyCross.getId());
 
