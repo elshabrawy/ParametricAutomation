@@ -4235,9 +4235,13 @@ public class DataDevQueryUtil
 			// Query q = session.createQuery("select o from MasterPartMask o  where o.mstrPart=:man");
 			// q.setParameter("man", maskMaster);
 			// mask = (MasterPartMask) q.uniqueResult();
-			Criteria cri = session.createCriteria(MasterPartMask.class);
-			cri.add(Restrictions.eq("mstrPart", maskMaster));
-			mask = (MasterPartMask) cri.uniqueResult();
+			mask = (MasterPartMask) session
+					.createSQLQuery("SELECT * FROM MasterPartMask WHERE MSTR_PART = :mstrPart")
+					.addEntity(MasterPartMask.class).setParameter("mstrPart", maskMaster)
+					.uniqueResult();
+			// Criteria cri = session.createCriteria(MasterPartMask.class);
+			// cri.add(Restrictions.eq("mstrPart", maskMaster));
+			// mask = (MasterPartMask) cri.uniqueResult();
 			if(mask == null)
 				return null;
 			SQLQuery q = session
