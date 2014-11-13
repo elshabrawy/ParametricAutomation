@@ -2756,10 +2756,25 @@ public class DataDevQueryUtil
 				com.setMasterPartMask(mask);
 			}
 			// NPI Flag part
-			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
-				com.setNpiFlag(1l);
-			else
-				com.setNpiFlag(0l);
+			// if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
+			// com.setNpiFlag(1l);
+			// else
+			// com.setNpiFlag(0l);
+			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+			{
+				try
+				{
+					insertNPIPart(com, partInfo.getNewsLink(), session);
+				}catch(ConstraintViolationException e)
+				{
+					e.printStackTrace();
+					if(e.getMessage().contains("NPI_PARTS_COM_UQ"))
+					{
+						System.out.println("Found in NPI before");
+					}
+				}
+
+			}
 
 			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty()
 					&& partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
@@ -4248,7 +4263,10 @@ public class DataDevQueryUtil
 	public static MasterPartMask getMask(String maskValue)
 	{
 		Session session = SessionUtil.getSession();
-		MasterPartMask mask = null;
+		// MasterPartMask mask = null;
+		Long mask = null;
+		BigDecimal id = null;
+		MasterPartMask maskObj = null;
 		try
 		{
 			String maskMaster = maskValue.replaceAll("_", "%").replaceAll("(%){2,}", "%");
@@ -4259,26 +4277,33 @@ public class DataDevQueryUtil
 			// Query q = session.createQuery("select o from MasterPartMask o  where o.mstrPart=:man");
 			// q.setParameter("man", maskMaster);
 			// mask = (MasterPartMask) q.uniqueResult();
-			Criteria cri = session.createCriteria(MasterPartMask.class);
-			cri.add(Restrictions.eq("mstrPart", maskMaster));
-			mask = (MasterPartMask) cri.uniqueResult();
-			if(mask == null)
+			id = (BigDecimal) session
+					.createSQLQuery(
+							"SELECT id FROM Master_Part_Mask WHERE MSTR_PART = '" + maskMaster
+									+ "'").list().get(0);
+			// .addEntity(MasterPartMask.class).setParameter("mstrPart", maskMaster)
+			// .uniqueResult();
+			// Criteria cri = session.createCriteria(MasterPartMask.class);
+			// cri.add(Restrictions.eq("mstrPart", maskMaster));
+			// mask = (MasterPartMask) cri.uniqueResult();
+			if(id == null)
 				return null;
+			maskObj = new MasterPartMask(id.longValue());
 			SQLQuery q = session
 					.createSQLQuery("select /*+ INDEX(x PART_MASK_PN_ID_IDX) */ x.mask_id from PART_MASK_VALUE x where x.MASK_PN='"
-							+ maskValue + "' and x.mask_id =" + mask.getId() + "");
+							+ maskValue + "' and x.mask_id =" + id);
 			// q.setParameter("val", maskValue);
 			// q.setParameter("mskid", mask.getId());
-			// q.list();
+			// q.list();k
 
 			if(q.list().isEmpty())
 			{
 				PartMaskValueId mskValId = new PartMaskValueId();
-				mskValId.setMaskId(mask.getId());
+				mskValId.setMaskId(id.longValue());
 				mskValId.setMaskPn(maskValue);
 				PartMaskValue maskval = new PartMaskValue();
 				maskval.setId(mskValId);
-				maskval.setMasterPartMask(mask);
+				maskval.setMasterPartMask(maskObj);
 				session.saveOrUpdate(maskval);
 			}
 
@@ -4292,7 +4317,7 @@ public class DataDevQueryUtil
 		{
 			session.close();
 		}
-		return mask;
+		return maskObj;
 	}
 
 	private static TrackingParametric getTrackingParametricByPdfUrlAndSupName(String pdfUrl,

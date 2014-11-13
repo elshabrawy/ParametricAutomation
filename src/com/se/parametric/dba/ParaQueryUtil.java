@@ -52,6 +52,7 @@ import com.se.automation.db.client.mapping.FamilyCross;
 import com.se.automation.db.client.mapping.Feature;
 import com.se.automation.db.client.mapping.GenericFamily;
 import com.se.automation.db.client.mapping.MapGeneric;
+import com.se.automation.db.client.mapping.MasterPartMask;
 import com.se.automation.db.client.mapping.Multiplier;
 import com.se.automation.db.client.mapping.MultiplierUnit;
 import com.se.automation.db.client.mapping.NoParametricDocuments;
@@ -992,11 +993,11 @@ public class ParaQueryUtil
 	@SuppressWarnings("unchecked")
 	public static Family getFamilyByExactName(String name, Session session)
 	{
-		// Family family = (Family) session.createSQLQuery("SELECT * FROM Family WHERE NAME = :name")
-		// .addEntity(Family.class).setParameter("name", name).uniqueResult();
-		final Criteria crit = session.createCriteria(Family.class);
-		crit.add(Restrictions.eq("name", name));
-		final Family family = (Family) crit.uniqueResult();
+		 Family family = (Family) session.createSQLQuery("SELECT * FROM Family WHERE NAME = :name")
+		 .addEntity(Family.class).setParameter("name", name).uniqueResult();
+//		final Criteria crit = session.createCriteria(Family.class);
+//		crit.add(Restrictions.eq("name", name));
+//		final Family family = (Family) crit.uniqueResult();
 		return family;
 	}
 
@@ -5437,9 +5438,20 @@ public class ParaQueryUtil
 		try
 		{
 
-			Query q = session.createQuery("select o from FamilyCross o "
-					+ " where CM.NONALPHANUM (o.family)='" + famName + "'");
-			familyCross = (FamilyCross) q.uniqueResult();
+//			Query q = session.createQuery("select o from FamilyCross o "
+//					+ " where CM.NONALPHANUM (o.family)='" + famName + "'");
+//			familyCross = (FamilyCross) q.uniqueResult();
+			
+			BigDecimal	id = (BigDecimal) session
+					.createSQLQuery("SELECT id FROM Family_Cross WHERE family = '"+famName+"'").uniqueResult();
+//					.addEntity(MasterPartMask.class).setParameter("mstrPart", maskMaster)
+//					.uniqueResult();			
+//			 Criteria cri = session.createCriteria(MasterPartMask.class);
+//			 cri.add(Restrictions.eq("mstrPart", maskMaster));
+//			 mask = (MasterPartMask) cri.uniqueResult();
+			if(id == null)
+				return null;
+			familyCross=new FamilyCross(id.longValue());
 			// System.out.println("Family Cross id="+familyCross.getId());
 
 			// Criteria cr = session.createCriteria(FamilyCross.class);
