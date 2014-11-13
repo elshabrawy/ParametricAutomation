@@ -2732,10 +2732,26 @@ public class DataDevQueryUtil
 				com.setMasterPartMask(mask);
 			}
 			// NPI Flag part
-			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
-				com.setNpiFlag(1l);
-			else
-				com.setNpiFlag(0l);
+//			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
+//				com.setNpiFlag(1l);
+//			else
+//				com.setNpiFlag(0l);
+			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+			{
+				try
+				{
+					insertNPIPart(com, partInfo.getNewsLink(), session);
+				}catch(ConstraintViolationException e)
+				{
+					e.printStackTrace();
+					if(e.getMessage().contains("NPI_PARTS_COM_UQ"))
+					{
+					System.out.println("Found in NPI before");	
+					}
+				}
+				
+				
+			}
 
 			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty()
 					&& partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
