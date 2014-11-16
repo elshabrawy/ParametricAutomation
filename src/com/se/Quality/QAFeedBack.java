@@ -262,7 +262,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		}
 	}
 
-	private void loadpdf(int[] selectedPdfs) throws Exception
+	private void loadpdf(int selectedPdf) throws Exception
 	{
 		JComboBox[] combos = filterPanel.comboBoxItems;
 
@@ -273,7 +273,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 		String pltype = combos[4].getSelectedItem().toString();
 
 		wsMap.clear();
-		TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+		TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdf);
 		String pdfUrl = docInfoDTO.getPdfUrl();
 		Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 
@@ -541,6 +541,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 
 				int[] selectedPdfs = tablePanel.table.getSelectedRows();
+				int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
+						* tablePanel.getRecordsPerPage() + selectedPdfs[0];
 				int selectedPdfsCount = selectedPdfs.length;
 				if(selectedPdfsCount == 0)
 				{
@@ -554,7 +556,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 				else
 				{
-					loadpdf(selectedPdfs);
+//					loadpdf(selectedPdfs);
+					loadpdf(selectedDataIndex);
 				}
 			}
 			/**

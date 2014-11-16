@@ -283,6 +283,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 					return null;
 				}
 				int[] selectedPdfs = tablePanel.table.getSelectedRows();
+				int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
+						* tablePanel.getRecordsPerPage() + selectedPdfs[0];
 				int selectedPdfsCount = selectedPdfs.length;
 				if(selectedPdfsCount == 0)
 				{
@@ -298,7 +300,8 @@ public class EngFeedBack extends JPanel implements ActionListener
 				{
 					try
 					{
-						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+//						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);						
 						String pdfUrl = docInfoDTO.getPdfUrl();
 						System.out.println(pdfUrl);
 						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
