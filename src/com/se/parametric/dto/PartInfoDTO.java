@@ -1,6 +1,8 @@
 package com.se.parametric.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.se.automation.db.client.mapping.Document;
@@ -45,6 +47,7 @@ public class PartInfoDTO
 	private String ActinDueDate;
 	private String WrongFeatures;
 	private PartComponent component;
+	private ArrayList<Long> plFetIds;
 
 	public PartComponent getComponent()
 	{
@@ -364,6 +367,16 @@ public class PartInfoDTO
 	public void setNewsLink(String newsLink)
 	{
 		this.newsLink = newsLink;
+	}
+
+	public ArrayList<Long> getPlFetIds()
+	{
+		return plFetIds;
+	}
+
+	public void setPlFetIds(ArrayList<Long> plFetIds)
+	{
+		this.plFetIds = plFetIds;
 	}
 
 }

@@ -11,7 +11,7 @@ public class FeatureDTO
 	private boolean doneFlag;
 	private boolean core;
 	private boolean code;
-
+	private long plFetId;
 	public boolean isCore()
 	{
 		return core;
@@ -80,6 +80,16 @@ public class FeatureDTO
 	public void setUnit(String unit)
 	{
 		this.unit = unit;
+	}
+
+	public long getPlFetId()
+	{
+		return plFetId;
+	}
+
+	public void setPlFetId(long plFetId)
+	{
+		this.plFetId = plFetId;
 	}
 
 }
