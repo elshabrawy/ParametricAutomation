@@ -263,6 +263,8 @@ public class QAReviewData extends JPanel implements ActionListener
 	private void loadpdf()
 	{
 		int[] selectedPdfs = tablePanel.table.getSelectedRows();
+		int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
+				* tablePanel.getRecordsPerPage() + selectedPdfs[0];
 		int selectedPdfsCount = selectedPdfs.length;
 		if(selectedPdfsCount == 0)
 		{
@@ -292,7 +294,8 @@ public class QAReviewData extends JPanel implements ActionListener
 					status = StatusName.waitingsummary;
 				}
 				wsMap.clear();
-				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+//				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);				
 				String pdfUrl = docInfoDTO.getPdfUrl();
 				Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 
