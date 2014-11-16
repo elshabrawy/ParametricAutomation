@@ -2799,41 +2799,41 @@ public class DataDevQueryUtil
 			}
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
-//			for(String fetName : fetNames)
-//			{
-//				// session.beginTransaction().begin();
-//				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
-//						partInfo.getPlName(), session);
-//				String fetValue = fetsMap.get(fetName);
-//				if((fetValue == null) || ("".equals(fetValue)))
-//				{
-//					continue;
-//				}
-//				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
-//						plFeature, session);
-//				Criteria parametricReviewDataCriteria = session
-//						.createCriteria(ParametricReviewData.class);
-//				parametricReviewDataCriteria.add(Restrictions.eq("component", com));
-//				parametricReviewDataCriteria.add(Restrictions.eq("plFeature", plFeature));
-//				ParametricReviewData data = (ParametricReviewData) parametricReviewDataCriteria
-//						.uniqueResult();
-//				if(data == null)
-//				{
-//					data = new ParametricReviewData();
-//					long id = QueryUtil.getRandomID();
-//					data.setId(id);
-//					data.setComponent(com);
-//					data.setPlFeature(plFeature);
-//					data.setTrackingParametric(track);
-//				}
-//				// data.setComponent(com);
-//				data.setGroupApprovedValueId(group.getId());
-//				// data.setPlFeature(plFeature);
-//				data.setModifiedDate(ParaQueryUtil.getDate());
-//				session.saveOrUpdate(data);
-//				// session.beginTransaction().commit();
-//			}
-			saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
+			for(String fetName : fetNames)
+			{
+				// session.beginTransaction().begin();
+				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+						partInfo.getPlName(), session);
+				String fetValue = fetsMap.get(fetName);
+				if((fetValue == null) || ("".equals(fetValue)))
+				{
+					continue;
+				}
+				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
+						plFeature, session);
+				Criteria parametricReviewDataCriteria = session
+						.createCriteria(ParametricReviewData.class);
+				parametricReviewDataCriteria.add(Restrictions.eq("component", com));
+				parametricReviewDataCriteria.add(Restrictions.eq("plFeature", plFeature));
+				ParametricReviewData data = (ParametricReviewData) parametricReviewDataCriteria
+						.uniqueResult();
+				if(data == null)
+				{
+					data = new ParametricReviewData();
+					long id = QueryUtil.getRandomID();
+					data.setId(id);
+					data.setComponent(com);
+					data.setPlFeature(plFeature);
+					data.setTrackingParametric(track);
+				}
+				// data.setComponent(com);
+				data.setGroupApprovedValueId(group.getId());
+				// data.setPlFeature(plFeature);
+				data.setModifiedDate(ParaQueryUtil.getDate());
+				session.saveOrUpdate(data);
+				// session.beginTransaction().commit();
+			}
+//			saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -6474,8 +6474,8 @@ public class DataDevQueryUtil
 		
 		
 		
-			PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
-					partInfo.getPlName(), session);
+//			PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+//					partInfo.getPlName(), session);
 			String fetValue = fetsMap.get(fetName);
 			if(fetValue.isEmpty())
 			{
