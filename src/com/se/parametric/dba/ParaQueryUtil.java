@@ -993,8 +993,11 @@ public class ParaQueryUtil
 	@SuppressWarnings("unchecked")
 	public static Family getFamilyByExactName(String name, Session session)
 	{
-		 Family family = (Family) session.createSQLQuery("SELECT * FROM Family WHERE NAME = :name")
-		 .addEntity(Family.class).setParameter("name", name).uniqueResult();
+		BigDecimal	id = (BigDecimal) session.createSQLQuery("SELECT id FROM Family WHERE NAME ='"+name+"'").uniqueResult();
+		 if(id == null)
+				return null;
+		Family family=new Family(id.longValue());
+//		 .addEntity(Family.class).setParameter("name", name).uniqueResult();
 //		final Criteria crit = session.createCriteria(Family.class);
 //		crit.add(Restrictions.eq("name", name));
 //		final Family family = (Family) crit.uniqueResult();
@@ -4492,7 +4495,7 @@ public class ParaQueryUtil
 					List<String> appValues = getGroupFullValueByPlFeature(plFeature, session);
 					fetdto.setFeatureapprovedvalue(appValues);
 				}
-
+				fetdto.setPlFetId(plFeature.getId());
 				fets.add(fetdto);
 			}
 			return fets;

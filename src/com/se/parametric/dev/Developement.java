@@ -640,7 +640,7 @@ public class Developement extends JPanel implements ActionListener
 								{
 									wsMap.get(wsName).saveParts(false);
 									MainWindow.glass.setVisible(false);
-									JOptionPane.showMessageDialog(null, "Saving Data Finished");
+									JOptionPane.showMessageDialog(null, "Saving Data Finished Please Check Val_Status");
 								}
 								else
 								{
