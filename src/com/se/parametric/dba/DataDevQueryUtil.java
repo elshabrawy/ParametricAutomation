@@ -173,19 +173,21 @@ public class DataDevQueryUtil
 			{
 				end = new SimpleDateFormat("MM/dd/yyyy").format(enddate);
 			}
-			TrackingTaskStatus taskStatus = null;
+			List<TrackingTaskStatus> taskStatus = null;
 			Criteria cri = session.createCriteria(TrackingTaskStatus.class);
-			cri.add(Restrictions.eq("name", StatusName.qaReview));
-			taskStatus = (TrackingTaskStatus) cri.uniqueResult();
+			cri.add(Restrictions.or(Restrictions.eq("name", StatusName.qaReview),
+					Restrictions.eq("name", StatusName.waitingsummary)));
+			taskStatus = cri.list();
 			if(startdate == null && enddate == null)
 			{
 
 				Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
-				Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
-						+ "' FROM Tracking_Parametric tp, pl p, supplier";
 				Sql = Sql
-						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
-				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
+						+ "t.name TYPE, U.FULL_NAME user_Name,st.name FROM Tracking_Parametric tp, pl p, supplier";
+				Sql = Sql
+						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE st.id = tp.TRACKING_TASK_STATUS_ID and tp.p";
+				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN ("
+						+ taskStatus.get(0).getId() + "," + taskStatus.get(1).getId()
 						+ ") AND tp.supplier_id = s.id AN";
 				Sql = Sql
 						+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
@@ -196,11 +198,12 @@ public class DataDevQueryUtil
 			else
 			{
 				Sql = " SELECT DISTINCT p.name pl,Get_PL_Type(P.ID ), s.name supplier, tt";
-				Sql = Sql + "t.name TYPE, U.FULL_NAME user_Name,'" + StatusName.waitingsummary
-						+ "' FROM Tracking_Parametric tp, pl p, supplier";
 				Sql = Sql
-						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE tp.p";
-				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN (" + taskStatus.getId()
+						+ "t.name TYPE, U.FULL_NAME user_Name,st.name FROM Tracking_Parametric tp, pl p, supplier";
+				Sql = Sql
+						+ " s, tracking_task_type ttt, grm.GRM_USER u, TRACKING_TASK_STATUS st WHERE st.id = tp.TRACKING_TASK_STATUS_ID and tp.p";
+				Sql = Sql + "l_id = p.id AND tp.TRACKING_TASK_STATUS_ID IN ("
+						+ taskStatus.get(0).getId() + "," + taskStatus.get(1).getId()
 						+ ") AND tp.supplier_id = s.id AN";
 				Sql = Sql
 						+ "D tp.tracking_task_type_id = ttt.id AND u.id = tp.user_id AND st.id = tp.TRACK";
@@ -597,7 +600,7 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.in("trackingTaskStatus", statusObj));
 			}
 
-			if(!(usersId.length == 0) && usersId[0] != 0 && usersId != null)
+			if(usersId != null && (!(usersId.length == 0) && usersId[0] != 0))
 			{
 				criteria.add(Restrictions.in("parametricUserId", usersId));
 			}
@@ -722,8 +725,12 @@ public class DataDevQueryUtil
 
 				if(inputType.equals("QAReview"))
 				{
+					if(status.equals("All"))
+					{
+						status = StatusName.qaReview;
+					}
 					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj
-							.getPl().getId(), usersId, StatusName.qaReview);
+							.getPl().getId(), usersId, status);
 					docInfo.setPDFParts(noparts.get(0));
 					docInfo.setPLParts(noparts.get(1));
 					docInfo.setPDFDoneParts(noparts.get(2));
@@ -983,7 +990,7 @@ public class DataDevQueryUtil
 				result.add(0);
 			}
 			String users = "";
-			if(usersId.length > 0)
+			if(usersId != null && usersId.length > 0)
 			{
 				users += "And Z.USER_ID in (";
 				for(int u = 0; u < usersId.length; u++)
@@ -2540,7 +2547,7 @@ public class DataDevQueryUtil
 
 	public static boolean saveParamtric(PartInfoDTO partInfo)
 	{
-		
+
 		Session session = SessionUtil.getSession();
 		try
 		{
@@ -2654,37 +2661,37 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(famGen);
 				// session.beginTransaction().commit()
 			}
-			
+
 			Map<String, String> fetsMap = partInfo.getFetValues();
 			Set<String> fetNames = fetsMap.keySet();
-			
-//			String features="";
-//			for(String fetName : fetNames)
-//			{
-//				// session.beginTransaction().begin();
-//				PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
-//						partInfo.getPlName(), session);
-//				String fetValue = fetsMap.get(fetName);
-//				if(fetValue.isEmpty())
-//				{
-//					System.out.println(fetName + "Has blank Values ");
-//					continue;
-//				}
-//				
-//				ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
-//						plFeature, session);
-//				ParametricReviewData data = new ParametricReviewData();
-//				long id = QueryUtil.getRandomID();
-//				data.setComponent(com);
-//				data.setTrackingParametric(track);
-//				data.setGroupApprovedValueId(group.getId());
-//				data.setPlFeature(plFeature);
-//				data.setStoreDate(new Date());
-//				data.setId(id);
-//				session.saveOrUpdate(data);
-//				// session.beginTransaction().commit();
-//			}
-			saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
+
+			// String features="";
+			// for(String fetName : fetNames)
+			// {
+			// // session.beginTransaction().begin();
+			// PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+			// partInfo.getPlName(), session);
+			// String fetValue = fetsMap.get(fetName);
+			// if(fetValue.isEmpty())
+			// {
+			// System.out.println(fetName + "Has blank Values ");
+			// continue;
+			// }
+			//
+			// ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(fetValue,
+			// plFeature, session);
+			// ParametricReviewData data = new ParametricReviewData();
+			// long id = QueryUtil.getRandomID();
+			// data.setComponent(com);
+			// data.setTrackingParametric(track);
+			// data.setGroupApprovedValueId(group.getId());
+			// data.setPlFeature(plFeature);
+			// data.setStoreDate(new Date());
+			// data.setId(id);
+			// session.saveOrUpdate(data);
+			// // session.beginTransaction().commit();
+			// }
+			saveParametricReviewData(partInfo, com.getComId(), track.getId(), session);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -2856,7 +2863,7 @@ public class DataDevQueryUtil
 				session.saveOrUpdate(data);
 				// session.beginTransaction().commit();
 			}
-//			saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
+			// saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -6489,59 +6496,65 @@ public class DataDevQueryUtil
 		}
 
 	}
-	public static void saveParametricReviewData(PartInfoDTO partInfo,Long comId,Long trackingId,Session session){
+
+	public static void saveParametricReviewData(PartInfoDTO partInfo, Long comId, Long trackingId,
+			Session session)
+	{
 		Map<String, String> fetsMap = partInfo.getFetValues();
 		Set<String> fetNames = fetsMap.keySet();
-		
-		String features="";
+
+		String features = "";
 		for(String fetName : fetNames)
 		{
-		
-		
-		
-//			PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
-//					partInfo.getPlName(), session);
+
+			// PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+			// partInfo.getPlName(), session);
 			String fetValue = fetsMap.get(fetName);
 			if(fetValue.isEmpty())
 			{
 				System.out.println(fetName + "Has blank Values ");
 				continue;
-			}		
-			
-				features+=" select GETPLFETID('"+partInfo.getPlName()+"','"+fetName+"')||'_"+fetValue+"' val from dual union all";
-			
+			}
+
+			features += " select GETPLFETID('" + partInfo.getPlName() + "','" + fetName + "')||'_"
+					+ fetValue + "' val from dual union all";
+
 		}
-		features=features.substring(0, features.length()-10);
-		String sql="insert into PARAMETRIC_REVIEW_DATA(COM_ID,PL_FEATURE_ID,GROUP_APPROVED_VALUE_ID,TRACKING_PARAMETRIC_ID,STORE_DATE,MODIFIED_DATE) select "+comId+",PL_FEATURE_ID,ID,"+trackingId+",sysdate,sysdate from PARAMETRIC_APPROVED_GROUP where PL_FEATURE_ID||'_'||GROUP_FULL_VALUE in("+features+")";
-		int x=session.createSQLQuery(sql).executeUpdate();
-		System.out.println("number of parts is "+x);
-//		for(String fetName : fetNames)
-//		{
-//			// session.beginTransaction().begin();
-//			PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
-//					partInfo.getPlName(), session);
-//			String fetValue = fetsMap.get(fetName);
-//			if(fetValue.isEmpty())
-//			{
-//				System.out.println(fetName + "Has blank Values ");
-//				continue;
-//			}
-//			
-//			features+="GETPLFETID('"+partInfo.getPlName()+"','"+fetName+"')||'_"+fetValue+"'),";
-//			ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(PartInfoDTO fetValue,
-//					plFeature, session);
-//			ParametricReviewData data = new ParametricReviewData();
-//			long id = QueryUtil.getRandomID();
-//			data.setComponent(com);
-//			data.setTrackingParametric(track);
-//			data.setGroupApprovedValueId(group.getId());
-//			data.setPlFeature(plFeature);
-//			data.setStoreDate(new Date());
-//			data.setId(id);
-//			session.saveOrUpdate(data);
-//			// session.beginTransaction().commit();
-//		}
-		
-		
+		features = features.substring(0, features.length() - 10);
+		String sql = "insert into PARAMETRIC_REVIEW_DATA(COM_ID,PL_FEATURE_ID,GROUP_APPROVED_VALUE_ID,TRACKING_PARAMETRIC_ID,STORE_DATE,MODIFIED_DATE) select "
+				+ comId
+				+ ",PL_FEATURE_ID,ID,"
+				+ trackingId
+				+ ",sysdate,sysdate from PARAMETRIC_APPROVED_GROUP where PL_FEATURE_ID||'_'||GROUP_FULL_VALUE in("
+				+ features + ")";
+		int x = session.createSQLQuery(sql).executeUpdate();
+		System.out.println("number of parts is " + x);
+		// for(String fetName : fetNames)
+		// {
+		// // session.beginTransaction().begin();
+		// PlFeature plFeature = ParaQueryUtil.getPlFeatureByExactName(fetName,
+		// partInfo.getPlName(), session);
+		// String fetValue = fetsMap.get(fetName);
+		// if(fetValue.isEmpty())
+		// {
+		// System.out.println(fetName + "Has blank Values ");
+		// continue;
+		// }
+		//
+		// features+="GETPLFETID('"+partInfo.getPlName()+"','"+fetName+"')||'_"+fetValue+"'),";
+		// ParametricApprovedGroup group = ParaQueryUtil.getParametricApprovedGroup(PartInfoDTO fetValue,
+		// plFeature, session);
+		// ParametricReviewData data = new ParametricReviewData();
+		// long id = QueryUtil.getRandomID();
+		// data.setComponent(com);
+		// data.setTrackingParametric(track);
+		// data.setGroupApprovedValueId(group.getId());
+		// data.setPlFeature(plFeature);
+		// data.setStoreDate(new Date());
+		// data.setId(id);
+		// session.saveOrUpdate(data);
+		// // session.beginTransaction().commit();
+		// }
+
 	}
 }
