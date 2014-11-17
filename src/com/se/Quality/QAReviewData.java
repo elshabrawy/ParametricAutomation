@@ -111,18 +111,18 @@ public class QAReviewData extends JPanel implements ActionListener
 		tabbedPane.addTab("Summary Sheet", null, Summarytab, null);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
-		
-		
+
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -203,23 +203,26 @@ public class QAReviewData extends JPanel implements ActionListener
 		String plType = filterPanel.comboBoxItems[1].getSelectedItem().toString();
 		String supplierName = filterPanel.comboBoxItems[2].getSelectedItem().toString();
 		String taskType = filterPanel.comboBoxItems[3].getSelectedItem().toString();
+		String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
+		if(status.equals("All"))
+		{
+			status = StatusName.qaReview;
+			summarydata = false;
+
+		}
+		else if(status.equals(StatusName.waitingsummary))
+		{
+			summarydata = true;
+		}
+
 		if(taskType.equals("All"))
 		{
 			JOptionPane.showMessageDialog(null, "Please Select Task Type");
+			return;
 		}
 		else
 		{
 			String userName = filterPanel.comboBoxItems[4].getSelectedItem().toString();
-			String status = filterPanel.comboBoxItems[5].getSelectedItem().toString();
-			if(status.equals("All"))
-			{
-				status = StatusName.qaReview;
-				summarydata = false;
-			}
-			else if(status.equals(StatusName.waitingsummary))
-			{
-				summarydata = true;
-			}
 
 			Date startDate = null;
 			Date endDate = null;
@@ -230,23 +233,25 @@ public class QAReviewData extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				if(!userName.equals("All"))
-				{
-					long userId = ParaQueryUtil.getUserIdByExactName(userName);
-					users = new Long[] { userId };
-				}
-				else
-				{
-					ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
-					int size = model.getSize();
-					users = new Long[size - 1];
-					for(int i = 1; i < size; i++)
+				
+					if(!userName.equals("All"))
 					{
-						Object element = model.getElementAt(i);
-						if(element != null && !element.equals("All"))
-							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+						long userId = ParaQueryUtil.getUserIdByExactName(userName);
+						users = new Long[] { userId };
 					}
-				}
+					else
+					{
+						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
+						int size = model.getSize();
+						users = new Long[size - 1];
+						for(int i = 1; i < size; i++)
+						{
+							Object element = model.getElementAt(i);
+							if(element != null && !element.equals("All"))
+								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
+						}
+					}
+				
 				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName,
 						supplierName, taskType, null, startDate, endDate, null, "QAReview", null,
 						status, plType, userId);
@@ -257,14 +262,13 @@ public class QAReviewData extends JPanel implements ActionListener
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	private void loadpdf()
 	{
 		int[] selectedPdfs = tablePanel.table.getSelectedRows();
-		int selectedDataIndex = (tablePanel.getCurrentPage() - 1)
-				* tablePanel.getRecordsPerPage() + selectedPdfs[0];
+		int selectedDataIndex = (tablePanel.getCurrentPage() - 1) * tablePanel.getRecordsPerPage()
+				+ selectedPdfs[0];
 		int selectedPdfsCount = selectedPdfs.length;
 		if(selectedPdfsCount == 0)
 		{
@@ -294,8 +298,8 @@ public class QAReviewData extends JPanel implements ActionListener
 					status = StatusName.waitingsummary;
 				}
 				wsMap.clear();
-//				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);				
+				// TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+				TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 				String pdfUrl = docInfoDTO.getPdfUrl();
 				Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
 
@@ -496,7 +500,8 @@ public class QAReviewData extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO,startDate,endDate);
+				filterPanel.filterList = DataDevQueryUtil.getQAReviewFilterData(userDTO, startDate,
+						endDate);
 				filterPanel.refreshFilters();
 				filterPanel.setCollapsed(true);
 			}

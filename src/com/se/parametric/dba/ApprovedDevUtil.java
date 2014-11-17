@@ -1188,6 +1188,7 @@ public class ApprovedDevUtil
 		{
 			feedBackCrit.add(Expression.between("storeDate", startdate, enddate));
 		}
+		System.out.println(groupRecord.getId());
 		appFeedback = (ParametricFeedbackCycle) feedBackCrit.uniqueResult();
 		if(appFeedback != null)
 		{
@@ -1968,9 +1969,9 @@ public class ApprovedDevUtil
 				result.add(unApprovedDTO);
 			}
 
-			// }catch(Exception ex)
-			// {
-			// ex.printStackTrace();
+			 }catch(Exception ex)
+			 {
+			 ex.printStackTrace();
 		}finally
 		{
 			session.close();

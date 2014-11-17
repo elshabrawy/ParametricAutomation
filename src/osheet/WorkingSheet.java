@@ -120,6 +120,7 @@ public class WorkingSheet
 	// RelatedFeature relatedfeature ;
 	public ArrayList<ArrayList<String>> relatedFeature = new ArrayList<ArrayList<String>>();
 
+	private ArrayList<Long> plFetIds=new ArrayList<Long>();
 	public WorkingSheet(XSpreadsheet sheet, Pl sheetpl)
 	{
 		this.sheet = sheet;
@@ -593,6 +594,7 @@ public class WorkingSheet
 					setCellColore(doneCell, new Integer(0x23E282));
 					doneFets.add(featureDTO.getFeatureName());
 				}
+				plFetIds.add(featureDTO.getPlFetId());
 			}
 			Cell cell = getCellByPosission(HeaderList.size(), StatrtRecord);
 			cell.setText("Description");
@@ -2446,6 +2448,8 @@ public class WorkingSheet
 
 	public void saveParts(boolean update)
 	{
+		
+//		System.out.println(""+System.currentTimeMillis());
 		if(!canSave)
 		{
 			System.out.println("Can Save: " + canSave);
@@ -2465,119 +2469,121 @@ public class WorkingSheet
 			int npiIndex = sheetHeader.indexOf("NPI");
 			boolean npihasvalue = false;
 			int lastRow = getLastRow();
-			for(int i = 3; i < lastRow + 1; i++)
-			{
-				try
-				{
-					String seletedRange = "A" + i + ":" + lastColumn + i;
-					xcellrange = sheet.getCellRangeByName(seletedRange);
-					String famCross = "", generic = "";
-					XCell genCell = null;
-					XCell famCrossCell = null;
-					if(NPIFlag)
-					{
-						if(npiIndex > 0)
-						{
-							XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
-							String npi = getCellText(npiCell).getString();
-							if(!npi.isEmpty() && !npihasvalue)
-							{
-								npihasvalue = true;
-							}
-						}
-					}
-
-					XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
-					String pn = getCellText(pnCell).getString();
-					XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
-					String supplierName = getCellText(suppCell).getString();
-					XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
-					String family = getCellText(famCell).getString();
-					XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
-					String mask = getCellText(maskCell).getString();
-					// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
-
-					if(plType.equals("Semiconductor"))
-					{
-						genCell = xcellrange.getCellByPosition(genericCellNo, 0);
-						famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
-						generic = getCellText(genCell).getString();
-						famCross = getCellText(famCrossCell).getString();
-					}
-					if(pn.isEmpty())
-					{
-						partvalidation.setStatus("Empty Part");
-						setCellColore(pnCell, 0xD2254D);
-						writeValidtionStatus(xcellrange, false);
-						canSave = false;
-					}
-					if(family.isEmpty())
-					{
-						partvalidation.setStatus("Empty Family");
-						setCellColore(famCell, 0xD2254D);
-						writeValidtionStatus(xcellrange, false);
-						canSave = false;
-					}
-					/**** validate that mask not null ***/
-					if(mask.isEmpty())
-					{
-						partvalidation.setStatus("Empty Mask)");
-						setCellColore(maskCell, 0xD2254D);
-						writeValidtionStatus(xcellrange, false);
-						canSave = false;
-					}
-					else if(mask.length() != pn.length())
-					{
-						partvalidation.setStatus("Wrong Mask Length");
-						setCellColore(maskCell, 0xD2254D);
-						writeValidtionStatus(xcellrange, false);
-						canSave = false;
-					}
-					/**
-					 * validate that generic and family Cross not null
-					 */
-					if(plType.equals("Semiconductor"))
-					{
-
-						if(generic.isEmpty() || famCross.isEmpty())
-						{
-							partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
-							setCellColore(genCell, 0xD2254D);
-							setCellColore(famCrossCell, 0xD2254D);
-							writeValidtionStatus(xcellrange, false);
-							canSave = false;
-						}
-					}
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-			if(NPIFlag && !npihasvalue && canSave)
-			{
-				partvalidation.setStatus("NPI Must has at least one value");
-				writeValidtionStatus(xcellrange, false);
-				canSave = false;
-			}
-			if(!canSave)
-			{
-				System.out.println("Can Save: " + canSave);
-				MainWindow.glass.setVisible(false);
-				JOptionPane.showMessageDialog(null,
-						"can't save sheet duto some errors in your data");
-				return;
-			}
-			saved = true;
+//			for(int i = 3; i < lastRow + 1; i++)
+//			{
+//				try
+//				{
+//					String seletedRange = "A" + i + ":" + lastColumn + i;
+//					xcellrange = sheet.getCellRangeByName(seletedRange);
+//					String famCross = "", generic = "";
+//					XCell genCell = null;
+//					XCell famCrossCell = null;
+//					if(NPIFlag)
+//					{
+//						if(npiIndex > 0)
+//						{
+//							XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
+//							String npi = getCellText(npiCell).getString();
+//							if(!npi.isEmpty() && !npihasvalue)
+//							{
+//								npihasvalue = true;
+//							}
+//						}
+//					}
+//
+//					XCell pnCell = xcellrange.getCellByPosition(PartCell, 0);
+//					String pn = getCellText(pnCell).getString();
+//					XCell suppCell = xcellrange.getCellByPosition(supCell, 0);
+//					String supplierName = getCellText(suppCell).getString();
+//					XCell famCell = xcellrange.getCellByPosition(familyCell, 0);
+//					String family = getCellText(famCell).getString();
+//					XCell maskCell = xcellrange.getCellByPosition(maskCellNo, 0);
+//					String mask = getCellText(maskCell).getString();
+//					// PartComponent component=DataDevQueryUtil.getComponentByPartNumberAndSupplierName(pn, supplierName);
+//
+//					if(plType.equals("Semiconductor"))
+//					{
+//						genCell = xcellrange.getCellByPosition(genericCellNo, 0);
+//						famCrossCell = xcellrange.getCellByPosition(famCrossCellNo, 0);
+//						generic = getCellText(genCell).getString();
+//						famCross = getCellText(famCrossCell).getString();
+//					}
+//					if(pn.isEmpty())
+//					{
+//						partvalidation.setStatus("Empty Part");
+//						setCellColore(pnCell, 0xD2254D);
+//						writeValidtionStatus(xcellrange, false);
+//						canSave = false;
+//					}
+//					if(family.isEmpty())
+//					{
+//						partvalidation.setStatus("Empty Family");
+//						setCellColore(famCell, 0xD2254D);
+//						writeValidtionStatus(xcellrange, false);
+//						canSave = false;
+//					}
+//					/**** validate that mask not null ***/
+//					if(mask.isEmpty())
+//					{
+//						partvalidation.setStatus("Empty Mask)");
+//						setCellColore(maskCell, 0xD2254D);
+//						writeValidtionStatus(xcellrange, false);
+//						canSave = false;
+//					}
+//					else if(mask.length() != pn.length())
+//					{
+//						partvalidation.setStatus("Wrong Mask Length");
+//						setCellColore(maskCell, 0xD2254D);
+//						writeValidtionStatus(xcellrange, false);
+//						canSave = false;
+//					}
+//					/**
+//					 * validate that generic and family Cross not null
+//					 */
+//					if(plType.equals("Semiconductor"))
+//					{
+//
+//						if(generic.isEmpty() || famCross.isEmpty())
+//						{
+//							partvalidation.setStatus("Empty Main columns(Generic or Family Cross)");
+//							setCellColore(genCell, 0xD2254D);
+//							setCellColore(famCrossCell, 0xD2254D);
+//							writeValidtionStatus(xcellrange, false);
+//							canSave = false;
+//						}
+//					}
+//				}catch(Exception e)
+//				{
+//					e.printStackTrace();
+//				}
+//			}
+//			if(NPIFlag && !npihasvalue && canSave)
+//			{
+//				partvalidation.setStatus("NPI Must has at least one value");
+//				writeValidtionStatus(xcellrange, false);
+//				canSave = false;
+//			}
+//			if(!canSave)
+//			{
+//				System.out.println("Can Save: " + canSave);
+//				MainWindow.glass.setVisible(false);
+//				JOptionPane.showMessageDialog(null,
+//						"can't save sheet duto some errors in your data");
+//				return;
+//			}
+//			saved = true;
+			Date startDate=new Date();
+			String pn = "", supplierName = "", family, mask, pdfUrl = null, desc = "", famCross = null, generic = null, NPIPart = null;
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				try
 				{
+					
 					String seletedRange2 = "A" + (3 + i) + ":" + lastColumn + (3 + i);
 					xcellrange = sheet.getCellRangeByName(seletedRange2);
 					// int ss = Integer.parseInt("sss", 4);
 					PartInfoDTO partInfo = new PartInfoDTO();
-					ArrayList<String> partData = sheetData.get(i);
-					String pn = "", supplierName = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null;
+					ArrayList<String> partData = sheetData.get(i);					
 					supplierName = partData.get(supCell);
 					pn = partData.get(PartCell);
 					if(pn.isEmpty())
@@ -2622,6 +2628,7 @@ public class WorkingSheet
 					partInfo.setFetValues(readRowValues(partData));
 					partInfo.setNPIFlag(NPIPart);
 					partInfo.setDescription(desc);
+					partInfo.setPlFetIds(plFetIds);
 					boolean save = false;
 					if(!update)
 					{
@@ -2645,24 +2652,31 @@ public class WorkingSheet
 						save = DataDevQueryUtil.updateParamtric(partInfo);
 					}
 
-					// System.out.println("Main Cells " + pn + " : " + family + " : " + mask);
+					 System.out.println("Part Saved:" + pn + " : " + seletedRange2);
 					if(save)
 
 						pdfSet.add(pdfUrl);
 					else
 					{
-						JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
-								+ pdfUrl);
-						return;
+						pdfSet.remove(pdfUrl);
+//						JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
+//								+ pdfUrl);
+//						return;
 					}
+					partvalidation.setComment("");
+					partvalidation.setStatus("Saved");
+					writeValidtionStatus(xcellrange, false);
+					
 				}catch(Exception e)
 				{
 					try
 					{
 						// Cell cell = getCellByPosission(lastColNum + 1, i + 1);
 						// cell.setText(e.getMessage());
-						partvalidation.setStatus(e.getMessage());
+						partvalidation.setComment(e.getMessage());
+						partvalidation.setStatus("Rejected");
 						writeValidtionStatus(xcellrange, false);
+						pdfSet.remove(pdfUrl);
 						continue;
 					}catch(Exception ex)
 					{
@@ -2672,11 +2686,12 @@ public class WorkingSheet
 			}
 			DataDevQueryUtil.saveTrackingParamtric(pdfSet, selectedPL, null,
 					StatusName.doneFLagEngine, "");
-
+			System.out.println("~~~~~~~~~~~~~~~~~~~~ Saving finished:" + startDate + " to  " + new Date()+" ~~~~~~~~~~~~~~~~~~~~~~");
 		}catch(Exception e)
 		{
 			MainWindow.glass.setVisible(false);
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Can't Save Taracking PDFs" );
 		}
 
 	}
@@ -3944,8 +3959,8 @@ public class WorkingSheet
 			XCell fetCell = xHdrUnitrange.getCellByPosition(j, 1);
 			String fetName = getCellText(fetCell).getString();
 			String fetvalue = partData.get(j);
-			System.out.println(fetName + " cell " + j + "=" + fetvalue);
-			fetValues.put(fetName, fetvalue);
+//			System.out.println(plFetIds.get(j-startParametricFT)+"_Id_"+fetName + " cell " + j + "=" + fetvalue);
+			fetValues.put(plFetIds.get(j-startParametricFT)+"_Id_"+fetName, fetvalue);
 		}
 		return fetValues;
 	}
