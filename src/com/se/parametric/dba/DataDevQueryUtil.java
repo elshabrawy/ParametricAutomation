@@ -815,9 +815,21 @@ public class DataDevQueryUtil
 			if(!status.equals("All"))
 			{
 				Criteria statusCriteria = session.createCriteria(TrackingTaskStatus.class);
-				statusCriteria.add(Restrictions.eq("name", status));
-				TrackingTaskStatus statusObj = (TrackingTaskStatus) statusCriteria.uniqueResult();
-				criteria.add(Restrictions.eq("trackingTaskStatus", statusObj));
+				List<TrackingTaskStatus> statusObj;
+				if(status.equals(StatusName.assigned))
+				{
+					Disjunction or = Restrictions.disjunction();
+					or.add(Restrictions.eq("name", StatusName.assigned));
+					or.add(Restrictions.eq("name", StatusName.inprogress));
+					statusCriteria.add(or);
+				}
+				else
+				{
+					statusCriteria.add(Restrictions.eq("name", status));
+				}
+				
+				statusObj = statusCriteria.list();
+				criteria.add(Restrictions.in("trackingTaskStatus", statusObj));
 			}
 
 			if(!(usersId.length == 0) && usersId[0] != 0 && usersId != null)

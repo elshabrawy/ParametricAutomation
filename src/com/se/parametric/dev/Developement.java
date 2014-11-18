@@ -249,7 +249,7 @@ public class Developement extends JPanel implements ActionListener
 				}
 				else if(sheetpanel.isOpened() && ok == true)
 				{
-
+					MainWindow.glass.setVisible(true);
 				}
 
 				for(String wsName : wsMap.keySet())
@@ -640,7 +640,8 @@ public class Developement extends JPanel implements ActionListener
 								{
 									wsMap.get(wsName).saveParts(false);
 									MainWindow.glass.setVisible(false);
-									JOptionPane.showMessageDialog(null, "Saving Data Finished Please Check Val_Status");
+									JOptionPane.showMessageDialog(null,
+											"Saving Data Finished Please Check Val_Status");
 								}
 								else
 								{
