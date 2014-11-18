@@ -2653,6 +2653,12 @@ public class WorkingSheet
 								writeValidtionStatus(xcellrange, false);
 								save = true;
 							}
+							else
+							{
+								save = false;
+								partvalidation.setComment(e.getMessage());
+								partvalidation.setStatus("Rejected");
+							}
 						}
 
 					}
@@ -2663,17 +2669,16 @@ public class WorkingSheet
 
 					System.out.println("Part Saved:" + pn + " : " + seletedRange2);
 					if(save)
-
+					{
 						pdfSet.add(pdfUrl);
+						partvalidation.setComment("");
+						partvalidation.setStatus("Saved");
+					}
 					else
 					{
 						pdfSet.remove(pdfUrl);
-						// JOptionPane.showMessageDialog(null, "Part Number Can't Save:" + pn + "\n"
-						// + pdfUrl);
-						// return;
 					}
-					partvalidation.setComment("");
-					partvalidation.setStatus("Saved");
+
 					writeValidtionStatus(xcellrange, false);
 
 				}catch(Exception e)
