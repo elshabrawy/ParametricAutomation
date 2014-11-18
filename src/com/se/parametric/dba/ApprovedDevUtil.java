@@ -1587,6 +1587,20 @@ public class ApprovedDevUtil
 		UnApprovedDTO unApprovedDTO = null;
 		try
 		{
+			if(startDate != null)
+			{
+				startDate.setHours(0);
+				startDate.setMinutes(0);
+				startDate.setSeconds(0);
+			}
+			if(endDate != null)
+			{
+				endDate.setHours(0);
+				endDate.setMinutes(0);
+				endDate.setSeconds(0);
+				endDate.setDate(endDate.getDate() + 1);
+			}
+
 			String userCol = "paraUserId";
 			if(team.equals("QA"))
 				userCol = "qaUserId";
@@ -1969,9 +1983,9 @@ public class ApprovedDevUtil
 				result.add(unApprovedDTO);
 			}
 
-			 }catch(Exception ex)
-			 {
-			 ex.printStackTrace();
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}finally
 		{
 			session.close();
