@@ -453,7 +453,10 @@ public class TablePanel extends JPanel implements ActionListener
 				recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages "
 						+ this.getPageNumber());
 				paggingLabel.setText("1");
-				// setCurrentPage(1);
+				
+				 setCurrentPage(1);
+				 System.out.println("Current Page in setTableData1() = "+currentPage);
+				 
 				first.setEnabled(false);
 				previous.setEnabled(false);
 				if(pageNumber > 1)
