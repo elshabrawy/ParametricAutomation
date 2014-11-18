@@ -349,8 +349,13 @@ public class TablePanel extends JPanel implements ActionListener
 	}
 	
 	public void updateSheetPanelPagging(){
+		System.err.println(getCurrentPage());	
 		setPaggingLabel(getCurrentPage());
-		setTableData1(1, getRows1(getCurrentPage()));
+//		try{
+			setTableData1(1, getRows1(getCurrentPage()));
+//		}catch(Exception ex){
+//			
+//		}
 	}
 	
 	public void setTableData(int x, ArrayList<ArrayList<String>> result)
@@ -448,7 +453,10 @@ public class TablePanel extends JPanel implements ActionListener
 				recordsLabel.setText("Records " + this.getRecordNumber() + " and Pages "
 						+ this.getPageNumber());
 				paggingLabel.setText("1");
-				// setCurrentPage(1);
+				
+				 setCurrentPage(1);
+				 System.out.println("Current Page in setTableData1() = "+currentPage);
+				 
 				first.setEnabled(false);
 				previous.setEnabled(false);
 				if(pageNumber > 1)
