@@ -2664,7 +2664,18 @@ public class WorkingSheet
 					}
 					else
 					{
-						save = DataDevQueryUtil.updateParamtric(partInfo);
+						
+						try
+						{
+							save = DataDevQueryUtil.updateParamtric(partInfo);
+						}catch(Exception e)
+						{		
+							e.printStackTrace();
+								save = false;
+								partvalidation.setComment(e.getMessage());
+								partvalidation.setStatus("Rejected");						
+						}
+						
 					}
 
 					System.out.println("Part Saved:" + pn + " : " + seletedRange2);
