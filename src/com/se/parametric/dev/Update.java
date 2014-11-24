@@ -616,6 +616,8 @@ public class Update extends JPanel implements ActionListener
 					if(wsName != "LoadAllData" && wsName != "Separation")
 					{
 						wsMap.get(wsName).saveParts(true);
+						JOptionPane.showMessageDialog(null,
+								"Saving Data Finished Please Check Val_Status");
 						// wsMap.get(wsName).readSpreadsheet();
 						// wsMap.get(wsName).updateApprovedValues();
 					}

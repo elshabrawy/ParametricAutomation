@@ -2785,26 +2785,6 @@ public class DataDevQueryUtil
 				}
 				com.setMasterPartMask(mask);
 			}
-			// NPI Flag part
-			// if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
-			// com.setNpiFlag(1l);
-			// else
-			// com.setNpiFlag(0l);
-			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
-			{
-				try
-				{
-					insertNPIPart(com, partInfo.getNewsLink(), session);
-				}catch(ConstraintViolationException e)
-				{
-					e.printStackTrace();
-					if(e.getMessage().contains("NPI_PARTS_COM_UQ"))
-					{
-						System.out.println("Found in NPI before");
-					}
-				}
-
-			}
 
 			if(partInfo.getGeneric() != null && !partInfo.getGeneric().isEmpty()
 					&& partInfo.getFamilycross() != null && !partInfo.getFamilycross().isEmpty())
@@ -2832,6 +2812,15 @@ public class DataDevQueryUtil
 			session.saveOrUpdate(com);
 			session.beginTransaction().commit();
 
+			// NPI Flag part
+			// if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equals("Yes"))
+			// com.setNpiFlag(1l);
+			// else
+			// com.setNpiFlag(0l);
+			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
+			{
+					insertNPIPart(com, partInfo.getNewsLink(), session);
+			}
 			if(gen != null && fam != null)
 			{
 				famGen = new MasterFamilyGeneric();
@@ -2884,10 +2873,10 @@ public class DataDevQueryUtil
 				// session.beginTransaction().commit();
 			}
 			// saveParametricReviewData(partInfo,com.getComId(),track.getId(),session);
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-			return false;
+			// }catch(Exception ex)
+			// {
+			// ex.printStackTrace();
+			// return false;
 		}finally
 		{
 			session.close();
@@ -4222,6 +4211,8 @@ public class DataDevQueryUtil
 	{
 		TblNpiParts npiPart = new TblNpiParts();
 		// generic.setId(QueryUtil.getRandomID());
+		try
+		{			
 		npiPart.setPartComponent(com);
 		npiPart.setSupplier(com.getSupplierId());
 		npiPart.setPl(com.getSupplierPl().getPl());
@@ -4231,6 +4222,19 @@ public class DataDevQueryUtil
 		npiPart.setAutoFlag(1L);
 		session.saveOrUpdate(npiPart);
 		session.beginTransaction().commit();
+	
+		}catch(ConstraintViolationException e)
+		{
+			e.printStackTrace();
+//			session.cancelQuery();
+			session.clear();
+			session.flush();			
+			if(e.getMessage().contains("NPI_PARTS_COM_UQ"))
+			{
+				System.out.println("Found in NPI before");
+			}
+			return npiPart;
+		}
 		return npiPart;
 	}
 
