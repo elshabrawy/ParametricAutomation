@@ -556,7 +556,7 @@ public class QAFeedBack extends JPanel implements ActionListener
 				}
 				else
 				{
-//					loadpdf(selectedPdfs);
+					// loadpdf(selectedPdfs);
 					loadpdf(selectedDataIndex);
 				}
 			}
