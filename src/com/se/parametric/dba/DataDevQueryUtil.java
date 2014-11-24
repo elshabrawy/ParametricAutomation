@@ -2819,7 +2819,7 @@ public class DataDevQueryUtil
 			// com.setNpiFlag(0l);
 			if(partInfo.getNPIFlag() != null && partInfo.getNPIFlag().equalsIgnoreCase("Yes"))
 			{
-					insertNPIPart(com, partInfo.getNewsLink(), session);
+				insertNPIPart(com, partInfo.getNewsLink(), session);
 			}
 			if(gen != null && fam != null)
 			{
@@ -3969,7 +3969,14 @@ public class DataDevQueryUtil
 			}
 			if(type != null && !type.equals("All"))
 			{
-				qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
+				if(type.contains("NPI"))
+				{
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID in(" + StatusName.npiId + ","
+							+ StatusName.npitrasferredId + "," + StatusName.npiupdateId + ")");
+					// qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
+				}
+				else
+					qury.append(" AND t.TRACKING_TASK_TYPE_ID = getTaskTypeId('" + type + "')");
 			}
 			if((usersId != null) && !(usersId.length == 0))
 			{
@@ -4212,23 +4219,23 @@ public class DataDevQueryUtil
 		TblNpiParts npiPart = new TblNpiParts();
 		// generic.setId(QueryUtil.getRandomID());
 		try
-		{			
-		npiPart.setPartComponent(com);
-		npiPart.setSupplier(com.getSupplierId());
-		npiPart.setPl(com.getSupplierPl().getPl());
-		npiPart.setOfflinedocid(com.getDocument());
-		npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
-		npiPart.setInsertionDate(new Date());
-		npiPart.setAutoFlag(1L);
-		session.saveOrUpdate(npiPart);
-		session.beginTransaction().commit();
-	
+		{
+			npiPart.setPartComponent(com);
+			npiPart.setSupplier(com.getSupplierId());
+			npiPart.setPl(com.getSupplierPl().getPl());
+			npiPart.setOfflinedocid(com.getDocument());
+			npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
+			npiPart.setInsertionDate(new Date());
+			npiPart.setAutoFlag(1L);
+			session.saveOrUpdate(npiPart);
+			session.beginTransaction().commit();
+
 		}catch(ConstraintViolationException e)
 		{
 			e.printStackTrace();
-//			session.cancelQuery();
+			// session.cancelQuery();
 			session.clear();
-			session.flush();			
+			session.flush();
 			if(e.getMessage().contains("NPI_PARTS_COM_UQ"))
 			{
 				System.out.println("Found in NPI before");
