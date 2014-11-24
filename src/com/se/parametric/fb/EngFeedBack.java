@@ -122,19 +122,19 @@ public class EngFeedBack extends JPanel implements ActionListener
 		tabbedPane.addTab("Separation Sheet", null, separationTab, null);
 		this.add(tabbedPane);
 
-		
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
-		
+
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -300,8 +300,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 				{
 					try
 					{
-//						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
-						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);						
+						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 						String pdfUrl = docInfoDTO.getPdfUrl();
 						System.out.println(pdfUrl);
 						Document document = ParaQueryUtil.getDocumnetByPdfUrl(pdfUrl);
@@ -336,11 +335,12 @@ public class EngFeedBack extends JPanel implements ActionListener
 							wsMap.put(pl, ws);
 							if(docInfoDTO.getTaskType().contains("NPI"))
 								ws.setNPIflag(true);
-							ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"),
+							ws.setReviewHeader(
+									Arrays.asList("QA Comment", "Old Eng Comment", "IssueType"),
 									false);
 							ws.statusValues.remove(0);
 							ArrayList<String> sheetHeader = ws.getHeader();
-							// int tlCommentIndex = sheetHeader.indexOf("TL Comment");
+							int IssueTypeIndex = sheetHeader.indexOf("IssueType");
 							int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 							int Cactionindex = sheetHeader.indexOf("C_Action");
 							int Pactionindex = sheetHeader.indexOf("P_Action");
@@ -387,7 +387,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 										sheetRecord.set(Actionduedateindex, date == null ? "" : sdf
 												.format(date).toString());
 									}
-									for(int l = 0; l < 7; l++)
+									for(int l = 0; l < 8; l++)
 									{
 										sheetRecord.add("");
 									}
@@ -397,6 +397,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 									sheetRecord.set(2, feedCom.get(1));
 									sheetRecord.set(wrongfetsindex, wrongfeatures);
 									sheetRecord.set(fbcommentindex, feedCom.get(0));
+									sheetRecord.set(IssueTypeIndex, feedCom.get(7));
 									plData.set(j, sheetRecord);
 								}catch(Exception e)
 								{
@@ -481,7 +482,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
 						ws.statusValues.remove(0);
 						ArrayList<String> sheetHeader = ws.getHeader();
-						// int tlCommentIndex = sheetHeader.indexOf("TL Comment");
+						int IssueTypeIndex = sheetHeader.indexOf("IssueType");
 						int qaCommentIndex = sheetHeader.indexOf("QA Comment");
 						int Cactionindex = sheetHeader.indexOf("C_Action");
 						int Pactionindex = sheetHeader.indexOf("P_Action");
@@ -526,7 +527,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 								sheetRecord.set(Actionduedateindex,
 										date == null ? "" : sdf.format(date).toString());
 							}
-							for(int l = 0; l < 7; l++)
+							for(int l = 0; l < 8; l++)
 							{
 								sheetRecord.add("");
 							}
@@ -536,6 +537,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 							sheetRecord.set(2, feedCom.get(1));
 							sheetRecord.set(wrongfetsindex, wrongfeatures);
 							sheetRecord.set(fbcommentindex, feedCom.get(0));
+							sheetRecord.set(IssueTypeIndex, feedCom.get(7));
 							plData.set(j, sheetRecord);
 						}
 						ws.writeReviewData(plData, 2, 4);
@@ -687,4 +689,3 @@ public class EngFeedBack extends JPanel implements ActionListener
 	}
 
 }
-
