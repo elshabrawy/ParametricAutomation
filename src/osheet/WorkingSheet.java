@@ -3141,7 +3141,9 @@ public class WorkingSheet
 			int fbtypeindex = sheetHeader.indexOf("Feedback Type");
 			int pdfindex = sheetHeader.indexOf("PDF URL");
 			int comidindex = sheetHeader.indexOf("Comid");
-			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
+			int NewsLinkindex = sheetHeader.indexOf("News Link");
+
+			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null, newsLink = "";
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
@@ -3158,6 +3160,8 @@ public class WorkingSheet
 				String ActinDueDate = partData.get(Actionduedateindex);
 				String wrongfets = partData.get(wrongfetsindex);
 				String comid = partData.get(comidindex);
+				if(NewsLinkindex != -1)
+					newsLink = partData.get(NewsLinkindex);
 				pn = partData.get(partcell);
 				pdfUrl = partData.get(pdfindex);
 				family = partData.get(famcell);
@@ -3195,6 +3199,7 @@ public class WorkingSheet
 				partInfo.setPdfUrl(pdfUrl);
 				partInfo.setFamily(family);
 				partInfo.setMask(mask);
+				partInfo.setNewsLink(newsLink);
 
 				partInfo.setFbtype(fbtype);
 				partInfo.setCAction(CAction);
