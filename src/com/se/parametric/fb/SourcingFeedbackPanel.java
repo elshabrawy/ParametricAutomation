@@ -37,17 +37,18 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 	private JTextField plTF;
 	JTextComponent textComponent;
 	private String userName;
+	private JFrame parentframe;
 
 	/**
 	 * Create the panel.
 	 */
-	public SourcingFeedbackPanel(String userName, String pdfUrl, String plName)
+	public SourcingFeedbackPanel(String userName, String pdfUrl, String plName, JFrame parent)
 	{
 		setSize(500, 300);
 		setLayout(null);
 
 		this.userName = userName;
-
+		parentframe = parent;
 		JLabel dsUrlLbl = new JLabel("PDF Link : ");
 		JLabel statusLbl = new JLabel("Status : ");
 		JLabel commentLbl = new JLabel("Comment : ");
@@ -142,7 +143,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 		{
 			String[] rejectCommentOptions = { "Documentation", "Broken Link",
 					"No order Information", "Not Complete DS", "Wrong Vendor", "Acquired Vendor",
-					"Not NPI","Wrong News" };
+					"Not NPI", "Wrong News" };
 			for(int i = 0; i < rejectCommentOptions.length; i++)
 			{
 				model.addElement(rejectCommentOptions[i]);
@@ -154,7 +155,8 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 	public static void main(String[] args)
 	{
 		JFrame srcFeedbackFrame = new JFrame("Sourcing Feedback");
-		SourcingFeedbackPanel panel = new SourcingFeedbackPanel("a_kamal", "scxsdc", "dscfk");
+		SourcingFeedbackPanel panel = new SourcingFeedbackPanel("a_kamal", "scxsdc", "dscfk",
+				new JFrame());
 		srcFeedbackFrame.getContentPane().add(panel);
 		srcFeedbackFrame.setBounds(200, 150, 500, 300);
 		srcFeedbackFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -352,6 +354,7 @@ public class SourcingFeedbackPanel extends JPanel implements ActionListener, Key
 					MainWindow.glass.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Feedback Sent", "Feedback Sent",
 							JOptionPane.INFORMATION_MESSAGE);
+					parentframe.dispose();
 				}
 				else
 				{

@@ -233,25 +233,25 @@ public class QAReviewData extends JPanel implements ActionListener
 					startDate = filterPanel.jDateChooser1.getDate();
 					endDate = filterPanel.jDateChooser2.getDate();
 				}
-				
-					if(!userName.equals("All"))
+
+				if(!userName.equals("All"))
+				{
+					long userId = ParaQueryUtil.getUserIdByExactName(userName);
+					users = new Long[] { userId };
+				}
+				else
+				{
+					ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
+					int size = model.getSize();
+					users = new Long[size - 1];
+					for(int i = 1; i < size; i++)
 					{
-						long userId = ParaQueryUtil.getUserIdByExactName(userName);
-						users = new Long[] { userId };
+						Object element = model.getElementAt(i);
+						if(element != null && !element.equals("All"))
+							users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
 					}
-					else
-					{
-						ComboBoxModel model = filterPanel.comboBoxItems[4].getModel();
-						int size = model.getSize();
-						users = new Long[size - 1];
-						for(int i = 1; i < size; i++)
-						{
-							Object element = model.getElementAt(i);
-							if(element != null && !element.equals("All"))
-								users[i - 1] = ParaQueryUtil.getUserIdByExactName((String) element);
-						}
-					}
-				
+				}
+
 				tablePanel.selectedData = DataDevQueryUtil.getReviewPDF(users, plName,
 						supplierName, taskType, null, startDate, endDate, null, "QAReview", null,
 						status, plType, userId);

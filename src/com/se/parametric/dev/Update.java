@@ -122,20 +122,20 @@ public class Update extends JPanel implements ActionListener
 		tabbedPane.addTab("Sheet", null, tabSheet, null);
 		tabbedPane.addTab("Separation", null, separationTab, null);
 		this.add(tabbedPane);
-		
+
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
-		
-		
+
 		this.addFocusListener(new FocusListener() {
 
 			@Override
@@ -638,7 +638,8 @@ public class Update extends JPanel implements ActionListener
 					String plName = sheetpanel.getActiveSheetName();
 					String url = sheetpanel.getCellText(sheetpanel.getSelectedXCell()).getString();
 					System.out.println(url);
-					SourcingFeedbackPanel panel = new SourcingFeedbackPanel(userName, url, plName);
+					SourcingFeedbackPanel panel = new SourcingFeedbackPanel(userName, url, plName,
+							srcFeedbackFrame);
 					srcFeedbackFrame.getContentPane().add(panel);
 					srcFeedbackFrame.setBounds(200, 150, 500, 280);
 					srcFeedbackFrame.setVisible(true);

@@ -4840,6 +4840,10 @@ public class ParaQueryUtil
 			{
 				taskType = getTrackingTaskTypeByName("New", session);
 			}
+			if(taskType.getName().contains("NPI"))
+			{
+				taskType = getTrackingTaskTypeByName("NPI", session);
+			}
 			Criteria criteria = session.createCriteria(TrackingParamUserPlRate.class);
 			criteria.add(Restrictions.eq("pl", pl));
 			criteria.add(Restrictions.eq("type", "QA"));

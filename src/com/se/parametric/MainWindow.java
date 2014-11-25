@@ -229,7 +229,17 @@ public class MainWindow extends JFrame
 		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
 
-		
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.8 @ 24/11/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+
+		txt += "- Write exception message in saving sheet \n";
+		txt += "- load pdfs in doneflag engine in Update \n";
+		txt += "- Close SRCFB screen after feedback sent  \n";
+		txt += "- Display issue type in EngFB screen  \n";
+		txt += "- Enhance get QA user method to get right qauser  \n";
+		txt += "- Fix NPI update saving  \n";
+
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.7 @ 18/11/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";
@@ -238,7 +248,7 @@ public class MainWindow extends JFrame
 		txt += "- Fill the approved value Map before validation \n";
 		txt += "- Enance development sheet of saving parts  \n";
 		txt += "- Enance displaying in Newslink,NewsDate  \n";
-		
+
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.6 @ 03/11/2014 ~~~~~~~~~\n";
 		txt += "---------------------------------------------\n";

@@ -675,7 +675,8 @@ public class Developement extends JPanel implements ActionListener
 					String plName = sheetpanel.getActiveSheetName();
 					String url = sheetpanel.getCellText(sheetpanel.getSelectedXCell()).getString();
 					System.out.println(url);
-					SourcingFeedbackPanel panel = new SourcingFeedbackPanel(userName, url, plName);
+					SourcingFeedbackPanel panel = new SourcingFeedbackPanel(userName, url, plName,
+							srcFeedbackFrame);
 					srcFeedbackFrame.getContentPane().add(panel);
 					srcFeedbackFrame.setBounds(200, 150, 500, 280);
 					srcFeedbackFrame.setVisible(true);

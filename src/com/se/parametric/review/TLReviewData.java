@@ -112,14 +112,15 @@ public class TLReviewData extends JPanel implements ActionListener
 		this.add(tabbedPane);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 			{
-				System.err.println(tablePanel.getCurrentPage());				
-				if(tabbedPane.getSelectedIndex() == 0){
+				System.err.println(tablePanel.getCurrentPage());
+				if(tabbedPane.getSelectedIndex() == 0)
+				{
 					tablePanel.updateSheetPanelPagging();
-				}					
+				}
 			}
 		});
 		this.addFocusListener(new FocusListener() {
@@ -316,7 +317,7 @@ public class TLReviewData extends JPanel implements ActionListener
 						String taskType = combos[2].getSelectedItem().toString();
 						String userName = combos[3].getSelectedItem().toString();
 						wsMap.clear();
-//						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
+						// TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedPdfs[0]);
 						TableInfoDTO docInfoDTO = tablePanel.selectedData.get(selectedDataIndex);
 						String pdfUrl = docInfoDTO.getPdfUrl();
 						String plName = docInfoDTO.getPlName();
@@ -506,7 +507,6 @@ public class TLReviewData extends JPanel implements ActionListener
 					}
 				}
 				MainWindow.glass.setVisible(false);
-				JOptionPane.showMessageDialog(null, "Saving Data Finished");
 			}
 			else if(event.getActionCommand().equals(" Save "))
 			{
@@ -530,18 +530,14 @@ public class TLReviewData extends JPanel implements ActionListener
 								.createApprovedValuesList(featureFullValue, plName, featureName,
 										row.get(7), row.get(8), row.get(9), row.get(12),
 										row.get(13), row.get(11), row.get(10));
-						try
-						{
-							ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
-									featureName, featureFullValue, row.get(2), userId);
-						}catch(Exception ex)
-						{
-							ex.printStackTrace();
-						}
+						ApprovedDevUtil.saveAppGroupAndSepValue(0, 0, approved, plName,
+								featureName, featureFullValue, row.get(2), userId);
+
 						isExclamationMark = false;
 						List<String> appValues = wsMap.get(plName).getApprovedFeatuer()
 								.get(featureName);
 						appValues.add(featureFullValue);
+						wsMap.get(plName).getApprovedFeatuer().put(featureName, appValues);
 					}
 					MainWindow.glass.setVisible(false);
 					int reply = JOptionPane.showConfirmDialog(null,
@@ -616,4 +612,3 @@ public class TLReviewData extends JPanel implements ActionListener
 		}
 	}
 }
-

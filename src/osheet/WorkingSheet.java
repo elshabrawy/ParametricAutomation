@@ -2664,18 +2664,18 @@ public class WorkingSheet
 					}
 					else
 					{
-						
+
 						try
 						{
 							save = DataDevQueryUtil.updateParamtric(partInfo);
 						}catch(Exception e)
-						{		
+						{
 							e.printStackTrace();
-								save = false;
-								partvalidation.setComment(e.getMessage());
-								partvalidation.setStatus("Rejected");						
+							save = false;
+							partvalidation.setComment(e.getMessage());
+							partvalidation.setStatus("Rejected");
 						}
-						
+
 					}
 
 					System.out.println("Part Saved:" + pn + " : " + seletedRange2);
@@ -2992,6 +2992,7 @@ public class WorkingSheet
 		{
 			Set<String> rejectedPdfs = new HashSet<String>();
 			Set<String> acceptedPdfs = new HashSet<String>();
+			Set<String> updatedPdfs = new HashSet<String>();
 			List<PartInfoDTO> feedbackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
 			saved = true;
@@ -3095,13 +3096,15 @@ public class WorkingSheet
 					DataDevQueryUtil.updateParamtric(partInfo);
 					if(!rejectedPdfs.contains(pdfUrl))
 					{
-						acceptedPdfs.add(pdfUrl);
+						updatedPdfs.add(pdfUrl);
 					}
 				}
 			}
 			DataDevQueryUtil.savePartsFeedback(feedbackParts);
 			DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
 					StatusName.qaReview, teamLeaderName);
+			DataDevQueryUtil.saveTrackingParamtric(updatedPdfs, selectedPL, null,
+					StatusName.doneFLagEngine, teamLeaderName);
 			DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
 					StatusName.engFeedback, teamLeaderName);
 		}catch(Exception e)
@@ -3127,8 +3130,9 @@ public class WorkingSheet
 		try
 		{
 			Set<String> pdfs = new HashSet<String>();
+			Set<String> updatedpdfs = new HashSet<String>();
 			List<String> fbTypes = new ArrayList<String>();
-			// List<PartInfoDTO> updatedParts = new ArrayList<PartInfoDTO>();
+			// List<PartInfoDTO> updatedpdfs = new ArrayList<PartInfoDTO>();
 			// List<PartInfoDTO> rejectedParts = new ArrayList<PartInfoDTO>();
 			List<PartInfoDTO> feedBackParts = new ArrayList<PartInfoDTO>();
 			ArrayList<String> sheetHeader = getHeader();
@@ -3152,7 +3156,9 @@ public class WorkingSheet
 			int fbtypeindex = sheetHeader.indexOf("Feedback Type");
 			int pdfindex = sheetHeader.indexOf("PDF URL");
 			int comidindex = sheetHeader.indexOf("Comid");
-			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
+			int NewsLinkindex = sheetHeader.indexOf("News Link");
+
+			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null, newsLink = "";
 			for(int i = 0; i < sheetData.size(); i++)
 			{
 				PartInfoDTO partInfo = new PartInfoDTO();
@@ -3169,6 +3175,8 @@ public class WorkingSheet
 				String ActinDueDate = partData.get(Actionduedateindex);
 				String wrongfets = partData.get(wrongfetsindex);
 				String comid = partData.get(comidindex);
+				if(NewsLinkindex != -1)
+					newsLink = partData.get(NewsLinkindex);
 				pn = partData.get(partcell);
 				pdfUrl = partData.get(pdfindex);
 				family = partData.get(famcell);
@@ -3206,6 +3214,7 @@ public class WorkingSheet
 				partInfo.setPdfUrl(pdfUrl);
 				partInfo.setFamily(family);
 				partInfo.setMask(mask);
+				partInfo.setNewsLink(newsLink);
 
 				partInfo.setFbtype(fbtype);
 				partInfo.setCAction(CAction);
@@ -3254,18 +3263,15 @@ public class WorkingSheet
 				}
 				else if("Updated".equals(status))
 				{
-
 					partInfo.setFetValues(readRowValues(partData));
 					if((issuedTo != null) && (!"".equals(issuedTo)))
 					{
 						partInfo.setFeedBackStatus(StatusName.accept);
 						feedBackParts.add(partInfo);
 					}
-
 					DataDevQueryUtil.updateParamtric(partInfo);
-					pdfs.add(pdfUrl);
+					updatedpdfs.add(pdfUrl);
 					fbTypes.add(partInfo.getFbtype());
-
 				}
 
 			}
@@ -3273,6 +3279,8 @@ public class WorkingSheet
 			DataDevQueryUtil.savePartsFeedback(feedBackParts);
 			DataDevQueryUtil.saveTrackingParamtric(pdfs, selectedPL, null, StatusName.tlFeedback,
 					devName);
+			DataDevQueryUtil.saveTrackingParamtric(updatedpdfs, selectedPL, null,
+					StatusName.doneFLagEngine, devName);
 			MainWindow.glass.setVisible(false);
 			JOptionPane.showMessageDialog(null, "Saving Data Finished");
 		}catch(Exception e)
@@ -3442,8 +3450,8 @@ public class WorkingSheet
 							{
 								qareviewpdfs.remove(pdfUrl);
 							}
-							// QA_feedback
-							qafeedbackpdfs.add(pdfUrl);
+							// Doneflagengine
+							doneflagpfds.add(pdfUrl);
 						}
 						partsToStoreFeedback.add(partInfo);
 						partInfo.setFetValues(readRowValues(partData));
@@ -3456,8 +3464,8 @@ public class WorkingSheet
 						partInfo.setFeedBackCycleType("Wrong Data");
 						if(!qafeedbackpdfs.contains(pdfUrl) && !engfeedbackpfds.contains(pdfUrl))
 						{
-							// QA_Review
-							qareviewpdfs.add(pdfUrl);
+							// Doneflagengine
+							doneflagpfds.add(pdfUrl);
 						}
 						partsToStoreFeedback.add(partInfo);
 						partInfo.setFetValues(readRowValues(partData));
