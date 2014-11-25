@@ -3312,6 +3312,7 @@ public class ParaQueryUtil
 				groupFullValue, plName, featureName, session);
 		if(parametricApprovedGroup == null)
 		{
+			 System.out.println("~~~~~~ New Group ~~~~~~"+ groupFullValue+"$"+featureName+"$"+plName );
 			parametricApprovedGroup = new ParametricApprovedGroup();
 			parametricApprovedGroup.setId(System.nanoTime());
 			parametricApprovedGroup.setPlFeature(getPlFeatureByExactName(featureName, plName,
