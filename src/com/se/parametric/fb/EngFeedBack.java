@@ -479,7 +479,7 @@ public class EngFeedBack extends JPanel implements ActionListener
 						if(DataDevQueryUtil.isNPITaskType(users, pl, supplierName, null,
 								StatusName.engFeedback, startDate, endDate, null))
 							ws.setNPIflag(true);
-						ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment"), false);
+						ws.setReviewHeader(Arrays.asList("QA Comment", "Old Eng Comment","IssueType"), false);
 						ws.statusValues.remove(0);
 						ArrayList<String> sheetHeader = ws.getHeader();
 						int IssueTypeIndex = sheetHeader.indexOf("IssueType");
