@@ -3408,8 +3408,8 @@ public class WorkingSheet
 							}
 							if(issuetype == StatusName.wrongValue)
 							{
-								// doneflag_engine
-								doneflagpfds.add(pdfUrl);
+								// QA_Review
+								qareviewpdfs.add(pdfUrl);
 							}
 							else
 							{
