@@ -474,7 +474,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										oldValReq.setIssuedby(issuedby);
 										oldValReq.setIssueTo(issuedto);
 										oldValReq.setFbStatus(StatusName.accept);
-										oldValReq.setGruopSatus(StatusName.tlFeedback);
+										oldValReq.setGruopSatus(StatusName.reject);
 										ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 										// initiate new FB from QA to Eng
 										oldValReq.setGruopSatus(StatusName.engFeedback);
