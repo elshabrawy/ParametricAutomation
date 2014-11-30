@@ -937,7 +937,7 @@ public class ApprovedDevUtil
 			/** component has group value */
 			criteria = session.createCriteria(ParametricReviewData.class);
 			criteria.add(Restrictions.eq("groupApprovedValueId", groups.getId()));
-			List wrongPartsList = criteria.list();
+			List<ParametricReviewData> wrongPartsList = criteria.list();
 			/** reject status criteria */
 			criteria = session.createCriteria(ParaFeedbackStatus.class);
 			criteria.add(Restrictions.eq("feedbackStatus", "Open"));
@@ -958,7 +958,7 @@ public class ApprovedDevUtil
 			Set<TrackingParametric> tracks = new HashSet<TrackingParametric>();
 			for(int i = 0; i < wrongPartsList.size(); i++)
 			{
-				ParametricReviewData rd = (ParametricReviewData) wrongPartsList.get(i);
+				ParametricReviewData rd = wrongPartsList.get(i);
 				if(rd.getTrackingParametric() != null)
 				{
 					tracks.add(rd.getTrackingParametric());
@@ -1010,7 +1010,6 @@ public class ApprovedDevUtil
 					}
 					session.saveOrUpdate(OldFBCyc);
 					session.saveOrUpdate(FBCyc);
-					session.beginTransaction().commit();
 				}
 				else
 				{
@@ -1031,7 +1030,14 @@ public class ApprovedDevUtil
 					FBCyc.setFbItemValue(rd.getComponent().getPartNumber());
 					FBCyc.setFbComment(app.getComment());
 					FBCyc.setIssuedBy(app.getIssuedby());
-					FBCyc.setIssuedTo(app.getIssueTo());
+					if(app.getFbType().equals("Internal"))
+					{
+						FBCyc.setIssuedTo(app.getUserId());
+					}
+					else
+					{
+						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
+					}
 					FBCyc.setStoreDate(new Date());
 
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
