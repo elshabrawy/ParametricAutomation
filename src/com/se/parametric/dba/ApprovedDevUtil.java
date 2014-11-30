@@ -1460,37 +1460,45 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("feedbackStatus", fbStatus));
 			paraFeedbackStatus = (ParaFeedbackStatus) criteria.uniqueResult();//
 
-			FBObj = parametricFeedbackCycle.getParametricFeedback();
-			FBObj.setParaFeedbackStatus(paraFeedbackStatus);
-			FBObj.setDocument(document);
-			if(paraIssueType != null)
-				FBObj.setParaIssueType(paraIssueType);
+			criteria = session.createCriteria(ParametricFeedbackCycle.class);
+			criteria.add(Restrictions.eq("fbItemValue", groups.getGroupFullValue()));
+			criteria.add(Restrictions.eq("issuedBy", app.getIssuedby()));
+			criteria.add(Restrictions.eq("issuedTo", app.getIssueTo()));
+			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
-			FBCyc.setId(System.nanoTime());
-			FBCyc.setParametricFeedback(FBObj);
-			FBCyc.setFbItemValue(groups.getGroupFullValue());
-			FBCyc.setFbComment(app.getComment());
-			FBCyc.setIssuedBy(app.getIssuedby());
-
-			FBCyc.setIssuedTo(app.getIssueTo());
-
-			FBCyc.setStoreDate(new Date());
-
-			FBCyc.setParaFeedbackStatus(paraFeedbackAction);
-			FBCyc.setFeedbackRecieved(fbRecieved);
-			if(app.getCAction() != null && app.getPAction() != null && app.getRootCause() != null
-					&& app.getActionDueDate() != null)
+			if(criteria.uniqueResult() == null)
 			{
-				feedbackAction = getParaAction(app.getCAction(), app.getPAction(),
-						app.getRootCause(), app.getActionDueDate(), session);
-				if(feedbackAction != null)
-				{
-					FBCyc.setParaFeedbackAction(feedbackAction);
-				}
-			}
-			session.saveOrUpdate(FBObj);
-			session.saveOrUpdate(FBCyc);
+				FBObj = parametricFeedbackCycle.getParametricFeedback();
+				FBObj.setParaFeedbackStatus(paraFeedbackStatus);
+				FBObj.setDocument(document);
+				if(paraIssueType != null)
+					FBObj.setParaIssueType(paraIssueType);
 
+				FBCyc.setId(System.nanoTime());
+				FBCyc.setParametricFeedback(FBObj);
+				FBCyc.setFbItemValue(groups.getGroupFullValue());
+				FBCyc.setFbComment(app.getComment());
+				FBCyc.setIssuedBy(app.getIssuedby());
+
+				FBCyc.setIssuedTo(app.getIssueTo());
+
+				FBCyc.setStoreDate(new Date());
+
+				FBCyc.setParaFeedbackStatus(paraFeedbackAction);
+				FBCyc.setFeedbackRecieved(fbRecieved);
+				if(app.getCAction() != null && app.getPAction() != null
+						&& app.getRootCause() != null && app.getActionDueDate() != null)
+				{
+					feedbackAction = getParaAction(app.getCAction(), app.getPAction(),
+							app.getRootCause(), app.getActionDueDate(), session);
+					if(feedbackAction != null)
+					{
+						FBCyc.setParaFeedbackAction(feedbackAction);
+					}
+				}
+				session.saveOrUpdate(FBObj);
+				session.saveOrUpdate(FBCyc);
+			}
 			criteria = session.createCriteria(TrackingTaskStatus.class);
 			criteria.add(Restrictions.eq("name", app.getGruopSatus()));
 			TrackingTaskStatus trackingTaskStatus = (TrackingTaskStatus) criteria.uniqueResult();//

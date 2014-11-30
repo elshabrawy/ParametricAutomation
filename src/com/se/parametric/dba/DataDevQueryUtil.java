@@ -3083,38 +3083,50 @@ public class DataDevQueryUtil
 					FBObj.setType("P");
 					FBObj.setDocument(document);
 				}
-				FBCyc.setId(System.nanoTime());
-				FBCyc.setParametricFeedback(FBObj);
-				FBCyc.setFbItemValue(component.getPartNumber());
-				FBCyc.setFbComment(comment);
-				FBCyc.setIssuedBy(issuedByUser.getId());
-				FBCyc.setIssuedTo(issedto);
-				FBCyc.setStoreDate(date);
-				FBCyc.setParaFeedbackStatus(paraFeedbackAction);
-				FBCyc.setFeedbackRecieved(fbRecieved);
+				fbcriteria = session.createCriteria(ParametricFeedbackCycle.class);
+				fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
+				fbcriteria.add(Restrictions.eq("issuedTo", issuedToUser.getId()));
+				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
-				if(partInfo.getCAction() != null && partInfo.getPAction() != null
-						&& partInfo.getRootCause() != null && partInfo.getActinDueDate() != null)
+				ParametricFeedbackCycle parametricFBCycle = (ParametricFeedbackCycle) fbcriteria
+						.uniqueResult();
+				if(parametricFBCycle == null)
 				{
-					if(!partInfo.getCAction().equals("") && !partInfo.getPAction().equals("")
-							&& !partInfo.getRootCause().equals("")
-							&& !partInfo.getActinDueDate().equals(""))
+					FBCyc.setId(System.nanoTime());
+					FBCyc.setParametricFeedback(FBObj);
+					FBCyc.setFbItemValue(component.getPartNumber());
+					FBCyc.setFbComment(comment);
+					FBCyc.setIssuedBy(issuedByUser.getId());
+					FBCyc.setIssuedTo(issedto);
+					FBCyc.setStoreDate(date);
+					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
+					FBCyc.setFeedbackRecieved(fbRecieved);
+
+					if(partInfo.getCAction() != null && partInfo.getPAction() != null
+							&& partInfo.getRootCause() != null
+							&& partInfo.getActinDueDate() != null)
 					{
-						feedbackAction = ApprovedDevUtil.getParaAction(partInfo.getCAction(),
-								partInfo.getPAction(), partInfo.getRootCause(),
-								partInfo.getActinDueDate(), session);
-						if(feedbackAction != null)
+						if(!partInfo.getCAction().equals("") && !partInfo.getPAction().equals("")
+								&& !partInfo.getRootCause().equals("")
+								&& !partInfo.getActinDueDate().equals(""))
 						{
-							FBCyc.setParaFeedbackAction(feedbackAction);
+							feedbackAction = ApprovedDevUtil.getParaAction(partInfo.getCAction(),
+									partInfo.getPAction(), partInfo.getRootCause(),
+									partInfo.getActinDueDate(), session);
+							if(feedbackAction != null)
+							{
+								FBCyc.setParaFeedbackAction(feedbackAction);
+							}
 						}
 					}
+					session.saveOrUpdate(FBObj);
+					session.saveOrUpdate(FBCyc);
+					session.beginTransaction().commit();
+
+					if(wrongfeatures != null && !wrongfeatures.isEmpty())
+						savewrongfeatures(session, FBObj, comment, wrongfeatures,
+								parametricFeedbackCycle);
 				}
-				session.saveOrUpdate(FBObj);
-				session.saveOrUpdate(FBCyc);
-				session.beginTransaction().commit();
-				if(wrongfeatures != null && !wrongfeatures.isEmpty())
-					savewrongfeatures(session, FBObj, comment, wrongfeatures,
-							parametricFeedbackCycle);
 				if(fbStatus.equals(StatusName.closed))
 				{
 					System.err.println("edit in summary status");

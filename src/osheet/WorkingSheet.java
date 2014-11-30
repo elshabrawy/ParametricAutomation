@@ -2809,7 +2809,8 @@ public class WorkingSheet
 					{
 						oldflag = partData.get(oldflagIndex);
 						if(!oldflag.isEmpty() && !status.isEmpty()
-								&& (oldflag.equals("R") || oldflag.equals("W")))
+								&& (oldflag.equals("R") || oldflag.equals("W"))
+								&& (!status.equals("R") && !status.equals("W")))
 						{
 							changedparts.add(pn);
 						}
@@ -2863,12 +2864,8 @@ public class WorkingSheet
 				{
 					DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
 							StatusName.waitingsummary, QAName); // // Eng
-					if(summarydata)
-						DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
-								StatusName.tlFeedback, QAName);
-					else
-						DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
-								StatusName.waitingsummary, QAName);
+					DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+							StatusName.waitingsummary, QAName);
 				}
 				else
 				{
