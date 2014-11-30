@@ -2863,8 +2863,12 @@ public class WorkingSheet
 				{
 					DataDevQueryUtil.saveTrackingParamtric(acceptedPdfs, selectedPL, null,
 							StatusName.waitingsummary, QAName); // // Eng
-					DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
-							StatusName.waitingsummary, QAName);
+					if(summarydata)
+						DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+								StatusName.tlFeedback, QAName);
+					else
+						DataDevQueryUtil.saveTrackingParamtric(rejectedPdfs, selectedPL, null,
+								StatusName.waitingsummary, QAName);
 				}
 				else
 				{
