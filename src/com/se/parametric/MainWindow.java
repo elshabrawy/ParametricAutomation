@@ -206,12 +206,12 @@ public class MainWindow extends JFrame
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
 		dialog.setLayout(null);
-		JLabel lbl = new JLabel("Version No 2.7");
+		JLabel lbl = new JLabel("Version No 2.9");
 		lbl.setFont(new Font("Simpson", Font.BOLD, 18));
 		lbl.setForeground(new Color(160, 82, 45));
 		lbl.setBounds(((width - 383) / 4) - 100, 5, 300, 40);
 
-		JLabel lbl2 = new JLabel("Last updates on 18/11/2014 :- ");
+		JLabel lbl2 = new JLabel("Last updates on 30/11/2014 :- ");
 		lbl2.setFont(new Font("Simpson", Font.BOLD, 14));
 		lbl2.setForeground(new Color(189, 67, 67));
 		lbl2.setBounds(0, 55, 250, 20);
@@ -228,6 +228,13 @@ public class MainWindow extends JFrame
 		txtarea.setFont(new Font("Simpson", Font.BOLD, 12));
 		txtarea.setBounds(0, 80, 450, 250);
 		String txt = "";
+
+		txt += "---------------------------------------------\n";
+		txt += "~~~~~~~ Version No 2.9 @ 30/11/2014 ~~~~~~~~~\n";
+		txt += "---------------------------------------------\n";
+
+		txt += "- Prevent to save more than one feedback on same item \n";
+		txt += "- Open feedback to all documents have same wrong value \n";
 
 		txt += "---------------------------------------------\n";
 		txt += "~~~~~~~ Version No 2.8 @ 24/11/2014 ~~~~~~~~~\n";
