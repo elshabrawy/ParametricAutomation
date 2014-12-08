@@ -6026,7 +6026,8 @@ public class DataDevQueryUtil
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
-					MasterPartMask mask = getMask(qachk.getNewValue());
+					Object[] nunalphavalues = getnunalphavalues(qachk.getNewValue(),"","",session);
+					MasterPartMask mask = getMask(nunalphavalues[1].toString());
 					if(mask == null)
 					{
 						mask = insertMask(qachk.getNewValue(), session);
@@ -6078,7 +6079,8 @@ public class DataDevQueryUtil
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
-					MapGeneric generic = ParaQueryUtil.getGeneric(qachk.getNewValue());
+					Object[] nunalphavalues = getnunalphavalues("",qachk.getNewValue(),"",session);
+					MapGeneric generic = ParaQueryUtil.getGeneric(nunalphavalues[2].toString());
 					if(generic == null)
 					{
 						generic = insertGeneric(qachk.getNewValue(), session);
