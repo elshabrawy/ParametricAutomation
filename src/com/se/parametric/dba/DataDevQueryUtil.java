@@ -6395,6 +6395,7 @@ public class DataDevQueryUtil
 			qaexception.setId(System.nanoTime());
 			qaexception.setComid(qachk.getPart().getComId());
 			qaexception.setFamily(qachk.getFamily());
+			cri = session.createCriteria(PreQaCheckersException.class);
 			if(qachk.getChecker().equals(StatusName.MaskMultiData)
 					|| qachk.getChecker().equals(StatusName.RootPartChecker)
 					|| qachk.getChecker().equals(StatusName.generic_part))
@@ -6411,7 +6412,6 @@ public class DataDevQueryUtil
 			qaexception.setPlId(qachk.getProductLine().getId());
 			qaexception.setPreQaCheckers(checker);
 
-			cri = session.createCriteria(PreQaCheckersException.class);
 			cri.add(Restrictions.eq("family", qaexception.getFamily()));
 			cri.add(Restrictions.eq("comid", qaexception.getComid()));
 			cri.add(Restrictions.eq("preQaCheckers", qaexception.getPreQaCheckers()));
