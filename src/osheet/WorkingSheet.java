@@ -1550,6 +1550,14 @@ public class WorkingSheet
 			plname = getCellText(plCell).getString();
 			Pl pl = ParaQueryUtil.getPlByPlName(plname);
 			int lastRow = getLastRow();
+			// edit by MG 17-11-2014
+			List<FeatureDTO> plfets = ParaQueryUtil.getPlFeautres(sheetpl, true);
+			approvedFeatuer.clear();
+			for(FeatureDTO featureDTO : plfets)
+			{
+				List<String> appValues = featureDTO.getFeatureapprovedvalue();
+				approvedFeatuer.put(featureDTO.getFeatureName(), appValues);
+			}
 			part: for(int i = 3; i < lastRow + 1; i++)
 			{
 
@@ -1747,14 +1755,6 @@ public class WorkingSheet
 				}
 				if(!update || (update && !status.equals("Rejected") && !status.equals("Approved")))
 				{
-					// edit by MG 17-11-2014
-					List<FeatureDTO> plfets = ParaQueryUtil.getPlFeautres(sheetpl, true);
-					approvedFeatuer.clear();
-					for(FeatureDTO featureDTO : plfets)
-					{
-						List<String> appValues = featureDTO.getFeatureapprovedvalue();
-						approvedFeatuer.put(featureDTO.getFeatureName(), appValues);
-					}
 					appFlag = isRowValuesApproved(xcellrange, endParametricFT);
 					if(!appFlag)
 					{
