@@ -148,7 +148,7 @@ public class ParaQueryUtil
 			// System.out.println(ptype.getName());
 			// System.out.println(getLastIssueSource(28862724l));
 			new ParaQueryUtil().getPlFeautres(pl, false);
-			DataDevQueryUtil.getMask("AD7903BRQZ____");
+			// DataDevQueryUtil.getMask("AD7903BRQZ____");
 		}catch(Exception e)
 		{
 			// TODO Auto-generated catch block
@@ -3312,7 +3312,8 @@ public class ParaQueryUtil
 				groupFullValue, plName, featureName, session);
 		if(parametricApprovedGroup == null)
 		{
-			 System.out.println("~~~~~~ New Group ~~~~~~"+ groupFullValue+"$"+featureName+"$"+plName );
+			System.out.println("~~~~~~ New Group ~~~~~~" + groupFullValue + "$" + featureName + "$"
+					+ plName);
 			parametricApprovedGroup = new ParametricApprovedGroup();
 			parametricApprovedGroup.setId(System.nanoTime());
 			parametricApprovedGroup.setPlFeature(getPlFeatureByExactName(featureName, plName,

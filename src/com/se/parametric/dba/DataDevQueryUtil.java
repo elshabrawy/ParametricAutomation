@@ -2600,7 +2600,7 @@ public class DataDevQueryUtil
 			if(partInfo.getMask() != null)
 			{
 
-				MasterPartMask mask = getMask(nunalphavalues[1].toString());
+				MasterPartMask mask = getMask(nunalphavalues[1].toString(), partInfo.getMask());
 				if(mask == null)
 				{
 					mask = insertMask(partInfo.getMask(), session);
@@ -2778,7 +2778,7 @@ public class DataDevQueryUtil
 
 			if(partInfo.getMask() != null)
 			{
-				MasterPartMask mask = getMask(nunalphavalues[1].toString());
+				MasterPartMask mask = getMask(nunalphavalues[1].toString(), partInfo.getMask());
 				if(mask == null)
 				{
 					mask = insertMask(partInfo.getMask(), session);
@@ -4317,7 +4317,7 @@ public class DataDevQueryUtil
 	/****
 	 * get Mask Object By Mame by Ahmed makram
 	 ****/
-	public static MasterPartMask getMask(String maskValue)
+	public static MasterPartMask getMask(String maskValuenunalpha, String maskValue)
 	{
 		Session session = SessionUtil.getSession();
 		// MasterPartMask mask = null;
@@ -4326,7 +4326,7 @@ public class DataDevQueryUtil
 		MasterPartMask maskObj = null;
 		try
 		{
-			String maskMaster = maskValue.replaceAll("_", "%").replaceAll("(%){2,}", "%");
+			String maskMaster = maskValuenunalpha.replaceAll("_", "%").replaceAll("(%){2,}", "%");
 			if(!maskMaster.contains("%"))
 			{
 				maskMaster = maskMaster + "%";
@@ -4360,6 +4360,7 @@ public class DataDevQueryUtil
 				PartMaskValue maskval = new PartMaskValue();
 				maskval.setId(mskValId);
 				maskval.setMasterPartMask(maskObj);
+				maskval.setAutoFlag(1L);
 				session.saveOrUpdate(maskval);
 			}
 
@@ -6026,8 +6027,9 @@ public class DataDevQueryUtil
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
-					Object[] nunalphavalues = getnunalphavalues(qachk.getNewValue(),"","",session);
-					MasterPartMask mask = getMask(nunalphavalues[1].toString());
+					Object[] nunalphavalues = getnunalphavalues(qachk.getNewValue(), "", "",
+							session);
+					MasterPartMask mask = getMask(nunalphavalues[1].toString(), qachk.getNewValue());
 					if(mask == null)
 					{
 						mask = insertMask(qachk.getNewValue(), session);
@@ -6079,7 +6081,8 @@ public class DataDevQueryUtil
 			{
 				if(qachk.getNewValue() != null && !qachk.getNewValue().isEmpty())
 				{
-					Object[] nunalphavalues = getnunalphavalues("",qachk.getNewValue(),"",session);
+					Object[] nunalphavalues = getnunalphavalues("", qachk.getNewValue(), "",
+							session);
 					MapGeneric generic = ParaQueryUtil.getGeneric(nunalphavalues[2].toString());
 					if(generic == null)
 					{

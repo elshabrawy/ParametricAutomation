@@ -604,7 +604,9 @@ public class Developement extends JPanel implements ActionListener
 					{
 						if(wsName != "LoadAllData" && wsName != "Separation")
 						{
+							System.out.println(new Date());
 							wsMap.get(wsName).validateParts(false);
+							System.out.println(new Date());
 							if(!wsMap.get(wsName).canSave)
 							{
 								saveevent = event;
