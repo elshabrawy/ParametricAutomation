@@ -481,28 +481,27 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										oldValReq.setIssueType(StatusName.wrongValue);
 										oldValReq.setFbStatus(StatusName.reject);
 										oldValReq.setIssueTo(issuedby);
-
+										oldValReq.setIssuedby(issuedto);
 										if(oldValReq.getFbType().equals(StatusName.internal))
 										{
-											oldValReq.setIssuedby(issuedto);
 											oldValReq.setComment(newValReq.get(23));
 										}
 										else
 										{
-											Long qaUserId = 0L;
-											// try
-											// {
-											qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
-													.getPlByPlName(session, oldValReq.getPlName()),
-													ParaQueryUtil.getTrackingTaskTypeByName(
-															"Approved Values", session));
+											// Long qaUserId = 0L;
+											// // try
+											// // {
+											// qaUserId = ParaQueryUtil.getQAUserId(ParaQueryUtil
+											// .getPlByPlName(session, oldValReq.getPlName()),
+											// ParaQueryUtil.getTrackingTaskTypeByName(
+											// "Approved Values", session));
 											// }catch(Exception e)
 											// {
 											// // TODO Auto-generated catch block
 											// e.printStackTrace();
 											// }
 											oldValReq.setComment(newValReq.get(25));
-											oldValReq.setIssuedby(qaUserId);
+											// oldValReq.setIssuedby(qaUserId);
 										}
 										// oldValReq.setFbType(oldValReq.getFbType());
 										ApprovedDevUtil.saveAppWrongValue(oldValReq);
