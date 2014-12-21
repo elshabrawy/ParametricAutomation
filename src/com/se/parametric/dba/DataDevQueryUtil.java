@@ -3028,6 +3028,13 @@ public class DataDevQueryUtil
 					paraIssueType = (ParaIssueType) criteria.uniqueResult();
 				}
 
+				ParaIssueType excIssueType = null;
+
+				criteria = session.createCriteria(ParaIssueType.class);
+				// System.out.println(app.getIssueType());
+				criteria.add(Restrictions.eq("issueType", StatusName.QAException));
+				excIssueType = (ParaIssueType) criteria.uniqueResult();
+
 				Document document = null;
 
 				document = ParaQueryUtil.getDocumnetByPdfUrl(partInfo.getPdfUrl());
@@ -3060,6 +3067,8 @@ public class DataDevQueryUtil
 				fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
 				fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
+				fbcriteria.createAlias("parametricFeedback", "paramFb");
+				fbcriteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 				ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) fbcriteria
 						.uniqueResult();
@@ -3087,6 +3096,8 @@ public class DataDevQueryUtil
 				fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
 				fbcriteria.add(Restrictions.eq("issuedTo", issuedToUser.getId()));
 				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
+				fbcriteria.createAlias("parametricFeedback", "paramFb");
+				fbcriteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 				ParametricFeedbackCycle parametricFBCycle = (ParametricFeedbackCycle) fbcriteria
 						.uniqueResult();

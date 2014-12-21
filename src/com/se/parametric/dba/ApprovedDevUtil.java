@@ -1422,6 +1422,12 @@ public class ApprovedDevUtil
 			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 			Document document = null;
 			ParaIssueType paraIssueType = null;
+			ParaIssueType excIssueType = null;
+
+			criteria = session.createCriteria(ParaIssueType.class);
+			System.out.println(app.getIssueType());
+			criteria.add(Restrictions.eq("issueType", StatusName.QAException));
+			excIssueType = (ParaIssueType) criteria.uniqueResult();
 
 			document = ParaQueryUtil.getDocumnetByPdfUrl(app.getPdfUrl());
 
@@ -1431,6 +1437,8 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("fbItemValue", groups.getGroupFullValue()));
 			criteria.add(Restrictions.eq("issuedTo", app.getIssuedby()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
+			criteria.createAlias("parametricFeedback", "paramFb");
+			criteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 			ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria
 					.uniqueResult();
@@ -1471,6 +1479,8 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("issuedBy", app.getIssuedby()));
 			criteria.add(Restrictions.eq("issuedTo", app.getIssueTo()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
+			criteria.createAlias("parametricFeedback", "paramFb");
+			criteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 			if(criteria.uniqueResult() == null)
 			{
