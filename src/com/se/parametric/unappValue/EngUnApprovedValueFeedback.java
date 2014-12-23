@@ -476,7 +476,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 										oldValReq.setFbStatus(StatusName.accept);
 										oldValReq.setGruopSatus(StatusName.reject);
 										ApprovedDevUtil.replyApprovedValueFB(oldValReq);
-										// initiate new FB from QA to Eng
+										// initiate new FB from TL to Eng
 										oldValReq.setGruopSatus(StatusName.engFeedback);
 										oldValReq.setIssueType(StatusName.wrongValue);
 										oldValReq.setFbStatus(StatusName.reject);
@@ -502,6 +502,7 @@ public class EngUnApprovedValueFeedback extends JPanel implements ActionListener
 											// }
 											oldValReq.setComment(newValReq.get(25));
 											// oldValReq.setIssuedby(qaUserId);
+											oldValReq.setFbType(StatusName.internal);
 										}
 										// oldValReq.setFbType(oldValReq.getFbType());
 										ApprovedDevUtil.saveAppWrongValue(oldValReq);
