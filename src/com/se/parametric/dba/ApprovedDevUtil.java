@@ -986,20 +986,22 @@ public class ApprovedDevUtil
 					FBCyc.setFbItemValue(rd.getComponent().getPartNumber());
 					FBCyc.setFbComment(app.getComment());
 					FBCyc.setIssuedBy(app.getIssuedby());
-					if(app.getFbType().equals("Internal"))
-					{
-						FBCyc.setIssuedTo(app.getUserId());
-					}
-					else
-					{
-						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
-					}
+					// if(app.getFbType().equals("Internal"))
+					// {
+					FBCyc.setIssuedTo(app.getUserId());
+					// }
+					// else
+					// {
+					// FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
+					// }
 					FBCyc.setStoreDate(new Date());
 
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					if(app.getCAction() != null && app.getPAction() != null
-							&& app.getRootCause() != null && app.getActionDueDate() != null)
+							&& app.getRootCause() != null && app.getActionDueDate() != null
+							&& !app.getCAction().isEmpty() && !app.getPAction().isEmpty()
+							&& !app.getRootCause().isEmpty() && !app.getActionDueDate().isEmpty())
 					{
 						feedbackAction = getParaAction(app.getCAction(), app.getPAction(),
 								app.getRootCause(), app.getActionDueDate(), session);
@@ -1030,20 +1032,22 @@ public class ApprovedDevUtil
 					FBCyc.setFbItemValue(rd.getComponent().getPartNumber());
 					FBCyc.setFbComment(app.getComment());
 					FBCyc.setIssuedBy(app.getIssuedby());
-					if(app.getFbType().equals("Internal"))
-					{
-						FBCyc.setIssuedTo(app.getUserId());
-					}
-					else
-					{
-						FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
-					}
+					// if(app.getFbType().equals("Internal"))
+					// {
+					FBCyc.setIssuedTo(app.getUserId());
+					// }
+					// else
+					// {
+					// FBCyc.setIssuedTo(ParaQueryUtil.getTLByUserID(app.getUserId()));
+					// }
 					FBCyc.setStoreDate(new Date());
 
 					FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 					FBCyc.setFeedbackRecieved(0l);
 					if(app.getCAction() != null && app.getPAction() != null
-							&& app.getRootCause() != null && app.getActionDueDate() != null)
+							&& app.getRootCause() != null && app.getActionDueDate() != null
+							&& !app.getCAction().isEmpty() && !app.getPAction().isEmpty()
+							&& !app.getRootCause().isEmpty() && !app.getActionDueDate().isEmpty())
 					{
 						feedbackAction = getParaAction(app.getCAction(), app.getPAction(),
 								app.getRootCause(), app.getActionDueDate(), session);
@@ -1422,12 +1426,6 @@ public class ApprovedDevUtil
 			ParametricFeedbackCycle FBCyc = new ParametricFeedbackCycle();
 			Document document = null;
 			ParaIssueType paraIssueType = null;
-			ParaIssueType excIssueType = null;
-
-			criteria = session.createCriteria(ParaIssueType.class);
-			System.out.println(app.getIssueType());
-			criteria.add(Restrictions.eq("issueType", StatusName.QAException));
-			excIssueType = (ParaIssueType) criteria.uniqueResult();
 
 			document = ParaQueryUtil.getDocumnetByPdfUrl(app.getPdfUrl());
 
@@ -1437,8 +1435,6 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("fbItemValue", groups.getGroupFullValue()));
 			criteria.add(Restrictions.eq("issuedTo", app.getIssuedby()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			criteria.createAlias("parametricFeedback", "paramFb");
-			criteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 			ParametricFeedbackCycle parametricFeedbackCycle = (ParametricFeedbackCycle) criteria
 					.uniqueResult();
@@ -1479,8 +1475,6 @@ public class ApprovedDevUtil
 			criteria.add(Restrictions.eq("issuedBy", app.getIssuedby()));
 			criteria.add(Restrictions.eq("issuedTo", app.getIssueTo()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
-			criteria.createAlias("parametricFeedback", "paramFb");
-			criteria.add(Restrictions.ne("paramFb.paraIssueType", excIssueType));
 
 			if(criteria.uniqueResult() == null)
 			{
@@ -1503,7 +1497,9 @@ public class ApprovedDevUtil
 				FBCyc.setParaFeedbackStatus(paraFeedbackAction);
 				FBCyc.setFeedbackRecieved(fbRecieved);
 				if(app.getCAction() != null && app.getPAction() != null
-						&& app.getRootCause() != null && app.getActionDueDate() != null)
+						&& app.getRootCause() != null && app.getActionDueDate() != null
+						&& !app.getCAction().isEmpty() && !app.getPAction().isEmpty()
+						&& !app.getRootCause().isEmpty() && !app.getActionDueDate().isEmpty())
 				{
 					feedbackAction = getParaAction(app.getCAction(), app.getPAction(),
 							app.getRootCause(), app.getActionDueDate(), session);
