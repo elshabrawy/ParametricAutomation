@@ -5572,10 +5572,22 @@ public class ParaQueryUtil
 			int npi = getNPIAssigned(userIds, colName, reviewStatusId, session);
 			int newcount = getNewAssigned(userIds, colName, reviewStatusId, session);
 			int bk = getBacklogAssigned(userIds, colName, reviewStatusId, session);
+			if(group != 23)
+			{
+				colName = "USER_ID";
+			}
+			else
+			{
+				colName = "QA_USER_ID";
+			}
 			int fb = getFeedBackCount(userIds, colName, fbStatusId, session);
 			if(group != 23)
 			{
-				colName = "paraUserId";
+				colName = "PARA_USER_ID";
+			}
+			else
+			{
+				colName = "QA_USER_ID";
 			}
 			int appnew = getAppValueCount(userIds, colName, reviewStatusId, "New", session);
 			int appnpi = getAppValueCount(userIds, colName, reviewStatusId, "NPI", session);
@@ -5605,9 +5617,11 @@ public class ParaQueryUtil
 		crit.createCriteria("trackingTaskType").add(
 				Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
 		crit.add(Restrictions.in(colName, userIds));
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
 
-		if(crit.list() != null)
-			return crit.list().size();
+		if(count != null)
+			return count.intValue();
 		return 0;
 	}
 
@@ -5647,167 +5661,276 @@ public class ParaQueryUtil
 	public static int getFeedBackCount(Long[] userIds, String colName, long statusId,
 			final Session session)
 	{
-		List<Document> docs = new ArrayList<>();
-		List<TrackingParametric> tracks = null;
-		final Criteria crit = session.createCriteria(TrackingParametric.class);
-		crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("id", statusId));
-		// crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
-		crit.add(Restrictions.in(colName, userIds));
-
-		tracks = crit.list();
-
-		if(tracks != null)
+		String users = "";
+		long tluser = userIds[0];
+		if(userIds.length > 1)
 		{
-			for(int i = 0; i < tracks.size(); i++)
+			for(long user : userIds)
 			{
-				if(tracks.get(i).getDocument() != null)
-					docs.add(tracks.get(i).getDocument());
+				users += user + ",";
 			}
-			if(!docs.isEmpty())
-			{
-				Criteria cri = session.createCriteria(ParametricApprovedGroup.class);
-				cri.add(Restrictions.in("document", docs));
-				List<ParametricApprovedGroup> groups = null;
-				groups = cri.list();
-				if(groups != null && !groups.isEmpty())
-				{
-					List<String> groupsvalue = new ArrayList<>();
-					for(int i = 0; i < groups.size(); i++)
-					{
-						if(groups.get(i).getGroupFullValue() != null)
-							groupsvalue.add(groups.get(i).getGroupFullValue());
-					}
-					Criteria feedbackcri = session.createCriteria(ParametricFeedbackCycle.class);
-					feedbackcri.add(Restrictions.in("fbItemValue", groupsvalue));
-					feedbackcri.add(Restrictions.eq("feedbackRecieved", 0l));
-					long tluser = userIds[0];
-					if(userIds.length > 1)
-						tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
-
-					feedbackcri.add(Restrictions.eq("issuedTo", tluser));
-					if(!feedbackcri.list().isEmpty())
-					{
-						return feedbackcri.list().size();
-					}
-					else
-						return 0;
-				}
-				else
-					return 0;
-			}
-			else
-				return 0;
+			users = users.substring(0, users.length() - 1);
+			tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
 		}
 		else
-			return 0;
+		{
+			users = userIds[0].toString();
+		}
+		String sql = "";
+		sql = " SELECT COUNT(distinct DOCUMENT_ID) FROM PART_COMPONENT x WHERE DOCUMENT_ID IN";
+		sql = sql
+				+ " (SELECT DOCUMENT_ID FROM TRACKING_PARAMETRIC WHERE TRACKING_TASK_STATUS_ID = "
+				+ statusId + "";
+		sql = sql + " AND " + colName + " in (" + users
+				+ ") ) AND x.PART_NUMBER IN (SELECT y.FB_ITEM_VALUE";
+		sql = sql + " FROM PARAMETRIC_FEEDBACK_CYCLE y WHERE y.ISSUED_TO = " + tluser
+				+ " and y.FEEDBACK_RECIEVED = 0 )";
+
+		Query query = session.createSQLQuery(sql);
+		Object result = query.uniqueResult();
+		return Integer.parseInt(result.toString());
+
+		// List<Document> docs = new ArrayList<>();
+		// List<TrackingParametric> tracks = null;
+		// final Criteria crit = session.createCriteria(TrackingParametric.class);
+		// crit.createCriteria("trackingTaskStatus").add(Restrictions.eq("id", statusId));
+		// // crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		// crit.add(Restrictions.in(colName, userIds));
+		//
+		// tracks = crit.list();
+		//
+		// if(tracks != null)
+		// {
+		// for(int i = 0; i < tracks.size(); i++)
+		// {
+		// if(tracks.get(i).getDocument() != null)
+		// docs.add(tracks.get(i).getDocument());
+		// }
+		// if(!docs.isEmpty())
+		// {
+		// Criteria cri = session.createCriteria(ParametricApprovedGroup.class);
+		// cri.add(Restrictions.in("document", docs));
+		// List<ParametricApprovedGroup> groups = null;
+		// groups = cri.list();
+		// if(groups != null && !groups.isEmpty())
+		// {
+		// List<String> groupsvalue = new ArrayList<>();
+		// for(int i = 0; i < groups.size(); i++)
+		// {
+		// if(groups.get(i).getGroupFullValue() != null)
+		// groupsvalue.add(groups.get(i).getGroupFullValue());
+		// }
+		// Criteria feedbackcri = session.createCriteria(ParametricFeedbackCycle.class);
+		// feedbackcri.add(Restrictions.in("fbItemValue", groupsvalue));
+		// feedbackcri.add(Restrictions.eq("feedbackRecieved", 0l));
+		// long tluser = userIds[0];
+		// if(userIds.length > 1)
+		// tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
+		//
+		// feedbackcri.add(Restrictions.eq("issuedTo", tluser));
+		// if(!feedbackcri.list().isEmpty())
+		// {
+		// return feedbackcri.list().size();
+		// }
+		// else
+		// return 0;
+		// }
+		// else
+		// return 0;
+		// }
+		// else
+		// return 0;
+		// }
+		// else
+		// return 0;
 	}
 
 	public static int getAppValueCount(Long[] userIds, String colName, long statusId, String type,
 			final Session session)
 	{
 
-		List<ParametricApprovedGroup> groups = null;
-		List<Document> docs = new ArrayList<>();
-		int count = 0;
-		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
-		crit.createCriteria("status").add(Restrictions.eq("id", statusId));
-		// crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
-		crit.add(Restrictions.in(colName, userIds));
-		groups = crit.list();
-		if(groups == null)
-			return 0;
+		String users = "";
+		long tluser = userIds[0];
+		String typestring = "";
+		if(userIds.length > 1)
+		{
+			for(long user : userIds)
+			{
+				users += user + ",";
+			}
+			users = users.substring(0, users.length() - 1);
+			tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
+		}
 		else
 		{
-			for(int i = 0; i < groups.size(); i++)
-			{
-				if(groups.get(i).getDocument() != null)
-					docs.add(groups.get(i).getDocument());
-			}
-			if(!docs.isEmpty())
-			{
-				for(int d = 0; d < docs.size(); d++)
-				{
-					Criteria cri = session.createCriteria(TrackingParametric.class);
-					cri.add(Restrictions.eq("document", docs.get(d)));
-					if(type.equals("NPI"))
-					{
-						cri.createCriteria("trackingTaskType").add(
-								Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
-					}
-					else
-					{
-						cri.createCriteria("trackingTaskType")
-								.add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
-										15l })));
-					}
-					if(!cri.list().isEmpty())
-						count++;
-				}
-			}
-			else
-				return 0;
+			users = userIds[0].toString();
 		}
-		return count;
+		if(type.equals("NPI"))
+		{
+			typestring = "in (4,12,15)";
+		}
+		else
+		{
+			typestring = "not in (4,12,15)";
+		}
+		String sql = "";
+		sql = " SELECT COUNT(*) FROM PARAMETRIC_APPROVED_GROUP WHERE STATUS = " + statusId
+				+ " AND DOCUMENT_ID";
+		sql = sql
+				+ " IN (SELECT DOCUMENT_ID FROM TRACKING_PARAMETRIC WHERE TRACKING_TASK_STATUS_ID in ("
+				+ StatusName.inprogressId + "," + StatusName.doneFLagEngineId
+				+ ") and TRACKING_TASK_TYPE_ID " + typestring + " ";
+		sql = sql + ") and " + colName + " in (" + users + ")";
+
+		Query query = session.createSQLQuery(sql);
+		Object result = query.uniqueResult();
+		return Integer.parseInt(result.toString());
+		// List<ParametricApprovedGroup> groups = null;
+		// List<Document> docs = new ArrayList<>();
+		// int count = 0;
+		// final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		// crit.createCriteria("status").add(Restrictions.eq("id", statusId));
+		// // crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		// crit.add(Restrictions.in(colName, userIds));
+		// groups = crit.list();
+		// if(groups == null)
+		// return 0;
+		// else
+		// {
+		// for(int i = 0; i < groups.size(); i++)
+		// {
+		// if(groups.get(i).getDocument() != null)
+		// docs.add(groups.get(i).getDocument());
+		// }
+		// if(!docs.isEmpty())
+		// {
+		// for(int d = 0; d < docs.size(); d++)
+		// {
+		// Criteria cri = session.createCriteria(TrackingParametric.class);
+		// cri.createAlias("trackingTaskStatus", "status");
+		// cri.add(Restrictions.or(Restrictions.eq("status.id", StatusName.inprogressId),
+		// Restrictions.eq("status.id", StatusName.doneFLagEngineId)));
+		// cri.add(Restrictions.eq("document", docs.get(d)));
+		// if(type.equals("NPI"))
+		// {
+		// cri.createCriteria("trackingTaskType").add(
+		// Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		// }
+		// else
+		// {
+		// cri.createCriteria("trackingTaskType")
+		// .add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
+		// 15l })));
+		// }
+		// if(!cri.list().isEmpty())
+		// count++;
+		// }
+		// }
+		// else
+		// return 0;
+		// }
+		// return count;
 	}
 
 	public static int getAppFeedBackCount(Long[] userIds, String colName, long statusId,
 			String type, final Session session)
 	{
 
-		List<ParametricApprovedGroup> groups = null;
-		List<Document> docs = new ArrayList<>();
-		int count = 0;
-		final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
-		crit.createCriteria("status").add(Restrictions.eq("id", statusId));
-		// crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
-		crit.add(Restrictions.in(colName, userIds));
-		groups = crit.list();
-		if(groups == null)
-			return 0;
+		String users = "";
+		long tluser = userIds[0];
+		String typestring = "";
+		if(userIds.length > 1)
+		{
+			for(long user : userIds)
+			{
+				users += user + ",";
+			}
+			users = users.substring(0, users.length() - 1);
+			tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
+		}
 		else
 		{
-			for(int i = 0; i < groups.size(); i++)
-			{
-				Criteria feedbackcri = session.createCriteria(ParametricFeedbackCycle.class);
-				feedbackcri.add(Restrictions.eq("fbItemValue", groups.get(i).getGroupFullValue()));
-				feedbackcri.add(Restrictions.eq("feedbackRecieved", 0l));
-				long tluser = userIds[0];
-				if(userIds.length > 1)
-				{
-					tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
-				}
-				feedbackcri.add(Restrictions.eq("issuedTo", tluser));
-				if(!feedbackcri.list().isEmpty())
-				{
-					if(groups.get(i).getDocument() != null)
-						docs.add(groups.get(i).getDocument());
-				}
-			}
-			if(!docs.isEmpty())
-			{
-				for(int d = 0; d < docs.size(); d++)
-				{
-					Criteria cri = session.createCriteria(TrackingParametric.class);
-					cri.add(Restrictions.eq("document", docs.get(d)));
-					if(type.equals("NPI"))
-					{
-						cri.createCriteria("trackingTaskType").add(
-								Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
-					}
-					else
-					{
-						cri.createCriteria("trackingTaskType")
-								.add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
-										15l })));
-					}
-					if(!cri.list().isEmpty())
-						count++;
-				}
-			}
-			else
-				return 0;
+			users = userIds[0].toString();
 		}
-		return count;
+		if(type.equals("NPI"))
+		{
+			typestring = "in (4,12,15)";
+		}
+		else
+		{
+			typestring = "not in (4,12,15)";
+		}
+		String sql = "";
+		sql = " SELECT COUNT(*) FROM PARAMETRIC_APPROVED_GROUP WHERE STATUS = " + statusId
+				+ " AND DOCUMENT_ID";
+		sql = sql
+				+ " IN (SELECT DOCUMENT_ID FROM TRACKING_PARAMETRIC WHERE TRACKING_TASK_STATUS_ID in ("
+				+ StatusName.inprogressId + "," + StatusName.doneFLagEngineId
+				+ ") and TRACKING_TASK_TYPE_ID " + typestring + " ";
+		sql = sql + ") and " + colName + " in (" + users
+				+ ") and GROUP_FULL_VALUE in (select FB_ITEM_VALUE from ";
+		sql = sql + "PARAMETRIC_FEEDBACK_CYCLE where FEEDBACK_RECIEVED=0 and ISSUED_TO in ("
+				+ tluser + "))";
+
+		Query query = session.createSQLQuery(sql);
+		Object result = query.uniqueResult();
+		return Integer.parseInt(result.toString());
+		// List<ParametricApprovedGroup> groups = null;
+		// List<Document> docs = new ArrayList<>();
+		// int count = 0;
+		// final Criteria crit = session.createCriteria(ParametricApprovedGroup.class);
+		// crit.createCriteria("status").add(Restrictions.eq("id", statusId));
+		// // crit.createCriteria("trackingTaskType").add(Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		// crit.add(Restrictions.in(colName, userIds));
+		// groups = crit.list();
+		// if(groups == null)
+		// return 0;
+		// else
+		// {
+		// for(int i = 0; i < groups.size(); i++)
+		// {
+		// Criteria feedbackcri = session.createCriteria(ParametricFeedbackCycle.class);
+		// feedbackcri.add(Restrictions.eq("fbItemValue", groups.get(i).getGroupFullValue()));
+		// feedbackcri.add(Restrictions.eq("feedbackRecieved", 0l));
+		// long tluser = userIds[0];
+		// if(userIds.length > 1)
+		// {
+		// tluser = ParaQueryUtil.getTLByUserID(userIds[0]);
+		// }
+		// feedbackcri.add(Restrictions.eq("issuedTo", tluser));
+		// if(!feedbackcri.list().isEmpty())
+		// {
+		// if(groups.get(i).getDocument() != null)
+		// docs.add(groups.get(i).getDocument());
+		// }
+		// }
+		// if(!docs.isEmpty())
+		// {
+		// for(int d = 0; d < docs.size(); d++)
+		// {
+		// Criteria cri = session.createCriteria(TrackingParametric.class);
+		// cri.createAlias("trackingTaskQaStatus", "status");
+		// cri.add(Restrictions.or(Restrictions.eq("status.id", StatusName.inprogressId),
+		// Restrictions.eq("status.id", StatusName.doneFLagEngineId)));
+		// if(type.equals("NPI"))
+		// {
+		// cri.createCriteria("trackingTaskType").add(
+		// Restrictions.in("id", new Long[] { 4l, 12l, 15l }));
+		// }
+		// else
+		// {
+		// cri.createCriteria("trackingTaskType")
+		// .add(Restrictions.not(Restrictions.in("id", new Long[] { 4l, 12l,
+		// 15l })));
+		// }
+		// if(!cri.list().isEmpty())
+		// count++;
+		// }
+		// }
+		// else
+		// return 0;
+		// }
+		// return count;
 	}
 
 	public static Long getTeamLeaderIDByMember(long userId)
