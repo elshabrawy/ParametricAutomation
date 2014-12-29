@@ -2810,6 +2810,7 @@ public class DataDevQueryUtil
 			com.setUpdateDate(new Date());
 			com.setAutoFlag(1L);
 			session.saveOrUpdate(com);
+			partInfo.setComponent(com);
 			// session.beginTransaction().commit();
 
 			// NPI Flag part
@@ -3057,7 +3058,7 @@ public class DataDevQueryUtil
 				trackingFeedbackType = (TrackingFeedbackType) criteria.uniqueResult();
 
 				Criteria fbcriteria = session.createCriteria(ParametricFeedbackCycle.class);
-				fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
+				fbcriteria.add(Restrictions.eq("fbItemValue", partNum));
 				fbcriteria.add(Restrictions.eq("issuedTo", issuedByUser.getId()));
 				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
@@ -3084,7 +3085,7 @@ public class DataDevQueryUtil
 					FBObj.setDocument(document);
 				}
 				fbcriteria = session.createCriteria(ParametricFeedbackCycle.class);
-				fbcriteria.add(Restrictions.eq("fbItemValue", component.getPartNumber()));
+				fbcriteria.add(Restrictions.eq("fbItemValue", partNum));
 				fbcriteria.add(Restrictions.eq("issuedTo", issuedToUser.getId()));
 				fbcriteria.add(Restrictions.eq("feedbackRecieved", 0l));
 
@@ -3094,7 +3095,7 @@ public class DataDevQueryUtil
 				{
 					FBCyc.setId(System.nanoTime());
 					FBCyc.setParametricFeedback(FBObj);
-					FBCyc.setFbItemValue(component.getPartNumber());
+					FBCyc.setFbItemValue(partNum);
 					FBCyc.setFbComment(comment);
 					FBCyc.setIssuedBy(issuedByUser.getId());
 					FBCyc.setIssuedTo(issedto);
