@@ -24,6 +24,7 @@ import com.se.automation.db.client.mapping.Pl;
 import com.se.automation.db.client.mapping.Supplier;
 import com.se.automation.db.client.mapping.SupplierPl;
 import com.se.automation.db.client.mapping.TrackingParametric;
+import com.se.automation.db.parametric.ParametricQueryUtil;
 import com.se.automation.db.parametric.RelatedFeature;
 import com.se.automation.db.parametric.StatusName;
 import com.se.parametric.AppContext;
@@ -3223,7 +3224,8 @@ public class WorkingSheet
 				partInfo.setRootCause(RootCause);
 				partInfo.setActinDueDate(ActinDueDate);
 				partInfo.setWrongFeatures(wrongfets);
-				PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
+				PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid
+						.isEmpty() ? "0" : comid));
 				partInfo.setComponent(component);
 				if(ActinDueDate != null && !ActinDueDate.isEmpty())
 				{
