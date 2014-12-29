@@ -6049,4 +6049,17 @@ public class ParaQueryUtil
 		return qacheckParts;
 	}
 
+	public static long getQAUserIdbydoc(Document document, Pl pl)
+	{
+		Session session = SessionUtil.getSession();
+		long qauser = 0L;
+		Criteria cri = session.createCriteria(TrackingParametric.class);
+		cri.add(Restrictions.eq("pl", pl));
+		cri.add(Restrictions.eq("document", document));
+		TrackingParametric track = (TrackingParametric) cri.uniqueResult();
+		qauser = track.getQaUserId();
+		session.close();
+		return qauser;
+
+	}
 }
