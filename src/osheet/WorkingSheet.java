@@ -67,7 +67,7 @@ public class WorkingSheet
 	private int sheetindex;
 	private String sheetname;
 	private boolean sheetvisiblity;
-	protected Pl sheetpl;
+	public Pl sheetpl;
 	protected Supplier supplier;
 	private SupplierPl supplierPl;
 	private String selectedPL;

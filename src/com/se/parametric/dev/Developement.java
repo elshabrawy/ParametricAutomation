@@ -674,7 +674,7 @@ public class Developement extends JPanel implements ActionListener
 				else
 				{
 					JFrame srcFeedbackFrame = new JFrame("Sourcing Feedback");
-					String plName = sheetpanel.getActiveSheetName();
+					String plName = ws.sheetpl.getName();
 					String url = sheetpanel.getCellText(sheetpanel.getSelectedXCell()).getString();
 					System.out.println(url);
 					SourcingFeedbackPanel panel = new SourcingFeedbackPanel(userName, url, plName,
