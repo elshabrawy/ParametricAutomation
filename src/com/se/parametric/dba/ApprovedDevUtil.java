@@ -1286,6 +1286,8 @@ public class ApprovedDevUtil
 			criteria = session.createCriteria(ParametricFeedbackCycle.class);
 			criteria.add(Restrictions.eq("issuedTo", userDto.getId()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
+			criteria.createAlias("parametricFeedback", "parametricFeedback");
+			criteria.add(Restrictions.eq("parametricFeedback.type", "V"));
 			List list = criteria.list();
 			GrmUser eng = null;
 			Object[] row = null;
@@ -1293,6 +1295,33 @@ public class ApprovedDevUtil
 			Long[] teamMembers = null;
 			ParametricFeedbackCycle parametricFeedbackCycle = null;
 			ParametricApprovedGroup parametricApprovedGroup = null;
+			String colname = "";
+			String statusname = "";
+			if(type.equals("Eng"))
+			{
+				colname = "paraUserId";
+				statusname = StatusName.engFeedback;
+				teamMembers = new Long[] { userDto.getId() };
+				// criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
+				// criteria.add(Restrictions.eq("status.name", StatusName.engFeedback));
+			}
+
+			if(type.equals("QA"))
+			{
+				colname = "qaUserId";
+				statusname = StatusName.qaFeedback;
+				teamMembers = new Long[] { userDto.getId() };
+				// criteria.add(Restrictions.eq("qaUserId", userDto.getId()));
+				// criteria.add(Restrictions.eq("status.name", StatusName.qaFeedback));
+			}
+			if(type.equals("TL"))
+			{
+				colname = "paraUserId";
+				statusname = StatusName.tlFeedback;
+				teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDto.getId());
+				// criteria.add(Restrictions.in("paraUserId", teamMembers));
+				// criteria.add(Restrictions.eq("status.name", StatusName.tlFeedback));
+			}
 			for(int i = 0; i < list.size(); i++)
 			{
 
@@ -1301,23 +1330,8 @@ public class ApprovedDevUtil
 				criteria.add(Restrictions.eq("groupFullValue",
 						parametricFeedbackCycle.getFbItemValue()));
 				criteria.createAlias("status", "status");
-				if(type.equals("Eng"))
-				{
-					criteria.add(Restrictions.eq("paraUserId", userDto.getId()));
-					criteria.add(Restrictions.eq("status.name", StatusName.engFeedback));
-				}
-
-				if(type.equals("QA"))
-				{
-					criteria.add(Restrictions.eq("qaUserId", userDto.getId()));
-					criteria.add(Restrictions.eq("status.name", StatusName.qaFeedback));
-				}
-				if(type.equals("TL"))
-				{
-					teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDto.getId());
-					criteria.add(Restrictions.in("paraUserId", teamMembers));
-					criteria.add(Restrictions.eq("status.name", StatusName.tlFeedback));
-				}
+				criteria.add(Restrictions.in(colname, teamMembers));
+				criteria.add(Restrictions.eq("status.name", statusname));
 				if(startDate != null && endDate != null)
 				{
 					criteria.add(Expression.between("storeDate", startDate, endDate));
