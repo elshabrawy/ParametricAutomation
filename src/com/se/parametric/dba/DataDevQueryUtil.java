@@ -3,6 +3,7 @@ package com.se.parametric.dba;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -655,7 +656,7 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.eq("supplier", supplier));
 			}
 			// System.out.println(criteria.list().size());
-
+			int[] taskTypeint = null;
 			if(type != null && !type.equals("All"))
 			{
 				Criteria typeCriteria = session.createCriteria(TrackingTaskType.class);
@@ -674,7 +675,7 @@ public class DataDevQueryUtil
 								Restrictions.eq("name", "NPI Update")));
 
 					}
-
+					taskTypeint = new int[] { StatusName.npiId, StatusName.npiupdateId };
 				}
 				else
 				{
@@ -698,26 +699,30 @@ public class DataDevQueryUtil
 				criteria.add(Restrictions.sqlRestriction(sql));
 			}
 			List list = criteria.list();
+			Map<String, String> plPartsMap = null, docPartsMap = null, npiPartsMap = null;
+			if(inputType.equals("QAReview"))
+			{
+				int statusId = StatusName.qaReviewId;
+				if(status == StatusName.qaFeedback)
+					statusId = StatusName.qaFeedbackId;
+				System.out.println("plparts:" + new Date());
+				plPartsMap = getPlPartsCount(statusId, taskTypeint, session);
+				System.out.println("docparts:" + new Date());
+				docPartsMap = getDocPartsCount(statusId, taskTypeint, session);
+				System.out.println("NPIpats:" + new Date());
+				npiPartsMap = getDocNPIPartsCount(statusId, session);
+			}
 			for(int i = 0; i < list.size(); i++)
 			{
 				TrackingParametric obj = (TrackingParametric) list.get(i);
 				TableInfoDTO docInfo = new TableInfoDTO();
-				System.out.println("no:" + i);
-				System.out.println("track : " + obj.getId());
-				if(inputType.equals("QAReview"))
-				{
-					int infectedParts = getInfectedPartsByDoc(obj.getDocument().getId());
-					int infectedTaxonomies = getInfectedTaxonomiesByDoc(obj.getDocument().getId());
-					docInfo.setInfectedParts(infectedParts);
-					docInfo.setInfectedTaxonomies(infectedTaxonomies);
-				}
-				System.out.println(obj.getDocument().getPdf());
+				System.out.println("track NO : " + i + " ID:" + obj.getId() + " pdf:"
+						+ obj.getDocument().getId());
 				docInfo.setPdfUrl(obj.getDocument().getPdf().getSeUrl());
 				docInfo.setPlName(obj.getPl().getName());
 				docInfo.setSupplierName(obj.getSupplier().getName());
 				docInfo.setStatus(obj.getTrackingTaskStatus().getName());
 				docInfo.setTaskType(obj.getTrackingTaskType().getName());
-
 				docInfo.setDevUserName(ParaQueryUtil.getGRMUser(obj.getParametricUserId())
 						.getFullName());
 				docInfo.setExtracted(obj.getExtractionStatus() == null ? "No" : "Yes");
@@ -725,20 +730,39 @@ public class DataDevQueryUtil
 
 				if(inputType.equals("QAReview"))
 				{
-					if(status.equals("All"))
-					{
-						status = StatusName.qaReview;
-					}
-					List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj
-							.getPl().getId(), usersId, status);
-					docInfo.setPDFParts(noparts.get(0));
-					docInfo.setPLParts(noparts.get(1));
-					docInfo.setPDFDoneParts(noparts.get(2));
-					docInfo.setPLDoneParts(noparts.get(3));
+					/**
+					 * Ignored By Ahmad Makram to enhance performance if(status.equals("All")) { status = StatusName.qaReview; }
+					 * 
+					 * List<Integer> noparts = getnoPartsPerPDFandPL(obj.getDocument().getId(), obj .getPl().getId(), usersId, status);
+					 * docInfo.setPDFParts(noparts.get(0)); docInfo.setPLParts(noparts.get(1)); docInfo.setPDFDoneParts(noparts.get(2));
+					 * docInfo.setPLDoneParts(noparts.get(3));
+					 */
+
+					int infectedParts = getInfectedPartsByDoc(obj.getDocument().getId());
+					int infectedTaxonomies = getInfectedTaxonomiesByDoc(obj.getDocument().getId());
+					docInfo.setInfectedParts(infectedParts);
+					docInfo.setInfectedTaxonomies(infectedTaxonomies);
+
+					String pdfParts = docPartsMap.get(obj.getDocument().getId() + "_allDoc") == null ? "0"
+							: docPartsMap.get(obj.getDocument().getId() + "_allDoc");
+					String pdfDoneParts = docPartsMap.get(obj.getDocument().getId() + "_doneDoc") == null ? "0"
+							: docPartsMap.get(obj.getDocument().getId() + "_doneDoc");
+					String plPartC = plPartsMap.get(obj.getPl().getId() + "_allPl") == null ? "0"
+							: plPartsMap.get(obj.getPl().getId() + "_allPl");
+					String plDoneParts = plPartsMap.get(obj.getPl().getId() + "_donePl") == null ? "0"
+							: plPartsMap.get(obj.getPl().getId() + "_donePl");
+					String npiDocparts = npiPartsMap.get(obj.getDocument().getId() + "_npiDocPart") == null ? "0"
+							: npiPartsMap.get(obj.getDocument().getId() + "_npiDocPart");
+					docInfo.setPDFParts(Integer.parseInt(pdfParts));
+					docInfo.setPDFDoneParts(Integer.parseInt(pdfDoneParts));
+					docInfo.setPLParts(Integer.parseInt(plPartC));
+					docInfo.setPLDoneParts(Integer.parseInt(plDoneParts));
+
 					if(obj.getTrackingTaskType().getName().contains("NPI"))
-						docInfo.setTaskparts(noparts.get(4));
+						docInfo.setTaskparts(Integer.parseInt(npiDocparts));
 					else
-						docInfo.setTaskparts(noparts.get(0) - noparts.get(4));
+						docInfo.setTaskparts(Integer.parseInt(pdfParts)
+								- Integer.parseInt(npiDocparts));
 
 					int fets = 0;
 					try
@@ -4421,7 +4445,6 @@ public class DataDevQueryUtil
 			}
 		}catch(Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return (TrackingParametric) criteria.uniqueResult();
@@ -5048,6 +5071,13 @@ public class DataDevQueryUtil
 					qury.toString()).list();
 			List<Integer> noparts = new ArrayList<>();
 			// String keyword = "";
+			System.out.println("plparts:" + new Date());
+			Map<String, String> plParts = getPlPartsCount(StatusName.waitingsummaryId, null,
+					session);
+			System.out.println("docparts:" + new Date());
+			Map<String, String> docParts = getDocPartsCount(StatusName.waitingsummaryId, null,
+					session);
+			System.out.println("add to summry:" + new Date());
 			for(int i = 0; i < result.size(); i++)
 			{
 				Object[] data = result.get(i);
@@ -5059,40 +5089,37 @@ public class DataDevQueryUtil
 				summary.add(data[2] == null ? "" : data[2].toString());// pltype_2
 				summary.add(data[3] == null ? "" : data[3].toString());// plName_3
 
-				if(i == 0)
-				{
-					noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
-							Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
-					// keyword = getConfidentialStatus(Long.valueOf(data[13].toString()),
-					// Long.valueOf(data[14].toString()));
-					pdf = data[0] == null ? "" : data[0].toString();
-				}
-				else
-				{
-					if(!pdf.equals(data[0] == null ? "" : data[0].toString()))
-					{
-						noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
-								Long.valueOf(data[14].toString()), users, StatusName.waitingsummary);
-						// keyword = getConfidentialStatus(Long.valueOf(data[13].toString()),
-						// Long.valueOf(data[14].toString()));
-						pdf = data[0] == null ? "" : data[0].toString();
-					}
-				}
-				summary.add(noparts.get(0).toString());// PDFParts_4
-				summary.add(noparts.get(2).toString());// PDFDoneParts_5
-				summary.add(noparts.get(1).toString());// PLparts_6
-				summary.add(noparts.get(3).toString());// PLDoneParts_7
-
+				/**
+				 * Ignored By Ahmad Makram to enhance performance if(i == 0) { noparts = getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()),
+				 * Long.valueOf(data[14].toString()), users, StatusName.waitingsummary); // keyword =
+				 * getConfidentialStatus(Long.valueOf(data[13].toString()), // Long.valueOf(data[14].toString())); pdf = data[0] == null ? "" :
+				 * data[0].toString(); } else { if(!pdf.equals(data[0] == null ? "" : data[0].toString())) { noparts =
+				 * getnoPartsPerPDFandPL(Long.valueOf(data[13].toString()), Long.valueOf(data[14].toString()), users, StatusName.waitingsummary); //
+				 * keyword = getConfidentialStatus(Long.valueOf(data[13].toString()), // Long.valueOf(data[14].toString())); pdf = data[0] == null ?
+				 * "" : data[0].toString(); } } summary.add(noparts.get(0).toString());// PDFParts_4 summary.add(noparts.get(2).toString());//
+				 * PDFDoneParts_5 summary.add(noparts.get(1).toString());// PLparts_6 summary.add(noparts.get(3).toString());// PLDoneParts_7
+				 */
+				summary.add(docParts.get(data[13].toString() + "_allDoc") == null ? "" : docParts
+						.get(data[13].toString() + "_allDoc"));
+				summary.add(docParts.get(data[13].toString() + "_doneDoc") == null ? "" : docParts
+						.get(data[13].toString() + "_doneDoc"));
+				summary.add(plParts.get(data[14].toString() + "_allPl") == null ? "" : plParts
+						.get(data[14].toString() + "_allPl"));
+				summary.add(plParts.get(data[14].toString() + "_donePl") == null ? "" : plParts
+						.get(data[14].toString() + "_donePl"));
 				summary.add(data[4].toString());// COM_ID_8
 				summary.add(data[5] == null ? "" : data[5].toString());// PART_NUMBER_9
 				summary.add(data[6] == null ? "" : data[6].toString());// supName_10
 				summary.add(data[7] == null ? "" : data[7].toString());// task_type_11
 				summary.add(data[8] == null ? "" : data[8].toString());// username_12
 				summary.add(data[9] == null ? "" : data[9].toString());// DATE_13
-				summary.add(data[10] == null ? "" : data[10].toString());// OLDQAFLAG_14
+				String oldQaFlag = data[10] == null ? "" : data[10].toString();
+				summary.add(oldQaFlag);// OLDQAFLAG_14
 				summary.add("");// NEWQAFLAG_15
-				String comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()),
-						userDTO.getId());
+				String comment = "";
+				if(oldQaFlag.equals("R"))
+					comment = getfbcommentbycomidanduser(Long.valueOf(data[4].toString()),
+							userDTO.getId(), session);
 				summary.add(comment);// QAcomment_16
 				summary.add(data[11] == null ? "" : data[11].toString());// DONEFLAG_17
 				summary.add(data[12] == null ? "" : data[12].toString());// EXTRACTIONFLAG_18
@@ -5106,6 +5133,9 @@ public class DataDevQueryUtil
 		}catch(Exception e)
 		{
 			e.printStackTrace();
+		}finally
+		{
+			session.close();
 		}
 		return allsummary;
 	}
@@ -5133,11 +5163,11 @@ public class DataDevQueryUtil
 
 	}
 
-	public static String getfbcommentbycomidanduser(Long itemid, long userid)
+	public static String getfbcommentbycomidanduser(Long itemid, long userid, Session session)
 	{
 		ParametricFeedbackCycle parametricfeedbackcycle = null;
-		Session session = null;
-		session = SessionUtil.getSession();
+		// Session session = null;
+		// session = SessionUtil.getSession();
 		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
 		cri.add(Restrictions.eq("issuedBy", userid));
 		cri.add(Restrictions.eq("feedbackRecieved", 0l));
@@ -5156,18 +5186,24 @@ public class DataDevQueryUtil
 	{
 		ParametricFeedbackCycle parametricfeedbackcycle = null;
 		Session session = null;
-		session = SessionUtil.getSession();
-		Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
-		cri.add(Restrictions.eq("issuedBy", userid));
-		cri.add(Restrictions.eq("feedbackRecieved", 0l));
-		cri.add(Restrictions.eq("fbItemValue", itemvalue));
-		parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
-		if(parametricfeedbackcycle != null)
+		try
 		{
-			return parametricfeedbackcycle.getFbComment();
+			session = SessionUtil.getSession();
+			Criteria cri = session.createCriteria(ParametricFeedbackCycle.class);
+			cri.add(Restrictions.eq("issuedBy", userid));
+			cri.add(Restrictions.eq("feedbackRecieved", 0l));
+			cri.add(Restrictions.eq("fbItemValue", itemvalue));
+			parametricfeedbackcycle = (ParametricFeedbackCycle) cri.uniqueResult();
+			if(parametricfeedbackcycle != null)
+			{
+				return parametricfeedbackcycle.getFbComment();
+			}
+			else
+				return "";
+		}finally
+		{
+			session.close();
 		}
-		else
-			return "";
 	}
 
 	public static String getqaflagbycomid(String comid)
@@ -6668,5 +6704,94 @@ public class DataDevQueryUtil
 		int x = session.createSQLQuery(sql).executeUpdate();
 		System.out.println("number of parts is " + x);
 
+	}
+
+	public static Map<String, String> getPlPartsCount(int statusId, int[] taskTypeint,
+			Session session)
+	{
+
+		Map<String, String> plParts = new HashMap<String, String>();
+		String trackCondtion = " AND t.TRACKING_TASK_STATUS_ID = " + statusId;
+		if(taskTypeint != null)
+		{
+			String taskType = "("
+					+ Arrays.toString(taskTypeint).substring(1, (3 * taskTypeint.length - 1))
+							.replaceAll(" ", "") + ")";
+			trackCondtion = trackCondtion + " and T.TRACKING_TASK_TYPE_ID in" + taskType;
+		}
+		String sql = "SELECT   t0.pl_id,t0.pl_parts,t1.pl_done_parts from"
+				+ "( SELECT PL_ID, COUNT (com_id) pl_parts FROM  (SELECT /*+ INDEX(x comp_doc_id_idx) */com_id,T.PL_ID,X.DONEFLAG"
+				+ " FROM PART_COMPONENT x,TRACKING_PARAMETRIC t WHERE x.DOCUMENT_ID=T.DOCUMENT_ID "
+				+ trackCondtion
+				+ ")GROUP BY   PL_ID) t0,"
+				+ " ( SELECT  PL_ID, COUNT (com_id) pl_done_parts FROM (SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */ com_id,T.PL_ID,X.DONEFLAG"
+				+ " FROM PART_COMPONENT x,TRACKING_PARAMETRIC t WHERE x.DOCUMENT_ID=T.DOCUMENT_ID "
+				+ trackCondtion + " and X.DONEFLAG=1)"
+				+ "  GROUP BY   PL_ID) t1 WHERE   t0.pl_id = t1.pl_id(+)";
+		ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+		for(int i = 0; i < result.size(); i++)
+		{
+			Object[] data = result.get(i);
+			String allparts = data[1] == null ? "0" : data[1].toString();
+			String doneparts = data[2] == null ? "0" : data[2].toString();
+			// System.out.println(data[0].toString()+"!"+ allparts + "_allPl");
+			plParts.put(data[0].toString() + "_allPl", allparts);
+			plParts.put(data[0].toString() + "_donePl", doneparts);
+
+		}
+		return plParts;
+	}
+
+	public static Map<String, String> getDocPartsCount(int statusId, int[] taskTypeint,
+			Session session)
+	{
+
+		Map<String, String> docParts = new HashMap<String, String>();
+		String trackCondtion = " AND t.TRACKING_TASK_STATUS_ID = " + statusId;
+		if(taskTypeint != null)
+		{
+			String taskType = "("
+					+ Arrays.toString(taskTypeint).substring(1, (3 * taskTypeint.length - 1))
+							.replaceAll(" ", "") + ")";
+			trackCondtion = trackCondtion + " and T.TRACKING_TASK_TYPE_ID in" + taskType;
+		}
+		String sql = "SELECT  t2.DOCUMENT_ID,t2.pdf_parts,t3.pdf_done_parts FROM (SELECT   DOCUMENT_ID, COUNT (com_id) pdf_parts"
+				+ " FROM (SELECT /*+ INDEX(x comp_doc_id_idx) */x.DOCUMENT_ID,com_id,X.DONEFLAG FROM PART_COMPONENT x,TRACKING_PARAMETRIC t"
+				+ " WHERE x.DOCUMENT_ID=T.DOCUMENT_ID "
+				+ trackCondtion
+				+ " ) GROUP BY DOCUMENT_ID) t2,"
+				+ " (SELECT   DOCUMENT_ID, COUNT (com_id) pdf_done_parts FROM   (SELECT /*+ INDEX(x COMP_DOC_DONE_IDX) */"
+				+ " x.DOCUMENT_ID,com_id,X.DONEFLAG FROM PART_COMPONENT x,TRACKING_PARAMETRIC t WHERE x.DOCUMENT_ID=T.DOCUMENT_ID "
+				+ trackCondtion
+				+ " and X.DONEFLAG=1) GROUP BY   DOCUMENT_ID) t3 WHERE t2.DOCUMENT_ID = t3.DOCUMENT_ID(+)";
+
+		ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+		for(int i = 0; i < result.size(); i++)
+		{
+			Object[] data = result.get(i);
+			String allparts = data[1] == null ? "0" : data[1].toString();
+			String doneparts = data[2] == null ? "0" : data[2].toString();
+			docParts.put(data[0].toString() + "_allDoc", allparts);
+			docParts.put(data[0].toString() + "_doneDoc", doneparts);
+
+		}
+		return docParts;
+	}
+
+	public static Map<String, String> getDocNPIPartsCount(int statusId, Session session)
+	{
+
+		Map<String, String> npiParts = new HashMap<String, String>();
+		String sql = " SELECT t.DOCUMENT_ID,COUNT(n.COM_ID) FROM TRACKING_PARAMETRIC t,TBL_NPI_PARTS n WHERE t.DOCUMENT_ID =N.OFFLINEDOCID(+)"
+				+ " AND t.TRACKING_TASK_STATUS_ID = " + statusId + " GROUP BY t.DOCUMENT_ID";
+		ArrayList<Object[]> result = (ArrayList<Object[]>) session.createSQLQuery(sql).list();
+		for(int i = 0; i < result.size(); i++)
+		{
+			Object[] data = result.get(i);
+			String npidocParts = data[1] == null ? "" : data[1].toString();
+			npiParts.put(data[0].toString() + "_npiDocPart", npidocParts);
+
+		}
+		return npiParts;
 	}
 }
