@@ -255,10 +255,10 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 				statusValues.add("Wrong Separation");
 				statusValues.add("Wrong Value");
 				ws.statusValues = statusValues;
-				ArrayList<String> commentValues = new ArrayList<String>();
-				commentValues.add(StatusName.approved);
-				commentValues.add(StatusName.reject);
-				ws.commentValues = commentValues;
+				// ArrayList<String> commentValues = new ArrayList<String>();
+				// commentValues.add(StatusName.approved);
+				// commentValues.add(StatusName.reject);
+				// ws.commentValues = commentValues;
 				ws.writeReviewData(list, 1, 15);
 				Robot bot = new Robot();
 				bot.mouseMove(1165, 345);
@@ -333,24 +333,23 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 						for(int i = 0; i < result.size(); i++)
 						{
 							ArrayList<String> newValReq = result.get(i);
-							if(newValReq.get(14).equals("Approved") && newValReq.get(15).isEmpty())
+							if(!newValReq.get(14).equals("Approved") && newValReq.get(15).isEmpty())
 							{
 								MainWindow.glass.setVisible(false);
-								JOptionPane.showMessageDialog(null, " Comment Must be in ("
-										+ StatusName.approved + " and " + StatusName.reject
-										+ " ) at Row :" + (i + 1));
+								JOptionPane.showMessageDialog(null, " Comment have value  at Row :"
+										+ (i + 1));
 								return null;
 							}
-							if(newValReq.get(14).equals("Approved")
-									&& (!newValReq.get(15).equals(StatusName.approved) && !newValReq
-											.get(15).equals(StatusName.reject)))
-							{
-								MainWindow.glass.setVisible(false);
-								JOptionPane.showMessageDialog(null, " Comment Must be in ("
-										+ StatusName.approved + " and " + StatusName.reject
-										+ " ) at Row :" + (i + 1));
-								return null;
-							}
+							// if(newValReq.get(14).equals("Approved")
+							// && (!newValReq.get(15).equals(StatusName.approved) && !newValReq
+							// .get(15).equals(StatusName.reject)))
+							// {
+							// MainWindow.glass.setVisible(false);
+							// JOptionPane.showMessageDialog(null, " Comment Must be in ("
+							// + StatusName.approved + " and " + StatusName.reject
+							// + " ) at Row :" + (i + 1));
+							// return null;
+							// }
 						}
 						/** Team Leader approved and send to QA */
 						for(int i = 0; i < result.size(); i++)
@@ -379,9 +378,9 @@ public class QAUnApprovedValueFeedback extends JPanel implements ActionListener
 								if(newValReq.get(14).equals("Approved"))
 								{
 									oldValReq.setFbStatus(StatusName.fbClosed);
-									oldValReq.setGruopSatus(oldValReq.getComment());
-									ApprovedDevUtil.setValueApproved(result.get(i),
-											StatusName.cmTransfere);
+									oldValReq.setGruopSatus(StatusName.cmTransfere);
+									// ApprovedDevUtil.setValueApproved(result.get(i),
+									// StatusName.cmTransfere);
 									ApprovedDevUtil.replyApprovedValueFB(oldValReq);
 								}
 

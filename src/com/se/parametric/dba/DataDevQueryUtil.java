@@ -2460,7 +2460,7 @@ public class DataDevQueryUtil
 		try
 		{
 			HashMap<Document, Date> docsmap = new HashMap<Document, Date>();
-			Set<Document> docsSet = new HashSet<Document>();
+			HashSet<Document> docsSet = new HashSet<Document>();
 			Criteria criteria = session.createCriteria(TrackingParametric.class);
 			criteria.add(Restrictions.eq("parametricUserId", userId));
 			if(startDate != null && endDate != null)
@@ -2515,11 +2515,38 @@ public class DataDevQueryUtil
 					ParametricFeedbackCycle parametricfeedbackCycle = parametricfeedbackCycles
 							.get(i);
 					Document doc = parametricfeedbackCycle.getParametricFeedback().getDocument();
-					docsSet.add(parametricfeedbackCycle.getParametricFeedback().getDocument());
+					System.out.println(parametricfeedbackCycle.getParametricFeedback()
+							.getDocument().getId());
+					docsSet.add(doc);
 					docsmap.put(doc, parametricfeedbackCycle.getStoreDate());
 				}
 			}
+			// int l = 1;
+			// boolean delete = false;
+			// HashSet<Document> tmpdocsSet = new HashSet<Document>();
+			// int h = 0;
+			// for(Iterator<Document> it = docsSet.iterator(); it.hasNext();)
+			// {
+			// if(h == 998 * l)
+			// {
+			// tmpdocsSet.add(it.next());
+			// delete = true;
+			// criteria.add(Restrictions.in("document", tmpdocsSet));
+			// l++;
+			// }
+			// if(delete == false)
+			// {
+			// tmpdocsSet.add(it.next());
+			// }
+			// else
+			// {
+			// tmpdocsSet.clear();
+			// delete = false;
+			// }
+			// h++;
+			// }
 
+			// criteria.add(Restrictions.in("document", tmpdocsSet));
 			if(docsSet.size() > 0)
 			{
 				criteria.add(Restrictions.in("document", docsSet));

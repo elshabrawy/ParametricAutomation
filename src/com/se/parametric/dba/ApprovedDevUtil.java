@@ -1446,7 +1446,8 @@ public class ApprovedDevUtil
 			ParametricApprovedGroup groups = ParaQueryUtil.getParametricApprovedGroup(
 					app.getFeatureValue(), app.getPlName(), app.getFeatureName(), session);
 			criteria = session.createCriteria(ParametricFeedbackCycle.class);
-			criteria.add(Restrictions.eq("fbItemValue", groups.getGroupFullValue()));
+			criteria.createAlias("parametricFeedback", "parametricFeed");
+			criteria.add(Restrictions.eq("parametricFeed.itemId", groups.getId()));
 			criteria.add(Restrictions.eq("issuedTo", app.getIssuedby()));
 			criteria.add(Restrictions.eq("feedbackRecieved", 0l));
 

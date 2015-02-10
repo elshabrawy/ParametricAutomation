@@ -3008,7 +3008,6 @@ public class WorkingSheet
 			int engindex = sheetHeader.indexOf("Eng Name");
 			int pdfindex = sheetHeader.indexOf("PDF URL");
 			int ComidIndex = sheetHeader.indexOf("Comid");
-			int NewsLinkIndex = sheetHeader.indexOf("News Link");
 			// List<String> fetNames = sheetHeader.subList(startParametricFT, endParametricFT);
 			ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 			String pn = "", family, mask, pdfUrl, desc = "", famCross = "", generic = "", NPIPart = null;
@@ -3022,9 +3021,6 @@ public class WorkingSheet
 				String plName = partData.get(Taxonomyindex);
 				String engName = partData.get(engindex);
 				String comid = partData.get(ComidIndex);
-				String newslink = "";
-				if(NewsLinkIndex != -1)
-					newslink = partData.get(NewsLinkIndex);
 				pn = partData.get(partcell);
 				pdfUrl = partData.get(pdfindex);
 				family = partData.get(famcell);
@@ -3062,7 +3058,6 @@ public class WorkingSheet
 				partInfo.setFbtype(StatusName.internal);
 				PartComponent component = DataDevQueryUtil.getComponentBycomid(Long.valueOf(comid));
 				partInfo.setComponent(component);
-				partInfo.setNewsLink(newslink);
 				if("Rejected".equals(status))
 				{
 					if("".equals(comment))
@@ -3336,7 +3331,6 @@ public class WorkingSheet
 			int fbtypeindex = sheetHeader.indexOf("Feedback Type");
 			int comidindex = sheetHeader.indexOf("Comid");
 			int issuetypeidx = sheetHeader.indexOf("Issue Type");
-			int newslinkidx = sheetHeader.indexOf("News Link");
 			ArrayList<ArrayList<String>> fileData = readSpreadsheet(2);
 			String pn = "", family, mask, pdfUrl, desc = "", famCross = null, generic = null, NPIPart = null, flowSource;
 			for(int i = 0; i < fileData.size(); i++)
@@ -3359,9 +3353,6 @@ public class WorkingSheet
 				String actionduedate = partData.get(Actionduedateindex);
 				String wrngfets = partData.get(wrongfetsindex);
 				String comid = partData.get(comidindex);
-				String newslink = "";
-				if(newslinkidx != -1)
-					newslink = partData.get(newslinkidx);
 
 				pn = partData.get(partcell);
 				pdfUrl = partData.get(pdfCellNo);
@@ -3401,7 +3392,6 @@ public class WorkingSheet
 				partInfo.setStatus(status);
 				partInfo.setComment(comment);
 				partInfo.setIssuedBy(teamLeaderName);
-				partInfo.setNewsLink(newslink);
 				if("Approved Eng.".equals(status))
 				{
 					if(fbtype.equals("QA"))
