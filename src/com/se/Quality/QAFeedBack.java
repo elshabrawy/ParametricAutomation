@@ -102,8 +102,8 @@ public class QAFeedBack extends JPanel implements ActionListener
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		tabbedPane.addTab("Data Sheet", null, tabSheet, null);
 
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
+//		filterPanel.filterButton.addActionListener(this);
+//		filterPanel.refreshButton.addActionListener(this);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 
