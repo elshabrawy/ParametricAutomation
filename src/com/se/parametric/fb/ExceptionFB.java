@@ -74,13 +74,10 @@ public class ExceptionFB extends JPanel implements ActionListener
 		selectionPanel.addButtonsPanel(buttonLabels, this);
 
 		selectionPanel.addComponentsToPanel();
-
+		sheetpanel = selectionPanel.getSheet();
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addTab("Input Selection", null, selectionPanel, null);
 		add(tabbedPane);
-
-		filterPanel.filterButton.addActionListener(this);
-		filterPanel.refreshButton.addActionListener(this);
 		this.addFocusListener(new FocusListener() {
 
 			@Override
