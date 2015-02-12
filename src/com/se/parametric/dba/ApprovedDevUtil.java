@@ -1318,7 +1318,7 @@ public class ApprovedDevUtil
 			{
 				colname = "paraUserId";
 				statusname = StatusName.tlFeedback;
-				teamMembers = ParaQueryUtil.getTeamMembersIDByTL(userDto.getId());
+				teamMembers = ParaQueryUtil.getTeamMembersIDplusTLByTL(userDto.getId());
 				// criteria.add(Restrictions.in("paraUserId", teamMembers));
 				// criteria.add(Restrictions.eq("status.name", StatusName.tlFeedback));
 			}

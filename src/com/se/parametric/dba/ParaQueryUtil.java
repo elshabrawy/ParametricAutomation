@@ -355,6 +355,33 @@ public class ParaQueryUtil
 
 	}
 
+	public static Long[] getTeamMembersIDplusTLByTL(long userId)
+	{
+
+		Long[] result = new Long[10];
+		Session grmSession = com.se.grm.db.SessionUtil.getSession();
+		try
+		{
+			Criteria crit = grmSession.createCriteria(GrmUser.class);
+			crit.add(Restrictions.eq("leader", getGrmUserById(userId, grmSession)));
+			List<GrmUser> u = crit.list();
+			int i = 0;
+			result = new Long[u.size() + 1];
+			for(GrmUser grmUser : u)
+			{
+				result[i] = grmUser.getId();
+				System.out.println("user :" + grmUser.getId());
+				i++;
+			}
+			result[u.size()] = userId;
+		}finally
+		{
+			grmSession.close();
+		}
+		return result;
+
+	}
+
 	public static List<String> getUnit()
 	{
 
@@ -5553,12 +5580,15 @@ public class ParaQueryUtil
 		try
 		{
 			Long[] userIds = new Long[] { userId };
+			Long[] appuserIds = new Long[] { userId };
 			String colName = "parametricUserId";
 			long fbStatusId = 14;
 			long reviewStatusId = 6;
+			appuserIds = userIds;
 			if(role == 1)
 			{
 				userIds = ParaQueryUtil.getTeamMembersIDByTL(userId);
+				appuserIds = ParaQueryUtil.getTeamMembersIDplusTLByTL(userId);
 				fbStatusId = 28;
 				reviewStatusId = 4;
 			}
@@ -5589,10 +5619,10 @@ public class ParaQueryUtil
 			{
 				colName = "QA_USER_ID";
 			}
-			int appnew = getAppValueCount(userIds, colName, reviewStatusId, "New", session);
-			int appnpi = getAppValueCount(userIds, colName, reviewStatusId, "NPI", session);
-			int appfbnew = getAppFeedBackCount(userIds, colName, fbStatusId, "New", session);
-			int appfbnpi = getAppFeedBackCount(userIds, colName, fbStatusId, "NPI", session);
+			int appnew = getAppValueCount(appuserIds, colName, reviewStatusId, "New", session);
+			int appnpi = getAppValueCount(appuserIds, colName, reviewStatusId, "NPI", session);
+			int appfbnew = getAppFeedBackCount(appuserIds, colName, fbStatusId, "New", session);
+			int appfbnpi = getAppFeedBackCount(appuserIds, colName, fbStatusId, "NPI", session);
 			flags.add(npi + "");
 			flags.add(newcount + "");
 			flags.add(bk + "");

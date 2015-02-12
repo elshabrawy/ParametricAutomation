@@ -63,7 +63,7 @@ public class TLUnApprovedValueFeedback extends JPanel implements ActionListener
 		this.setLayout(new BorderLayout());
 		// int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 		// int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-		teamMembers = ParaQueryUtil.getTeamMembersIDByTL(TLDTO.getId());
+		teamMembers = ParaQueryUtil.getTeamMembersIDplusTLByTL(TLDTO.getId());
 		ArrayList<Object[]> filterData = ApprovedDevUtil.getEngUnapprovedData(TLDTO, null, null,
 				"TL");
 		// System.out.println("User:" + userDTO.getId() + " " + userDTO.getFullName() + " " + filterData.size());
