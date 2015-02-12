@@ -1573,7 +1573,7 @@ public class WorkingSheet
 					{
 						XCell npiCell = xcellrange.getCellByPosition(npiIndex, 0);
 						String npi = getCellText(npiCell).getString();
-						if(!npi.isEmpty() && !npihasvalue)
+						if(!npi.isEmpty() && npi.equalsIgnoreCase("Yes") && !npihasvalue)
 						{
 							npihasvalue = true;
 						}

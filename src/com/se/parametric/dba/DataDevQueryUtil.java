@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -4281,18 +4282,31 @@ public class DataDevQueryUtil
 	public static TblNpiParts insertNPIPart(PartComponent com, String seUrl, Session session)
 	{
 		TblNpiParts npiPart = new TblNpiParts();
+		// Date datefrom6months = new Date();
+		Calendar currentDateBefore6Months = Calendar.getInstance();
+		currentDateBefore6Months.add(Calendar.MONTH, -6);
+		System.out.println(currentDateBefore6Months);
 		// generic.setId(QueryUtil.getRandomID());
 		try
 		{
-			npiPart.setPartComponent(com);
-			npiPart.setSupplier(com.getSupplierId());
-			npiPart.setPl(com.getSupplierPl().getPl());
-			npiPart.setOfflinedocid(com.getDocument());
-			npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
-			npiPart.setInsertionDate(new Date());
-			npiPart.setAutoFlag(1L);
-			session.saveOrUpdate(npiPart);
-			session.beginTransaction().commit();
+			if(com.getStoreDate() != null
+					&& com.getStoreDate().before(currentDateBefore6Months.getTime()))
+			{
+				System.out.println("Insertion date of parts is before 6 months from now");
+				return null;
+			}
+			else
+			{
+				npiPart.setPartComponent(com);
+				npiPart.setSupplier(com.getSupplierId());
+				npiPart.setPl(com.getSupplierPl().getPl());
+				npiPart.setOfflinedocid(com.getDocument());
+				npiPart.setNewsdocid(ParaQueryUtil.getDocumentBySeUrl(seUrl, session));
+				npiPart.setInsertionDate(new Date());
+				npiPart.setAutoFlag(1L);
+				session.saveOrUpdate(npiPart);
+				session.beginTransaction().commit();
+			}
 
 		}catch(ConstraintViolationException e)
 		{
