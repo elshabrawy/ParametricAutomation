@@ -22,6 +22,17 @@ public class GrmUserDTO
 	private long id;
 	private GrmRole grmRole;
 	private String groupName;
+	private String taskType;
+
+	public String getTaskType()
+	{
+		return taskType;
+	}
+
+	public void setTaskType(String taskType)
+	{
+		this.taskType = taskType;
+	}
 
 	public String getGroupName()
 	{

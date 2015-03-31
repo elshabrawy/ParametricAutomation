@@ -263,8 +263,6 @@ public class LoginForm extends JFrame
 					}
 				}
 			}
-
-			// return result;
 		}
 	}
 
@@ -319,10 +317,10 @@ public class LoginForm extends JFrame
 			{
 
 				LongRunProcess process = new LongRunProcess(grmUser);
-				mainFrame = new MainWindow();
+				mainFrame = new MainWindow(grmUser);
 				try
 				{
-					mainFrame.init(grmUser);
+//					mainFrame.init(grmUser);
 					process.execute();
 					loginframe.setVisible(false);
 					mainFrame.setVisible(true);

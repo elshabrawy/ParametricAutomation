@@ -27,6 +27,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
+import com.se.GUI.UserFactory;
+import com.se.GUI.UserType;
 import com.se.Quality.QAChecks;
 import com.se.Quality.QAException;
 import com.se.Quality.QAFeedBack;
@@ -42,6 +44,7 @@ import com.se.parametric.fb.TLFeedBack;
 import com.se.parametric.review.TLReviewData;
 import com.se.parametric.unappValue.EngUnApprovedValueFeedback;
 import com.se.parametric.unappValue.TLUnApprovedValue;
+
 
 public class MainPanel extends JPanel implements ActionListener
 {
@@ -78,16 +81,14 @@ public class MainPanel extends JPanel implements ActionListener
 	JButton qachecksBu;
 	JButton updateBu;
 	JButton exportPanelBu;
-	// static int width;
-	// static int height;
-	// JPanel mainpnl;
-	// JPanel tabspanel;
 	static JTabbedPane tabbedPane;
 	List<JButton> buttonlist;
 	List<String> iconsurl;
+	ArrayList<ArrayList<Object>> result =null;
 	JToolBar toolBar;
 	static JPopupMenu menu;
-
+	UserFactory userFactory=new UserFactory();
+	UserType user=null;
 	public MainPanel(GrmUserDTO userDTO)
 	{
 		this.userDTO = userDTO;
@@ -111,99 +112,42 @@ public class MainPanel extends JPanel implements ActionListener
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addMouseListener(new PopupListener());
 		createMenu();
-		// tabbedPane.setBounds(0, height - 980, width - 10, height - 30);
-		// tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-		// tabspanel.add(tabbedPane);
-
 		toolBar = new JToolBar("");
-		toolBar.setFloatable(false);
-		// toolBar.setBounds(0, 0, width - 5, height - 935);
-
-		// role 3 eng , role 1 tl
+		toolBar.setFloatable(false);		
 		if(userRole == 1 && userGroup == 1)
 		{
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-
-			tlreviewDataBu = new JButton("TL Data Review");
-			iconsurl.add("/Resources/reviews.jpg");
-			tlfeedBackBu = new JButton("TL Data FeedBack");
-			iconsurl.add("/Resources/feedback-icon.png");
-			tlunApprovedBu = new JButton("UnApproved Value");
-			iconsurl.add("/Resources/approved.png");
-			buttonlist.add(tlreviewDataBu);
-			buttonlist.add(tlfeedBackBu);
-			buttonlist.add(tlunApprovedBu);
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+			user=userFactory.getUser("ParametricTLNew");
+//			result=user.creatTabs();
+//			user.drawtoolbar( 10, 170, toolBar);
+			
 		}
-		else if(userRole == 3 && userGroup == 1)
+		else if(userRole == 3 && userGroup == 1 &&userDTO.getTaskType().equals("New"))
 		{
-			// parametric eng
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-			developementBu = new JButton("Developement");
-			iconsurl.add("/Resources/development-icon.png");
-			updateBu = new JButton("NPI Update");
-			iconsurl.add("/Resources/update-icon.png");
-			engfeedBackBu = new JButton("Eng Data Feedback");
-			iconsurl.add("/Resources/feedback-icon.png");
-			engunApprovedBu = new JButton("Eng UnApproved Value");
-			iconsurl.add("/Resources/approved.png");
-			qachecksBu = new JButton("QA Checks");
-			iconsurl.add("/Resources/check-icon.png");
-			exceptionfbBu = new JButton("QA ExceptionFeedback");
-			iconsurl.add("/Resources/exception.png");
-			exportPanelBu = new JButton("Export");
-			iconsurl.add("/Resources/export.png");
+			 user=userFactory.getUser("ParametricEngNew");
+//			 result=user.creatTabs();
+//			user.drawtoolbar( 10, 170, toolBar);
+			
 
-			buttonlist.add(developementBu);
-			buttonlist.add(updateBu);
-			buttonlist.add(engfeedBackBu);
-			buttonlist.add(engunApprovedBu);
-			buttonlist.add(qachecksBu);
-			buttonlist.add(exceptionfbBu);
-//			buttonlist.add(exportPanelBu);
-
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+		}
+		else if(userRole == 3 && userGroup == 1 &&userDTO.getTaskType().equals("Update"))
+		{
+			user=userFactory.getUser("ParametricEngUpdate");
+//			result=user.creatTabs();
+//			user.drawtoolbar( 10, 170, toolBar);
 		}
 		else if(userRole == 3 && userGroup == 23)
 		{
-			// Q eng
-			// System.out.println("Quality Eng");
-			// tlfeedBack = new TLFeedBack(userDTO);
-			//
-			// qaReviewData = new QAReviewData(userDTO);
-			// qaFeedBack = new QAFeedBack(userDTO);
-			// qUnApproved = new QualityUnApprovedValue(userDTO);
-			// qaexception = new QAException(userDTO);
-			//
-			// tabbedPane.addTab("Quality Data Review", null, qaReviewData, null);
-			// tabbedPane.addTab("Quality Feedback", null, qaFeedBack, null);
-			// tabbedPane.addTab("Quality UnApproved", null, qUnApproved, null);
-			// tabbedPane.addTab("Quality Exception", null, qaexception, null);
-			int wstart = 10;
-			int Bwidth = 170;
-			buttonlist = new ArrayList<>();
-			iconsurl = new ArrayList<>();
-
-			qaReviewDataBu = new JButton("Quality Data Review");
-			iconsurl.add("/Resources/reviews.jpg");
-			qaFeedBackBu = new JButton("Quality Feedback");
-			iconsurl.add("/Resources/feedback-icon.png");
-			qUnApprovedBu = new JButton("Quality UnApproved");
-			iconsurl.add("/Resources/approved.png");
-			qaexceptionBu = new JButton("Quality Exception");
-			iconsurl.add("/Resources/exception.png");
-			buttonlist.add(qaReviewDataBu);
-			buttonlist.add(qaFeedBackBu);
-			buttonlist.add(qUnApprovedBu);
-			buttonlist.add(qaexceptionBu);
-			drawtoolbar(buttonlist, iconsurl, wstart, Bwidth);
+			
+			user=userFactory.getUser("QualityEngNew");
+//			result=user.creatTabs();
+//			user.drawtoolbar( 10, 170, toolBar);
+//			user.drawtoolbar(buttons, iconsurl, 10, 170, toolBar);
 		}
+		ArrayList<Object> gui=user.creatTabs(userDTO);
+		toolBar=(JToolBar) gui.get(0);
+		tabbedPane=(JTabbedPane) gui.get(1);
+
+		user.drawtoolbar( 10, 170, toolBar);
 		add(toolBar, BorderLayout.PAGE_START);
 		// add(mainpnl);
 		add(tabbedPane, BorderLayout.CENTER);
@@ -225,37 +169,37 @@ public class MainPanel extends JPanel implements ActionListener
 		});
 	}
 
-	private void drawtoolbar(List<JButton> buttons, List<String> iconsurl, int wstart, int Bwidth)
-	{
-		try
-		{
-			Image img;
-			toolBar.addSeparator();
-			for(int i = 0; i < buttons.size(); i++)
-			{
-				buttons.get(i).setBounds(wstart + ((i + 1) * Bwidth), 5, Bwidth - 5, 32);
-				buttons.get(i).setForeground(new Color(25, 25, 112));
-				// tlunApprovedBu.setBackground(new Color(255, 255, 255));
-				buttons.get(i).setFont(new Font("Herman", Font.PLAIN, 11));
-				buttons.get(i).addActionListener(this);
-				buttons.get(i).setToolTipText(buttons.get(i).getText());
-				// buttons.get(i).setOpaque(false);
-				// buttons.get(i).setBorder(BorderFactory.createEmptyBorder());
-				buttons.get(i).setVerticalTextPosition(SwingConstants.BOTTOM);
-				buttons.get(i).setHorizontalTextPosition(SwingConstants.CENTER);
-
-				img = ImageIO.read(getClass().getResource(iconsurl.get(i)));
-				buttons.get(i).setIcon(new ImageIcon(img));
-				buttons.get(i).setIconTextGap(5);
-				toolBar.add(buttons.get(i));
-				toolBar.addSeparator();
-			}
-		}catch(Exception e)
-		{
-			// System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
+//	private void drawtoolbar(List<JButton> buttons, List<String> iconsurl, int wstart, int Bwidth)
+//	{
+//		try
+//		{
+//			Image img;
+//			toolBar.addSeparator();
+//			for(int i = 0; i < buttons.size(); i++)
+//			{
+//				buttons.get(i).setBounds(wstart + ((i + 1) * Bwidth), 5, Bwidth - 5, 32);
+//				buttons.get(i).setForeground(new Color(25, 25, 112));
+//				// tlunApprovedBu.setBackground(new Color(255, 255, 255));
+//				buttons.get(i).setFont(new Font("Herman", Font.PLAIN, 11));
+//				buttons.get(i).addActionListener(this);
+//				buttons.get(i).setToolTipText(buttons.get(i).getText());
+//				// buttons.get(i).setOpaque(false);
+//				// buttons.get(i).setBorder(BorderFactory.createEmptyBorder());
+//				buttons.get(i).setVerticalTextPosition(SwingConstants.BOTTOM);
+//				buttons.get(i).setHorizontalTextPosition(SwingConstants.CENTER);
+//
+//				img = ImageIO.read(getClass().getResource(iconsurl.get(i)));
+//				buttons.get(i).setIcon(new ImageIcon(img));
+//				buttons.get(i).setIconTextGap(5);
+//				toolBar.add(buttons.get(i));
+//				toolBar.addSeparator();
+//			}
+//		}catch(Exception e)
+//		{
+//			// System.out.println(e.getMessage());
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void updateFlags()
 	{

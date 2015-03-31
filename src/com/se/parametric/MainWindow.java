@@ -50,7 +50,7 @@ public class MainWindow extends JFrame
 	private JMenuBar menuBar;
 	private GrmUserDTO loggedInUser;
 	public static JPanel glass;
-
+	public GrmUserDTO grmUser;
 	// static
 	// {
 	// glass = new JPanel() {
@@ -81,8 +81,9 @@ public class MainWindow extends JFrame
 	// });
 	// }
 
-	public MainWindow()
+	public MainWindow(final GrmUserDTO grmUser)
 	{
+		this.grmUser= grmUser;
 		setTitle("Parametric Automation");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -123,6 +124,38 @@ public class MainWindow extends JFrame
 		});
 		optionsMenu.addSeparator();
 		optionsMenu.add(logoutMenuItem);
+		JMenu functionType = new JMenu("Function Type");
+		
+		JMenu functions = new JMenu("Functions");
+		JMenuItem newFunction = new JMenuItem("New");
+		newFunction.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				grmUser.setTaskType("New");
+				init(grmUser);
+
+			}
+
+		});
+		JMenuItem updateFunction = new JMenuItem("Update");
+		updateFunction.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				grmUser.setTaskType("Update");
+				init(grmUser);
+
+			}
+
+		});
+		functions.add(newFunction);
+
+		functions.add(updateFunction);
+		functionType.add(functions);
+
 		JMenuItem aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.addActionListener(new ActionListener() {
 
@@ -160,6 +193,7 @@ public class MainWindow extends JFrame
 		helpMenu.addSeparator();
 		helpMenu.add(aboutMenuItem);
 		menuBar.add(optionsMenu);
+		menuBar.add(functionType);
 		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
 		createLoading();
@@ -434,7 +468,7 @@ public class MainWindow extends JFrame
 			{
 			}
 		});
-
+       this.setVisible(true);
 	}
 
 	public long getUserID(String userName, String pass)
