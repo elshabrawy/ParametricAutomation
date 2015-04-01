@@ -1,10 +1,7 @@
 package com.se.parametric;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -14,21 +11,16 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import com.se.GUI.UserFactory;
-import com.se.GUI.UserType;
 import com.se.Quality.QAChecks;
 import com.se.Quality.QAException;
 import com.se.Quality.QAFeedBack;
@@ -44,6 +36,9 @@ import com.se.parametric.fb.TLFeedBack;
 import com.se.parametric.review.TLReviewData;
 import com.se.parametric.unappValue.EngUnApprovedValueFeedback;
 import com.se.parametric.unappValue.TLUnApprovedValue;
+import com.se.users.GuiFactory;
+import com.se.users.gui.Gui;
+
 
 
 public class MainPanel extends JPanel implements ActionListener
@@ -87,8 +82,8 @@ public class MainPanel extends JPanel implements ActionListener
 	ArrayList<ArrayList<Object>> result =null;
 	JToolBar toolBar;
 	static JPopupMenu menu;
-	UserFactory userFactory=new UserFactory();
-	UserType user=null;
+	GuiFactory guiFactory=new GuiFactory();
+	Gui gui=null;
 	public MainPanel(GrmUserDTO userDTO)
 	{
 		this.userDTO = userDTO;
@@ -116,14 +111,14 @@ public class MainPanel extends JPanel implements ActionListener
 		toolBar.setFloatable(false);		
 		if(userRole == 1 && userGroup == 1)
 		{
-			user=userFactory.getUser("ParametricTLNew");
+			gui=guiFactory.getUserType("ParametricTLNew");
 //			result=user.creatTabs();
 //			user.drawtoolbar( 10, 170, toolBar);
 			
 		}
 		else if(userRole == 3 && userGroup == 1 &&userDTO.getTaskType().equals("New"))
 		{
-			 user=userFactory.getUser("ParametricEngNew");
+			 gui=guiFactory.getUserType("ParametricEngNewGUI");
 //			 result=user.creatTabs();
 //			user.drawtoolbar( 10, 170, toolBar);
 			
@@ -131,23 +126,23 @@ public class MainPanel extends JPanel implements ActionListener
 		}
 		else if(userRole == 3 && userGroup == 1 &&userDTO.getTaskType().equals("Update"))
 		{
-			user=userFactory.getUser("ParametricEngUpdate");
+			gui=guiFactory.getUserType("ParametricEngUpdate");
 //			result=user.creatTabs();
 //			user.drawtoolbar( 10, 170, toolBar);
 		}
 		else if(userRole == 3 && userGroup == 23)
 		{
 			
-			user=userFactory.getUser("QualityEngNew");
+			gui=guiFactory.getUserType("QualityEngNew");
 //			result=user.creatTabs();
 //			user.drawtoolbar( 10, 170, toolBar);
 //			user.drawtoolbar(buttons, iconsurl, 10, 170, toolBar);
 		}
-		ArrayList<Object> gui=user.creatTabs(userDTO);
-		toolBar=(JToolBar) gui.get(0);
-		tabbedPane=(JTabbedPane) gui.get(1);
+		ArrayList<Object> tabs=gui.creatTabs(userDTO);
+		toolBar=(JToolBar) tabs.get(0);
+		tabbedPane=(JTabbedPane) tabs.get(1);
 
-		user.drawtoolbar( 10, 170, toolBar);
+		gui.drawtoolbar( 10, 170, toolBar);
 		add(toolBar, BorderLayout.PAGE_START);
 		// add(mainpnl);
 		add(tabbedPane, BorderLayout.CENTER);
